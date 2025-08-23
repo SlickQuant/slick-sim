@@ -33,6 +33,7 @@ FetchContent_Declare(
   GIT_TAG v1.12.0
 )
 FetchContent_MakeAvailable(spdlog)
+add_definitions(-DSPDLOG_USE_STD_FORMAT -DSPDLOG_USE_STD_FORMAT_HO)
 
 add_subdirectory(src)
 

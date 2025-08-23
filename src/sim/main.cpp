@@ -1,6 +1,6 @@
-#include "core/logger.h"
+#include <core/logger.h>
 
 int main() {
-    es::info("ExchangeSimulator skeleton");
+    SPDLOG_INFO("ExchangeSimulator skeleton");
     return 0;
 }
