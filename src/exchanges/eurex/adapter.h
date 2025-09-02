@@ -1,6 +1,6 @@
 #pragma once
 
-namespace es::eurex {
+namespace exch_sim::eurex {
 class Adapter {
 public:
     void connect();
