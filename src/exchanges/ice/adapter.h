@@ -1,6 +1,6 @@
 #pragma once
 
-namespace es::ice {
+namespace exch_sim::ice {
 class Adapter {
 public:
     void connect();
