@@ -1,0 +1,29 @@
+{
+    "order_request_queue_size": 16777216,
+    "order_response_queue_size": 16777216,
+    "md_event_queue": 16777216,
+    "md_publisher": {
+        "coinbase": {
+            "port": 5000
+        }
+    },
+    "order_gateway": {
+        "rest": {
+            "port": 3000,
+            "exchange": "coinbase"
+        },
+        "ws": {
+            "port": 3001,
+            "exchange": "coinbase"
+        }
+    },
+    "exchanges": {
+        "coinbase": {
+            "md_feeds": [
+                {
+                    "type": "coinbase_live_ws"
+                }
+            ]
+        }
+    }
+}

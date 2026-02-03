@@ -1,20 +1,79 @@
-#include "order_gateway.h"
-#include <slick_logger/logger.hpp>
+#include "order_gateway.hpp"
+#include "client_manager/tcp_client_manager.hpp"
+#include "client_manager/coinbase_rest_client_manager.hpp"
+#include "client_manager/coinbase_ws_client_manager.hpp"
 
-namespace exch_sim::order_gateway {
+using TCPServerConfig = slick::socket::TCPServerConfig;
 
-OrderGateway::OrderGateway(const slick_socket::TCPServerConfig& config, ProtocolType default_protocol)
-    : slick_socket::TCPServerBase<OrderGateway>("MultiProtocolOrderGateway", config)
-    , order_queue_(std::make_unique<slick::SlickQueue<Order>>(1024))
+namespace slick::sim::order_gateway {
+
+OrderGateway::OrderGateway(
+    const json& config,
+    slick::SlickQueue<Request> &request_queue,
+    slick::SlickQueue<OrderResponse> &order_response_queue,
+    ProtocolType default_protocol)
+    : request_queue_(request_queue)
+    , order_response_queue_(order_response_queue)
     , default_protocol_(default_protocol)
     , auto_detect_protocol_(true)
 {
-    LOG_INFO("Multi-protocol OrderGateway initialized on port {} with default protocol: {}", 
-             config.port, static_cast<int>(default_protocol));
+    if (config.contains("tcp")) {
+        auto &tcp = config["tcp"];
+        TCPServerConfig tcp_config;
+        tcp_config.port = tcp.value("port", tcp_config.port);
+        tcp_config.receive_buffer_size = tcp.value("receive_buffer_size", 65535);
+        tcp_config.cpu_affinity = tcp.value("cpu_affinity", tcp_config.cpu_affinity);
+
+        std::string_view exchange = tcp.value("exchange", "");
+        client_managers_.emplace_back(std::make_unique<TcpClientManager>(tcp, request_queue_, order_response_queue_, tcp_config));
+    }
+
+    if (config.contains("rest")) {
+        auto &rest = config["rest"];
+        if (!rest.contains("exchange")) {
+            throw std::runtime_error("Missing exchange in order_gateway.rest config");
+        }
+        std::string exch = rest.value("exchange", "");
+        if (exch == "coinbase") {
+            client_managers_.emplace_back(std::make_unique<coinbase::CoinbaseRestClientManager>(rest, request_queue_, order_response_queue_));
+        }
+        else {
+            throw std::runtime_error(std::format("Unsupported exchange {}", exch));
+        }
+    }
+
+    if (config.contains("ws")) {
+        auto &rest = config["ws"];
+        if (!rest.contains("exchange")) {
+            throw std::runtime_error("Missing exchange in order_gateway.rest config");
+        }
+        std::string exch = rest.value("exchange", "");
+        if (exch == "coinbase") {
+            client_managers_.emplace_back(std::make_unique<coinbase::CoinbaseWebsocketClientManager>(rest, request_queue_, order_response_queue_));
+        }
+        else {
+            throw std::runtime_error(std::format("Unsupported exchange {}", exch));
+        }
+    }
+    // LOG_INFO("Multi-protocol OrderGateway initialized on port {} with default protocol: {}", 
+    //          config.port, static_cast<int>(default_protocol));
 }
 
 OrderGateway::~OrderGateway() {
-    stop();
+    // stop();
+}
+
+void OrderGateway::start() {
+    LOG_INFO("ExchangeSimulator OrderGateway starting...");
+    for (auto &mgr : client_managers_) {
+        mgr->start();
+    }
+}
+
+void OrderGateway::stop() {
+    for (auto &mgr : client_managers_) {
+        mgr->stop();
+    }
 }
 
 void OrderGateway::set_order_callback(OrderCallback callback) {
@@ -43,7 +102,7 @@ void OrderGateway::onClientDisconnected(int client_id) {
 }
 
 void OrderGateway::onClientData(int client_id, const uint8_t* data, size_t length) {
-    LOG_DEBUG("Received {} bytes from client {}", length, client_id);
+    LOG_TRACE("Received {} bytes from client {}", length, client_id);
     
     auto client_it = clients_.find(client_id);
     if (client_it == clients_.end()) {
@@ -88,9 +147,9 @@ void OrderGateway::process_message_result(const ParseResult& result, int client_
                  order.quantity, order.price, client_id);
         
         // Push to lock-free queue
-        uint64_t index = order_queue_->reserve();
-        *(*order_queue_)[index] = order;
-        order_queue_->publish(index);
+        uint64_t index = request_queue_.reserve();
+        // *(*request_queue_)[index] = order;
+        request_queue_.publish(index);
         
         // Call callback if set
         if (order_callback_) {
@@ -146,7 +205,7 @@ void OrderGateway::send_execution_report(const OrderResponse& response, int clie
     try {
         std::vector<uint8_t> response_data = client.parser->serialize_response(response);
         if (!response_data.empty()) {
-            send_data(client_id, response_data);
+            // send_data(client_id, response_data);
             LOG_DEBUG("Sent execution report to client {} using protocol {}", 
                      client_id, static_cast<int>(client.protocol_type));
         } else {
@@ -165,4 +224,4 @@ std::vector<std::pair<int, ProtocolType>> OrderGateway::get_client_protocols() c
     return result;
 }
 
-} // namespace exch_sim::order_gateway
+} // namespace slick::sim::order_gateway

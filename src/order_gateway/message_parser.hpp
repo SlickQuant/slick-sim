@@ -1,12 +1,13 @@
 #pragma once
 
-#include "order.h"
+#include <common/messages.hpp>
+#include <common/order.hpp>
 #include <vector>
 #include <memory>
 #include <string>
 #include <optional>
 
-namespace exch_sim::order_gateway {
+namespace slick::sim::order_gateway {
 
 enum class ProtocolType {
     FIX,
@@ -46,11 +47,11 @@ public:
     
 protected:
     // Helper to convert protocol-specific fields to internal enums
-    static OrderSide parse_side(const std::string& side_str);
+    static Side parse_side(const std::string& side_str);
     static OrderType parse_order_type(const std::string& type_str);
     static TimeInForce parse_time_in_force(const std::string& tif_str);
     
-    static std::string side_to_string(OrderSide side);
+    static std::string side_to_string(Side side);
     static std::string order_type_to_string(OrderType type);
     static std::string order_status_to_string(OrderStatus status);
 };
@@ -71,4 +72,4 @@ public:
     }
 };
 
-} // namespace exch_sim::order_gateway
+} // namespace slick::sim::order_gateway

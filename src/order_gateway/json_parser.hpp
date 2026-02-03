@@ -1,11 +1,11 @@
 #pragma once
 
-#include "message_parser.h"
+#include "message_parser.hpp"
 #include <nlohmann/json.hpp>
 #include <string>
 #include <atomic>
 
-namespace exch_sim::order_gateway {
+namespace slick::sim::order_gateway {
 
 class JsonParser : public MessageParser {
 public:
@@ -41,4 +41,4 @@ private:
     JsonFieldMapping field_mapping_;
 };
 
-} // namespace exch_sim::order_gateway
+} // namespace slick::sim::order_gateway
