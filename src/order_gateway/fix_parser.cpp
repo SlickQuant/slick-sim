@@ -1,11 +1,11 @@
-#include "fix_parser.h"
-#include <slick_logger/logger.hpp>
+#include "fix_parser.hpp"
+#include <slick/logger.hpp>
 #include <sstream>
 #include <iomanip>
 #include <quickfix/Message.h>
 #include <quickfix/Field.h>
 
-namespace exch_sim::order_gateway {
+namespace slick::sim::order_gateway {
 
 FixParser::FixParser() : exec_id_counter_(1), current_client_id_(-1) {}
 
@@ -89,7 +89,7 @@ Order FixParser::parse_new_order_single(const FIX44::NewOrderSingle& message, in
     // Side
     FIX::Side side;
     message.get(side);
-    order.side = static_cast<OrderSide>(side.getValue());
+    order.side = static_cast<Side>(side.getValue());
     
     // Order Type
     FIX::OrdType ordType;
@@ -100,10 +100,10 @@ Order FixParser::parse_new_order_single(const FIX44::NewOrderSingle& message, in
     FIX::OrderQty qty;
     message.get(qty);
     order.quantity = static_cast<uint64_t>(qty.getValue());
-    order.remaining_quantity = order.quantity;
+    order.leaves_quantity = order.quantity;
     
     // Price (if limit order)
-    if (order.type == OrderType::Limit || order.type == OrderType::StopLimit) {
+    if (order.type == OrderType::LIMIT || order.type == OrderType::STOP_LIMIT) {
         FIX::Price price;
         message.get(price);
         order.price = price.getValue();
@@ -135,7 +135,7 @@ FIX44::ExecutionReport FixParser::create_execution_report(const OrderResponse& r
     FIX44::ExecutionReport execReport;
     
     execReport.set(FIX::OrderID(response.client_order_id));
-    execReport.set(FIX::ExecID(response.exec_id));
+    execReport.set(FIX::ExecID(response.order_id));
     execReport.set(FIX::ExecType(static_cast<char>(response.order_status)));
     execReport.set(FIX::OrdStatus(static_cast<char>(response.order_status)));
     execReport.set(FIX::Side(FIX::Side_BUY)); // TODO: Should come from original order
@@ -143,9 +143,9 @@ FIX44::ExecutionReport FixParser::create_execution_report(const OrderResponse& r
     execReport.set(FIX::CumQty(static_cast<int>(response.cum_qty)));
     execReport.set(FIX::AvgPx(response.price));
     
-    if (!response.reject_reason.empty()) {
-        execReport.set(FIX::Text(response.reject_reason));
-    }
+    // if (response.reject_reason != OrdRejectReason::NONE) {
+    //     execReport.set(FIX::Text(response.reject_reason));
+    // }
     
     return execReport;
 }
@@ -168,4 +168,4 @@ void FixParser::reset() {
     current_client_id_ = -1;
 }
 
-} // namespace exch_sim::order_gateway
+} // namespace slick::sim::order_gateway

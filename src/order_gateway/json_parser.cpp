@@ -1,8 +1,8 @@
-#include "json_parser.h"
-#include <slick_logger/logger.hpp>
+#include "json_parser.hpp"
+#include <slick/logger.hpp>
 #include <algorithm>
 
-namespace exch_sim::order_gateway {
+namespace slick::sim::order_gateway {
 
 JsonParser::JsonParser() : exec_id_counter_(1) {}
 
@@ -111,7 +111,7 @@ Order JsonParser::parse_new_order_json(const nlohmann::json& json_order, int cli
     } else {
         order.quantity = order_data[field_mapping_.quantity].get<uint64_t>();
     }
-    order.remaining_quantity = order.quantity;
+    order.leaves_quantity = order.quantity;
     
     // Price (if present)
     if (order_data.contains(field_mapping_.price) && !order_data[field_mapping_.price].is_null()) {
@@ -149,16 +149,15 @@ nlohmann::json JsonParser::create_execution_report_json(const OrderResponse& res
     // Common crypto exchange execution report format
     json_response["type"] = "executionReport";
     json_response["clientOrderId"] = response.client_order_id;
-    json_response["execId"] = response.exec_id;
+    json_response["exchId"] = response.order_id;
     json_response["orderStatus"] = order_status_to_string(response.order_status);
     json_response["price"] = std::to_string(response.price);
-    json_response["quantity"] = std::to_string(response.quantity);
+    json_response["quantity"] = std::to_string(response.qty);
     json_response["cumQty"] = std::to_string(response.cum_qty);
     json_response["leavesQty"] = std::to_string(response.leaves_qty);
-    json_response["timestamp"] = std::chrono::duration_cast<std::chrono::milliseconds>(
-        response.timestamp.time_since_epoch()).count();
+    json_response["timestamp"] = response.timestamp;
     
-    if (!response.reject_reason.empty()) {
+    if (response.reject_reason != OrdRejectReason::NONE) {
         json_response["rejectReason"] = response.reject_reason;
     }
     
@@ -206,4 +205,4 @@ void JsonParser::reset() {
     message_buffer_.clear();
 }
 
-} // namespace exch_sim::order_gateway
+} // namespace slick::sim::order_gateway

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "message_parser.h"
+#include "message_parser.hpp"
 #include <cstdint>
 #include <vector>
 #include <atomic>
@@ -13,7 +13,7 @@ namespace sbe {
     class OrderCancelRequest516;
 }
 
-namespace exch_sim::order_gateway {
+namespace slick::sim::order_gateway {
 
 class SbeParser : public MessageParser {
 public:
@@ -40,4 +40,4 @@ private:
     std::atomic<uint64_t> exec_id_counter_;
 };
 
-} // namespace exch_sim::order_gateway
+} // namespace slick::sim::order_gateway

@@ -1,48 +1,48 @@
-#include "message_parser.h"
-#include "fix_parser.h"
-#include "sbe_parser.h"
-#include "json_parser.h"
-#include <slick_logger/logger.hpp>
+#include "message_parser.hpp"
+#include "fix_parser.hpp"
+#include "sbe_parser.hpp"
+#include "json_parser.hpp"
+#include <slick/logger.hpp>
 
-namespace exch_sim::order_gateway {
+namespace slick::sim::order_gateway {
 
-OrderSide MessageParser::parse_side(const std::string& side_str) {
+Side MessageParser::parse_side(const std::string& side_str) {
     if (side_str == "1" || side_str == "B" || side_str == "BUY" || side_str == "buy") {
-        return OrderSide::Buy;
+        return Side::BUY;
     } else if (side_str == "2" || side_str == "S" || side_str == "SELL" || side_str == "sell") {
-        return OrderSide::Sell;
+        return Side::SELL;
     }
-    return OrderSide::Buy; // Default
+    return Side::BUY; // Default
 }
 
 OrderType MessageParser::parse_order_type(const std::string& type_str) {
     if (type_str == "1" || type_str == "MARKET" || type_str == "market") {
-        return OrderType::Market;
+        return OrderType::MARKET;
     } else if (type_str == "2" || type_str == "LIMIT" || type_str == "limit") {
-        return OrderType::Limit;
+        return OrderType::LIMIT;
     } else if (type_str == "3" || type_str == "STOP" || type_str == "stop") {
-        return OrderType::Stop;
+        return OrderType::STOP;
     } else if (type_str == "4" || type_str == "STOP_LIMIT" || type_str == "stop_limit") {
-        return OrderType::StopLimit;
+        return OrderType::STOP_LIMIT;
     }
-    return OrderType::Market; // Default
+    return OrderType::MARKET; // Default
 }
 
 TimeInForce MessageParser::parse_time_in_force(const std::string& tif_str) {
     if (tif_str == "0" || tif_str == "DAY" || tif_str == "day") {
-        return TimeInForce::Day;
+        return TimeInForce::DAY;
     } else if (tif_str == "1" || tif_str == "GTC" || tif_str == "gtc") {
-        return TimeInForce::GoodTillCancel;
+        return TimeInForce::GOOD_TILL_CANCEL;
     } else if (tif_str == "3" || tif_str == "IOC" || tif_str == "ioc") {
-        return TimeInForce::ImmediateOrCancel;
+        return TimeInForce::IMMEDIATE_OR_CANCEL;
     } else if (tif_str == "4" || tif_str == "FOK" || tif_str == "fok") {
-        return TimeInForce::FillOrKill;
+        return TimeInForce::FILL_OR_KILL;
     }
-    return TimeInForce::Day; // Default
+    return TimeInForce::DAY; // Default
 }
 
-std::string MessageParser::side_to_string(OrderSide side) {
-    return std::string(1, static_cast<char>(side));
+std::string MessageParser::side_to_string(Side side) {
+    return std::to_string(static_cast<uint8_t>(side));
 }
 
 std::string MessageParser::order_type_to_string(OrderType type) {
@@ -87,4 +87,4 @@ std::unique_ptr<MessageParser> MessageParserFactory::create_parser_from_data(con
     return std::make_unique<JsonParser>();
 }
 
-} // namespace exch_sim::order_gateway
+} // namespace slick::sim::order_gateway

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "message_parser.h"
+#include "message_parser.hpp"
 
 #include <quickfix/Application.h>
 #include <quickfix/MessageCracker.h>
@@ -10,7 +10,7 @@
 #include <string>
 #include <atomic>
 
-namespace exch_sim::order_gateway {
+namespace slick::sim::order_gateway {
 
 class FixParser : public MessageParser, public FIX::MessageCracker
 {
@@ -41,4 +41,4 @@ private:
     int current_client_id_;
 };
 
-} // namespace exch_sim::order_gateway
+} // namespace slick::sim::order_gateway

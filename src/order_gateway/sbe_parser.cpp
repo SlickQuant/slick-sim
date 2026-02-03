@@ -1,10 +1,10 @@
-#include "sbe_parser.h"
-#include <slick_logger/logger.hpp>
+#include "sbe_parser.hpp"
+#include <slick/logger.hpp>
 #include <cstring>
 #include <algorithm>
 #include <chrono>
 
-namespace exch_sim::order_gateway {
+namespace slick::sim::order_gateway {
 
 SbeParser::SbeParser() : exec_id_counter_(1) {}
 
@@ -57,4 +57,4 @@ void SbeParser::reset() {
     message_buffer_.clear();
 }
 
-} // namespace exch_sim::order_gateway
+} // namespace slick::sim::order_gateway

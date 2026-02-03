@@ -1,0 +1,552 @@
+#include <slick/logger.hpp>
+#include "coinbase_publisher.hpp"
+#include <common/symbol_manager.hpp>
+#include <utils/timestamp.hpp>
+
+using namespace slick::sim::md_publisher;
+using namespace slick::sim;
+using namespace slick::sim::utils;
+
+namespace {
+    auto &symbol_mgr = SymbolManager::instance();
+}
+
+uint_fast64_t PerSocketData::heartbeat_count = 0;
+
+CoinbasePublisher::CoinbasePublisher(const nlohmann::json &config, slick::SlickQueue<Request> &request_queue, slick::SlickQueue<uint8_t> &market_data_queue)
+    : Publisher(request_queue, market_data_queue)
+{
+}
+
+void CoinbasePublisher::start() {
+    running_.store(true, std::memory_order_release);
+    // Start WebSocket server thread (handles everything in event loop)
+    ws_thread_ = std::thread([this]() {
+        auto app = uWS::App();
+
+        app.ws<PerSocketData>("/*", {
+                /* WebSocket settings */
+                .compression = uWS::SHARED_COMPRESSOR,
+                .maxPayloadLength = 2 << 24,
+                .idleTimeout = 120,
+                .maxBackpressure = 2 << 25,
+
+                /* WebSocket handlers */
+                .upgrade = nullptr,
+
+                .open = [this](auto *ws) {
+                    // Initialize connection timestamp
+                    ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+                    clients_.emplace(ws);
+                    LOG_INFO("CoinbasePublisher WebSocket client connected");
+                },
+
+                .message = [this](auto *ws, std::string_view message, uWS::OpCode opCode) {
+                    handleMessage(ws, message);
+                },
+
+                .drain = [](auto *ws) {
+                    // Check backpressure
+                },
+
+                .ping = [](auto *ws, std::string_view message) {
+                    // Automatically respond to client ping with pong
+                    // uWebSockets handles this automatically, but we log it
+                    LOG_TRACE("CoinbasePublisher Received ping from client");
+                },
+
+                .pong = [this](auto *ws, std::string_view message) {
+                    // Client responded to our ping
+                    ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+                    LOG_TRACE("CoinbasePublisher Received pong from client");
+                },
+
+                .close = [this](auto *ws, int code, std::string_view message) {
+                    handleClose(ws, code, message);
+                }
+            })
+            .listen(port_, [this, &app](auto *listen_socket) {
+                listen_socket_ = listen_socket;
+                if (listen_socket) {
+                    LOG_INFO("CoinbasePublisher started on port {}", port_);
+
+                    // Get the event loop
+                    loop_ = uWS::Loop::get();
+
+                    // Create heartbeat timer in the event loop
+                    // Use defer() to create timer with proper lambda capture
+                    loop_->defer([this]() {
+                        heartbeat_timer_ = us_create_timer((struct us_loop_t*)loop_, 0, 0);
+
+                        // Store 'this' pointer in timer extension data
+                        *((CoinbasePublisher**)us_timer_ext(heartbeat_timer_)) = this;
+
+                        // Set timer callback that retrieves 'this' from extension data
+                        us_timer_set(heartbeat_timer_, [](struct us_timer_t *timer) {
+                            // Dereference the pointer stored in extension data
+                            auto* self = *((CoinbasePublisher**)us_timer_ext(timer));
+                            self->checkHeartbeats();
+                        }, ping_interval_ms_, ping_interval_ms_);
+                    });
+
+                    LOG_INFO("CoinbasePublisher Event loop configured (heartbeat: {}ms)", ping_interval_ms_);
+
+                    // Start continuous response processing
+                    schedulePublishProcessing();
+
+                } else {
+                    LOG_ERROR("CoinbasePublisher Failed to listen on port {}", port_);
+                }
+            })
+            .run();
+    });
+}
+
+void CoinbasePublisher::stop() {
+    running_.store(false, std::memory_order_release);
+
+    // Close heartbeat timer
+    if (heartbeat_timer_) {
+        us_timer_close(heartbeat_timer_);
+        heartbeat_timer_ = nullptr;
+    }
+
+    // Close WebSocket server
+    if (listen_socket_) {
+        us_listen_socket_close(0, listen_socket_);
+        listen_socket_ = nullptr;
+    }
+
+    if (ws_thread_.joinable()) {
+        ws_thread_.join();
+    }
+}
+
+void CoinbasePublisher::schedulePublishProcessing() {
+    if (!running_.load(std::memory_order_acquire) || !loop_) {
+        return;
+    }
+
+    loop_->defer([this]() {
+        publishMarketDataUpdate();
+    });
+}
+
+void CoinbasePublisher::publishMarketDataUpdate() {
+    // Process up to 100 update per call to avoid blocking event loop too long
+    constexpr int max_batch = 100;
+    int processed = 0;
+
+    while (processed < max_batch) {
+        // Try to read from the queue (non-blocking)
+        auto c = data_cursor_;
+        auto [data, size] = market_data_queue_.read(data_cursor_);
+
+        if (data == nullptr) {
+            // No more data available
+            break;
+        }
+
+        auto *update = reinterpret_cast<MarketDataUpdate*>(data);
+        switch(update->type) {
+            case MDUpdateType::BOOK:
+                break;
+            case MDUpdateType::LEVEL:
+                publishLevelUpdate(update);
+                break;
+            case MDUpdateType::ORDER:
+                break;
+            case MDUpdateType::SUB_RESPONSE:
+                publishSubscriptionResponse(update);
+                processed = max_batch;
+                break;
+        }
+
+        processed++;
+    }
+
+    // Reschedule ourselves to run again on next event loop iteration
+    // schedulePublishProcessing() checks running_ flag
+    schedulePublishProcessing();
+}
+
+void CoinbasePublisher::handleMessage(wsT *ws, std::string_view message) {
+    try {
+        json msg = json::parse(message);
+
+        // Check if this is a subscription message
+        if (msg.contains("type") && msg["type"] == "subscribe") {
+
+            auto *user_data = ws->getUserData();
+
+            if (!clients_.contains(ws)) {
+                user_data->seq_num = 0;
+                clients_.emplace(ws);
+            }
+
+            auto &channel = msg["channel"].get_ref<std::string&>();
+
+            if (channel == "level2") {
+                for (auto &prod : msg["product_ids"]) {
+                    LOG_INFO("Client {:p} subscribe level2: {}", ws, prod.get<std::string_view>());
+                    auto index = request_queue_.reserve();
+                    auto *request = request_queue_[index];
+                    std::string symbol = prod.get<std::string>();
+                    memcpy(request->symbol, symbol.c_str(), sizeof(request->symbol));
+                    request->msg_type = MessageType::MD_SUBSCRIPTION;
+                    auto channel_index = static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2);
+                    request->md_subscription.channel = channel_index;
+                    request->md_subscription.client = (void*)ws;
+                    request_queue_.publish(index);
+                    auto& channel_map = subscription_info_[channel_index];
+                    auto &subscriptions = channel_map[symbol];
+                    subscriptions.emplace(ws);
+                    user_data->subscription_info[channel_index].active_subscriptions.emplace(symbol);
+                    user_data->subscription_info[channel_index].pending_subscriptions.emplace(symbol);
+                    symbol_channel_client_[symbol].emplace(channel_index, ws);
+                }
+            }
+            else if (channel == "market_trades") {
+                for (auto &prod : msg["product_ids"]) {
+                    LOG_INFO("Client {:p} subscribe market_trades: {}", ws, prod.get<std::string_view>());
+                    auto index = request_queue_.reserve();
+                    auto *request = request_queue_[index];
+                    std::string symbol = prod.get<std::string>();
+                    memcpy(request->symbol, symbol.c_str(), sizeof(request->symbol));
+                    request->msg_type = MessageType::MD_SUBSCRIPTION;
+                    auto channel_index = static_cast<uint8_t>(coinbase::WebSocketChannel::MARKET_TRADES);
+                    request->md_subscription.channel = channel_index;
+                    request->md_subscription.client = (void*)ws;
+                    request_queue_.publish(index);
+                    auto& channel_map = subscription_info_[channel_index];
+                    auto &subscriptions = channel_map[symbol];
+                    subscriptions.emplace(ws);
+                    user_data->subscription_info[channel_index].active_subscriptions.emplace(symbol);
+                    user_data->subscription_info[channel_index].pending_subscriptions.emplace(symbol);
+                    symbol_channel_client_[symbol].emplace(channel_index, ws);
+                }
+            }
+            else if (channel == "ticker") {
+                for (auto &prod : msg["product_ids"]) {
+                    LOG_INFO("Client {:p} subscribe ticker: {}", ws, prod.get<std::string_view>());
+                    auto index = request_queue_.reserve();
+                    auto *request = request_queue_[index];
+                    std::string symbol = prod.get<std::string>();
+                    memcpy(request->symbol, symbol.c_str(), sizeof(request->symbol));
+                    request->msg_type = MessageType::MD_SUBSCRIPTION;
+                    auto channel_index = static_cast<uint8_t>(coinbase::WebSocketChannel::TICKER);
+                    request->md_subscription.channel = channel_index;
+                    request->md_subscription.client = (void*)ws;
+                    request_queue_.publish(index);
+                    auto& channel_map = subscription_info_[channel_index];
+                    auto &subscriptions = channel_map[symbol];
+                    subscriptions.emplace(ws);
+                    user_data->subscription_info[channel_index].active_subscriptions.emplace(symbol);
+                    user_data->subscription_info[channel_index].pending_subscriptions.emplace(symbol);
+                    symbol_channel_client_[symbol].emplace(channel_index, ws);
+                }
+            }
+            else if (channel == "heartbeats") {
+                user_data->subscribed_heartbeat = true;
+                json response = {
+                    {"channel", "subscriptions"},
+                    {"client_id", ""},
+                    {"timestamp", format_timestamp_iso8601(9)},
+                    {"sequence_num", user_data->seq_num++},
+                    {"events", {{
+                        {"subscriptions", {
+                            {"heartbeats", {"heartbeats"}}
+                        }}
+                    }}}
+                };
+                ws->send(response.dump(), uWS::OpCode::TEXT);
+            }
+            else {
+                json response = {
+                    {"type", "error"},
+                    {"message", std::format("channel `{}` is not supported", channel)},
+                };
+                ws->send(response.dump(), uWS::OpCode::TEXT);
+            }
+        }
+        else {
+            json response = {
+                {"type", "error"},
+                {"message", std::format("type `{}` is not supported", msg.value<std::string>("type", ""))},
+            };
+            ws->send(response.dump(), uWS::OpCode::TEXT);
+        }
+    } catch (const json::parse_error& e) {
+        sendError(ws, std::string("Invalid JSON: ") + e.what());
+    }
+}
+
+void CoinbasePublisher::checkHeartbeats() {
+    auto now = std::chrono::steady_clock::now();
+    std::vector<wsT*> disconnected_clients;
+
+    // No lock needed - single threaded event loop
+    for (auto it = clients_.begin(); it != clients_.end();) {
+        auto* ws = *it;
+        auto* user_data = ws->getUserData();
+
+        // Check if client has responded to pings
+        auto time_since_pong = std::chrono::duration_cast<std::chrono::seconds>(
+            now - user_data->last_pong);
+
+        if (time_since_pong > pong_timeout_) {
+            // Client hasn't responded to pings, close connection
+            LOG_WARN("Client {:p} failed heartbeat check (last_pong: {}s ago), disconnecting",
+                        ws, time_since_pong.count());
+
+            disconnected_clients.push_back(ws);
+            it = clients_.erase(it);
+            ws->close();  // Close the connection
+        } else {
+            // Send ping to client (only if authenticated)
+            if (user_data->subscribed_heartbeat) {
+                // Send a text-based ping message (Coinbase style)
+                json event = {
+                    {"current_time", utils::format_heatbeat_timestamp()},
+                    {"heartbeat_counter", user_data->heartbeat_count++}
+                };
+                json ping_msg = {
+                    {"channel", "heartbeats"},
+                    {"client_id", ""},
+                    {"timestamp", utils::format_timestamp_iso8601(9)},
+                    {"sequence_num", user_data->seq_num++},
+                    {"events", {event}}
+                };
+                ws->send(ping_msg.dump(), uWS::OpCode::TEXT);
+
+            }
+            // Also send protocol-level ping
+            ws->send("", uWS::OpCode::PING);
+            LOG_TRACE("Sent heartbeat to client {:p}", ws);
+            ++it;
+        }
+    }
+
+    if (!disconnected_clients.empty()) {
+        LOG_INFO("Disconnected {} stale clients", disconnected_clients.size());
+    }
+}
+
+void CoinbasePublisher::handleClose(wsT *ws, int code, std::string_view message) {
+    LOG_INFO("Client {:p} disconnected: code={}, msg={}", ws, code, message);
+    unsubscribeMD(ws);
+    clients_.erase(ws);
+}
+
+void CoinbasePublisher::unsubscribeMD(wsT *ws) {
+    for (auto channel = 0; channel < static_cast<int>(coinbase::WebSocketChannel::__COUNT__); ++channel) {
+        auto &channel_sub = subscription_info_[channel];
+        auto *user_data = ws->getUserData();
+        for (const auto &symbol : user_data->subscription_info[channel].active_subscriptions) {
+            LOG_INFO("Client {:p} unsubscribe channel {}: {}", ws, coinbase::to_string(static_cast<coinbase::WebSocketChannel>(channel)), symbol);
+            auto index = request_queue_.reserve();
+            auto *request = request_queue_[index];
+            memcpy(request->symbol, symbol.data(), sizeof(request->symbol));
+            request->msg_type = MessageType::MD_UNSUBSCRIPTION;
+            request->md_subscription.channel = static_cast<uint8_t>(channel);
+            request->md_subscription.client = (void*)ws;
+            request_queue_.publish(index);
+
+            auto it = symbol_channel_client_.find(symbol);
+            if (it != symbol_channel_client_.end()) {
+                auto range = it->second.equal_range(static_cast<uint8_t>(channel));
+                for (auto itr = range.first; itr != range.second; ) {
+                    if (itr->second == ws) {
+                        itr = it->second.erase(itr);
+                        break;
+                    } else {
+                        ++itr;
+                    }
+                }
+                if (it->second.empty()) {
+                    symbol_channel_client_.erase(it);
+                }
+            }
+            subscription_info_[channel][symbol].erase(ws);
+        }
+        user_data->subscription_info[channel].active_subscriptions.clear();
+        user_data->subscription_info[channel].pending_subscriptions.clear();
+        user_data->subscription_info[channel].received_subscriptions.clear();
+    }
+}
+
+void CoinbasePublisher::sendError(wsT *ws, const std::string& error_msg) {
+    json error = {
+        {"type", "error"},
+        {"message", error_msg}
+    };
+    ws->send(error.dump(), uWS::OpCode::TEXT);
+    LOG_ERROR("WebSocket error: {}", error_msg);
+}
+
+void CoinbasePublisher::publishSubscriptionResponse(MarketDataUpdate *update) {
+    auto *response = reinterpret_cast<MDSubscriptionResponse*>(update->data);
+    auto &channel_sub = subscription_info_[response->channel];
+    auto it = channel_sub.find(update->symbol);
+    if (it != channel_sub.end()) {
+        if (it->second.empty()) {
+            return;
+        }
+        json snapshot_msg;
+        auto channel = static_cast<coinbase::WebSocketChannel>(response->channel);
+        // Send coinbase snapshot based on channel type
+        if (channel == coinbase::WebSocketChannel::LEVEL2) {
+            // Extract book snapshot data
+            auto *snapshot = reinterpret_cast<BookSnapshot*>(response->data);
+            auto *levels = reinterpret_cast<MDLevel*>(snapshot->levels);
+
+            // Build bids and asks arrays
+            json::array_t updates;
+
+            auto total_levels = snapshot->num_bid + snapshot->num_ask;
+            uint32_t i = 0;
+
+            for (; i < snapshot->num_bid; ++i) {
+                updates.push_back({
+                    {"side", "bid"},
+                    {"price_level", std::to_string(static_cast<double>(levels[i].price) / DOUBLE_MULTIPLIER)},
+                    {"new_quantity", std::to_string(static_cast<double>(levels[i].qty) / DOUBLE_MULTIPLIER)}
+                });
+            }
+
+            for (; i < total_levels; ++i) {
+                updates.push_back({
+                    {"side", "offer"},
+                    {"price_level", std::to_string(static_cast<double>(levels[i].price) / DOUBLE_MULTIPLIER)},
+                    {"new_quantity", std::to_string(static_cast<double>(levels[i].qty) / DOUBLE_MULTIPLIER)}
+                });
+            }
+
+            // Create level2 snapshot message
+            snapshot_msg = {
+                {"channel", "l2_data"},
+                {"client_id", ""},
+                {"timestamp", format_timestamp_iso8601(9)},
+                {"events", {{
+                    {"type", "snapshot"},
+                    {"product_id", update->symbol},
+                    {"updates", updates}
+                }}}
+            };
+        }
+        else if (channel == coinbase::WebSocketChannel::MARKET_TRADES) {
+            // Send empty trades snapshot
+            snapshot_msg = {
+                {"channel", "market_trades"},
+                {"client_id", ""},
+                {"timestamp", format_timestamp_iso8601(9)},
+                {"events", {{
+                    {"type", "snapshot"},
+                    {"trades", json::array()}
+                }}}
+            };
+        }
+        else if (channel == coinbase::WebSocketChannel::TICKER) {
+            // Send ticker snapshot (would need actual ticker data)
+            snapshot_msg = {
+                {"channel", "ticker"},
+                {"client_id", ""},
+                {"timestamp", format_timestamp_iso8601(9)},
+                {"events", {{
+                    {"type", "snapshot"},
+                    {"tickers", json::array()}
+                }}}
+            };
+        }
+        else {
+            LOG_WARN("Subscription response for unsupported channel: {}", coinbase::to_string(channel));
+            return;
+        }
+
+        for (const auto &ws : it->second) {
+            auto *user_data = ws->getUserData();
+            auto &subscription_info = user_data->subscription_info[response->channel];
+            auto it_sym = subscription_info.pending_subscriptions.find(update->symbol);
+            if (it_sym != subscription_info.pending_subscriptions.end()) {
+                subscription_info.pending_subscriptions.erase(it_sym);
+                subscription_info.received_subscriptions.emplace_back(update->symbol);
+
+                snapshot_msg["sequence_num"] = user_data->seq_num++;
+                ws->send(snapshot_msg.dump(), uWS::OpCode::TEXT);
+
+                if (subscription_info.pending_subscriptions.empty()) {
+                    // Send subscription confirmation
+                    json subscription_msg = {
+                        {"channel", "subscriptions"},
+                        {"client_id", ""},
+                        {"timestamp", format_timestamp_iso8601(9)},
+                        {"sequence_num", user_data->seq_num++},
+                        {"events", {{
+                            {"subscriptions", {
+                                {coinbase::to_string(channel), subscription_info.received_subscriptions}
+                            }}
+                        }}}
+                    };
+
+                    for (auto i = 0u; i < coinbase::WebSocketChannel::__COUNT__; ++i) {
+                        if (i == response->channel) {
+                            continue;
+                        }
+                        auto &other_sub_info = user_data->subscription_info[i];
+                        if (!other_sub_info.received_subscriptions.empty()) {
+                            subscription_msg["events"][0]["subscriptions"][coinbase::to_string(static_cast<coinbase::WebSocketChannel>(i))] = other_sub_info.received_subscriptions;
+                        }
+                    }
+                    ws->send(subscription_msg.dump(), uWS::OpCode::TEXT);
+                }
+            }
+        }
+    }
+}
+
+void CoinbasePublisher::publishLevelUpdate(MarketDataUpdate *update) {
+    auto *level_update = reinterpret_cast<MDLevelUpdate*>(update->data);
+    auto it_range = symbol_channel_client_.find(update->symbol);
+    if (it_range != symbol_channel_client_.end()) {
+        auto range = it_range->second.equal_range(static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2));
+        if (range.first == range.second) {
+            return;
+        }
+        // Build level update message
+        json::array_t updates;
+        for (auto i = 0u; i < level_update->num_level_update; ++i) {
+            auto &level = level_update->levels[i];
+            LOG_DEBUG("Level Update: {} {} @ {} size={} time={}({})",
+                      update->symbol,
+                      level.side ? "BUY" : "SELL",
+                      static_cast<double>(level.price) / DOUBLE_MULTIPLIER,
+                      static_cast<double>(level.qty) / DOUBLE_MULTIPLIER,
+                      format_timestamp_iso8601(level.event_time, 6),
+                      level.event_time);
+            updates.push_back({
+                {"side", level.side ? "bid" : "offer"},
+                {"price_level", std::to_string(static_cast<double>(level.price) / DOUBLE_MULTIPLIER)},
+                {"new_quantity", std::to_string(static_cast<double>(level.qty) / DOUBLE_MULTIPLIER)},
+                {"event_time", format_timestamp_iso8601(level.event_time, 6)}
+            });
+        }
+
+        json update_msg = {
+            {"channel", "l2_data"},
+            {"client_id", ""},
+            {"timestamp", format_timestamp_iso8601(9)},
+            {"events", {{
+                {"type", "update"},
+                {"product_id", update->symbol},
+                {"updates", updates}
+            }}}
+        };
+
+        for (auto it = range.first; it != range.second; ++it) {
+            auto *ws = it->second;
+            auto *user_data = ws->getUserData();
+            update_msg["sequence_num"] = user_data->seq_num++;
+            ws->send(update_msg.dump(), uWS::OpCode::TEXT);
+        }
+    }
+}
