@@ -139,7 +139,6 @@ void CoinbasePublisher::publishMarketDataUpdate() {
 
     while (processed < max_batch) {
         // Try to read from the queue (non-blocking)
-        auto c = data_cursor_;
         auto [data, size] = market_data_queue_.read(data_cursor_);
 
         if (data == nullptr) {

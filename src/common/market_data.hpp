@@ -20,11 +20,19 @@ enum MDUpdateType : uint8_t {
     SUB_RESPONSE,
 };
 
+enum UpdateFlags : uint8_t {
+    F_NONE = 0,
+    F_IS_SNAPSHOT = 1,
+    F_END_EVENT = 1 << 1,
+};
+
 struct MDLevel {
     uint64_t event_time;
+    uint64_t seq_num;
     price_t price;
     qty_t qty;
     uint32_t num_orders;
+    UpdateFlags flgas;
     Side side;
 };
 
@@ -81,8 +89,10 @@ struct BookSnapshot {
 
 struct MDTrade {
     uint64_t event_time;
+    uint64_t seq_num;
     price_t price;
     qty_t qty;
+    UpdateFlags flgas;
     Side side;
 };
 
