@@ -205,11 +205,11 @@ void Exchange::rejectCancelOrderRequest(const Request &request, OrdRejectReason 
 
 void Exchange::publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std::array<uint8_t, 2> &indices) {
     auto sz = sizeof(MarketDataUpdate) + sizeof(MDBookUpdate);
-    auto index = md_update_queue_.reserve(sz);
+    uint64_t index = md_update_queue_.reserve(sz);
     MarketDataUpdate* update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
     update->type = MDUpdateType::BOOK;
     update->venue = venue_;
-    std::memcpy(update->symbol, order_book.symbol().data(), sizeof(update->symbol));
+    std::strncpy(update->symbol, order_book.symbolName().data(), sizeof(update->symbol));
     MDBookUpdate* book_update = reinterpret_cast<MDBookUpdate*>(update->data);
     book_update->update_index[0] = indices[0];
     book_update->update_index[1] = indices[1];

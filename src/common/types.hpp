@@ -10,8 +10,9 @@ using qty_t = uint_fast64_t;
 using time_t = uint_fast64_t;
 using symid_t = uint16_t;
 
+constexpr symid_t INVALID_SYMBOL_ID = std::numeric_limits<symid_t>::max();
 constexpr price_t NULL_PRICE = std::numeric_limits<price_t>::max();
-constexpr int32_t DOUBLE_MULTIPLIER = 1e8;
+constexpr int32_t DOUBLE_MULTIPLIER = static_cast<int32_t>(1e8);
 
 enum Venue : uint8_t {
     UNKNOWN_VENUE,

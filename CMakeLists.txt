@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.25)
 set(BUILD_VERSION 0.1.0)
 project(ExchangeSimulator VERSION ${BUILD_VERSION} LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -45,19 +45,8 @@ if (NOT slick-socket_FOUND)
         GIT_TAG v1.0.4
     )
     FetchContent_MakeAvailable(slick-socket)
-endif()
-
-find_package(slick-net 1.2.2 CONFIG QUIET)
-if (NOT slick-net_FOUND)
-    message(STATUS "Fetching slick-net...")
-    set(BUILD_SLICK_NET_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(BUILD_SLICK_NET_TESTS OFF CACHE BOOL "" FORCE)
-    FetchContent_Declare(
-        slick-net
-        GIT_REPOSITORY https://github.com/SlickQuant/slick-net.git
-        GIT_TAG v1.2.2
-    )
-    FetchContent_MakeAvailable(slick-net)
+else()
+    message(STATUS "Found slick-socket: ${slick-socket_VERSION}")
 endif()
 
 find_package(slick-object-pool 0.1.3 CONFIG QUIET)
@@ -70,6 +59,8 @@ if (NOT slick-object-pool_FOUND)
         GIT_TAG v0.1.3
     )
     FetchContent_MakeAvailable(slick-object-pool)
+else()
+    message(STATUS "Found slick-object-pool: ${slick-object-pool_VERSION}")
 endif()
 
 find_package(coinbase-advanced-cpp 0.1.0 CONFIG QUIET)
@@ -82,9 +73,26 @@ if (NOT coinbase-advanced-cpp_FOUND)
         GIT_TAG main
     )
     FetchContent_MakeAvailable(coinbase-advanced-cpp)
+else()
+    message(STATUS "Found coinbase-advanced-cpp: ${coinbase-advanced-cpp_VERSION}")
 endif()
 
-find_package(slick-orderbook 1.0.0 CONFIG QUIET)
+find_package(slick-net 1.2.2 CONFIG QUIET)
+if (NOT slick-net_FOUND)
+    message(STATUS "Fetching slick-net...")
+    set(BUILD_SLICK_NET_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(BUILD_SLICK_NET_TESTS OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(
+        slick-net
+        GIT_REPOSITORY https://github.com/SlickQuant/slick-net.git
+        GIT_TAG v1.2.4
+    )
+    FetchContent_MakeAvailable(slick-net)
+else()
+    message(STATUS "Found slick-net: ${slick-net_VERSION}")
+endif()
+
+find_package(slick-orderbook CONFIG QUIET)
 if (NOT slick-orderbook_FOUND)
     message(STATUS "Fetching slick-orderbook...")
     set(BUILD_COINBASE_ADVANCED_TESTS OFF CACHE BOOL "" FORCE)
@@ -94,6 +102,8 @@ if (NOT slick-orderbook_FOUND)
         GIT_TAG main
     )
     FetchContent_MakeAvailable(slick-orderbook)
+else()
+    message(STATUS "Found slick-orderbook: ${slick-orderbook_VERSION}")
 endif()
 
 # Add QuickFIX dependency (prefer vcpkg installation)
@@ -102,12 +112,32 @@ find_package(unofficial-uwebsockets CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(jwt-cpp CONFIG REQUIRED)
 find_package(foonathan_memory CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED COMPONENTS multi_index)
+find_package(Boost CONFIG REQUIRED COMPONENTS)
+
+if(MSVC)
+    add_definitions(-D_WIN32_WINNT=0x0601)
+    add_compile_options(
+        /W4
+        /wd4324  # Suppress C4324: structure was padded due to alignment specifier (intentional for cache alignment)
+        /wd4200 
+        $<$<CONFIG:Release>:/O2>
+        $<$<CONFIG:Release>:/GL>  # Whole program optimization
+    )
+    add_link_options(
+        $<$<CONFIG:Release>:/LTCG>  # Link-time code generation (required with /GL)
+    )
+else()
+    add_compile_options(
+        -Wall -Wextra -Wpedantic
+        $<$<CONFIG:Release>:-O3>
+        $<$<CONFIG:Release>:-march=native>
+        $<$<CONFIG:Release>:-flto>
+    )
+endif()
 
 option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 if(ENABLE_ASAN)
   if(MSVC)
-    add_definitions(-D_WIN32_WINNT=0x0601)
     # MSVC AddressSanitizer (requires Visual Studio 2022 17.7+)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.37")
       add_compile_options(/fsanitize=address)

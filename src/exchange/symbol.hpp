@@ -9,19 +9,12 @@
 namespace slick::sim::exch {
 
 struct Symbol {
-    symid_t id_;
+    symid_t id_ = INVALID_SYMBOL_ID;
     Venue venue_;
     std::string symbol_;
     engine::MatchingEngine *matching_engine_;
     std::unique_ptr<OrderBook> order_book_;
     std::atomic_uint16_t num_subscriptions_ = 0;
-
-    void setId(symid_t id) noexcept {
-        id_ = id;
-        if (order_book_) {
-            order_book_->setSid(id);
-        }
-    }
 
     Symbol() = default;
     ~Symbol() = default;
@@ -58,17 +51,22 @@ struct Symbol {
 
 inline std::tuple<OrdRejectReason, Order*, std::vector<TradeSummary>> Symbol::addOrder(const AddOrderMessage &msg)
 {
-    return matching_engine_->addOrder(*order_book_.get(), msg);
+    std::vector<TradeSummary> trades;
+    return std::make_tuple(OrdRejectReason::NONE, nullptr, trades);
+    // return matching_engine_->addOrder(*order_book_.get(), msg);
 }
 
 inline std::tuple<OrdRejectReason, Order*, std::vector<TradeSummary>> Symbol::modifyOrder(const ModifyOrderMessage &msg)
 {
-    return matching_engine_->modifyOrder(*order_book_.get(), msg);
+    std::vector<TradeSummary> trades;
+    return std::make_tuple(OrdRejectReason::NONE, nullptr, trades);
+    // return matching_engine_->modifyOrder(*order_book_.get(), msg);
 }
 
 inline std::tuple<OrdRejectReason, Order*> Symbol::cancelOrder(const CancelOrderMessage &msg)
 {
-    return matching_engine_->cancelOrder(*order_book_.get(), msg);
+    return std::make_tuple(OrdRejectReason::NONE, nullptr);
+    // return matching_engine_->cancelOrder(*order_book_.get(), msg);
 }
 
 }
