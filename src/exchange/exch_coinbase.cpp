@@ -59,7 +59,7 @@ Symbol* CoinbaseExchange::addSymbol(std::string_view product_id) {
         matching_engines_[engine::MatchingEngine::Type::FIFO] = std::make_unique<engine::FifoMatchingEngine>(request_queue_, order_response_queue_);
     }
     symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
-    symbol->order_book_ = std::make_unique<OrderBook>(symbol->id_, std::string(product_id), Venue::COINBASE);
+    symbol->order_book_ = std::make_unique<OrderBookImpl<true>>(symbol->id_, std::string(product_id), Venue::COINBASE);
     return symbol;
 }
 
@@ -164,20 +164,22 @@ void CoinbaseExchange::processSequencedEvents() {
                 pending_events.pop();
 
                 // Dispatch the event
-                dispatchEvent(symbol, event);
+                dispatchEvent(symbol, event, state);
 
-                if (!level_update_buffer_.empty()) {
-                    publishLevelUpdate(
-                        symbol->symbol_.c_str(),
-                        level_update_buffer_
-                    );
-                    level_update_buffer_.clear();
-                }
+                // if (!level_update_buffer_.empty()) {
+                //     publishLevelUpdate(
+                //         symbol->symbol_.c_str(),
+                //         level_update_buffer_
+                //     );
+                //     level_update_buffer_.clear();
+                // }
 
-                if (!trade_update_buffer_.empty()) {
-                    publishMDTrades(symbol->symbol_.c_str(), trade_update_buffer_);
-                    trade_update_buffer_.clear();
-                }
+                // if (!trade_update_buffer_.empty()) {
+                //     publishMDTrades(symbol->symbol_.c_str(), trade_update_buffer_);
+                //     trade_update_buffer_.clear();
+                // }
+                state.last_sequence_id = event.sequence_id;
+                state.last_seq_num = event.seq_num;
 
             } else {
                 // Top event not ready yet, stop processing this symbol
@@ -187,19 +189,20 @@ void CoinbaseExchange::processSequencedEvents() {
     }
 }
 
-void CoinbaseExchange::dispatchEvent(Symbol* symbol, const Event& event) {
+void CoinbaseExchange::dispatchEvent(Symbol* symbol, const Event& event, SymbolEventState& state) {
     if (event.type == EventType::LEVEL_UPDATE) {
         // Ignore stale events - skip if older than last update
         if (event.event_time < symbol->order_book_->lastUpdateTime()) {
-            LOG_WARN("[CoinbaseExchange] Skipping stale level update for symbol {}: event_time={}, last_update_time={}",
+            LOG_WARN("[CoinbaseExchange] Skipping stale level update for symbol {}: seq_num={}, event_time={}({}), last_update_time={}({}) last_seq_num={}",
                       symbol->symbol_,
-                      event.event_time,
-                      symbol->order_book_->lastUpdateTime());
+                      event.seq_num,
+                      utils::format_timestamp_iso8601(event.event_time), event.event_time,
+                      utils::format_timestamp_iso8601(symbol->order_book_->lastUpdateTime()), symbol->order_book_->lastUpdateTime(), symbol->order_book_->lastSeqNum());
             return;
         }
 
         // Update last update time before processing
-        symbol->order_book_->setLastUpdateTime(event.event_time);
+        symbol->order_book_->setLastUpdate(event.event_time, event.seq_num);
 
         // Process level update
         // auto [index, qty, order_count] = symbol->matching_engine_->onLevelUpdate(
@@ -212,24 +215,49 @@ void CoinbaseExchange::dispatchEvent(Symbol* symbol, const Event& event) {
         //     trade_update_buffer_
         // );
 
+        if (!level_update_buffer_.empty() && 
+            state.last_published_level_seq_num &&
+            event.seq_num != state.last_published_level_seq_num) {
+            publishLevelUpdate(
+                symbol->symbol_.c_str(),
+                level_update_buffer_
+            );
+            state.last_published_level_seq_num = level_update_buffer_.back().seq_num;
+            level_update_buffer_.clear();
+        }
+
         level_update_buffer_.emplace_back(MDLevel{
             .event_time = event.event_time,
             .seq_num = event.seq_num,
             .price = event.price,
             .qty = event.qty,
-            .num_orders = event.order_count,
+            .num_orders = 0,
             .flags = event.flags,
             .side = event.side
         });
     }
     else if (event.type == EventType::TRADE) {
         // TODO: Match against orders in the order book via matching engine
-        LOG_DEBUG("[CoinbaseExchange] Trade: {} {} @ {} size={} time={}",
-                  symbol->symbol_,
-                  event.side == Side::BUY ? "BUY" : "SELL",
-                  event.price,
-                  event.qty,
-                  event.event_time);
+        // LOG_DEBUG("[CoinbaseExchange] Trade: {} {} @ {} size={} time={} seq_num={} last_published_level_seq_num={}",
+        //           symbol->symbol_,
+        //           event.side == Side::BUY ? "BUY" : "SELL",
+        //           event.price,
+        //           event.qty,
+        //           event.event_time,
+        //           event.seq_num,
+        //           state.last_published_level_seq_num);
+
+        if (!trade_update_buffer_.empty() && 
+            state.last_published_trade_seq_num &&
+            event.seq_num != state.last_published_trade_seq_num) {
+            publishMDTrades(
+                symbol->symbol_.c_str(),
+                trade_update_buffer_
+            );
+            state.last_published_trade_seq_num = trade_update_buffer_.back().seq_num;
+            trade_update_buffer_.clear();
+        }
+
         trade_update_buffer_.emplace_back(MDTrade{
             .event_time = event.event_time,
             .seq_num = event.seq_num,
@@ -245,10 +273,10 @@ void CoinbaseExchange::populateMDTradesResponse(Symbol* symbol) {
     uint32_t num_trades = 0;
     auto it = trade_snapshots_.find(symbol);
     if (it != trade_snapshots_.end()) {
-        num_trades = it->second.size();
+        num_trades = static_cast<uint32_t>(it->second.size());
     }
 
-    auto sz = sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(MDTradeUpdate) + num_trades * sizeof(MDTrade); // Empty snapshot
+    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(MDTradeUpdate) + num_trades * sizeof(MDTrade)); // Empty snapshot
     auto index = md_update_queue_.reserve(sz);
     auto *update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
     memcpy(update->symbol, symbol->symbol_.c_str(), sizeof(update->symbol));

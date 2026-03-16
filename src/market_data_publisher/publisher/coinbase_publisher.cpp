@@ -15,6 +15,7 @@ uint_fast64_t PerSocketData::heartbeat_count = 0;
 
 CoinbasePublisher::CoinbasePublisher(const nlohmann::json &config, slick::SlickQueue<Request> &request_queue, slick::SlickQueue<uint8_t> &market_data_queue)
     : Publisher(request_queue, market_data_queue)
+    , port_(config.value("port", 5000))
 {
 }
 
@@ -41,24 +42,24 @@ void CoinbasePublisher::start() {
                     LOG_INFO("CoinbasePublisher WebSocket client connected");
                 },
 
-                .message = [this](auto *ws, std::string_view message, uWS::OpCode opCode) {
+                .message = [this](auto *ws, std::string_view message, uWS::OpCode /* opCode */) {
                     handleMessage(ws, message);
                 },
 
-                .drain = [](auto *ws) {
+                .drain = [](auto */* ws */) {
                     // Check backpressure
                 },
 
-                .ping = [](auto *ws, std::string_view message) {
+                .ping = [](auto *ws, std::string_view /* message */) {
                     // Automatically respond to client ping with pong
                     // uWebSockets handles this automatically, but we log it
-                    LOG_TRACE("CoinbasePublisher Received ping from client");
+                    LOG_TRACE("CoinbasePublisher Received ping from client {:p}", (void*)ws);
                 },
 
-                .pong = [this](auto *ws, std::string_view message) {
+                .pong = [this](auto *ws, std::string_view /* message */) {
                     // Client responded to our ping
                     ws->getUserData()->last_pong = std::chrono::steady_clock::now();
-                    LOG_TRACE("CoinbasePublisher Received pong from client");
+                    LOG_TRACE("CoinbasePublisher Received pong from client {:p}", (void*)ws);
                 },
 
                 .close = [this](auto *ws, int code, std::string_view message) {
@@ -408,16 +409,16 @@ void CoinbasePublisher::publishSubscriptionResponse(MarketDataUpdate *update) {
             for (; i < snapshot->num_bid; ++i) {
                 updates.push_back({
                     {"side", "bid"},
-                    {"price_level", std::to_string(static_cast<double>(levels[i].price) / DOUBLE_MULTIPLIER)},
-                    {"new_quantity", std::to_string(static_cast<double>(levels[i].qty) / DOUBLE_MULTIPLIER)}
+                    {"price_level", std::to_string(to_price_double(levels[i].price))},
+                    {"new_quantity", std::to_string(to_qty_double(levels[i].qty))}
                 });
             }
 
             for (; i < total_levels; ++i) {
                 updates.push_back({
                     {"side", "offer"},
-                    {"price_level", std::to_string(static_cast<double>(levels[i].price) / DOUBLE_MULTIPLIER)},
-                    {"new_quantity", std::to_string(static_cast<double>(levels[i].qty) / DOUBLE_MULTIPLIER)}
+                    {"price_level", std::to_string(to_price_double(levels[i].price))},
+                    {"new_quantity", std::to_string(to_qty_double(levels[i].qty))}
                 });
             }
 
@@ -515,17 +516,18 @@ void CoinbasePublisher::publishLevelUpdate(MarketDataUpdate *update) {
         json::array_t updates;
         for (auto i = 0u; i < level_update->num_level_update; ++i) {
             auto &level = level_update->levels[i];
-            LOG_DEBUG("Level Update: {} {} @ {} size={} time={}({})",
-                      update->symbol,
-                      level.side ? "BUY" : "SELL",
-                      static_cast<double>(level.price) / DOUBLE_MULTIPLIER,
-                      static_cast<double>(level.qty) / DOUBLE_MULTIPLIER,
-                      format_timestamp_iso8601(level.event_time, 6),
-                      level.event_time);
+            // LOG_DEBUG("Level Update: {} {} @ {} size={} seq_num={} time={}({})",
+            //           update->symbol,
+            //           level.side ? "SELL" : "BUY",
+            //           to_price_double(level.price),
+            //           to_qty_double(level.qty),
+            //           level.seq_num,
+            //           format_timestamp_iso8601(level.event_time, 6),
+            //           level.event_time);
             updates.push_back({
-                {"side", level.side ? "bid" : "offer"},
-                {"price_level", std::to_string(static_cast<double>(level.price) / DOUBLE_MULTIPLIER)},
-                {"new_quantity", std::to_string(static_cast<double>(level.qty) / DOUBLE_MULTIPLIER)},
+                {"side", level.side ? "offer" : "bid"},
+                {"price_level", std::to_string(to_price_double(level.price))},
+                {"new_quantity", std::to_string(to_qty_double(level.qty))},
                 {"event_time", format_timestamp_iso8601(level.event_time, 6)}
             });
         }

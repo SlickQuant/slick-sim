@@ -157,6 +157,7 @@ struct Order {
     
     int client_id = -1;
     std::chrono::system_clock::time_point created_time = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point last_update_time = std::chrono::system_clock::now();
     std::optional<std::chrono::system_clock::time_point> last_fill_time;
 
     std::string reject_message;
@@ -167,31 +168,31 @@ struct Order {
     Order() = default;
 
     double price_double() const noexcept {
-        return static_cast<double>(price) / DOUBLE_MULTIPLIER;
+        return to_price_double(price);
     }
 
     double qty_double() const noexcept {
-        return static_cast<double>(quantity) / DOUBLE_MULTIPLIER;
+        return to_qty_double(quantity);
     }
 
     double filled_qty_double() const noexcept {
-        return static_cast<double>(filled_quantity) / DOUBLE_MULTIPLIER;
+        return to_qty_double(filled_quantity);
     }
 
     double leaves_qty_double() const noexcept {
-        return static_cast<double>(leaves_quantity) / DOUBLE_MULTIPLIER;
+        return to_qty_double(leaves_quantity);
     }
 
     double last_filled_qty_double() const noexcept {
-        return static_cast<double>(last_filled_qty) / DOUBLE_MULTIPLIER;
+        return to_qty_double(last_filled_qty);
     }
 
     double last_filled_price_double() const noexcept {
-        return static_cast<double>(last_filled_price) / DOUBLE_MULTIPLIER;
+        return to_price_double(last_filled_price);
     }
 
     double avg_filled_price_double() const noexcept {
-        return static_cast<double>(avg_filled_price) / DOUBLE_MULTIPLIER;
+        return to_price_double(avg_filled_price);
     }
 };
 

@@ -1,9 +1,15 @@
 #include "exchange.hpp"
 #include <common/symbol_manager.hpp>
 #include <slick/logger.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/lexical_cast.hpp>
+#include <utils/order.hpp>
 
 using namespace slick::sim::exch;
 using namespace slick::sim;
+using namespace slick::sim::utils;
 
 namespace {
     auto &symbol_mgr = SymbolManager::instance();
@@ -14,13 +20,15 @@ Exchange::Exchange(
     const nlohmann::json &config,
     slick::SlickQueue<Request> &request_queue,
     slick::SlickQueue<OrderResponse> &order_response_queue,
-    slick::SlickQueue<uint8_t> &md_update_queue
+    slick::SlickQueue<uint8_t> &md_update_queue,
+    uint_fast32_t buffer_size
 ) 
     : venue_(venue)
     , config_(config)
     , request_queue_(request_queue)
     , order_response_queue_(order_response_queue)
     , md_update_queue_(md_update_queue)
+    , order_buffer_(buffer_size)
 {
 }
 
@@ -54,6 +62,16 @@ void Exchange::stop()
     {
         thread_.join();
     }
+}
+
+Order* Exchange::allocateOrder() {
+    auto *order = order_buffer_.allocate();
+    boost::uuids::uuid u = boost::uuids::random_generator()();
+    order->order_id = boost::lexical_cast<std::string>(u);
+    order->id = nextOrderId();
+    order->created_time = std::chrono::system_clock::now();
+    order->last_update_time = order->created_time;
+    return order;
 }
 
 void Exchange::processMdData()
@@ -93,10 +111,32 @@ void Exchange::processRequest()
             }
             else
             {
-                sendOrderNewPending(*request);
-                auto [reject_reason, order, fills] = symbol->addOrder(request->add_order);
+                auto &msg  = request->add_order;
+                if (msg.client_order_id[0] != '\0') {
+                    auto *order = symbol->order_book_->findOrderByClientOrderId(msg.client_order_id);
+                    if (order) [[unlikely]] {
+                        LOG_WARN(std::format("ClientOrderId {} already exist", msg.client_order_id));
+                        rejectNewOrderRequest(*request, OrdRejectReason::CLIENT_ORDER_ID_ALREADY_EXISTS);
+                        return; 
+                    }
+                }
+                Order *order = allocateOrder();
+                order->client_order_id = msg.client_order_id;
+                order->user_id = msg.user_id;
+                order->side = msg.side;
+                order->type = msg.type;
+                order->time_in_force = msg.time_in_force;
+                order->price = msg.price;
+                order->quantity = msg.qty;
+                
+                sendOrderNewPending(order);
+
+                auto [reject_reason, trade_summaries] = symbol->addOrder(order);
                 if (reject_reason == OrdRejectReason::NONE) {
                     sendOrderAck(order);
+                    if (!trade_summaries.empty()) {
+                        // TODO: publish trade summaries
+                    }
                 }
                 else {
                     rejectNewOrderRequest(*request, reject_reason);
@@ -112,8 +152,21 @@ void Exchange::processRequest()
             }
             else
             {
+                Order *order;
+                if (request->modify_order.client_order_id[0] != '\0') {
+                    order = symbol->findOrderByClientOrderId(request->modify_order.client_order_id);
+                }
+                else {
+                    order = symbol->findOrderByOrderId(request->modify_order.order_id);
+                }
+
+                if (!order) {
+                    LOG_WARN(std::format("{} OrderId {} not found for modification", symbol->symbol_, request->modify_order.order_id));
+                    rejectModifyOrderRequest(*request, OrdRejectReason::UNKNOWN_ORDER);
+                    return;
+                }
                 sendOrderReplacePending(*request);
-                auto [reject_reason, order, fills] = symbol->modifyOrder(request->modify_order);
+                auto [reject_reason, trade_summaries] = symbol->modifyOrder(order, request->modify_order.new_price, request->modify_order.new_qty);
                 if (reject_reason == OrdRejectReason::NONE) {
                 }
             }
@@ -127,10 +180,21 @@ void Exchange::processRequest()
             }
             else
             {
-                sendOrderCancelPending(*request);
-                auto [reject_reason, order] = symbol->cancelOrder(request->cancel_order);
-                if (reject_reason == OrdRejectReason::NONE) {
+                Order *order;
+                if (request->cancel_order.client_order_id[0] != '\0') {
+                    order = symbol->findOrderByClientOrderId(request->cancel_order.client_order_id);
                 }
+                else {
+                    order = symbol->findOrderByOrderId(request->cancel_order.order_id);
+                }
+
+                if (!order) {
+                    LOG_WARN(std::format("{} OrderId {} not found for cancellation", symbol->symbol_, request->cancel_order.order_id));
+                    rejectCancelOrderRequest(*request, OrdRejectReason::UNKNOWN_ORDER);
+                    return;
+                }
+                sendOrderCancelPending(*request);
+                symbol->cancelOrder(order);
             }
             break;
         }
@@ -143,7 +207,7 @@ void Exchange::processRequest()
 }
 
 void Exchange::rejectMdSubscription(const Request &request, MDSubscriptionRejectReason reason) {
-    auto sz = sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse);
+    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse));
     auto index = md_update_queue_.reserve(sz);
     auto *update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
     update->type = MDUpdateType::SUB_RESPONSE;
@@ -160,14 +224,14 @@ void Exchange::rejectNewOrderRequest(const Request &request, OrdRejectReason rea
     memcpy(response.user_id, request.add_order.user_id, sizeof(response.user_id));
     memcpy(response.client_order_id, request.add_order.client_order_id, sizeof(response.client_order_id));
     memset(response.order_id, 0, sizeof(response.order_id));
-    response.request_type = MessageType::NEW_ORDER_SINGLE;
+    response.response_type = MessageType::REJECT;
     response.order_status = OrderStatus::REJECTED;
     response.price = request.add_order.price;
     response.qty = request.add_order.qty;
     response.cum_qty = 0;
     response.leaves_qty = 0;
-    OrdRejectReason reject_reason = reason;
-    uint64_t timestamp = std::chrono::system_clock::now().time_since_epoch().count();
+    response.reject_reason = reason;
+    response.timestamp = std::chrono::system_clock::now().time_since_epoch().count();
     order_response_queue_.publish(index);
 }
 
@@ -204,7 +268,7 @@ void Exchange::rejectCancelOrderRequest(const Request &request, OrdRejectReason 
 }
 
 void Exchange::publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std::array<uint8_t, 2> &indices) {
-    auto sz = sizeof(MarketDataUpdate) + sizeof(MDBookUpdate);
+    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDBookUpdate));
     uint64_t index = md_update_queue_.reserve(sz);
     MarketDataUpdate* update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
     update->type = MDUpdateType::BOOK;
@@ -218,7 +282,7 @@ void Exchange::publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std
 }
 
 void Exchange::publishLevelUpdate(const char* symbol, const std::vector<MDLevel> &level_updates) {
-    auto sz = sizeof(MarketDataUpdate) + sizeof(MDLevelUpdate) + level_updates.size() * sizeof(MDLevel);
+    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDLevelUpdate) + level_updates.size() * sizeof(MDLevel));
     auto index = md_update_queue_.reserve(sz);
     MarketDataUpdate* update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
     update->type = MDUpdateType::LEVEL;
@@ -231,7 +295,7 @@ void Exchange::publishLevelUpdate(const char* symbol, const std::vector<MDLevel>
 }
 
 void Exchange::publishMDTrades(const char* symbol, const std::vector<MDTrade> &trade_updates) {
-    auto sz = sizeof(MarketDataUpdate) + sizeof(MDTradeUpdate) + trade_updates.size() * sizeof(MDTrade);
+    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDTradeUpdate) + trade_updates.size() * sizeof(MDTrade));
     auto index = md_update_queue_.reserve(sz);
     MarketDataUpdate* update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
     update->type = MDUpdateType::TRADE;
@@ -243,9 +307,26 @@ void Exchange::publishMDTrades(const char* symbol, const std::vector<MDTrade> &t
     md_update_queue_.publish(index, sz);
 }
 
-void Exchange::sendOrderNewPending(const Request &request) {}
-void Exchange::sendOrderAck(const Order *order) {}
-void Exchange::sendOrderReplacePending(const Request &request) {}
-void Exchange::sendOrderReplaced(const Order *order) {}
-void Exchange::sendOrderCancelPending(const Request &request) {}
-void Exchange::sendOrderCanceled(const Order *order) {}
+void Exchange::sendOrderNewPending(const Order *order) {
+    auto index = order_response_queue_.reserve();
+    auto &response = *order_response_queue_[index];
+    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
+    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
+    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+    response.response_type = MessageType::EXECUTION_REPORT;
+    response.order_status = OrderStatus::PENDING_NEW;
+    response.price = order->price;
+    response.qty = order->quantity;
+    response.cum_qty = 0;
+    response.leaves_qty = order->quantity;
+    response.timestamp = std::chrono::system_clock::now().time_since_epoch().count();
+    order_response_queue_.publish(index);
+    LOG_DEBUG("Published Order New Pending: user_id={}, client_order_id={}, index={}",
+              order->user_id, order->client_order_id, index);
+}
+
+void Exchange::sendOrderAck(const Order */* order */) {}
+void Exchange::sendOrderReplacePending(const Request &/* request */) {}
+void Exchange::sendOrderReplaced(const Order */* order */) {}
+void Exchange::sendOrderCancelPending(const Request &/* request */) {}
+void Exchange::sendOrderCanceled(const Order */* order */) {}

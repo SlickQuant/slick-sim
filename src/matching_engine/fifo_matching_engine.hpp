@@ -18,11 +18,12 @@ public:
         return MatchingEngine::Type::FIFO;
     }
 
-    std::tuple<OrdRejectReason, Order*, std::vector<TradeSummary>> match(Order* order, OrderBook &book, uint64_t event_time, uint64_t seq_num=0) override;
-    std::vector<TradeSummary> match(OrderBook &book, uint64_t event_time, uint64_t seq_num=0) override;
+    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(Order* order, price_t order_price, qty_t order_qty, OrderBook &book, uint64_t event_time, uint64_t seq_num = 0) override;
 
-    // std::tuple<OrdRejectReason, Order*, std::vector<TradeSummary>> addOrder(OrderBook &book, const AddOrderMessage &msg) override;
-    // std::tuple<OrdRejectReason, Order*, std::vector<TradeSummary>> modifyOrder(OrderBook &book, const ModifyOrderMessage &msg) override;
+    std::vector<TradeSummaryInfo> match(OrderBook &book, uint64_t event_time, uint64_t seq_num=0) override;
+
+    std::tuple<OrdRejectReason, std::vector<TradeSummary>> addOrder(OrderBook &book, Order *order) override;
+    std::tuple<OrdRejectReason, std::vector<TradeSummary>> modifyOrder(OrderBook &book, Order* order, price_t new_price, qty_t new_qty) override;
     // std::tuple<OrdRejectReason, Order*> cancelOrder(OrderBook &book, const CancelOrderMessage &msg) override;
 
     // std::tuple<int, qty_t, uint32_t> onLevelUpdate(

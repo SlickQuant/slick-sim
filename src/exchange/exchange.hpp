@@ -1,6 +1,7 @@
 #pragma once
 
 #include <slick/queue.h>
+#include <slick/object_pool.h>
 #include <md_feed/md_feed.hpp>
 #include <vector>
 #include <memory>
@@ -27,7 +28,8 @@ public:
         const nlohmann::json &config,
         slick::SlickQueue<Request> &request_queue,
         slick::SlickQueue<OrderResponse> &order_response_queue,
-        slick::SlickQueue<uint8_t> &md_update_queue
+        slick::SlickQueue<uint8_t> &md_update_queue,
+        uint_fast32_t buffer_size = 65536
     );
 
     virtual ~Exchange();
@@ -35,14 +37,15 @@ public:
     void stop();
 
     
-    protected:
+protected:
+    Order* allocateOrder();
     void processMdData();
     void processRequest();
     void rejectMdSubscription(const Request &request, MDSubscriptionRejectReason reason);
     void rejectNewOrderRequest(const Request &request, OrdRejectReason reason);
     void rejectModifyOrderRequest(const Request &request, OrdRejectReason reason);
     void rejectCancelOrderRequest(const Request &request, OrdRejectReason reason);
-    void sendOrderNewPending(const Request &request);
+    void sendOrderNewPending(const Order *order);
     void sendOrderAck(const Order *order);
     void sendOrderReplacePending(const Request &request);
     void sendOrderReplaced(const Order *order);
@@ -52,8 +55,8 @@ public:
     void publishLevelUpdate(const char* symbol, const std::vector<MDLevel> &level_updates);
     void publishMDTrades(const char* symbol, const std::vector<MDTrade> &trade_updates);
 
-    virtual void handleMdSubscription(const Request &request) {}
-    virtual void handleMdUnsubscription(const Request &request) {}
+    virtual void handleMdSubscription(const Request &/* request */) {}
+    virtual void handleMdUnsubscription(const Request &/* request */) {}
 
 protected:
     Venue venue_;
@@ -67,6 +70,7 @@ protected:
     std::atomic_bool run_{true};
     uint_fast64_t order_request_cursor_{0};
     std::array<std::unique_ptr<engine::MatchingEngine>, engine::MatchingEngine::Type::__count__> matching_engines_;
+    slick::ObjectPool<Order> order_buffer_;
 };
 
 }   // end namespace slick::sim::exch

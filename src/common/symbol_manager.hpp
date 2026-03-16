@@ -36,10 +36,10 @@ public:
 
     exch::Symbol* createSymbol(std::string_view sym) {
         exch::Symbol symbol;
-        symbol.id_ = symbols_.size();
+        symbol.id_ = static_cast<symid_t>(symbols_.size());
         symbol.symbol_ = std::string(sym);
         symbols_.emplace_back(std::move(symbol));
-        symbols_by_name_.emplace(symbol.symbol_, &symbols_.back());
+        symbols_by_name_.emplace(std::string(sym), &symbols_.back());
         return &symbols_.back();
     }
 

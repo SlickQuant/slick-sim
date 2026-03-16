@@ -24,7 +24,7 @@ public:
 
     void push(const T& item) {
         buffer_[head_++ & mask_] = item;
-        if (head_ & mask_ == tail_ & mask_) {
+        if ((head_ & mask_) == (tail_ & mask_)) {
             // Overwrite oldest item
             ++tail_;
         }
@@ -32,7 +32,7 @@ public:
 
     void emplace(T&& item) {
         buffer_[head_++ & mask_] = std::move(item);
-        if (head_ & mask_ == tail_ & mask_) {
+        if ((head_ & mask_) == (tail_ & mask_)) {
             // Overwrite oldest item
             ++tail_;
         }
