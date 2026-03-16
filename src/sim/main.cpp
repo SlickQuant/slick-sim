@@ -11,6 +11,7 @@
 #include <exchange/exch_coinbase.hpp>
 #include <common/messages.hpp>
 #include <market_data_publisher/market_data_publisher.hpp>
+#include <coinbase/logging.hpp>
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -28,7 +29,7 @@ using Exchange = slick::sim::exch::Exchange;
 namespace {
     std::atomic_bool run{true};
 
-    extern "C" void _signal_handler(int signum) {
+    extern "C" void _signal_handler(int /* signum */) {
         run.store(false, std::memory_order_release);
         // exit(signum); // Terminate the program
     }
@@ -113,6 +114,10 @@ int main(int argc, char* argv[]) {
 #endif
     logger.add_file_sink("logs/slick-sim.log");
     logger.init(65535, 16777216);
+
+    coinbase::logging::set_log_handler([&logger](coinbase::logging::LogLevel level, const char* format_text, std::format_args args) {
+        logger.log(static_cast<slick::logger::LogLevel>(level), format_text, std::move(args));
+    });
 
     std::string config_file = "slick-sim.json";
     if (argc > 1) {

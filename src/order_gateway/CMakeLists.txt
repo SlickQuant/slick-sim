@@ -1,4 +1,5 @@
 add_library(order_gateway
+    client_manager/coinbase_rest_client_manager.cpp
     order_gateway.cpp
     message_parser.cpp
     fix_parser.cpp

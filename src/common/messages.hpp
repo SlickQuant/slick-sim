@@ -74,6 +74,7 @@ enum class OrdRejectReason : uint16_t {
     NONE,
     UNKNOWN,
     UNKNOWN_CONTRACT,
+    UNKNOWN_ORDER,
     MARKET_CLOSED,
     MARKET_HALTED,
     SMP,
@@ -90,6 +91,7 @@ enum class OrdRejectReason : uint16_t {
     INVALID_TICK_SIZE,
     INVALID_QTY,
     INVALID_MIN_QTY,
+    CLIENT_ORDER_ID_ALREADY_EXISTS,
 };
 
 inline std::string to_string(OrdRejectReason reject)
@@ -221,8 +223,8 @@ enum class MessageType : uint8_t {
 };
 
 struct AddOrderMessage {
-    char user_id[36];
-    char client_order_id[36];
+    char user_id[37];
+    char client_order_id[37];
     Side side;
     OrderType type;
     TimeInForce time_in_force;
@@ -234,17 +236,17 @@ struct AddOrderMessage {
 };
 
 struct ModifyOrderMessage {
-    char user_id[36];
-    char order_id[36];
-    char client_order_id[36];
+    char user_id[37];
+    char order_id[37];
+    char client_order_id[37];
     price_t new_price;
     qty_t new_qty;
 };
 
 struct CancelOrderMessage {
-    char user_id[36];
-    char order_id[36];
-    char client_order_id[36];
+    char user_id[37];
+    char order_id[37];
+    char client_order_id[37];
 };
 
 struct MDSubscriptionMessage {
@@ -270,10 +272,11 @@ struct Request {
 };
 
 struct OrderResponse {
-    char user_id[36];
-    char client_order_id[36];
-    char order_id[36];
-    MessageType request_type = MessageType::UNKNOWN;
+    char user_id[37];
+    char client_order_id[37];
+    char order_id[37];
+    char error_message[256];
+    MessageType response_type = MessageType::UNKNOWN;
     OrderStatus order_status = OrderStatus::NEW;
     price_t price = NULL_PRICE;
     qty_t qty = 0;

@@ -93,24 +93,24 @@ public:
                         LOG_INFO("WebSocket client connected");
                     },
 
-                    .message = [this](auto *ws, std::string_view message, uWS::OpCode opCode) {
+                    .message = [this](auto *ws, std::string_view message, uWS::OpCode /* opCode */) {
                         handleMessage(ws, message);
                     },
 
-                    .drain = [](auto *ws) {
+                    .drain = [](auto */* ws */) {
                         // Check backpressure
                     },
 
-                    .ping = [](auto *ws, std::string_view message) {
+                    .ping = [](auto *ws, std::string_view /* message */) {
                         // Automatically respond to client ping with pong
                         // uWebSockets handles this automatically, but we log it
-                        LOG_TRACE("Received ping from client");
+                        LOG_TRACE("Received ping from client {:p}", (void*)ws);
                     },
 
-                    .pong = [this](auto *ws, std::string_view message) {
+                    .pong = [this](auto *ws, std::string_view /* message */) {
                         // Client responded to our ping
                         ws->getUserData()->last_pong = std::chrono::steady_clock::now();
-                        LOG_DEBUG("Received pong from client");
+                        LOG_TRACE("Received pong from client {:p}", (void*)ws);
                     },
 
                     .close = [this](auto *ws, int code, std::string_view message) {
@@ -353,9 +353,9 @@ private:
         if (!user_id.empty()) {
             // Remove client from map (no lock needed - single threaded)
             clients_.erase(user_id);
-            LOG_INFO("Client disconnected: user_id={}, code={}", user_id, code);
+            LOG_INFO("Client disconnected: user_id={}, code={}, msg={}", user_id, code, message);
         } else {
-            LOG_INFO("Client disconnected before authentication, code={}", code);
+            LOG_INFO("Client disconnected before authentication, code={}, msg={}", code, message);
         }
     }
 
@@ -452,8 +452,8 @@ private:
                          user_data->user_id, time_since_pong.count());
 
                 disconnected_clients.push_back(it->first);
-                ws->close();  // Close the connection
                 it = clients_.erase(it);
+                ws->close();  // Close the connection
             } else {
                 // Send ping to client (only if authenticated)
                 if (user_data->subscribed_heartbeat) {
@@ -473,7 +473,7 @@ private:
                 }
                 // Also send protocol-level ping
                 ws->send("", uWS::OpCode::PING);
-                LOG_DEBUG("Sent heartbeat to client {}", user_data->user_id);
+                LOG_TRACE("Sent heartbeat to client {}", user_data->user_id);
                 ++it;
             }
         }

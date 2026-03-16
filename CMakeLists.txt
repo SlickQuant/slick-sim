@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-set(BUILD_VERSION 0.1.0)
-project(ExchangeSimulator VERSION ${BUILD_VERSION} LANGUAGES CXX)
+project(ExchangeSimulator VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,7 +16,7 @@ endif()
 
 include(FetchContent)
 
-find_package(slick-logger 1.0.4 CONFIG QUIET)
+find_package(slick-logger 1.0.6 CONFIG QUIET)
 if (NOT slick-logger_FOUND)
     message(STATUS "Fetching slick-logger...")
     # Disable examples, tests, and benchmarks for slick_logger
@@ -27,12 +26,12 @@ if (NOT slick-logger_FOUND)
     FetchContent_Declare(
         slick-logger
         GIT_REPOSITORY https://github.com/SlickQuant/slick-logger.git
-        GIT_TAG v1.0.4
+        GIT_TAG v1.0.6
     )
     FetchContent_MakeAvailable(slick-logger)
 endif()
 
-find_package(slick-socket 1.0.4 CONFIG QUIET)
+find_package(slick-socket 1.0.6 CONFIG QUIET)
 if (NOT slick-socket_FOUND)
     message(STATUS "Fetching slick-socket...")
     # Disable slick-socket example, and tests
@@ -42,7 +41,7 @@ if (NOT slick-socket_FOUND)
     FetchContent_Declare(
         slick-socket
         GIT_REPOSITORY https://github.com/SlickQuant/slick-socket.git
-        GIT_TAG v1.0.4
+        GIT_TAG v1.0.6
     )
     FetchContent_MakeAvailable(slick-socket)
 else()
@@ -63,21 +62,21 @@ else()
     message(STATUS "Found slick-object-pool: ${slick-object-pool_VERSION}")
 endif()
 
-find_package(coinbase-advanced-cpp 0.1.0 CONFIG QUIET)
+find_package(coinbase-advanced-cpp 0.2.1 CONFIG QUIET)
 if (NOT coinbase-advanced-cpp_FOUND)
     message(STATUS "Fetching coinbase-advanced-cpp...")
-    set(BUILD_COINBASE_ADVANCED_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         coinbase-advanced-cpp
         GIT_REPOSITORY https://github.com/SlickQuant/coinbase-advanced-cpp.git
-        GIT_TAG main
+        GIT_TAG v0.2.2
     )
     FetchContent_MakeAvailable(coinbase-advanced-cpp)
 else()
     message(STATUS "Found coinbase-advanced-cpp: ${coinbase-advanced-cpp_VERSION}")
 endif()
 
-find_package(slick-net 1.2.2 CONFIG QUIET)
+# slick-net should be fetched after coinbase-advanced-cpp since it depends on it, and we want to avoid fetching the dependency twice if it's already available
+find_package(slick-net 2.0.0 CONFIG QUIET)
 if (NOT slick-net_FOUND)
     message(STATUS "Fetching slick-net...")
     set(BUILD_SLICK_NET_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -85,11 +84,9 @@ if (NOT slick-net_FOUND)
     FetchContent_Declare(
         slick-net
         GIT_REPOSITORY https://github.com/SlickQuant/slick-net.git
-        GIT_TAG v1.2.4
+        GIT_TAG v2.0.0
     )
     FetchContent_MakeAvailable(slick-net)
-else()
-    message(STATUS "Found slick-net: ${slick-net_VERSION}")
 endif()
 
 find_package(slick-orderbook CONFIG QUIET)
@@ -99,7 +96,7 @@ if (NOT slick-orderbook_FOUND)
     FetchContent_Declare(
         slick-orderbook
         GIT_REPOSITORY https://github.com/SlickQuant/slick-orderbook.git
-        GIT_TAG main
+        GIT_TAG main #v1.0.1
     )
     FetchContent_MakeAvailable(slick-orderbook)
 else()
@@ -112,7 +109,7 @@ find_package(unofficial-uwebsockets CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(jwt-cpp CONFIG REQUIRED)
 find_package(foonathan_memory CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED COMPONENTS)
+find_package(Boost CONFIG REQUIRED COMPONENTS uuid)
 
 if(MSVC)
     add_definitions(-D_WIN32_WINNT=0x0601)

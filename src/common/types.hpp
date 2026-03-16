@@ -14,6 +14,22 @@ constexpr symid_t INVALID_SYMBOL_ID = std::numeric_limits<symid_t>::max();
 constexpr price_t NULL_PRICE = std::numeric_limits<price_t>::max();
 constexpr int32_t DOUBLE_MULTIPLIER = static_cast<int32_t>(1e8);
 
+inline price_t to_price_t(double price) {
+    return static_cast<price_t>(price * DOUBLE_MULTIPLIER);
+}   
+
+inline double to_price_double(price_t price) {
+    return static_cast<double>(price) / DOUBLE_MULTIPLIER;
+}
+
+inline qty_t to_qty_t(double qty) {
+    return static_cast<qty_t>(qty * DOUBLE_MULTIPLIER);
+}
+
+inline double to_qty_double(qty_t qty) {
+    return static_cast<double>(qty) / DOUBLE_MULTIPLIER;
+}
+
 enum Venue : uint8_t {
     UNKNOWN_VENUE,
     CME,

@@ -32,7 +32,7 @@ struct MDLevel {
     price_t price;
     qty_t qty;
     uint32_t num_orders;
-    UpdateFlags flgas;
+    UpdateFlags flags;
     Side side;
 };
 
@@ -92,7 +92,7 @@ struct MDTrade {
     uint64_t seq_num;
     price_t price;
     qty_t qty;
-    UpdateFlags flgas;
+    UpdateFlags flags;
     Side side;
 };
 

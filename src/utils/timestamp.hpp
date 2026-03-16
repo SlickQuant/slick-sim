@@ -25,10 +25,31 @@ inline std::string format_timestamp_iso8601(const std::chrono::system_clock::tim
     return std::format("{:%Y-%m-%dT%H:%M:%S}Z", seconds);
 }
 
-inline std::string format_timestamp_iso8601(uint64_t timestamp, int num_sebsecond_digits = 3) {
-    auto ns = std::chrono::nanoseconds{timestamp};
-    std::chrono::system_clock::time_point tp{std::chrono::duration_cast<std::chrono::system_clock::duration>(ns)};
-    return format_timestamp_iso8601(tp, num_sebsecond_digits);
+inline std::string format_timestamp_iso8601(uint64_t timestamp, int num_subsecond_digits = 3) {
+    std::chrono::system_clock::time_point tp;
+
+    // Heuristic to determine timestamp unit based on magnitude:
+    // - Milliseconds: Year 2100 = ~4,102,444,800,000 (4.1 trillion)
+    // - Microseconds: Year 2100 = ~4,102,444,800,000,000 (4.1 quadrillion)
+    // - Nanoseconds: Year 2100 = ~4,102,444,800,000,000,000 (4.1 quintillion)
+    constexpr uint64_t YEAR_2100_MS = 4'102'444'800'000ULL;
+    constexpr uint64_t YEAR_2100_US = 4'102'444'800'000'000ULL;
+
+    if (timestamp < YEAR_2100_MS) {
+        // Timestamp is in milliseconds
+        auto ms = std::chrono::milliseconds{timestamp};
+        tp = std::chrono::system_clock::time_point{std::chrono::duration_cast<std::chrono::system_clock::duration>(ms)};
+    } else if (timestamp < YEAR_2100_US) {
+        // Timestamp is in microseconds
+        auto us = std::chrono::microseconds{timestamp};
+        tp = std::chrono::system_clock::time_point{std::chrono::duration_cast<std::chrono::system_clock::duration>(us)};
+    } else {
+        // Timestamp is in nanoseconds
+        auto ns = std::chrono::nanoseconds{timestamp};
+        tp = std::chrono::system_clock::time_point{std::chrono::duration_cast<std::chrono::system_clock::duration>(ns)};
+    }
+
+    return format_timestamp_iso8601(tp, num_subsecond_digits);
 }
 
 inline std::string format_timestamp_iso8601(int num_sebsecond_digits = 3) {
