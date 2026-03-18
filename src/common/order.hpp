@@ -82,6 +82,22 @@ enum class OrderType : char {
     return "UNKNOWN";
 }
 
+enum class ExecType : char {
+    NEW = '0',
+    PARTIAL_FILL = '1',
+    FILL = '2',
+    CANCELED = '3',
+    REPLACED = '4',
+    PENDING_NEW = '5',
+    PENDING_CANCEL = '6',
+    TRADE = '8',
+    EXPIRED = 'C',
+    PENDING_REPLACE = 'E',
+    TRADE_CORRECT = 'G',
+    TRADE_CANCEL = 'H',
+    ORDER_STATUS = 'I'
+};
+
 enum class OrderStatus : char {
     NEW = '0',
     PARTIALLY_FILLED = '1',
@@ -108,6 +124,12 @@ enum class TimeInForce : char {
     FILL_OR_KILL = '4',
     GOOD_TILL_CROSSING = '5',
     GOOD_TILL_DATE = '6'
+};
+
+enum class SelfMatchPreventionMode : uint8_t {
+    NONE = 0,           // No SMP, allow self-matching
+    CANCEL_RESTING = 1, // Cancel the resting order on the book
+    CANCEL_NEWEST = 2,  // Cancel/reject the incoming order
 };
 
 enum class ProductType : uint8_t {

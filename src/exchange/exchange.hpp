@@ -41,6 +41,7 @@ protected:
     Order* allocateOrder();
     void processMdData();
     void processRequest();
+    void handleNewOrderRequest(const Request &request);
     void rejectMdSubscription(const Request &request, MDSubscriptionRejectReason reason);
     void rejectNewOrderRequest(const Request &request, OrdRejectReason reason);
     void rejectModifyOrderRequest(const Request &request, OrdRejectReason reason);
@@ -51,9 +52,11 @@ protected:
     void sendOrderReplaced(const Order *order);
     void sendOrderCancelPending(const Request &request);
     void sendOrderCanceled(const Order *order);
+    void sendOrderExecution(const Order *order);
     void publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std::array<uint8_t, 2> &indices);
     void publishLevelUpdate(const char* symbol, const std::vector<MDLevel> &level_updates);
     void publishMDTrades(const char* symbol, const std::vector<MDTrade> &trade_updates);
+    void publishTradeSummary(const char* symbol, const TradeSummaryInfo &trade_summary);
 
     virtual void handleMdSubscription(const Request &/* request */) {}
     virtual void handleMdUnsubscription(const Request &/* request */) {}

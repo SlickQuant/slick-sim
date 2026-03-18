@@ -1,4 +1,5 @@
 add_library(matching_engine STATIC
+    matching_engine.cpp
     fifo_matching_engine.cpp
 )
 

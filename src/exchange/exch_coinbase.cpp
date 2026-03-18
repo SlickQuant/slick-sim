@@ -53,13 +53,14 @@ void CoinbaseExchange::run() {
 
 Symbol* CoinbaseExchange::addSymbol(std::string_view product_id) {
     assert(!sym_mgr.getSymbol(product_id));
-    auto symbol = sym_mgr.createSymbol(product_id);
+    auto symbol = sym_mgr.createSymbol(product_id, Venue::COINBASE);
     assert(symbol);
     if (!matching_engines_[engine::MatchingEngine::Type::FIFO]) {
-        matching_engines_[engine::MatchingEngine::Type::FIFO] = std::make_unique<engine::FifoMatchingEngine>(request_queue_, order_response_queue_);
+        matching_engines_[engine::MatchingEngine::Type::FIFO] = std::make_unique<engine::FifoMatchingEngine>(order_response_queue_);
     }
     symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
-    symbol->order_book_ = std::make_unique<OrderBookImpl<true>>(symbol->id_, std::string(product_id), Venue::COINBASE);
+    symbol->createOrderBook<true>();
+    // symbol->order_book_ = std::make_unique<OrderBookImpl<true>>(symbol->id_, std::string(product_id), Venue::COINBASE);
     return symbol;
 }
 

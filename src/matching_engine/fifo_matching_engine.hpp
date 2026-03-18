@@ -9,7 +9,6 @@ using Logger = slick::logger::Logger;
 class FifoMatchingEngine : public MatchingEngine {
 public:
     FifoMatchingEngine(
-        slick::SlickQueue<Request> &request_queue,
         slick::SlickQueue<OrderResponse> &order_response_queue
     );
     ~FifoMatchingEngine() override = default;
@@ -18,7 +17,7 @@ public:
         return MatchingEngine::Type::FIFO;
     }
 
-    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(Order* order, price_t order_price, qty_t order_qty, OrderBook &book, uint64_t event_time, uint64_t seq_num = 0) override;
+    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(Order* order, price_t order_price, qty_t order_qty, OrderBook &book, uint64_t event_time, uint64_t seq_num = 0, SelfMatchPreventionMode smp_mode = SelfMatchPreventionMode::NONE) override;
 
     std::vector<TradeSummaryInfo> match(OrderBook &book, uint64_t event_time, uint64_t seq_num=0) override;
 
