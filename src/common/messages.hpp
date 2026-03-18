@@ -92,6 +92,7 @@ enum class OrdRejectReason : uint16_t {
     INVALID_QTY,
     INVALID_MIN_QTY,
     CLIENT_ORDER_ID_ALREADY_EXISTS,
+    FOK_CANNOT_FILL,
 };
 
 inline std::string to_string(OrdRejectReason reject)
@@ -103,6 +104,8 @@ inline std::string to_string(OrdRejectReason reject)
             return "UNKNOWN";
         case OrdRejectReason::UNKNOWN_CONTRACT:
             return "UNKNOWN_CONTRACT";
+        case OrdRejectReason::UNKNOWN_ORDER:
+            return "UNKNOWN_ORDER";
         case OrdRejectReason::MARKET_CLOSED:
             return "MARKET_CLOSED";
         case OrdRejectReason::MARKET_HALTED:
@@ -135,6 +138,10 @@ inline std::string to_string(OrdRejectReason reject)
             return "INVALID_QTY";
         case OrdRejectReason::INVALID_MIN_QTY:
             return "INVALID_MIN_QTY";
+        case OrdRejectReason::CLIENT_ORDER_ID_ALREADY_EXISTS:
+            return "CLIENT_ORDER_ID_ALREADY_EXISTS";
+        case OrdRejectReason::FOK_CANNOT_FILL:
+            return "FOK_CANNOT_FILL";
     }
     return std::format("UNHANDLED OrdRejectReason ({0})", static_cast<std::underlying_type<OrdRejectReason>::type>(reject));
 }
@@ -277,9 +284,12 @@ struct OrderResponse {
     char order_id[37];
     char error_message[256];
     MessageType response_type = MessageType::UNKNOWN;
+    ExecType exec_type = ExecType::NEW;
     OrderStatus order_status = OrderStatus::NEW;
+    OrderType order_type = OrderType::UNKNOWN;
     price_t price = NULL_PRICE;
     qty_t qty = 0;
+    qty_t last_qty = 0;
     qty_t cum_qty = 0;
     qty_t leaves_qty = 0;
     OrdRejectReason reject_reason = OrdRejectReason::NONE;
@@ -293,7 +303,8 @@ struct Trade {
 
 struct TradeSummary {
     time_t timestamp = 0;
-    int32_t security_id;
+    uint64_t trade_id;
+    int16_t security_id;
     Side aggressor_side;
     price_t price;
     qty_t qty;
@@ -302,5 +313,15 @@ struct TradeSummary {
 };
 
 #pragma pack(pop)
+
+struct TradeSummaryInfo {
+    time_t timestamp = 0;
+    uint64_t trade_id;
+    Side aggressor_side;
+    price_t price;
+    qty_t qty;
+    int32_t num_orders;
+    std::vector<Trade> Trades;
+};
 
 }   // end namespace slick::sim

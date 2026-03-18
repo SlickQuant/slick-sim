@@ -26,13 +26,21 @@ enum UpdateFlags : uint8_t {
     F_END_EVENT = 1 << 1,
 };
 
+enum MDUpdateAction: uint8_t {
+    ACTION_NEW,
+    ACTION_CHANGE,
+    ACTION_DELETE,
+};
+
 struct MDLevel {
     uint64_t event_time;
     uint64_t seq_num;
     price_t price;
     qty_t qty;
     uint32_t num_orders;
-    UpdateFlags flags;
+    uint16_t level_index;
+    MDUpdateAction update_action;
+    uint8_t flags;
     Side side;
 };
 
