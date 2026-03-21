@@ -59,8 +59,7 @@ Symbol* CoinbaseExchange::addSymbol(std::string_view product_id) {
         matching_engines_[engine::MatchingEngine::Type::FIFO] = std::make_unique<engine::FifoMatchingEngine>(order_response_queue_);
     }
     symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
-    symbol->createOrderBook<true>();
-    // symbol->order_book_ = std::make_unique<OrderBookImpl<true>>(symbol->id_, std::string(product_id), Venue::COINBASE);
+    symbol->createOrderBook<OrderBookType::L2>();
     return symbol;
 }
 

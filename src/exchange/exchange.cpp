@@ -69,7 +69,7 @@ Order* Exchange::allocateOrder() {
     boost::uuids::uuid u = boost::uuids::random_generator()();
     order->order_id = boost::lexical_cast<std::string>(u);
     order->id = nextOrderId();
-    order->created_time = std::chrono::system_clock::now();
+    order->created_time = std::chrono::system_clock::now().time_since_epoch().count();
     order->last_update_time = order->created_time;
     return order;
 }
@@ -180,6 +180,8 @@ void Exchange::handleNewOrderRequest(const Request &request) {
         order->time_in_force = msg.time_in_force;
         order->price = msg.price;
         order->quantity = msg.qty;
+        order->leaves_quantity = msg.qty;
+        order->type = msg.type;
         order->status = OrderStatus::PENDING_NEW;
         
         sendOrderNewPending(order);
@@ -335,7 +337,7 @@ void Exchange::sendOrderNewPending(const Order *order) {
     response.cum_qty = 0;
     response.leaves_qty = order->leaves_quantity;
     assert(response.leaves_qty == response.qty);
-    response.timestamp = order->created_time.time_since_epoch().count();;
+    response.timestamp = order->created_time;
     order_response_queue_.publish(index);
 }
 
@@ -352,7 +354,7 @@ void Exchange::sendOrderAck(const Order *order) {
     response.qty = order->quantity;
     response.cum_qty = 0;
     response.leaves_qty = order->leaves_quantity;
-    response.timestamp = order->last_update_time.time_since_epoch().count();
+    response.timestamp = order->last_update_time;
     order_response_queue_.publish(index);
 }
 
@@ -373,7 +375,7 @@ void Exchange::sendOrderCanceled(const Order *order) {
     response.qty = order->quantity;
     response.cum_qty = order->filled_quantity;
     response.leaves_qty = 0;
-    response.timestamp = order->last_update_time.time_since_epoch().count();
+    response.timestamp = order->last_update_time;
     order_response_queue_.publish(index);
 }
 
@@ -391,6 +393,6 @@ void Exchange::sendOrderExecution(const Order *order) {
     response.last_qty = order->last_filled_qty;
     response.cum_qty = order->filled_quantity;
     response.leaves_qty = order->leaves_quantity;
-    response.timestamp = order->last_update_time.time_since_epoch().count();
+    response.timestamp = order->last_update_time;
     order_response_queue_.publish(index);
 }

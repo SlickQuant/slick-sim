@@ -42,7 +42,7 @@ public:
         : OrderBookL3(sid, buffer_size, 500)
         , symbol_(std::move(symbol))
         , venue_(venue)
-        , order_buffer_(buffer_size)
+        // , order_buffer_(buffer_size)
     {}
     ~OrderBook() override = default;
 
@@ -85,6 +85,7 @@ public:
     }
 
     void deleteOrder(Order* order, uint64_t timestamp, uint64_t seq_num = 0, bool is_last_in_batch = true) {
+        deleteOrder(order->id, timestamp, seq_num, is_last_in_batch);
         auto it = orders_.find(order->id);
         if (it != orders_.end()) {
             if (!order->client_order_id.empty()) {
@@ -95,8 +96,7 @@ public:
             }
             orders_.erase(it);
         }
-        deleteOrder(order->id, timestamp, seq_num, is_last_in_batch);
-        order_buffer_.free(order);
+        // order_buffer_.free(order);
     }
 
     void modifyOrder(Order* order, price_t new_price, qty_t new_qty, uint64_t timestamp,
@@ -133,6 +133,31 @@ public:
         }
     }
 
+    bool executeOrder(slick::orderbook::OrderId order_id, slick::orderbook::Quantity executed_quantity, uint64_t timestamp, uint64_t seq_num = 0, bool is_last_in_batch = true) override {
+        auto rt = OrderBookL3::executeOrder(order_id, executed_quantity, timestamp, seq_num, is_last_in_batch);
+        auto *order = findOrder(order_id);
+        if (order) {
+            order->leaves_quantity -= executed_quantity;
+            order->last_update_time = timestamp;
+            order->avg_filled_price = ((order->avg_filled_price * order->filled_quantity) + (order->price * executed_quantity)) / (order->filled_quantity + executed_quantity);
+            order->filled_quantity += executed_quantity;
+            order->last_filled_price = order->price;
+            order->last_filled_qty = executed_quantity;
+            order->last_fill_time = timestamp;
+            order->num_fills += 1;
+            if (order->leaves_quantity == 0) {
+                if (!order->client_order_id.empty()) {
+                    orders_by_client_order_id_.erase(order->client_order_id);
+                }
+                if (!order->order_id.empty()) {
+                    orders_by_order_id_.erase(order->order_id);
+                }
+                orders_.erase(order_id);
+            }
+        }
+        return rt;
+    }
+
     time_t lastUpdateTime() const noexcept {
         return last_update_time_;
     }
@@ -160,7 +185,7 @@ protected:
     symid_t sid_;
     Venue venue_;
     std::string symbol_;
-    slick::ObjectPool<Order> order_buffer_;
+    // slick::ObjectPool<Order> order_buffer_;
     std::unordered_map<uint64_t, Order*> orders_;
     std::unordered_map<std::string, Order*> orders_by_client_order_id_;
     std::unordered_map<std::string, Order*> orders_by_order_id_;
@@ -169,7 +194,12 @@ protected:
 
 struct Empty {};
 
-template<bool IS_LEVEL2>
+enum class OrderBookType {
+    L2,
+    L3
+};
+
+template<OrderBookType BookType>
 class OrderBookImpl : public OrderBook {
 public:
     OrderBookImpl(symid_t sid, std::string symbol, Venue venue, uint_fast32_t buffer_size = 65536)
@@ -244,10 +274,9 @@ protected:
 
 protected:
     [[no_unique_address]] std::conditional_t<
-        IS_LEVEL2,
+        BookType == OrderBookType::L2,
         std::unordered_map<price_t, qty_t>,
         Empty> feed_md_level_quantity_;
-
 };
 
 
@@ -283,8 +312,8 @@ inline Order* OrderBook::findOrder(uint64_t order_id) {
 //     return book_.levelCount(to_book_side(side));
 // }
 
-template<bool IS_LEVEL2>
-inline std::string OrderBookImpl<IS_LEVEL2>::to_string() const {
+template<OrderBookType BookType>
+inline std::string OrderBookImpl<BookType>::to_string() const {
     std::stringstream ss;
     ss << "OrderBook: " << symbol_ << "\n";
     auto &sell_levels = getLevelsL3(orderbook::Side::Sell);
@@ -307,9 +336,9 @@ inline std::string OrderBookImpl<IS_LEVEL2>::to_string() const {
 }
 
 
-// Level2 Book Implementation
+// L2 Book Implementation
 template<>
-inline std::tuple<int, qty_t, uint32_t> OrderBookImpl<true>::onLevelUpdate(
+inline std::tuple<int, qty_t, uint32_t> OrderBookImpl<OrderBookType::L2>::onLevelUpdate(
     uint64_t event_time, uint64_t seq_num, Side side, price_t price, qty_t size, uint32_t /* num_orders */,
     std::vector<MDLevel>& /* level_updates */, std::vector<MDTrade>& /* trade_updates */, bool is_last_in_batch, bool is_snapshot
 ) {
@@ -371,7 +400,7 @@ inline std::tuple<int, qty_t, uint32_t> OrderBookImpl<true>::onLevelUpdate(
 }
 
 template<>
-inline void OrderBookImpl<true>::populateMDBookUpdate(MDBookUpdate &book_update) {
+inline void OrderBookImpl<OrderBookType::L2>::populateMDBookUpdate(MDBookUpdate &book_update) {
     auto &ask_levels = getLevelsL3(orderbook::Side::Sell);
     uint32_t i = 0;
     for (auto it = ask_levels.begin(); it != ask_levels.end() && i < 10; ++it, ++i) {
@@ -391,7 +420,7 @@ inline void OrderBookImpl<true>::populateMDBookUpdate(MDBookUpdate &book_update)
 }
 
 template<>
-inline void OrderBookImpl<true>::populateL2SubscriptionResponse(slick::SlickQueue<uint8_t> &md_update_queue, uint8_t channel) {
+inline void OrderBookImpl<OrderBookType::L2>::populateL2SubscriptionResponse(slick::SlickQueue<uint8_t> &md_update_queue, uint8_t channel) {
     auto &ask_levels = getLevelsL3(orderbook::Side::Sell);
     auto &bid_levels = getLevelsL3(orderbook::Side::Buy);
     auto sz = sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(BookSnapshot) + (bid_levels.size() + ask_levels.size()) * sizeof(MDLevel);
@@ -424,326 +453,30 @@ inline void OrderBookImpl<true>::populateL2SubscriptionResponse(slick::SlickQueu
 }
 
 
-// // OrderBookAdapter - Adapts slick::orderbook::OrderBookL2 to OrderBook interface
-// // Maintains Order* tracking for matching engine while using external library for level management
-// class OrderBookAdapter : public OrderBook {
-// public:
-//     OrderBookAdapter(std::string symbol, Venue venue, uint_fast32_t buffer_size = 65536)
-//         : OrderBook(std::move(symbol), venue, buffer_size)
-//         , external_book_(0) // SymbolId = 0, we don't use symbol IDs in sim
-//     {
-//         // Initialize cached levels for conversion
-//         cached_bid_levels_.reserve(20);
-//         cached_ask_levels_.reserve(20);
-//     }
 
-//     ~OrderBookAdapter() override = default;
+// L3 Book Implementation
+template<>
+inline std::tuple<int, qty_t, uint32_t> OrderBookImpl<OrderBookType::L3>::onLevelUpdate(
+    uint64_t event_time, uint64_t seq_num, Side side, price_t price, qty_t size, uint32_t num_orders,
+    std::vector<MDLevel>& level_updates, std::vector<MDTrade>& trade_updates,
+    bool is_last_in_batch, bool is_snapshot)
+{
+    // Stub implementation for testing
+    // In production, this would update market data structures
+    return std::make_tuple(0, size, num_orders);
+}
 
-//     void clear() override {
-//         external_book_.clear();
-//         level_order_counts_.clear();
-//         cached_bid_levels_.clear();
-//         cached_ask_levels_.clear();
-//     }
+template<>
+inline void OrderBookImpl<OrderBookType::L3>::populateL2SubscriptionResponse(slick::SlickQueue<uint8_t>& md_update_queue, uint8_t channel) {
+    // Stub implementation for testing
+    // In production, this would populate subscription response
+}
 
-//     uint32_t bidLevelsCount() const override {
-//         return static_cast<uint32_t>(external_book_.levelCount(slick::orderbook::Side::Buy));
-//     }
-
-//     uint32_t askLevelsCount() const override {
-//         return static_cast<uint32_t>(external_book_.levelCount(slick::orderbook::Side::Sell));
-//     }
-
-//     OrderBookLevel* bidLevel(uint32_t index) override {
-//         const auto* level = external_book_.getLevelByIndex(slick::orderbook::Side::Buy, static_cast<uint16_t>(index));
-//         if (!level) return nullptr;
-
-//         // Ensure cache has enough space
-//         if (cached_bid_levels_.size() <= index) {
-//             cached_bid_levels_.resize(index + 1);
-//         }
-
-//         // Convert external level to local format
-//         auto& cached = cached_bid_levels_[index];
-//         cached.price_ = level->price;
-//         cached.size_ = static_cast<qty_t>(level->quantity);
-//         cached.num_orders_ = getLevelOrderCount(Side::BUY, level->price);
-
-//         return &cached;
-//     }
-
-//     OrderBookLevel* askLevel(uint32_t index) override {
-//         const auto* level = external_book_.getLevelByIndex(slick::orderbook::Side::Sell, static_cast<uint16_t>(index));
-//         if (!level) return nullptr;
-
-//         // Ensure cache has enough space
-//         if (cached_ask_levels_.size() <= index) {
-//             cached_ask_levels_.resize(index + 1);
-//         }
-
-//         // Convert external level to local format
-//         auto& cached = cached_ask_levels_[index];
-//         cached.price_ = level->price;
-//         cached.size_ = static_cast<qty_t>(level->quantity);
-//         cached.num_orders_ = getLevelOrderCount(Side::SELL, level->price);
-
-//         return &cached;
-//     }
-
-//     void populateMDBookUpdate(MDBookUpdate &book_update) override {
-//         // Get ask levels (sells)
-//         for (uint32_t i = 0; i < 10; ++i) {
-//             const auto* level = external_book_.getLevelByIndex(slick::orderbook::Side::Sell, static_cast<uint16_t>(i));
-//             if (!level) break;
-
-//             book_update.sell[i].price = level->price;
-//             book_update.sell[i].qty = static_cast<qty_t>(level->quantity);
-//             book_update.sell[i].num_orders = getLevelOrderCount(Side::SELL, level->price);
-//         }
-
-//         // Get bid levels (buys)
-//         for (uint32_t i = 0; i < 10; ++i) {
-//             const auto* level = external_book_.getLevelByIndex(slick::orderbook::Side::Buy, static_cast<uint16_t>(i));
-//             if (!level) break;
-
-//             book_update.buy[i].price = level->price;
-//             book_update.buy[i].qty = static_cast<qty_t>(level->quantity);
-//             book_update.buy[i].num_orders = getLevelOrderCount(Side::BUY, level->price);
-//         }
-//     }
-
-//     void populateL2SubscriptionResponse(slick::SlickQueue<uint8_t> &md_update_queue, uint8_t channel) override {
-//         auto bids_count = external_book_.levelCount(slick::orderbook::Side::Buy);
-//         auto asks_count = external_book_.levelCount(slick::orderbook::Side::Sell);
-
-//         auto sz = sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(BookSnapshot) + (bids_count + asks_count) * sizeof(MDLevel);
-//         auto index = md_update_queue.reserve(sz);
-//         auto *update = reinterpret_cast<MarketDataUpdate*>(md_update_queue[index]);
-//         memcpy(update->symbol, symbol_.c_str(), sizeof(update->symbol));
-//         update->venue = venue_;
-//         update->type = MDUpdateType::SUB_RESPONSE;
-
-//         auto *response = reinterpret_cast<MDSubscriptionResponse*>(update->data);
-//         response->channel = channel;
-
-//         auto *snapshot = reinterpret_cast<BookSnapshot*>(response->data);
-//         snapshot->num_bid = static_cast<uint32_t>(bids_count);
-//         snapshot->num_ask = static_cast<uint32_t>(asks_count);
-
-//         auto *levels = reinterpret_cast<MDLevel*>(snapshot->levels);
-
-//         // Populate bid levels
-//         for (size_t i = 0; i < bids_count; ++i) {
-//             const auto* level = external_book_.getLevelByIndex(slick::orderbook::Side::Buy, static_cast<uint16_t>(i));
-//             if (level) {
-//                 levels->price = level->price;
-//                 levels->qty = static_cast<qty_t>(level->quantity);
-//                 levels->num_orders = getLevelOrderCount(Side::BUY, level->price);
-//                 ++levels;
-//             }
-//         }
-
-//         // Populate ask levels
-//         for (size_t i = 0; i < asks_count; ++i) {
-//             const auto* level = external_book_.getLevelByIndex(slick::orderbook::Side::Sell, static_cast<uint16_t>(i));
-//             if (level) {
-//                 levels->price = level->price;
-//                 levels->qty = static_cast<qty_t>(level->quantity);
-//                 levels->num_orders = getLevelOrderCount(Side::SELL, level->price);
-//                 ++levels;
-//             }
-//         }
-
-//         md_update_queue.publish(index, sz);
-//     }
-
-//     std::tuple<int, qty_t, uint32_t> onLevelUpdate(
-//         uint64_t event_time, uint64_t seq_num, Side side, price_t price, qty_t size, uint32_t num_orders,
-//         std::vector<MDLevel>& level_updates, std::vector<MDTrade>& trade_updates, bool is_last_in_batch, bool is_snapshot
-//     ) override {
-//         auto ext_side = convertSide(side);
-//         auto timestamp = getCurrentTimestamp();
-
-//         // Update the level in external book
-//         external_book_.updateLevel(ext_side, price, static_cast<slick::orderbook::Quantity>(size), timestamp);
-
-//         // Update order count tracking
-//         updateLevelOrderCount(side, price, num_orders);
-
-//         // Find the level index
-//         int index = -1;
-//         size_t level_count = external_book_.levelCount(ext_side);
-//         for (uint16_t i = 0; i < level_count; ++i) {
-//             const auto* level = external_book_.getLevelByIndex(ext_side, i);
-//             if (level && level->price == price) {
-//                 index = i;
-//                 break;
-//             }
-//         }
-
-//         return std::make_tuple(index, size, num_orders);
-//     }
-
-//     std::string to_string() const override {
-//         std::stringstream ss;
-//         ss << "OrderBook: " << symbol_ << "\n";
-
-//         // Show top 20 sell levels (reversed)
-//         auto sell_count = external_book_.levelCount(slick::orderbook::Side::Sell);
-//         int start = std::max(0, static_cast<int>(sell_count) - 20);
-//         for (int i = sell_count - 1; i >= start; --i) {
-//             const auto* level = external_book_.getLevelByIndex(slick::orderbook::Side::Sell, static_cast<uint16_t>(i));
-//             if (level) {
-//                 ss << std::right << std::setw(50) << std::format("{:.2f}", to_price_double(level->price));
-//                 ss << std::right << std::setw(20) << std::format("{:.8f}", to_qty_double(level->quantity));
-//                 ss << std::right << std::setw(10) << getLevelOrderCount(Side::SELL, level->price) << "\n";
-//             }
-//         }
-
-//         // Show top 20 buy levels
-//         auto buy_count = std::min(static_cast<size_t>(20), external_book_.levelCount(slick::orderbook::Side::Buy));
-//         for (size_t i = 0; i < buy_count; ++i) {
-//             const auto* level = external_book_.getLevelByIndex(slick::orderbook::Side::Buy, static_cast<uint16_t>(i));
-//             if (level) {
-//                 ss << std::right << std::setw(10) << getLevelOrderCount(Side::BUY, level->price);
-//                 ss << std::right << std::setw(20) << std::format("{:.8f}", to_qty_double(level->quantity));
-//                 ss << std::right << std::setw(20) << std::format("{:.2f}", to_price_double(level->price)) << "\n";
-//             }
-//         }
-
-//         return ss.str();
-//     }
-
-// protected:
-//     void addOrderInternal(Order* order) override {
-//         auto ext_side = convertSide(order->side);
-
-//         // Get current level quantity
-//         const auto* level = external_book_.getLevel(ext_side, order->price);
-//         slick::orderbook::Quantity current_qty = level ? level->quantity : 0;
-
-//         // Calculate new quantity
-//         slick::orderbook::Quantity new_qty = current_qty + static_cast<slick::orderbook::Quantity>(order->quantity);
-
-//         // Update level
-//         auto timestamp = getCurrentTimestamp();
-//         external_book_.updateLevel(ext_side, order->price, new_qty, timestamp);
-
-//         // Increment order count for this level
-//         incrementLevelOrderCount(order->side, order->price);
-//     }
-
-//     void removeOrderInternal(Order* order) override {
-//         auto ext_side = convertSide(order->side);
-
-//         // Get current level quantity
-//         const auto* level = external_book_.getLevel(ext_side, order->price);
-//         if (!level) return; // Level doesn't exist, nothing to remove
-
-//         // Calculate new quantity
-//         slick::orderbook::Quantity new_qty = level->quantity - static_cast<slick::orderbook::Quantity>(order->quantity);
-
-//         if (new_qty <= 0) {
-//             // Delete level if quantity reaches zero
-//             external_book_.deleteLevel(ext_side, order->price);
-//             // Remove from order count tracking
-//             removeLevelOrderCount(order->side, order->price);
-//         } else {
-//             // Update level with new quantity
-//             auto timestamp = getCurrentTimestamp();
-//             external_book_.updateLevel(ext_side, order->price, new_qty, timestamp);
-
-//             // Decrement order count
-//             decrementLevelOrderCount(order->side, order->price);
-//         }
-//     }
-
-//     void modifyOrderInternal(Order* order, qty_t old_qty) override {
-//         auto ext_side = convertSide(order->side);
-
-//         // Get current level quantity
-//         const auto* level = external_book_.getLevel(ext_side, order->price);
-//         if (!level) {
-//             // Level doesn't exist, treat as add
-//             addOrderInternal(order);
-//             return;
-//         }
-
-//         // Calculate quantity delta
-//         qty_t qty_delta = order->quantity - old_qty;
-//         slick::orderbook::Quantity new_qty = level->quantity + static_cast<slick::orderbook::Quantity>(qty_delta);
-
-//         // Update level
-//         auto timestamp = getCurrentTimestamp();
-//         external_book_.updateLevel(ext_side, order->price, new_qty, timestamp);
-//         // Order count stays the same for modify
-//     }
-
-// private:
-//     // Helper: Convert local Side enum to external Side enum
-//     static slick::orderbook::Side convertSide(Side side) noexcept {
-//         return (side == Side::BUY) ? slick::orderbook::Side::Buy : slick::orderbook::Side::Sell;
-//     }
-
-//     // Helper: Get current timestamp in nanoseconds
-//     static slick::orderbook::Timestamp getCurrentTimestamp() noexcept {
-//         using namespace std::chrono;
-//         return static_cast<slick::orderbook::Timestamp>(
-//             duration_cast<nanoseconds>(system_clock::now().time_since_epoch()).count()
-//         );
-//     }
-
-//     // Helper: Create level key for order count tracking
-//     static uint64_t makeLevelKey(Side side, price_t price) noexcept {
-//         return (static_cast<uint64_t>(side) << 56) | (static_cast<uint64_t>(price) & 0x00FFFFFFFFFFFFFF);
-//     }
-
-//     // Helper: Get order count for a level
-//     uint32_t getLevelOrderCount(Side side, price_t price) const noexcept {
-//         auto key = makeLevelKey(side, price);
-//         auto it = level_order_counts_.find(key);
-//         return (it != level_order_counts_.end()) ? it->second : 0;
-//     }
-
-//     // Helper: Increment order count for a level
-//     void incrementLevelOrderCount(Side side, price_t price) {
-//         auto key = makeLevelKey(side, price);
-//         ++level_order_counts_[key];
-//     }
-
-//     // Helper: Decrement order count for a level
-//     void decrementLevelOrderCount(Side side, price_t price) {
-//         auto key = makeLevelKey(side, price);
-//         auto it = level_order_counts_.find(key);
-//         if (it != level_order_counts_.end()) {
-//             if (--it->second == 0) {
-//                 level_order_counts_.erase(it);
-//             }
-//         }
-//     }
-
-//     // Helper: Set order count for a level (used by onLevelUpdate)
-//     void updateLevelOrderCount(Side side, price_t price, uint32_t count) {
-//         auto key = makeLevelKey(side, price);
-//         if (count == 0) {
-//             level_order_counts_.erase(key);
-//         } else {
-//             level_order_counts_[key] = count;
-//         }
-//     }
-
-//     // Helper: Remove level from order count tracking
-//     void removeLevelOrderCount(Side side, price_t price) {
-//         auto key = makeLevelKey(side, price);
-//         level_order_counts_.erase(key);
-//     }
-
-// private:
-//     slick::orderbook::OrderBookL2 external_book_;               // External library for level management
-//     std::unordered_map<uint64_t, uint32_t> level_order_counts_; // Track order counts per level (side+price -> count)
-//     mutable std::vector<OrderBookLevel> cached_bid_levels_;     // Cache for bidLevel() conversion
-//     mutable std::vector<OrderBookLevel> cached_ask_levels_;     // Cache for askLevel() conversion
-// };
+template<>
+inline void OrderBookImpl<OrderBookType::L3>::populateMDBookUpdate(MDBookUpdate& book_update) {
+    // Stub implementation for testing
+    // In production, this would populate MD book update
+}
 
 
 }   // end namespace slick::sim::order_book

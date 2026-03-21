@@ -2,6 +2,7 @@ add_library(exchange STATIC
     exchange.cpp
     exch_coinbase.cpp
     exch_coinbase_feed_callbacks.cpp
+    symbol.cpp
 )
 
 target_include_directories(exchange PRIVATE
