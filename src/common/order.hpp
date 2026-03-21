@@ -17,7 +17,7 @@ enum Side : uint8_t {
     UNKNOWN_SIDE,
 };
 
-inline Side opposite_side(Side side) {
+inline constexpr Side opposite_side(Side side) {
     switch(side) {
     case Side::BUY:
         return Side::SELL;
@@ -29,7 +29,18 @@ inline Side opposite_side(Side side) {
     return Side::UNKNOWN_SIDE;
 }
 
-inline std::string to_string(Side side) {
+template<Side S>
+inline constexpr Side opposite_side() {
+    if constexpr (S == Side::BUY) {
+        return Side::SELL;
+    } else if constexpr (S == Side::SELL) {
+        return Side::BUY;
+    } else {
+        return Side::UNKNOWN_SIDE;
+    }
+}
+
+inline constexpr std::string_view to_string(Side side) {
     switch(side)
     {
     case Side::BUY:
@@ -56,7 +67,7 @@ enum class OrderType : char {
     SCALED = 'A',
  };
 
- inline std::string to_string(OrderType type) {
+ inline constexpr std::string_view to_string(OrderType type) {
     switch(type) {
     case OrderType::MARKET:
         return "MARKET";
@@ -138,7 +149,7 @@ enum class ProductType : uint8_t {
     FUTURE,
 };
 
-inline std::string to_string(ProductType type) {
+inline constexpr std::string_view to_string(ProductType type) {
     switch(type) {
     case ProductType::SPOT:
         return "SPOT";
@@ -178,9 +189,9 @@ struct Order {
     double filled_value = 0;
     
     int client_id = -1;
-    std::chrono::system_clock::time_point created_time = std::chrono::system_clock::now();
-    std::chrono::system_clock::time_point last_update_time = std::chrono::system_clock::now();
-    std::optional<std::chrono::system_clock::time_point> last_fill_time;
+    uint64_t created_time = std::chrono::system_clock::now().time_since_epoch().count();
+    uint64_t last_update_time = std::chrono::system_clock::now().time_since_epoch().count();
+    std::optional<uint64_t> last_fill_time;
 
     std::string reject_message;
     std::string cancel_message;

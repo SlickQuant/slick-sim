@@ -9,7 +9,18 @@
 
 namespace slick::sim::exch {
 
-struct Symbol : public orderbook::IOrderBookObserver, public std::enable_shared_from_this<Symbol> {
+struct Symbol;
+
+struct OrderBookObserver : public orderbook::IOrderBookObserver {
+    Symbol* symbol_;
+    OrderBookObserver(Symbol* symbol) : symbol_(symbol) {}
+
+    void onPriceLevelUpdate(const PriceLevelUpdate& update) override;
+
+    void onOrderUpdate(const OrderUpdate& update) override;
+};
+
+struct Symbol : public orderbook::IOrderBookObserver {
     symid_t id_ = INVALID_SYMBOL_ID;
     Venue venue_;
     std::string symbol_;
@@ -19,8 +30,12 @@ struct Symbol : public orderbook::IOrderBookObserver, public std::enable_shared_
     SelfMatchPreventionMode smp_mode_ = SelfMatchPreventionMode::NONE;
     std::vector<MDLevel> md_level_update_cache_;
     std::vector<MDOrder> md_order_update_cache_;
+    std::shared_ptr<OrderBookObserver> book_observer_;
 
-    Symbol() = default;
+    Symbol() : book_observer_(std::make_shared<OrderBookObserver>(this)) {
+        md_level_update_cache_.reserve(64);
+        md_order_update_cache_.reserve(256);
+    };
     ~Symbol() = default;
 
     Symbol(const Symbol&) = delete;
@@ -46,10 +61,10 @@ struct Symbol : public orderbook::IOrderBookObserver, public std::enable_shared_
         return *this;
     }
 
-    template<bool IS_LEVEL2>
+    template<OrderBookType BookType>
     void createOrderBook() {
-        order_book_ = std::make_unique<OrderBookImpl<IS_LEVEL2>>(id_, symbol_, venue_);
-        order_book_->addObserver(shared_from_this());
+        order_book_ = std::make_unique<OrderBookImpl<BookType>>(id_, symbol_, venue_);
+        order_book_->addObserver(book_observer_);
     }
 
     std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> addOrder(Order *order);
@@ -68,79 +83,11 @@ struct Symbol : public orderbook::IOrderBookObserver, public std::enable_shared_
         return order_book_->findOrder(order_id);
     }
 
-    void onPriceLevelUpdate(const PriceLevelUpdate& update) override {
-        // md_level_update_cache_.push_back({
-        //     .event_time = update.timestamp,
-        //     .seq_num = update.seq_num,
-        //     .price = update.price,
-        //     .quantity = update.quantity,
-        //     .num_orders = update.num_orders,
-        //     .flags = static_cast<>(update.flags),
-        //     .side = static_cast<Side>(update.side)
-        // });
-    }
+    void onPriceLevelUpdate(const PriceLevelUpdate& update);
 
     /// Called when an individual order is updated (L3 event)
-    void onOrderUpdate(const OrderUpdate& update) override {
-        // md_order_update_cache_.push_back(update.order);
-    }
+    void onOrderUpdate(const OrderUpdate& update);
 };
 
-
-
-inline std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Order* order)
-{
-    LOG_INFO("{} Adding order {}: oid={}, client_oid={}, price={}, qty={}, tif={}",
-        symbol_, order->id, order->order_id, order->client_order_id,
-        order->price, order->quantity, static_cast<char>(order->time_in_force));
-
-    // Pass Symbol's SMP mode to matching engine
-    auto [reject_reason, trade_summaries] = matching_engine_->match(
-        order, order->price, order->quantity, *order_book_.get(),
-        order->created_time.time_since_epoch().count(), 0, smp_mode_
-    );
-
-    // Only add to book if no rejection and remaining quantity exists
-    if (reject_reason == OrdRejectReason::NONE && order->leaves_quantity > 0) {
-        // Check if TimeInForce allows resting on book
-        bool should_rest = (
-            order->time_in_force == TimeInForce::DAY ||
-            order->time_in_force == TimeInForce::GOOD_TILL_CANCEL ||
-            order->time_in_force == TimeInForce::GOOD_TILL_DATE
-        );
-
-        if (should_rest) {
-            order_book_->addOrder(order, order->created_time.time_since_epoch().count(), 0, true);
-        } else {
-            // IOC: Remainder is implicitly cancelled (not added to book)
-            // FOK: Will never reach here (would have been rejected in match)
-            LOG_INFO("{} Order {} has TIF={}, not adding to book (leaves_qty={})",
-                symbol_, order->id, static_cast<char>(order->time_in_force), order->leaves_quantity);
-        }
-    }
-
-    return std::make_tuple(reject_reason, trade_summaries);
-}
-
-inline std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::modifyOrder(Order* order, price_t new_price, qty_t new_qty)
-{
-    LOG_INFO("{} Modifying order {}: oid={}, client_oid={}, new_price={}, new_qty={}", symbol_, order->id, order->order_id, order->client_order_id, new_price, new_qty);
-    
-    auto [reject_reason, trade_summaries] = matching_engine_->match(order, new_price, new_qty, *order_book_.get(), order->last_update_time.time_since_epoch().count());
-    
-    if (reject_reason == OrdRejectReason::NONE) {
-        order_book_->modifyOrder(order, new_price, new_qty, order->last_update_time.time_since_epoch().count(), 0, true);
-    }
-    
-    order->last_update_time = std::chrono::system_clock::now();
-    return std::make_tuple(reject_reason, trade_summaries);
-}
-
-inline void Symbol::cancelOrder(Order *order)
-{
-    LOG_INFO("{} Canceling order: oid={}, client_oid={}", symbol_, order->order_id, order->client_order_id);
-    order->last_update_time = std::chrono::system_clock::now();
-    order_book_->deleteOrder(order, order->last_update_time.time_since_epoch().count(), 0, true);
-}
 
 } // namespace exchange

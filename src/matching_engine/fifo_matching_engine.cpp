@@ -49,7 +49,7 @@ inline bool isSelfMatch(const Order* incoming_order, const Order* book_order) {
 
 // Helper: Handle self-match according to Symbol's configured SMP mode
 // Returns true if matching should continue, false if order should be rejected
-inline bool handleSelfMatch(const Order* incoming_order, const slick::orderbook::detail::Order& book_order,
+inline bool handleSelfMatch(const Order* incoming_order, Order* book_order,
                             OrderBook& book, uint64_t event_time, uint64_t seq_num,
                             SelfMatchPreventionMode smp_mode) {
     switch (smp_mode) {
@@ -60,14 +60,14 @@ inline bool handleSelfMatch(const Order* incoming_order, const slick::orderbook:
         case SelfMatchPreventionMode::CANCEL_RESTING:
             // Cancel the resting book order and continue matching
             LOG_INFO("{} SMP: Canceling resting order {} (client_id={})",
-                incoming_order->symbol, book_order.order_id, incoming_order->client_id);
-            book.deleteOrder(book_order.order_id, event_time, seq_num, false);
+                incoming_order->symbol, book_order->order_id, incoming_order->client_id);
+            book.deleteOrder(book_order, event_time, seq_num, false);
             return true;  // Continue to next order
 
         case SelfMatchPreventionMode::CANCEL_NEWEST:
             // Reject the incoming order
             LOG_INFO("{} SMP: Rejecting new order {} due to self-match with resting order {} (client_id={})",
-                incoming_order->symbol, incoming_order->id, book_order.order_id, incoming_order->client_id);
+                incoming_order->symbol, incoming_order->id, book_order->order_id, incoming_order->client_id);
             return false;  // Signal to reject order
 
         default:
@@ -99,7 +99,7 @@ bool canFillCompletely(const Order* order, price_t order_price, qty_t order_qty,
     // Iterate through price levels in order (best to worst)
     for (const auto& [level_price, level_data] : levels) {
         // Check price compatibility - stop if price is worse than our limit
-        if (order_price != NULL_PRICE && !isPriceBetterOrEqual<SIDE>(order_price, level_price)) {
+        if (order_price != NULL_PRICE && !isPriceBetterOrEqual<SIDE>(level_price, order_price)) {
             break;  // Reached price levels we can't match against
         }
 
@@ -114,8 +114,12 @@ bool canFillCompletely(const Order* order, price_t order_price, qty_t order_qty,
                     // CANCEL_NEWEST: Order would be rejected on first self-match
                     return false;
                 }
-                // CANCEL_RESTING or NONE: Skip this order (will be handled during matching)
-                continue;
+                else if (smp_mode == SelfMatchPreventionMode::CANCEL_RESTING) {
+                    // CANCEL_RESTING: This resting order would be canceled, so skip it
+                    LOG_INFO("{} FOK check: Skipping self-match with resting order {} due to SMP (CANCEL_RESTING mode)",
+                        order->symbol, book_order.order_id);
+                    continue;
+                }
             }
 
             // Count available quantity
@@ -160,7 +164,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
         auto best_level = book.getBestLevel<static_cast<slick::orderbook::Side>(SIDE)>();
 
         // Check if we should continue matching at this level
-        if (!best_level || (order_price != NULL_PRICE && !isPriceBetterOrEqual<SIDE>(order_price, best_level->price))) {
+        if (!best_level || (order_price != NULL_PRICE && !isPriceBetterOrEqual<SIDE>(best_level->price, order_price))) {
             break;
         }
 
@@ -173,9 +177,9 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
 
         // NEW: Self-Match Prevention check
         auto* full_book_order = book.findOrder(book_order.order_id);
-        if (isSelfMatch(order, full_book_order)) {
+        if (smp_mode != SelfMatchPreventionMode::NONE && isSelfMatch(order, full_book_order)) {
             // Handle self-match according to Symbol's SMP mode
-            bool should_continue = handleSelfMatch(order, book_order, book, event_time, seq_num, smp_mode);
+            bool should_continue = handleSelfMatch(order, full_book_order, book, event_time, seq_num, smp_mode);
 
             if (!should_continue) {
                 // CANCEL_NEWEST mode: reject incoming order
@@ -185,7 +189,6 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
             }
 
             // CANCEL_RESTING mode: resting order was deleted, continue to next order
-            // NONE mode: not reached (isSelfMatch returned false)
             continue;
         }
 
@@ -207,7 +210,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
             TradeSummaryInfo summary;
             summary.timestamp = event_time;
             summary.trade_id = MatchingEngine::nextTradeId();
-            summary.aggressor_side = SIDE;
+            summary.aggressor_side = opposite_side<SIDE>();  // SIDE is the resting side, so aggressor is the opposite
             summary.price = best_level->price;
             summary.qty = trad_qty;
             summary.num_orders = 2;
@@ -225,7 +228,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
             last_summary.Trades.emplace_back(Trade{book_order.order_id, trad_qty});
         }
 
-        book.executeOrder(book_order.order_id, trad_qty, seq_num, order_qty == 0);
+        book.executeOrder(book_order.order_id, trad_qty, event_time, seq_num, order_qty == 0);
     }
 
     return std::make_tuple(OrdRejectReason::NONE, trade_summaries);
