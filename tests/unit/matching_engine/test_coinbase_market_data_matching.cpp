@@ -461,6 +461,169 @@ TEST_F(CoinbaseMarketDataMatchingTest, Level2QtyDecrease_PhantomOrderReducedFrom
 }
 
 // =============================================================================
+// Level2 Qty Change — Level Contains Mixed Simulator + Phantom Orders
+// =============================================================================
+
+// Simulates dispatchEvent's "existing level, qty increased" path when the level already contains
+// a simulator exchange order. The level2 event reports a total qty that exceeds the current phantom
+// qty -> a new phantom is added at the back for the delta. The simulator order is untouched.
+//
+//   Before: simulator SELL at kPrice100, qty=kQty10 (total_quantity=kQty10, MD qty=0)
+//   Event:  level2 SELL at kPrice100 says qty=kQty5 -> md_level_qty was 0, delta=kQty5 -> addBookOrder(kQty5)
+//   After:  total_quantity = kQty10 (sim) + kQty5 (phantom) = kQty15
+//           getMDLevelQty = kQty5 (only phantoms tracked)
+//           level orders = 2 (sim order + phantom)
+TEST_F(CoinbaseMarketDataMatchingTest, Level2QtyIncrease_WithSimulatorOrderOnLevel_PhantomAddedAtBack) {
+    // Add simulator SELL order at kPrice100
+    auto* sim_sell = createTestOrder(order_book_, Side::SELL, kPrice100, kQty10);
+    order_book_->addOrder(sim_sell, kT1, 1);
+
+    // Preconditions: level exists, no phantoms yet
+    EXPECT_EQ(order_book_->getMDLevelQty(kPrice100), 0);
+    {
+        auto [level, index] = order_book_->getLevel(to_book_side(Side::SELL), kPrice100);
+        ASSERT_NE(level, nullptr);
+        EXPECT_EQ(level->total_quantity, kQty10);
+        EXPECT_EQ(level->orders.size(), 1u);
+    }
+
+    // Level2 event: qty increased by kQty5 (md_level_qty was 0, delta = kQty5)
+    constexpr uint64_t kPhantomId = 5001;
+    order_book_->addBookOrder(kPhantomId, to_book_side(Side::SELL), kPrice100, kQty5, kT2, 2);
+
+    // getMDLevelQty tracks only the phantom
+    EXPECT_EQ(order_book_->getMDLevelQty(kPrice100), kQty5);
+
+    auto [level, index] = order_book_->getLevel(to_book_side(Side::SELL), kPrice100);
+    ASSERT_NE(level, nullptr);
+    // total_quantity includes both the simulator order and the phantom
+    EXPECT_EQ(level->total_quantity, kQty10 + kQty5);
+    EXPECT_EQ(level->orders.size(), 2u);
+
+    // Simulator order itself is unchanged
+    EXPECT_EQ(sim_sell->cum_quantity, 0);
+    EXPECT_EQ(sim_sell->quantity, kQty10);
+}
+
+// Simulates dispatchEvent's "existing level, qty decreased" path when the level has both a
+// simulator exchange order and a phantom order. The qty decrease must NOT touch the simulator
+// order — only the phantom at the back is reduced.
+//
+//   Before: simulator BUY at kPrice100 qty=kQty10, phantom BUY at kPrice100 qty=kQty10
+//           total_quantity=kQty20, getMDLevelQty=kQty10
+//   Event:  level2 BUY says qty=kQty5 -> md_level_qty was kQty10, diff=kQty5
+//           -> reduce back phantom from kQty10 to kQty5
+//   After:  getMDLevelQty = kQty5
+//           total_quantity = kQty10 (sim) + kQty5 (phantom) = kQty15
+//           simulator order qty unchanged
+TEST_F(CoinbaseMarketDataMatchingTest, Level2QtyDecrease_WithSimulatorOrderOnLevel_OnlyPhantomReduced) {
+    // Add simulator BUY order at kPrice100
+    auto* sim_buy = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
+    order_book_->addOrder(sim_buy, kT1, 1);
+
+    // Add phantom BUY at the same level (added after sim order -> sits at the back)
+    constexpr uint64_t kPhantomId = 5002;
+    order_book_->addBookOrder(kPhantomId, to_book_side(Side::BUY), kPrice100, kQty10, kT2, 2);
+
+    EXPECT_EQ(order_book_->getMDLevelQty(kPrice100), kQty10);
+    {
+        auto [level, index] = order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+        ASSERT_NE(level, nullptr);
+        EXPECT_EQ(level->total_quantity, kQty20);
+        EXPECT_EQ(level->orders.size(), 2u);
+    }
+
+    // Level2 event: total qty dropped to kQty15 -> md_level_qty was kQty10, diff = kQty10-kQty5 = kQty5
+    // Reduce back phantom from kQty10 to kQty5
+    order_book_->modifyOrder(kPhantomId, kPrice100, kQty5, kT3, 0, 3, true);
+
+    EXPECT_EQ(order_book_->getMDLevelQty(kPrice100), kQty5);
+
+    auto [level, index] = order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(level, nullptr);
+    EXPECT_EQ(level->total_quantity, kQty10 + kQty5);   // sim + reduced phantom
+    EXPECT_EQ(level->orders.size(), 2u);                // both orders still present
+
+    // Simulator order is completely untouched
+    EXPECT_EQ(sim_buy->quantity, kQty10);
+    EXPECT_EQ(sim_buy->cum_quantity, 0);
+}
+
+// Simulates the case where the qty decrease eliminates the phantom entirely, but the simulator
+// order remains on the level. After the phantom is deleted:
+//   getMDLevelQty = 0 (no phantoms)
+//   total_quantity = simulator order qty only
+//   orders.size() = 1 (only the sim order)
+TEST_F(CoinbaseMarketDataMatchingTest, Level2QtyDecrease_EliminatesPhantom_SimulatorOrderSurvives) {
+    // Add simulator SELL order at kPrice100
+    auto* sim_sell = createTestOrder(order_book_, Side::SELL, kPrice100, kQty10);
+    order_book_->addOrder(sim_sell, kT1, 1);
+
+    // Add phantom SELL at the same level
+    constexpr uint64_t kPhantomId = 5003;
+    order_book_->addBookOrder(kPhantomId, to_book_side(Side::SELL), kPrice100, kQty5, kT2, 2);
+
+    EXPECT_EQ(order_book_->getMDLevelQty(kPrice100), kQty5);
+    {
+        auto [level, index] = order_book_->getLevel(to_book_side(Side::SELL), kPrice100);
+        ASSERT_NE(level, nullptr);
+        EXPECT_EQ(level->total_quantity, kQty10 + kQty5);
+        EXPECT_EQ(level->orders.size(), 2u);
+    }
+
+    // Level2 event: qty reduced to 0 for the phantom (dispatchEvent sets qty=0 -> deletion)
+    order_book_->modifyOrder(kPhantomId, kPrice100, 0, kT3, 0, 3, true);
+
+    // Phantom gone, MD level qty drops to 0
+    EXPECT_EQ(order_book_->getMDLevelQty(kPrice100), 0);
+
+    auto [level, index] = order_book_->getLevel(to_book_side(Side::SELL), kPrice100);
+    ASSERT_NE(level, nullptr);
+    EXPECT_EQ(level->total_quantity, kQty10);   // only simulator order remains
+    EXPECT_EQ(level->orders.size(), 1u);
+
+    // Simulator order untouched
+    EXPECT_EQ(sim_sell->quantity, kQty10);
+    EXPECT_EQ(sim_sell->cum_quantity, 0);
+}
+
+// Simulates a level2 update that arrives for an existing level carrying both simulator and
+// phantom orders, where the total qty increased. A new phantom is appended at the back.
+// Verifies that getMDLevelQty and level->total_quantity both reflect the correct combined state.
+//
+//   Before: simulator BUY kQty10 + phantom BUY kQty5 at kPrice100
+//           getMDLevelQty = kQty5, total_quantity = kQty15
+//   Event:  level2 says qty = kQty10 -> md_level_qty was kQty5, delta = kQty5 -> addBookOrder kQty5
+//   After:  getMDLevelQty = kQty10
+//           total_quantity = kQty10 (sim) + kQty5 (old phantom) + kQty5 (new phantom) = kQty20
+//           orders.size() = 3
+TEST_F(CoinbaseMarketDataMatchingTest, Level2QtyIncrease_MixedLevel_CorrectTotalAfterDeltaAdded) {
+    // Add simulator BUY order
+    auto* sim_buy = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
+    order_book_->addOrder(sim_buy, kT1, 1);
+
+    // Add initial phantom BUY
+    constexpr uint64_t kPhantomId1 = 5004;
+    order_book_->addBookOrder(kPhantomId1, to_book_side(Side::BUY), kPrice100, kQty5, kT2, 2);
+    EXPECT_EQ(order_book_->getMDLevelQty(kPrice100), kQty5);
+
+    // Level2 event: qty grew from kQty5 (MD) to kQty10 (MD) -> delta = kQty5 -> new phantom
+    constexpr uint64_t kPhantomId2 = 5005;
+    order_book_->addBookOrder(kPhantomId2, to_book_side(Side::BUY), kPrice100, kQty5, kT3, 3);
+
+    EXPECT_EQ(order_book_->getMDLevelQty(kPrice100), kQty10);   // two phantoms
+
+    auto [level, index] = order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(level, nullptr);
+    EXPECT_EQ(level->total_quantity, kQty20);   // kQty10 sim + kQty5 + kQty5 phantoms
+    EXPECT_EQ(level->orders.size(), 3u);
+
+    // Simulator order unchanged
+    EXPECT_EQ(sim_buy->quantity, kQty10);
+    EXPECT_EQ(sim_buy->cum_quantity, 0);
+}
+
+// =============================================================================
 // Sequential Level2 Updates — Book State Accumulation
 // =============================================================================
 
