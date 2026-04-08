@@ -7,12 +7,14 @@
 #include <slick/queue.h>
 #include <slick/object_pool.h>
 #include <utils/order.hpp>
+#include <order_book/order_book.hpp>
 
 namespace slick::sim::test {
 
 using price_t = slick::sim::price_t;
 using qty_t = slick::sim::qty_t;
 using symid_t = slick::sim::symid_t;
+using OrderBook = slick::sim::OrderBook;
 
 // Helper: Price conversion shortcut
 inline constexpr price_t price(double p) { return to_price_t(p); }
@@ -41,7 +43,35 @@ inline Order* createTestOrder(
     order->price = price_val;
     order->quantity = qty_val;
     order->leaves_quantity = qty_val;
-    order->filled_quantity = 0;
+    order->cum_quantity = 0;
+    order->time_in_force = tif;
+    order->client_id = client_id;
+    order->status = OrderStatus::NEW;
+    order->product_type = ProductType::SPOT;
+    return order;
+}
+
+inline Order* createTestOrder(
+    std::shared_ptr<OrderBook>& order_book,
+    Side side,
+    price_t price_val,
+    qty_t qty_val,
+    TimeInForce tif = TimeInForce::GOOD_TILL_CANCEL,
+    int client_id = 1,
+    const std::string& symbol = "TEST-SYMBOL"
+) {
+    auto* order = order_book->allocateOrder();
+    order->id = utils::nextOrderId();
+    order->order_id = "ORD-" + std::to_string(order->id);
+    order->client_order_id = "CLIENT-" + std::to_string(order->id);
+    order->user_id = "user1";
+    order->symbol = symbol;
+    order->side = side;
+    order->type = OrderType::LIMIT;
+    order->price = price_val;
+    order->quantity = qty_val;
+    order->leaves_quantity = qty_val;
+    order->cum_quantity = 0;
     order->time_in_force = tif;
     order->client_id = client_id;
     order->status = OrderStatus::NEW;

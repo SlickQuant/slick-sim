@@ -1,12 +1,14 @@
 #include "symbol.hpp"
+#include <slick/logger.hpp>
 
+using namespace slick::sim;
 using namespace slick::sim::exch;
 
-void OrderBookObserver::onPriceLevelUpdate(const PriceLevelUpdate& update) override {
+void OrderBookObserver::onPriceLevelUpdate(const PriceLevelUpdate& update) {
     symbol_->onPriceLevelUpdate(update);
 }
 
-void OrderBookObserver::onOrderUpdate(const OrderUpdate& update) override {
+void OrderBookObserver::onOrderUpdate(const OrderUpdate& update) {
     symbol_->onOrderUpdate(update);
 }
 
@@ -14,7 +16,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
 {
     LOG_INFO("{} Adding order {}: oid={}, client_oid={}, price={}, qty={}, tif={}",
         symbol_, order->id, order->order_id, order->client_order_id,
-        order->price, order->quantity, static_cast<char>(order->time_in_force));
+        to_price_double(order->price), to_qty_double(order->quantity), to_string(order->time_in_force));
 
     // Pass Symbol's SMP mode to matching engine
     auto [reject_reason, trade_summaries] = matching_engine_->match(
@@ -63,20 +65,29 @@ void Symbol::cancelOrder(Order *order)
     LOG_INFO("{} Canceling order: oid={}, client_oid={}", symbol_, order->order_id, order->client_order_id);
     order->last_update_time = std::chrono::system_clock::now().time_since_epoch().count();
     order_book_->deleteOrder(order, order->last_update_time);
+    order_book_->freeOrder(order);
 }
 
 void Symbol::onPriceLevelUpdate(const PriceLevelUpdate& update) {
-    // md_level_update_cache_.push_back({
-    //     .event_time = update.timestamp,
-    //     .seq_num = update.seq_num,
-    //     .price = update.price,
-    //     .quantity = update.quantity,
-    //     .num_orders = update.num_orders,
-    //     .flags = static_cast<>(update.flags),
-    //     .side = static_cast<Side>(update.side)
-    // });
+    md_level_update_cache_.push_back({
+        .event_time = update.timestamp,
+        .seq_num = update.seq_num,
+        .price = update.price,
+        .qty = update.quantity,
+        .num_orders = update.num_orders,
+        .level_index = update.level_index,
+        .flags = (update.change_flags & slick::orderbook::PriceLevelChangeFlag::LastInBatch) ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE,
+        .side = static_cast<Side>(update.side)
+    });
 }
 
 void Symbol::onOrderUpdate(const OrderUpdate& update) {
-    // md_order_update_cache_.push_back(update.order);
+    md_order_update_cache_.push_back({
+        .order_id = update.order_id,
+        .event_time = update.timestamp,
+        .priority = update.priority,
+        .price = update.price,
+        .qty = update.quantity,
+        .side = static_cast<Side>(update.side)
+    });
 }

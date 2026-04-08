@@ -8,43 +8,7 @@ using json = nlohmann::json;
 
 namespace slick::sim::order_gateway::coinbase {
 
-inline std::string to_string(OrderStatus status) {
-    switch(status) {
-    case OrderStatus::NEW:
-        return "Open";
-    case OrderStatus::PARTIALLY_FILLED:
-        return "Filled";
-    case OrderStatus::FILLED:
-        return "Filled";
-    case OrderStatus::DONE_FOR_DAY:
-        return "Expired";
-    case OrderStatus::CANCELED:
-        return "CANCELLED";
-    case OrderStatus::REPLACED:
-        return "Open";
-    case OrderStatus::PENDING_CANCEL:
-        return "CANCEL_QUEUED";
-    case OrderStatus::STOPPED:
-        return "UNKNOWN_ORDER_STATUS";
-    case OrderStatus::REJECTED:
-        return "FAILED";
-    case OrderStatus::SUSPENDED:
-        return "UNKNOWN_ORDER_STATUS";
-    case OrderStatus::PENDING_NEW:
-        return "PENDING";
-    case OrderStatus::CALCULATED:
-        return "UNKNOWN_ORDER_STATUS";
-    case OrderStatus::EXPIRED:
-        return "Expired";
-    case OrderStatus::ACCEPTED_FOR_BIDDING:
-        return "UNKNOWN_ORDER_STATUS";
-    case OrderStatus::PENDING_REPLACE:
-        return "EDIT_QUEUED";
-    }
-    return "UNKNOWN_ORDER_STATUS";
-}
-
-inline std::string to_string(TimeInForce tif) {
+inline std::string_view to_coinbase_string(TimeInForce tif) {
     switch(tif) {
     case TimeInForce::GOOD_TILL_DATE:
         return "GOOD_UNTIL_DATE_TIME";
@@ -136,11 +100,11 @@ inline json to_json(const Order& order) {
         {"side", to_string(order.side)},
         {"client_order_id", order.client_order_id},
         {"status", to_string(order.status)},
-        {"time_in_force", to_string(order.time_in_force)},
+        {"time_in_force", to_coinbase_string(order.time_in_force)},
         {"created_time", utils::format_timestamp_iso8601()},
-        {"completion_percentage", std::to_string(order.filled_qty_double() / order.qty_double() * 100)},
-        {"filled_size", std::to_string(order.filled_qty_double())},
-        {"average_filled_price", std::to_string(order.avg_filled_price_double())},
+        {"completion_percentage", std::to_string(order.cum_qty_double() / order.qty_double() * 100)},
+        {"filled_size", std::to_string(order.cum_qty_double())},
+        {"average_filled_price", std::to_string(order.avg_fill_price_double())},
         {"number_of_fills", std::to_string(order.num_fills)},
         {"fee", std::to_string(order.fee)},
         {"filled_value", std::to_string(order.filled_value)},

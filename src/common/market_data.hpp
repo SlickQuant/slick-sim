@@ -57,7 +57,7 @@ struct MDLevelUpdate {
 };
 
 struct MDOrder {
-    char order_id[36];
+    uint64_t order_id;
     uint64_t event_time;
     uint64_t priority;
     price_t price;

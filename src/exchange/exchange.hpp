@@ -28,8 +28,7 @@ public:
         const nlohmann::json &config,
         slick::SlickQueue<Request> &request_queue,
         slick::SlickQueue<OrderResponse> &order_response_queue,
-        slick::SlickQueue<uint8_t> &md_update_queue,
-        uint_fast32_t buffer_size = 65536
+        slick::SlickQueue<uint8_t> &md_update_queue
     );
 
     virtual ~Exchange();
@@ -38,7 +37,6 @@ public:
 
     
 protected:
-    Order* allocateOrder();
     void processMdData();
     void processRequest();
     void handleNewOrderRequest(const Request &request);
@@ -47,14 +45,15 @@ protected:
     void rejectModifyOrderRequest(const Request &request, OrdRejectReason reason);
     void rejectCancelOrderRequest(const Request &request, OrdRejectReason reason);
     void sendOrderNewPending(const Order *order);
-    void sendOrderAck(const Order *order);
+    // void sendOrderAck(const Order *order);
     void sendOrderReplacePending(const Request &request);
-    void sendOrderReplaced(const Order *order);
+    // void sendOrderReplaced(const Order *order);
     void sendOrderCancelPending(const Request &request);
-    void sendOrderCanceled(const Order *order);
-    void sendOrderExecution(const Order *order);
+    // void sendOrderCanceled(const Order *order);
+    // void sendOrderExecution(const Order *order);
     void publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std::array<uint8_t, 2> &indices);
     void publishLevelUpdate(const char* symbol, const std::vector<MDLevel> &level_updates);
+    void publishMDOrderUpdate(const char* symbol, const std::vector<MDOrder> &order_updates);
     void publishMDTrades(const char* symbol, const std::vector<MDTrade> &trade_updates);
     void publishTradeSummary(const char* symbol, const TradeSummaryInfo &trade_summary);
 
@@ -73,7 +72,6 @@ protected:
     std::atomic_bool run_{true};
     uint_fast64_t order_request_cursor_{0};
     std::array<std::unique_ptr<engine::MatchingEngine>, engine::MatchingEngine::Type::__count__> matching_engines_;
-    slick::ObjectPool<Order> order_buffer_;
 };
 
 }   // end namespace slick::sim::exch

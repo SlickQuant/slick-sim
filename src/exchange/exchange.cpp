@@ -1,10 +1,6 @@
 #include "exchange.hpp"
 #include <common/symbol_manager.hpp>
 #include <slick/logger.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/lexical_cast.hpp>
 #include <utils/order.hpp>
 
 using namespace slick::sim::exch;
@@ -20,15 +16,13 @@ Exchange::Exchange(
     const nlohmann::json &config,
     slick::SlickQueue<Request> &request_queue,
     slick::SlickQueue<OrderResponse> &order_response_queue,
-    slick::SlickQueue<uint8_t> &md_update_queue,
-    uint_fast32_t buffer_size
+    slick::SlickQueue<uint8_t> &md_update_queue
 ) 
     : venue_(venue)
     , config_(config)
     , request_queue_(request_queue)
     , order_response_queue_(order_response_queue)
     , md_update_queue_(md_update_queue)
-    , order_buffer_(buffer_size)
 {
 }
 
@@ -62,16 +56,6 @@ void Exchange::stop()
     {
         thread_.join();
     }
-}
-
-Order* Exchange::allocateOrder() {
-    auto *order = order_buffer_.allocate();
-    boost::uuids::uuid u = boost::uuids::random_generator()();
-    order->order_id = boost::lexical_cast<std::string>(u);
-    order->id = nextOrderId();
-    order->created_time = std::chrono::system_clock::now().time_since_epoch().count();
-    order->last_update_time = order->created_time;
-    return order;
 }
 
 void Exchange::processMdData()
@@ -119,7 +103,12 @@ void Exchange::processRequest()
                 auto [reject_reason, trade_summaries] = symbol->modifyOrder(order, request->modify_order.new_price, request->modify_order.new_qty);
                 if (reject_reason == OrdRejectReason::NONE) {
                 }
+
+                if (order->leaves_quantity == 0) {
+                    symbol->order_book_->freeOrder(order);
+                }
             }
+            // TODO: publish MD updates
             break;
         }
         case MessageType::ORDER_CANCEL_REQUEST: {
@@ -172,7 +161,8 @@ void Exchange::handleNewOrderRequest(const Request &request) {
                 return; 
             }
         }
-        Order *order = allocateOrder();
+        Order *order = symbol->order_book_->allocateOrder();
+        order->symbol = symbol->symbol_;
         order->client_order_id = msg.client_order_id;
         order->user_id = msg.user_id;
         order->side = msg.side;
@@ -188,6 +178,10 @@ void Exchange::handleNewOrderRequest(const Request &request) {
 
         auto [reject_reason, trade_summaries] = symbol->addOrder(order);
 
+        if (order->leaves_quantity == 0) {
+            symbol->order_book_->freeOrder(order);
+        }
+
         if (!trade_summaries.empty()) {
             for (const auto &summary : trade_summaries) {
                 publishTradeSummary(symbol->symbol_.c_str(), summary);
@@ -197,7 +191,16 @@ void Exchange::handleNewOrderRequest(const Request &request) {
         if (reject_reason != OrdRejectReason::NONE && reject_reason != OrdRejectReason::FOK_CANNOT_FILL) {
             rejectNewOrderRequest(request, reject_reason);
         }
-        // TODO: publish MD level updates and order updates
+        
+        if (!symbol->md_level_update_cache_.empty()) {
+            publishLevelUpdate(symbol->symbol_.c_str(), symbol->md_level_update_cache_);
+            symbol->md_level_update_cache_.clear();
+        }
+
+        if (!symbol->md_order_update_cache_.empty()) {
+            // TODO: publish MD order update
+            symbol->md_order_update_cache_.clear();
+        }
     }
 }
 
@@ -279,13 +282,26 @@ void Exchange::publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std
 void Exchange::publishLevelUpdate(const char* symbol, const std::vector<MDLevel> &level_updates) {
     auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDLevelUpdate) + level_updates.size() * sizeof(MDLevel));
     auto index = md_update_queue_.reserve(sz);
-    MarketDataUpdate* update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
+    auto* update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
     update->type = MDUpdateType::LEVEL;
     update->venue = venue_;
     std::memcpy(update->symbol, symbol, sizeof(update->symbol));
-    MDLevelUpdate* level_update = reinterpret_cast<MDLevelUpdate*>(update->data);
+    auto* level_update = reinterpret_cast<MDLevelUpdate*>(update->data);
     level_update->num_level_update = static_cast<uint32_t>(level_updates.size());
     std::memcpy(level_update->levels, level_updates.data(), level_updates.size() * sizeof(MDLevel));
+    md_update_queue_.publish(index, sz);
+}
+
+void Exchange::publishMDOrderUpdate(const char* symbol, const std::vector<MDOrder> &order_updates) {
+    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDOrderUpdate) + order_updates.size() * sizeof(MDOrder));
+    auto index = md_update_queue_.reserve(sz);
+    auto* update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
+    update->type = MDUpdateType::ORDER;
+    update->venue = venue_;
+    std::memcpy(update->symbol, symbol, sizeof(update->symbol));
+    auto* order_update = reinterpret_cast<MDOrderUpdate*>(update->data);
+    order_update->num_orders = static_cast<uint32_t>(order_updates.size());
+    std::memcpy(order_update->orders, order_updates.data(), order_updates.size() * sizeof(MDOrder));
     md_update_queue_.publish(index, sz);
 }
 
@@ -326,6 +342,7 @@ void Exchange::publishTradeSummary(const char* symbol, const TradeSummaryInfo &t
 void Exchange::sendOrderNewPending(const Order *order) {
     auto index = order_response_queue_.reserve();
     auto &response = *order_response_queue_[index];
+    memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
     memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
     memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
     memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
@@ -333,66 +350,86 @@ void Exchange::sendOrderNewPending(const Order *order) {
     response.order_status = OrderStatus::PENDING_NEW;
     response.order_type = order->type;
     response.price = order->price;
+    response.avg_fill_price = order->avg_fill_price;
     response.qty = order->quantity;
     response.cum_qty = 0;
     response.leaves_qty = order->leaves_quantity;
     assert(response.leaves_qty == response.qty);
     response.timestamp = order->created_time;
+    response.side = order->side;
+    response.post_only = order->post_only;
     order_response_queue_.publish(index);
 }
 
-void Exchange::sendOrderAck(const Order *order) {
-    auto index = order_response_queue_.reserve();
-    auto &response = *order_response_queue_[index];
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
-    response.response_type = MessageType::EXECUTION_REPORT;
-    response.order_status = OrderStatus::NEW;
-    response.order_type = order->type;
-    response.price = order->price;
-    response.qty = order->quantity;
-    response.cum_qty = 0;
-    response.leaves_qty = order->leaves_quantity;
-    response.timestamp = order->last_update_time;
-    order_response_queue_.publish(index);
-}
+// void Exchange::sendOrderAck(const Order *order) {
+//     auto index = order_response_queue_.reserve();
+//     auto &response = *order_response_queue_[index];
+//     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
+//     memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
+//     memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
+//     memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+//     response.response_type = MessageType::EXECUTION_REPORT;
+//     response.order_status = OrderStatus::NEW;
+//     response.order_type = order->type;
+//     response.time_in_force = order->time_in_force;
+//     response.price = order->price;
+//     response.avg_price = order->avg_filled_price;
+//     response.qty = order->quantity;
+//     response.cum_qty = 0;
+//     response.leaves_qty = order->leaves_quantity;
+//     response.creation_time = order->created_time;
+//     response.timestamp = order->last_update_time;
+//     response.side = order->side;
+//     response.post_only = order->post_only;
+//     order_response_queue_.publish(index);
+// }
 
 void Exchange::sendOrderReplacePending(const Request &/* request */) {}
-void Exchange::sendOrderReplaced(const Order */* order */) {}
+// void Exchange::sendOrderReplaced(const Order */* order */) {}
 void Exchange::sendOrderCancelPending(const Request &/* request */) {}
 
-void Exchange::sendOrderCanceled(const Order *order) {
-    auto index = order_response_queue_.reserve();
-    auto &response = *order_response_queue_[index];
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
-    response.response_type = MessageType::EXECUTION_REPORT;
-    response.order_status = OrderStatus::CANCELED;
-    response.order_type = order->type;
-    response.price = order->price;
-    response.qty = order->quantity;
-    response.cum_qty = order->filled_quantity;
-    response.leaves_qty = 0;
-    response.timestamp = order->last_update_time;
-    order_response_queue_.publish(index);
-}
+// void Exchange::sendOrderCanceled(const Order *order) {
+//     auto index = order_response_queue_.reserve();
+//     auto &response = *order_response_queue_[index];
+//     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
+//     memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
+//     memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
+//     memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+//     response.response_type = MessageType::EXECUTION_REPORT;
+//     response.order_status = OrderStatus::CANCELED;
+//     response.order_type = order->type;
+//     response.time_in_force = order->time_in_force;
+//     response.price = order->price;
+//     response.avg_price = order->avg_filled_price;
+//     response.qty = order->quantity;
+//     response.cum_qty = order->filled_quantity;
+//     response.leaves_qty = 0;
+//     response.creation_time = order->created_time;
+//     response.timestamp = order->last_update_time;
+//     response.side = order->side;
+//     response.post_only = order->post_only;
+//     order_response_queue_.publish(index);
+// }
 
-void Exchange::sendOrderExecution(const Order *order) {
-    auto index = order_response_queue_.reserve();
-    auto &response = *order_response_queue_[index];
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
-    response.response_type = MessageType::EXECUTION_REPORT;
-    response.order_status = OrderStatus::NEW;
-    response.order_type = order->type;
-    response.price = order->price;
-    response.qty = order->quantity;
-    response.last_qty = order->last_filled_qty;
-    response.cum_qty = order->filled_quantity;
-    response.leaves_qty = order->leaves_quantity;
-    response.timestamp = order->last_update_time;
-    order_response_queue_.publish(index);
-}
+// void Exchange::sendOrderExecution(const Order *order) {
+//     auto index = order_response_queue_.reserve();
+//     auto &response = *order_response_queue_[index];
+//     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
+//     memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
+//     memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
+//     memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+//     response.response_type = MessageType::EXECUTION_REPORT;
+//     response.order_status = OrderStatus::NEW;
+//     response.order_type = order->type;
+//     response.time_in_force = order->time_in_force;
+//     response.price = order->price;
+//     response.qty = order->quantity;
+//     response.last_qty = order->last_filled_qty;
+//     response.cum_qty = order->filled_quantity;
+//     response.leaves_qty = order->leaves_quantity;
+//     response.creation_time = order->created_time;
+//     response.timestamp = order->last_update_time;
+//     response.side = order->side;
+//     response.post_only = order->post_only;
+//     order_response_queue_.publish(index);
+// }

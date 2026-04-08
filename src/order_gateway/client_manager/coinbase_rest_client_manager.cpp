@@ -93,13 +93,7 @@ void CoinbaseRestClientManager::handle_get_orders(uWS::HttpResponse<false>* res,
         {"orders", json::array()}
     };
 
-    auto iter = orders_.find(user_id);
-    if (iter != orders_.end()) {
-        for (auto &kvp : iter->second) {
-            auto &order = kvp.second;
-            response["/orders"_json_pointer].emplace_back(to_json(order));
-        }
-    }
+    // TODO: get orders from order gateway's internal state or database instead of maintaining separate state in REST client manager
 }
 
 void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
@@ -260,7 +254,8 @@ void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* re
                         matched_response = data;
                         assert(matched_response->response_type == MessageType::EXECUTION_REPORT ||
                                matched_response->response_type == MessageType::REJECT);
-                        assert(matched_response->order_status == OrderStatus::PENDING_NEW);
+                        assert(matched_response->order_status == OrderStatus::PENDING_NEW ||
+                               matched_response->order_status == OrderStatus::REJECTED);
                         break;
                     }
                 }
@@ -316,23 +311,6 @@ void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* re
                     }},
                     {"order_configuration", order_config}
                 };
-
-                // Store order in local cache for historical queries
-                Order order;
-                order.user_id = matched_response->user_id;
-                order.client_order_id = matched_response->client_order_id;
-                order.order_id = matched_response->order_id;
-                order.symbol = product_id;
-                order.side = side;
-                order.type = order_type;
-                order.time_in_force = tif;
-                order.price = matched_response->price;
-                order.quantity = matched_response->qty;
-                order.leaves_quantity = matched_response->leaves_qty;
-                order.filled_quantity = matched_response->cum_qty;
-                order.post_only = post_only;
-                order.status = matched_response->order_status;
-                orders_[user_id][std::string(matched_response->order_id)] = order;
 
                 res->writeStatus("200 OK")
                     ->writeHeader("Content-Type", "application/json")

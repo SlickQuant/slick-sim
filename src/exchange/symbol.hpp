@@ -20,12 +20,12 @@ struct OrderBookObserver : public orderbook::IOrderBookObserver {
     void onOrderUpdate(const OrderUpdate& update) override;
 };
 
-struct Symbol : public orderbook::IOrderBookObserver {
+struct Symbol {
     symid_t id_ = INVALID_SYMBOL_ID;
     Venue venue_;
     std::string symbol_;
     engine::MatchingEngine *matching_engine_;
-    std::unique_ptr<OrderBook> order_book_;
+    std::shared_ptr<OrderBook> order_book_;
     std::atomic_uint16_t num_subscriptions_ = 0;
     SelfMatchPreventionMode smp_mode_ = SelfMatchPreventionMode::NONE;
     std::vector<MDLevel> md_level_update_cache_;
@@ -48,7 +48,13 @@ struct Symbol : public orderbook::IOrderBookObserver {
         , matching_engine_(std::exchange(other.matching_engine_, nullptr))
         , order_book_(std::move(other.order_book_))
         , num_subscriptions_(other.num_subscriptions_.load(std::memory_order_relaxed))
-    {}
+        , book_observer_(std::make_shared<OrderBookObserver>(this))
+    {
+        if (order_book_) {
+            order_book_->removeObserver(other.book_observer_);
+            order_book_->addObserver(book_observer_);
+        }
+    }
     Symbol& operator= (Symbol&& other) {
         if (this != &other) {
             id_ = std::exchange(other.id_, 0);
@@ -63,7 +69,8 @@ struct Symbol : public orderbook::IOrderBookObserver {
 
     template<OrderBookType BookType>
     void createOrderBook() {
-        order_book_ = std::make_unique<OrderBookImpl<BookType>>(id_, symbol_, venue_);
+        order_book_ = std::make_shared<OrderBookImpl<BookType>>(id_, symbol_, venue_);
+        order_book_->addObserver(order_book_->shared_from_this());
         order_book_->addObserver(book_observer_);
     }
 

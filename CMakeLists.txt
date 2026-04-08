@@ -16,7 +16,7 @@ endif()
 
 include(FetchContent)
 
-find_package(slick-logger 1.0.6 CONFIG QUIET)
+find_package(slick-logger 1.0.8 CONFIG QUIET)
 if (NOT slick-logger_FOUND)
     message(STATUS "Fetching slick-logger...")
     # Disable examples, tests, and benchmarks for slick_logger
@@ -26,9 +26,11 @@ if (NOT slick-logger_FOUND)
     FetchContent_Declare(
         slick-logger
         GIT_REPOSITORY https://github.com/SlickQuant/slick-logger.git
-        GIT_TAG v1.0.6
+        GIT_TAG v1.0.8
     )
     FetchContent_MakeAvailable(slick-logger)
+else()
+    message(STATUS "Found slick-logger: ${slick-logger_VERSION}")
 endif()
 
 find_package(slick-socket 1.0.6 CONFIG QUIET)
@@ -68,7 +70,7 @@ if (NOT coinbase-advanced-cpp_FOUND)
     FetchContent_Declare(
         coinbase-advanced-cpp
         GIT_REPOSITORY https://github.com/SlickQuant/coinbase-advanced-cpp.git
-        GIT_TAG v0.2.2
+        GIT_TAG main
     )
     FetchContent_MakeAvailable(coinbase-advanced-cpp)
 else()

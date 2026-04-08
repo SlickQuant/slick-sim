@@ -1,8 +1,7 @@
 #include "client_manager.hpp"
 #include <uwebsockets/App.h>
-// #include <slick/net/websocket.h>
 #include <nlohmann/json.hpp>
-#define JWT_DISABLE_PICOJSON
+// #define JWT_DISABLE_PICOJSON
 #include <jwt-cpp/jwt.h>
 #include <jwt-cpp/traits/nlohmann-json/traits.h>
 #include <unordered_map>
@@ -42,9 +41,11 @@ class CoinbaseWebsocketClientManager : public ClientManager {
     // Response queue read index
     uint64_t response_read_index_ = 0;
 
+    using wsT = uWS::WebSocket<false, true, PerSocketData>;
+
     // Client connection mapping: user_id -> WebSocket connection
     // No mutex needed - all access is from the single event loop thread
-    std::unordered_map<std::string, uWS::WebSocket<false, true, PerSocketData>*> clients_;
+    std::unordered_map<std::string, wsT*> clients_;
 
     // Heartbeat configuration
     int ping_interval_ms_{15000};  // Send ping every 30 seconds (in milliseconds)
@@ -55,16 +56,10 @@ class CoinbaseWebsocketClientManager : public ClientManager {
     std::unordered_map<std::string, Order> orders_;
     std::unordered_multimap<std::string, Order> orders_by_client_id_;
     std::unordered_multimap<std::string, Fill> order_fills_;
+    double fee_rate_ = 0.0012; // 1.2%
 
 public:
-    CoinbaseWebsocketClientManager(const json& config, slick::SlickQueue<Request> &request_queue, slick::SlickQueue<OrderResponse> &response_queue)
-        : ClientManager(config, request_queue, response_queue)
-        , port_(config_.value("port", 3001))
-        , ping_interval_ms_(config_.value("ping_interval", 30) * 1000)
-        , pong_timeout_(config_.value("pong_timeout", 60))
-        , response_read_index_(response_queue_.initial_reading_index())
-    {
-    }
+    CoinbaseWebsocketClientManager(const json& config, slick::SlickQueue<Request> &request_queue, slick::SlickQueue<OrderResponse> &response_queue);
     ~CoinbaseWebsocketClientManager() override {
         stop();
     }
@@ -179,8 +174,10 @@ public:
     }
 
 private:
+    void handleOrderResponse(const OrderResponse &response, wsT *ws);
+
     // Handle incoming WebSocket messages
-    void handleMessage(uWS::WebSocket<false, true, PerSocketData> *ws, std::string_view message) {
+    void handleMessage(wsT *ws, std::string_view message) {
         try {
             json msg = json::parse(message);
 
@@ -347,7 +344,7 @@ private:
     }
 
     // Handle WebSocket close event
-    void handleClose(uWS::WebSocket<false, true, PerSocketData> *ws, int code, std::string_view message) {
+    void handleClose(wsT *ws, int code, std::string_view message) {
         auto &user_id = ws->getUserData()->user_id;
 
         if (!user_id.empty()) {
@@ -360,7 +357,7 @@ private:
     }
 
     // Send error message to client
-    void sendError(uWS::WebSocket<false, true, PerSocketData> *ws, const std::string& error_msg) {
+    void sendError(wsT *ws, const std::string& error_msg) {
         json error = {
             {"type", "error"},
             {"message", error_msg}
@@ -413,13 +410,10 @@ private:
             if (it != clients_.end()) {
                 auto* client_ws = it->second;
                 // Serialize order response to JSON
-                json response_json; // = to_json(response);
+                handleOrderResponse(response, client_ws);
 
-                // Send to client via WebSocket
-                client_ws->send(response_json.dump(), uWS::OpCode::TEXT);
-
-                LOG_INFO("Sent order response to user_id={}, client_order_id={}",
-                         user_id, response.client_order_id);
+                LOG_INFO("Sent order response {} to user_id={}, client_order_id={}, order_status={}",
+                         to_string(response.exec_type), user_id, response.client_order_id, to_string(response.order_status));
             } else {
                 LOG_WARN("No WebSocket connection found for user_id={}", user_id);
             }

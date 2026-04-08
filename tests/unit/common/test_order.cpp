@@ -23,10 +23,10 @@ TEST_F(OrderTest, InitialState) {
     EXPECT_EQ(order.price, 0);
     EXPECT_EQ(order.quantity, 0);
     EXPECT_EQ(order.leaves_quantity, 0);
-    EXPECT_EQ(order.filled_quantity, 0);
-    EXPECT_EQ(order.avg_filled_price, 0);
-    EXPECT_EQ(order.last_filled_price, 0);
-    EXPECT_EQ(order.last_filled_qty, 0);
+    EXPECT_EQ(order.cum_quantity, 0);
+    EXPECT_EQ(order.avg_fill_price, 0);
+    EXPECT_EQ(order.last_fill_price, 0);
+    EXPECT_EQ(order.last_fill_qty, 0);
     EXPECT_EQ(order.num_fills, 0);
     EXPECT_EQ(order.client_id, -1);
     EXPECT_FALSE(order.post_only);
@@ -38,36 +38,36 @@ TEST_F(OrderTest, FillTracking_SingleFill) {
 
     // Simulate a single fill
     qty_t fill_qty = kQty10;
-    order->filled_quantity = fill_qty;
+    order->cum_quantity = fill_qty;
     order->leaves_quantity = order->quantity - fill_qty;
-    order->last_filled_price = kPrice100;
-    order->last_filled_qty = fill_qty;
+    order->last_fill_price = kPrice100;
+    order->last_fill_qty = fill_qty;
 
-    EXPECT_EQ(order->filled_quantity, kQty10);
+    EXPECT_EQ(order->cum_quantity, kQty10);
     EXPECT_EQ(order->leaves_quantity, 0);
-    EXPECT_EQ(order->last_filled_price, kPrice100);
-    EXPECT_EQ(order->last_filled_qty, kQty10);
+    EXPECT_EQ(order->last_fill_price, kPrice100);
+    EXPECT_EQ(order->last_fill_qty, kQty10);
 }
 
 TEST_F(OrderTest, FillTracking_MultipleFills) {
     auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
 
     // First fill
-    order->filled_quantity += kQty5;
-    order->leaves_quantity = order->quantity - order->filled_quantity;
-    order->last_filled_price = kPrice100;
-    order->last_filled_qty = kQty5;
+    order->cum_quantity += kQty5;
+    order->leaves_quantity = order->quantity - order->cum_quantity;
+    order->last_fill_price = kPrice100;
+    order->last_fill_qty = kQty5;
 
-    EXPECT_EQ(order->filled_quantity, kQty5);
+    EXPECT_EQ(order->cum_quantity, kQty5);
     EXPECT_EQ(order->leaves_quantity, kQty5);
 
     // Second fill
-    order->filled_quantity += kQty5;
-    order->leaves_quantity = order->quantity - order->filled_quantity;
-    order->last_filled_price = kPrice100;
-    order->last_filled_qty = kQty5;
+    order->cum_quantity += kQty5;
+    order->leaves_quantity = order->quantity - order->cum_quantity;
+    order->last_fill_price = kPrice100;
+    order->last_fill_qty = kQty5;
 
-    EXPECT_EQ(order->filled_quantity, kQty10);
+    EXPECT_EQ(order->cum_quantity, kQty10);
     EXPECT_EQ(order->leaves_quantity, 0);
 }
 
@@ -77,8 +77,8 @@ TEST_F(OrderTest, LeavesQuantityCalculation) {
     EXPECT_EQ(order->leaves_quantity, kQty10);
 
     // Partial fill
-    order->filled_quantity = kQty5;
-    order->leaves_quantity = order->quantity - order->filled_quantity;
+    order->cum_quantity = kQty5;
+    order->leaves_quantity = order->quantity - order->cum_quantity;
 
     EXPECT_EQ(order->leaves_quantity, kQty5);
 }
@@ -99,15 +99,15 @@ TEST_F(OrderTest, QuantityConversions) {
 
 TEST_F(OrderTest, FilledQtyDouble) {
     auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
-    order->filled_quantity = kQty5;
+    order->cum_quantity = kQty5;
 
-    double filled_qty_double = order->filled_qty_double();
-    EXPECT_NEAR(filled_qty_double, 5.0, 0.01);
+    double cum_qty_double = order->cum_qty_double();
+    EXPECT_NEAR(cum_qty_double, 5.0, 0.01);
 }
 
 TEST_F(OrderTest, LeavesQtyDouble) {
     auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
-    order->filled_quantity = kQty5;
+    order->cum_quantity = kQty5;
     order->leaves_quantity = kQty5;
 
     double leaves_qty_double = order->leaves_qty_double();
@@ -116,18 +116,18 @@ TEST_F(OrderTest, LeavesQtyDouble) {
 
 TEST_F(OrderTest, LastFilledPriceDouble) {
     auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
-    order->last_filled_price = kPrice100;
+    order->last_fill_price = kPrice100;
 
-    double last_filled_price_double = order->last_filled_price_double();
-    EXPECT_NEAR(last_filled_price_double, 100.0, 0.01);
+    double last_fill_price_double = order->last_fill_price_double();
+    EXPECT_NEAR(last_fill_price_double, 100.0, 0.01);
 }
 
 TEST_F(OrderTest, AvgFilledPriceDouble) {
     auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
-    order->avg_filled_price = kPrice100;
+    order->avg_fill_price = kPrice100;
 
-    double avg_filled_price_double = order->avg_filled_price_double();
-    EXPECT_NEAR(avg_filled_price_double, 100.0, 0.01);
+    double avg_fill_price_double = order->avg_fill_price_double();
+    EXPECT_NEAR(avg_fill_price_double, 100.0, 0.01);
 }
 
 TEST_F(OrderTest, SideEnum) {
@@ -172,8 +172,8 @@ TEST_F(OrderTest, SideToString) {
 }
 
 TEST_F(OrderTest, OrderTypeToString) {
-    // EXPECT_STREQ(std::string(to_string(OrderType::MARKET)), "MARKET");
-    // EXPECT_STREQ(std::string(to_string(OrderType::LIMIT)), "LIMIT");
-    // EXPECT_STREQ(std::string(to_string(OrderType::STOP)), "STOP");
-    // EXPECT_STREQ(std::string(to_string(OrderType::STOP_LIMIT)), "STOP_LIMIT");
+//     EXPECT_STREQ(std::string(to_string(OrderType::MARKET)), "MARKET");
+//     EXPECT_STREQ(std::string(to_string(OrderType::LIMIT)), "LIMIT");
+//     EXPECT_STREQ(std::string(to_string(OrderType::STOP)), "STOP");
+//     EXPECT_STREQ(std::string(to_string(OrderType::STOP_LIMIT)), "STOP_LIMIT");
 }

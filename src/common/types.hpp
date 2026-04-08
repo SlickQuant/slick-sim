@@ -6,7 +6,7 @@
 namespace slick::sim {
 
 using price_t = int_fast64_t;
-using qty_t = uint_fast64_t;
+using qty_t = int_fast64_t;
 using time_t = uint_fast64_t;
 using symid_t = uint16_t;
 

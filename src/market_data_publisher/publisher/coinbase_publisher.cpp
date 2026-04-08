@@ -155,6 +155,7 @@ void CoinbasePublisher::publishMarketDataUpdate() {
                 publishLevelUpdate(update);
                 break;
             case MDUpdateType::ORDER:
+                publishOrderUpdate(update);
                 break;
             case MDUpdateType::SUB_RESPONSE:
                 publishSubscriptionResponse(update);
@@ -522,13 +523,13 @@ void CoinbasePublisher::publishLevelUpdate(MarketDataUpdate *update) {
             //           to_price_double(level.price),
             //           to_qty_double(level.qty),
             //           level.seq_num,
-            //           format_timestamp_iso8601(level.event_time, 6),
+            //           format_timestamp_iso8601(level.event_time, 9),
             //           level.event_time);
             updates.push_back({
                 {"side", level.side ? "offer" : "bid"},
                 {"price_level", std::to_string(to_price_double(level.price))},
                 {"new_quantity", std::to_string(to_qty_double(level.qty))},
-                {"event_time", format_timestamp_iso8601(level.event_time, 6)}
+                {"event_time", format_timestamp_iso8601(level.event_time, 9)}
             });
         }
 
@@ -549,5 +550,17 @@ void CoinbasePublisher::publishLevelUpdate(MarketDataUpdate *update) {
             update_msg["sequence_num"] = user_data->seq_num++;
             ws->send(update_msg.dump(), uWS::OpCode::TEXT);
         }
+    }
+}
+
+void CoinbasePublisher::publishOrderUpdate(MarketDataUpdate *update) {
+    auto *order_update = reinterpret_cast<MDOrderUpdate*>(update->data);
+    auto it_range = symbol_channel_client_.find(update->symbol);
+    if (it_range != symbol_channel_client_.end()) {
+        auto range = it_range->second.equal_range(static_cast<uint8_t>(coinbase::WebSocketChannel::USER));
+        if (range.first == range.second) {
+            return;
+        }
+        SLICK_ASSERT(false && "User data shouldn't subscribed in market data publisher");
     }
 }

@@ -4,6 +4,7 @@
 #include <common/symbol_manager.hpp>
 #include <coinbase/websocket.hpp>
 #include <utils/timestamp.hpp>
+#include <utils/price.hpp>
 #include <chrono>
 
 using namespace slick::sim::exch;
@@ -68,8 +69,8 @@ void CoinbaseExchange::handleMdSubscription(const Request &request) {
     std::string sym = request.symbol;
     auto *symbol = sym_mgr.getSymbol(sym);
     if (!symbol) {
+        symbol = addSymbol(sym);
         if (use_live_feed_) {
-            symbol = addSymbol(sym);
             switch(static_cast<coinbase::WebSocketChannel>(msg.channel)) {
                 case coinbase::WebSocketChannel::LEVEL2: {
                     pending_md_subscription_[coinbase::WebSocketChannel::LEVEL2].emplace(symbol);
@@ -84,12 +85,22 @@ void CoinbaseExchange::handleMdSubscription(const Request &request) {
             auto &feed = md_feeds_.back();
             feed->start();
             map_symbol_feed_.emplace(sym, feed);
-            symbol->num_subscriptions_.fetch_add(1, std::memory_order_relaxed);
-            return;
         }
         else {
-            // TODO: reject
+            // TODO: reject?
+            switch(static_cast<coinbase::WebSocketChannel>(msg.channel)) {
+                case coinbase::WebSocketChannel::LEVEL2: {
+                    symbol->order_book_->populateL2SubscriptionResponse(md_update_queue_, msg.channel);
+                    break;
+                }
+                case coinbase::WebSocketChannel::MARKET_TRADES: {
+                    populateMDTradesResponse(symbol);
+                    break;
+                }
+            }
         }
+        symbol->num_subscriptions_.fetch_add(1, std::memory_order_relaxed);
+        return;
     }
     symbol->num_subscriptions_.fetch_add(1, std::memory_order_relaxed);
     switch(static_cast<coinbase::WebSocketChannel>(msg.channel)) {
@@ -121,7 +132,6 @@ void CoinbaseExchange::handleMdSubscription(const Request &request) {
 }
 
 void CoinbaseExchange::handleMdUnsubscription(const Request &request) {
-    const auto &msg = request.md_subscription;
     std::string sym = request.symbol;
     auto *symbol = sym_mgr.getSymbol(sym);
     if (!symbol) {
@@ -202,21 +212,81 @@ void CoinbaseExchange::dispatchEvent(Symbol* symbol, const Event& event, SymbolE
         }
 
         // Update last update time before processing
+        // TODO: add fantom order then match
+
+        // auto book_side = to_book_side(side);
+        // if (is_snapshot) {
+        //     feed_md_level_quantity_[price] = size;
+        //     // Create a phantom order to represent the new L2 level
+        //     addOrder(utils::nextOrderId(), book_side, price, size, event_time, nextOrderPriority(), seq_num, is_last_in_batch);
+        //     auto [level, index] = getLevel(book_side, price);
+        //     return std::make_tuple(index, level->total_quantity, static_cast<uint32_t>(level->orderCount()));
+        // }
+        auto &book = symbol->order_book_;
+
+        auto book_side = to_book_side(event.side);
+        auto [level, index] = symbol->order_book_->getLevel(book_side, event.price);
+        if (!level) {
+            // this is a new level
+            qty_t qty = event.qty;
+            auto order_id = utils::nextOrderId();
+            auto trade_summaries = symbol->matching_engine_->match(event.side, order_id, event.price, qty, *book.get(), event.event_time, event.seq_num);
+            if (qty) {
+                symbol->order_book_->addOrder(order_id, book_side, event.price, qty, event.event_time, event.seq_num, event.flags & UpdateFlags::F_END_EVENT);
+            }
+
+            if (!trade_summaries.empty()) {
+                for (const auto &summary : trade_summaries) {
+                    publishTradeSummary(symbol->symbol_.c_str(), summary);
+                }
+            }
+
+            if (!symbol->md_level_update_cache_.empty()) {
+                publishLevelUpdate(symbol->symbol_.c_str(), symbol->md_level_update_cache_);
+                symbol->md_level_update_cache_.clear();
+            }
+
+            if (!symbol->md_order_update_cache_.empty()) {
+                // TODO: publish MD order update
+                symbol->md_order_update_cache_.clear();
+            }
+        } else {
+            // existing level
+            auto md_level_qty = symbol->order_book_->getMDLevelQty(event.price);
+            if (event.qty > md_level_qty) {
+                // Level qty increased, assume new orders added at the back. Create new phantom order to represent then increment
+                auto size = event.qty - md_level_qty;
+                symbol->order_book_->addBookOrder(utils::nextOrderId(), book_side, event.price, size, event.event_time, event.seq_num);
+            }
+            else if (event.qty < md_level_qty) {
+                // Level qty decreased. Alwayse assume the worst case, that the quantity decreased at the back
+                auto diff = md_level_qty - event.qty;
+                for (auto it = level->orders.rbegin(), it_last = std::prev(level->orders.rend()); it != level->orders.rend(); ++it) {
+                    auto &order = *it;
+                    auto *exch_order = symbol->findOrder(order.order_id);
+                    if (exch_order) {
+                        // This is an exchange order, skip it
+                        continue;
+                    }
+
+                    auto to_reduce = std::min<qty_t>(diff, order.quantity);
+                    symbol->order_book_->modifyOrder(order.order_id, event.price, order.quantity - to_reduce, event.event_time, order.priority, event.seq_num, (event.flags & UpdateFlags::F_END_EVENT) && (diff == 0));
+                    diff -= to_reduce;
+                    if (diff == 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        
         symbol->order_book_->setLastUpdate(event.event_time, event.seq_num);
 
-        // Process level update
-        // auto [index, qty, order_count] = symbol->matching_engine_->onLevelUpdate(
-        //     *symbol->order_book_,
-        //     event.side,
-        //     event.price,
-        //     event.qty,
-        //     0,
-        //     level_update_buffer_,
-        //     trade_update_buffer_
-        // );
+
+        if (!state.last_published_level_seq_num) [[unlikely]] {
+            state.last_published_level_seq_num = event.seq_num;
+        }
 
         if (!level_update_buffer_.empty() && 
-            state.last_published_level_seq_num &&
             event.seq_num != state.last_published_level_seq_num) {
             publishLevelUpdate(
                 symbol->symbol_.c_str(),

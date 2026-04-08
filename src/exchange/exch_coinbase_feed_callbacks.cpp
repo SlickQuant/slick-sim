@@ -41,18 +41,20 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient* /* client */, uint64_t 
         auto &update = *it_update;
         auto price = to_price_t(update.price_level);
         auto side = static_cast<Side>(update.side);
+        auto book_side = to_book_side(side);
         auto qty = to_qty_t(update.new_quantity);
-        symbol->order_book_->onLevelUpdate(update.event_time, seq_num, side, price, qty, 0,
-            level_updates, trade_updates, it_update == it_last, true);
-        // auto [index, qty, num_orders] = symbol->matching_engine_->onLevelUpdate(
-        //     *symbol->order_book_,
-        //     side,
-        //     price,
-        //     to_qty_t(update.new_quantity),
-        //     0,
-        //     level_update_buffer_,
-        //     trade_update_buffer_
-        // );
+
+        auto order_id = utils::nextOrderId();
+        auto trade_summaries = symbol->matching_engine_->match(side, order_id, price, qty, *symbol->order_book_.get(), update.event_time, seq_num);
+        if (qty) {
+            symbol->order_book_->addOrder(order_id, book_side, price, qty, update.event_time, seq_num, it_update == it_last);
+        }
+
+        if (!trade_summaries.empty()) {
+            for (const auto &summary : trade_summaries) {
+                publishTradeSummary(symbol->symbol_.c_str(), summary);
+            }
+        }
 
         if (it == pending_l2_subscriptions.end()) {
             level_update_buffer_.emplace_back(MDLevel{
@@ -74,6 +76,19 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient* /* client */, uint64_t 
     if (it != pending_l2_subscriptions.end()) {
         symbol->order_book_->populateL2SubscriptionResponse(md_update_queue_, coinbase::WebSocketChannel::LEVEL2);
         pending_l2_subscriptions.erase(it);
+        symbol->md_level_update_cache_.clear();
+        symbol->md_order_update_cache_.clear();
+    }
+    else {
+        if (!symbol->md_level_update_cache_.empty()) {
+            publishLevelUpdate(symbol->symbol_.c_str(), symbol->md_level_update_cache_);
+            symbol->md_level_update_cache_.clear();
+        }
+
+        if (!symbol->md_order_update_cache_.empty()) {
+            // TODO: publish MD order update
+            symbol->md_order_update_cache_.clear();
+        }
     }
 
     // publishMDBookUpdate(symbol->id_, *symbol->order_book_.get(), indices);
