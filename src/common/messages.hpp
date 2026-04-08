@@ -279,6 +279,7 @@ struct Request {
 };
 
 struct OrderResponse {
+    char symbol[32];
     char user_id[37];
     char client_order_id[37];
     char order_id[37];
@@ -287,13 +288,19 @@ struct OrderResponse {
     ExecType exec_type = ExecType::NEW;
     OrderStatus order_status = OrderStatus::NEW;
     OrderType order_type = OrderType::UNKNOWN;
+    TimeInForce time_in_force = TimeInForce::DAY;
     price_t price = NULL_PRICE;
+    price_t last_fill_price = NULL_PRICE;
+    price_t avg_fill_price = NULL_PRICE;
     qty_t qty = 0;
     qty_t last_qty = 0;
     qty_t cum_qty = 0;
     qty_t leaves_qty = 0;
     OrdRejectReason reject_reason = OrdRejectReason::NONE;
+    time_t creation_time = 0;
     time_t timestamp = 0;
+    Side side = Side::UNKNOWN_SIDE;
+    bool post_only = false;
 };
 
 struct Trade {

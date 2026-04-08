@@ -2,7 +2,7 @@
 #include <uwebsockets/App.h>
 #include <slick/net/http.hpp>
 #include <nlohmann/json.hpp>
-#define JWT_DISABLE_PICOJSON
+// #define JWT_DISABLE_PICOJSON
 #include <jwt-cpp/jwt.h>
 #include <jwt-cpp/traits/nlohmann-json/traits.h>
 #include <unordered_map>
@@ -31,8 +31,6 @@ class CoinbaseRestClientManager : public ClientManager {
     uint32_t port_ = 3000;
     std::string products_;
     std::unordered_map<std::string, std::string> product_by_id_;
-    std::unordered_map<std::string, std::unordered_map<std::string, Order>> orders_;
-    std::unordered_multimap<std::string, Fill> order_fills_;
 
 public:
     CoinbaseRestClientManager(const json& config, slick::SlickQueue<Request> &request_queue, slick::SlickQueue<OrderResponse> &response_queue)

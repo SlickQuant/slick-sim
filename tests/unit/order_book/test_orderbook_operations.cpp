@@ -11,15 +11,15 @@ using namespace slick::sim::test;
 class OrderBookOperationsTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        order_book_ = std::make_unique<OrderBookImpl<OrderBookType::L2>>(kSymbolId, "BTC-USD", Venue::COINBASE);
+        order_book_ = std::make_shared<OrderBookImpl<OrderBookType::L2>>(kSymbolId, "BTC-USD", Venue::COINBASE);
+        order_book_->addObserver(order_book_->shared_from_this());
     }
 
-    std::unique_ptr<OrderBook> order_book_;
-    slick::ObjectPool<Order> order_pool_{1024};
+    std::shared_ptr<OrderBook> order_book_;
 };
 
 TEST_F(OrderBookOperationsTest, AddOrder_NewBidLevel) {
-    auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
 
     order_book_->addOrder(order, 1000, 1);
 
@@ -30,11 +30,11 @@ TEST_F(OrderBookOperationsTest, AddOrder_NewBidLevel) {
 
 TEST_F(OrderBookOperationsTest, AddOrder_ExistingBidLevel) {
     // Add first order at price 100
-    auto* order1 = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order1 = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order1, 1000, 1);
 
     // Add second order at same price
-    auto* order2 = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order2 = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order2, 1001, 2);
 
     // Both orders should be found
@@ -43,7 +43,7 @@ TEST_F(OrderBookOperationsTest, AddOrder_ExistingBidLevel) {
 }
 
 TEST_F(OrderBookOperationsTest, DeleteOrder_RemovesFromBook) {
-    auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order, 1000, 1);
 
     ASSERT_NE(order_book_->findOrder(order->id), nullptr);
@@ -56,10 +56,10 @@ TEST_F(OrderBookOperationsTest, DeleteOrder_RemovesFromBook) {
 
 TEST_F(OrderBookOperationsTest, ModifyOrder_PriceChange_LosesPriority) {
     // Add two orders at same price
-    auto* order1 = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order1 = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order1, 1000, 1);
 
-    auto* order2 = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order2 = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order2, 1001, 2);
 
     uint64_t original_priority1 = order1->priority;
@@ -71,7 +71,7 @@ TEST_F(OrderBookOperationsTest, ModifyOrder_PriceChange_LosesPriority) {
 }
 
 TEST_F(OrderBookOperationsTest, ModifyOrder_QtyChange_KeepsPriority) {
-    auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order, 1000, 1);
 
     uint64_t original_priority = order->priority;
@@ -83,7 +83,7 @@ TEST_F(OrderBookOperationsTest, ModifyOrder_QtyChange_KeepsPriority) {
 }
 
 TEST_F(OrderBookOperationsTest, ExecuteOrder_FullFill) {
-    auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order, 1000, 1);
 
     // Execute full quantity
@@ -95,7 +95,7 @@ TEST_F(OrderBookOperationsTest, ExecuteOrder_FullFill) {
 }
 
 TEST_F(OrderBookOperationsTest, ExecuteOrder_PartialFill) {
-    auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order, 1000, 1);
 
     // Execute partial quantity
@@ -107,13 +107,13 @@ TEST_F(OrderBookOperationsTest, ExecuteOrder_PartialFill) {
 }
 
 TEST_F(OrderBookOperationsTest, PriorityAssignment_Monotonic) {
-    auto* order1 = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order1 = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order1, 1000, 1);
 
-    auto* order2 = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order2 = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order2, 1001, 2);
 
-    auto* order3 = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order3 = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order3, 1002, 3);
 
     // Priorities should be increasing

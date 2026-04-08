@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Missing configuration JSON file. Usange\n" << "    slick-sim [config_file]\n"
             << "    options:\n"
             << "      config_file: config JSON file. Default to slick-sim.json";
-        LOG_ERROR("Missing configuration JSON file. Usange\n    slick-sim [config_file]\n    options:\n      config_file: config JSON file. Default to slick-sim.json");
+        LOG_ERROR("Missing configuration JSON file. Usage\n    slick-sim [config_file]\n    options:\n      config_file: config JSON file. Default to slick-sim.json");
         return EXIT_FAILURE;
     }
 
@@ -156,6 +156,9 @@ int main(int argc, char* argv[]) {
         LOG_ERROR("Missing exchanges config");
         return EXIT_FAILURE;
     }
+
+
+    logger.set_level(slick::logger::to_log_level(config.value("log_level", "info")));
 
     // print_protocol_info();
 

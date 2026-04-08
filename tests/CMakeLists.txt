@@ -17,6 +17,7 @@ add_executable(slick_sim_tests
     unit/matching_engine/test_fifo_matching_engine.cpp
     unit/matching_engine/test_matching_engine_smp.cpp
     unit/matching_engine/test_matching_engine_tif.cpp
+    unit/matching_engine/test_coinbase_market_data_matching.cpp
 
     # Priority 2: Order Tests
     unit/common/test_order.cpp

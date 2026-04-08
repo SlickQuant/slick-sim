@@ -11,15 +11,15 @@ using namespace slick::sim::test;
 class OrderBookLookupTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        order_book_ = std::make_unique<OrderBookImpl<OrderBookType::L2>>(kSymbolId, "BTC-USD", Venue::COINBASE);
+        order_book_ = std::make_shared<OrderBookImpl<OrderBookType::L2>>(kSymbolId, "BTC-USD", Venue::COINBASE);
+        order_book_->addObserver(order_book_->shared_from_this());
     }
 
-    std::unique_ptr<OrderBook> order_book_;
-    slick::ObjectPool<Order> order_pool_{1024};
+    std::shared_ptr<OrderBook> order_book_;
 };
 
 TEST_F(OrderBookLookupTest, FindOrderById) {
-    auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order, 1000, 1);
 
     auto* found = order_book_->findOrder(order->id);
@@ -28,7 +28,7 @@ TEST_F(OrderBookLookupTest, FindOrderById) {
 }
 
 TEST_F(OrderBookLookupTest, FindOrderByClientOrderId) {
-    auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order, 1000, 1);
 
     auto* found = order_book_->findOrderByClientOrderId(order->client_order_id);
@@ -37,7 +37,7 @@ TEST_F(OrderBookLookupTest, FindOrderByClientOrderId) {
 }
 
 TEST_F(OrderBookLookupTest, FindOrderByOrderId) {
-    auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order, 1000, 1);
 
     auto* found = order_book_->findOrderByOrderId(order->order_id);
@@ -57,7 +57,7 @@ TEST_F(OrderBookLookupTest, FindOrder_NonExistent_ReturnsNull) {
 }
 
 TEST_F(OrderBookLookupTest, MultipleLookupMethods_SameOrder) {
-    auto* order = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order, 1000, 1);
 
     auto* found_by_id = order_book_->findOrder(order->id);
@@ -74,10 +74,10 @@ TEST_F(OrderBookLookupTest, MultipleLookupMethods_SameOrder) {
 }
 
 TEST_F(OrderBookLookupTest, MultipleOrders_CorrectLookup) {
-    auto* order1 = createTestOrder(order_pool_, Side::BUY, kPrice100, kQty10);
+    auto* order1 = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10);
     order_book_->addOrder(order1, 1000, 1);
 
-    auto* order2 = createTestOrder(order_pool_, Side::BUY, kPrice101, kQty10);
+    auto* order2 = createTestOrder(order_book_, Side::BUY, kPrice101, kQty10);
     order_book_->addOrder(order2, 1001, 2);
 
     auto* found1 = order_book_->findOrder(order1->id);

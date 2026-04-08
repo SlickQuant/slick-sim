@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <chrono>
 #include <cstdint>
 #include <nlohmann/json.hpp>
@@ -109,6 +110,38 @@ enum class ExecType : char {
     ORDER_STATUS = 'I'
 };
 
+inline constexpr std::string_view to_string(ExecType exec_type) {
+    switch (exec_type) {
+    case ExecType::NEW:
+        return "NEW";
+    case ExecType::PARTIAL_FILL:
+        return "PARTIAL_FILL";
+    case ExecType::FILL:
+        return "FILL";
+    case ExecType::CANCELED:
+        return "CANCELED";
+    case ExecType::REPLACED:
+        return "REPLACED";
+    case ExecType::PENDING_NEW:
+        return "PENDING_NEW";
+    case ExecType::PENDING_CANCEL:
+        return "PENDING_CENCEL";
+    case ExecType::TRADE:
+        return "TRADE";
+    case ExecType::EXPIRED:
+        return "EXPIRED";
+    case ExecType::PENDING_REPLACE:
+        return "PENDING_REPLACE";
+    case ExecType::TRADE_CORRECT:
+        return "TRADE_CORRECT";
+    case ExecType::TRADE_CANCEL:
+        return "TRADE_CANCEL";
+    case ExecType::ORDER_STATUS:
+        return "ORDER_STATUS";
+    }
+    return "UNKNOWN";
+}
+
 enum class OrderStatus : char {
     NEW = '0',
     PARTIALLY_FILLED = '1',
@@ -127,6 +160,42 @@ enum class OrderStatus : char {
     PENDING_REPLACE = 'E'
 };
 
+inline constexpr std::string_view to_string(OrderStatus status) {
+    switch (status) {
+    case OrderStatus::NEW:
+        return "NEW";
+    case OrderStatus::PARTIALLY_FILLED:
+        return "PARTIALLY_FILLED";
+    case OrderStatus::FILLED:
+        return "FILLED";
+    case OrderStatus::DONE_FOR_DAY:
+        return "DONE_FOR_DAY";
+    case OrderStatus::CANCELED:
+        return "CANCELLED";
+    case OrderStatus::REPLACED:
+        return "REPLACED";
+    case OrderStatus::PENDING_CANCEL:
+        return "PENDING_CANCEL";
+    case OrderStatus::STOPPED:
+        return "STOPPED";
+    case OrderStatus::REJECTED:
+        return "REJECTED";
+    case OrderStatus::SUSPENDED:
+        return "SUSPENDED";
+    case OrderStatus::PENDING_NEW:
+        return "PENDING_NEW";
+    case OrderStatus::CALCULATED:
+        return "CALCULATED";
+    case OrderStatus::EXPIRED:
+        return "EXPIRED";
+    case OrderStatus::ACCEPTED_FOR_BIDDING:
+        return "ACCEPTED_FOR_BIDDING";
+    case OrderStatus::PENDING_REPLACE:
+        return "PENDING_REPLACE";
+    }
+    return "UNKNOWN";
+}
+
 enum class TimeInForce : char {
     DAY = '0',
     GOOD_TILL_CANCEL = '1',
@@ -136,6 +205,26 @@ enum class TimeInForce : char {
     GOOD_TILL_CROSSING = '5',
     GOOD_TILL_DATE = '6'
 };
+
+inline std::string_view to_string(TimeInForce tif) {
+    switch (tif) {
+    case TimeInForce::DAY:
+        return "DAY";
+    case TimeInForce::GOOD_TILL_CANCEL:
+        return "GOOD_TILL_CANCEL";
+    case TimeInForce::AT_THE_OPENING:
+        return "AT_THE_OPENING";
+    case TimeInForce::IMMEDIATE_OR_CANCEL:
+        return "IMMEDIATE_OR_CANCEL";
+    case TimeInForce::FILL_OR_KILL:
+        return "FILL_OR_KILL";
+    case TimeInForce::GOOD_TILL_CROSSING:
+        return "GOOD_TILL_CROSSING";
+    case TimeInForce::GOOD_TILL_DATE:
+        return "GOOD_TILL_DATE";
+    }
+    return "UNKNOWN";
+}
 
 enum class SelfMatchPreventionMode : uint8_t {
     NONE = 0,           // No SMP, allow self-matching
@@ -180,10 +269,10 @@ struct Order {
     price_t price = 0;
     qty_t quantity = 0;
     qty_t leaves_quantity = 0;
-    price_t avg_filled_price = 0;
-    qty_t filled_quantity = 0;
-    price_t last_filled_price = 0; 
-    qty_t last_filled_qty = 0;
+    price_t avg_fill_price = 0;
+    qty_t cum_quantity = 0;
+    price_t last_fill_price = 0; 
+    qty_t last_fill_qty = 0;
     uint32_t num_fills = 0;
     double fee = 0;
     double filled_value = 0;
@@ -208,24 +297,24 @@ struct Order {
         return to_qty_double(quantity);
     }
 
-    double filled_qty_double() const noexcept {
-        return to_qty_double(filled_quantity);
+    double cum_qty_double() const noexcept {
+        return to_qty_double(cum_quantity);
     }
 
     double leaves_qty_double() const noexcept {
         return to_qty_double(leaves_quantity);
     }
 
-    double last_filled_qty_double() const noexcept {
-        return to_qty_double(last_filled_qty);
+    double last_fill_qty_double() const noexcept {
+        return to_qty_double(last_fill_qty);
     }
 
-    double last_filled_price_double() const noexcept {
-        return to_price_double(last_filled_price);
+    double last_fill_price_double() const noexcept {
+        return to_price_double(last_fill_price);
     }
 
-    double avg_filled_price_double() const noexcept {
-        return to_price_double(avg_filled_price);
+    double avg_fill_price_double() const noexcept {
+        return to_price_double(avg_fill_price);
     }
 };
 
