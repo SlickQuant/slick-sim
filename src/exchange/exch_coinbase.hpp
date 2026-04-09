@@ -51,10 +51,10 @@ public:
 protected:
     void handleMdSubscription(const Request &request) override;
     void handleMdUnsubscription(const Request &request) override;
+    void processSequencedEvents();
 
 private:
     Symbol* addSymbol(std::string_view product_id);
-    void processSequencedEvents();
     
     struct Event {
         EventType type;
