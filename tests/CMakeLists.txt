@@ -30,6 +30,7 @@ add_executable(slick_sim_tests
     # Priority 4: Symbol Tests
     unit/exchange/test_symbol.cpp
     unit/exchange/test_symbol_manager.cpp
+    unit/exchange/test_coinbase_exchange.cpp
 
     # Priority 5: Type & Message Tests
     unit/common/test_types.cpp
@@ -39,6 +40,7 @@ add_executable(slick_sim_tests
 target_link_libraries(slick_sim_tests
     PRIVATE
         matching_engine
+        exchange
         GTest::gtest
         GTest::gtest_main
         slick::logger

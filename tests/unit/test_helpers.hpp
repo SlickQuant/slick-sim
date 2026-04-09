@@ -103,7 +103,6 @@ public:
             auto [response, size] = queue_.read(cursor_);
             if (!response) break;
             responses.push_back(*response);
-            cursor_++;
         }
         return responses;
     }
@@ -119,7 +118,6 @@ public:
             auto [response, size] = queue_.read(temp_cursor);
             if (!response) break;
             cnt++;
-            temp_cursor++;
         }
         return cnt;
     }
