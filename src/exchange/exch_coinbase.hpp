@@ -51,7 +51,7 @@ public:
 protected:
     void handleMdSubscription(const Request &request) override;
     void handleMdUnsubscription(const Request &request) override;
-    void processSequencedEvents();
+    void processSequencedEvents(bool force = false);
 
 private:
     Symbol* addSymbol(std::string_view product_id);

@@ -63,6 +63,10 @@ void CoinbaseRestClientManager::setup_routes(uWS::App &app) {
         handle_get_orders(res, req);
     }).post("/api/v3/brokerage/orders", [this](auto *res, auto *req) {
         handle_create_order(res, req);
+    }).post("/api/v3/brokerage/orders/batch_cancel", [this](auto *res, auto *req) {
+        handle_batch_cancel(res, req);
+    }).post("/api/v3/brokerage/orders/edit", [this](auto *res, auto *req) {
+        handle_edit_order(res, req);
     });
 }
 
@@ -191,8 +195,8 @@ void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* re
                     ->writeHeader("Content-Type", "application/json")
                     ->end(response_json.dump());
 
-                LOG_ERROR("Order rejected: user={}, client_order_id={}, reason=Unsupported order_configuration type",
-                            user_id, client_order_id);
+                LOG_ERROR("Order rejected: user={}, client_order_id={}, reason=Unsupported order_configuration type, order_configuration={}",
+                            user_id, client_order_id, order_config.dump());
                 return;
             }
 
@@ -203,7 +207,7 @@ void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* re
             auto* request = request_queue_[request_index];
 
             // Populate Request struct
-            request->time_stamp = std::chrono::system_clock::now().time_since_epoch().count();
+            request->time_stamp = utils::get_current_time_ns();
             std::memset(request->symbol, 0, sizeof(request->symbol));
             std::memcpy(request->symbol, product_id.c_str(),
                         std::min(sizeof(request->symbol), product_id.size()));
@@ -316,6 +320,12 @@ void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* re
                     ->writeHeader("Content-Type", "application/json")
                     ->end(response_json.dump());
 
+                std::string order_id_str(matched_response->order_id,
+                    strnlen(matched_response->order_id, sizeof(matched_response->order_id)));
+                if (!order_id_str.empty()) {
+                    order_id_to_symbol_[order_id_str] = product_id;
+                }
+
                 LOG_INFO("Order processed successfully: user={}, client_order_id={}, order_id={}, status={}",
                             user_id, client_order_id, std::string_view(matched_response->order_id, sizeof(matched_response->order_id)), to_string(matched_response->order_status));
             }
@@ -344,6 +354,306 @@ void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* re
                     {"message", std::string("Unexpected error: ") + e.what()}
                 }).dump());
             LOG_ERROR("Unexpected error in POST /orders: {}", e.what());
+        }
+    });
+}
+
+void CoinbaseRestClientManager::handle_batch_cancel(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
+    auto [authenticated, user_id, error_response] = authenticate(req);
+    if (!authenticated) {
+        res->writeStatus("401 Unauthorized")
+            ->writeHeader("Content-Type", "application/json")
+            ->end(error_response);
+        return;
+    }
+
+    auto request_data = std::make_shared<PostRequestData>();
+    request_data->user_id = std::move(user_id);
+
+    res->onAborted([request_data]() {
+        LOG_WARN("HTTP connection aborted during POST /api/v3/brokerage/orders/batch_cancel");
+    });
+
+    res->onData([this, res, request_data](std::string_view chunk, bool is_last) mutable {
+        request_data->body_buffer.append(chunk);
+        if (!is_last) return;
+
+        try {
+            json request_body = json::parse(request_data->body_buffer);
+            auto& order_ids_json = request_body["order_ids"];
+            std::string user_id = request_data->user_id;
+
+            if (!order_ids_json.is_array() || order_ids_json.empty()) {
+                res->writeStatus("400 Bad Request")
+                    ->writeHeader("Content-Type", "application/json")
+                    ->end(R"({"error":"INVALID_ARGUMENT","message":"order_ids must be a non-empty array"})");
+                return;
+            }
+
+            struct CancelEntry {
+                std::string order_id;
+                bool submitted;
+                OrdRejectReason reject_reason = OrdRejectReason::NONE;
+            };
+            std::vector<CancelEntry> entries;
+            entries.reserve(order_ids_json.size());
+
+            // Process cancels one at a time so we can correlate reject responses.
+            // The engine looks up by client_order_id first if non-empty, so we must
+            // leave client_order_id empty and look up by order_id only.
+            // Successful cancels don't generate responses (sendOrderCancelPending is
+            // a no-op), so no response within the timeout window means success.
+            constexpr int timeout_ms = 200;
+            constexpr int poll_interval_us = 100;  // used inside per-order wait loop
+
+            for (auto& oid_json : order_ids_json) {
+                std::string order_id = oid_json.get<std::string>();
+
+                auto sym_it = order_id_to_symbol_.find(order_id);
+                if (sym_it == order_id_to_symbol_.end()) {
+                    LOG_WARN("batch_cancel: unknown order_id={}", order_id);
+                    entries.push_back({order_id, false});
+                    continue;
+                }
+                const std::string& symbol = sym_it->second;
+
+                // Capture response index before publishing so we don't miss a fast reject
+                uint64_t response_read_index = response_queue_.initial_reading_index();
+
+                auto request_index = request_queue_.reserve();
+                auto* request = request_queue_[request_index];
+                request->time_stamp = utils::get_current_time_ns();
+                std::memset(request->symbol, 0, sizeof(request->symbol));
+                std::memcpy(request->symbol, symbol.c_str(), std::min(sizeof(request->symbol), symbol.size()));
+                request->msg_type = MessageType::ORDER_CANCEL_REQUEST;
+
+                std::memset(&request->cancel_order, 0, sizeof(request->cancel_order));
+                std::memcpy(request->cancel_order.user_id, user_id.c_str(),
+                            std::min(sizeof(request->cancel_order.user_id), user_id.size()));
+                // Leave client_order_id empty — engine falls through to findOrderByOrderId
+                std::memcpy(request->cancel_order.order_id, order_id.c_str(),
+                            std::min(sizeof(request->cancel_order.order_id), order_id.size()));
+
+                request_queue_.publish(request_index);
+                LOG_INFO("Submitted cancel request: user={}, order_id={}, symbol={}", user_id, order_id, symbol);
+
+                // Wait briefly for a reject. If none arrives, the cancel succeeded.
+                OrdRejectReason reject_reason = OrdRejectReason::NONE;
+                auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+                while (std::chrono::steady_clock::now() < deadline) {
+                    auto [data, size] = response_queue_.read(response_read_index);
+                    if (data != nullptr) {
+                        if (std::string(data->user_id) == user_id && data->request_time == request->time_stamp) {
+                            if (data->order_status == OrderStatus::REJECTED) {
+                                reject_reason = data->reject_reason;
+                            }
+                            break;
+                        }
+                    }
+                    std::this_thread::sleep_for(std::chrono::microseconds(poll_interval_us));
+                }
+
+                entries.push_back({order_id, true, reject_reason});
+            }
+
+            // Build results
+            json results = json::array();
+            for (auto& entry : entries) {
+                if (!entry.submitted) {
+                    results.push_back({
+                        {"success", false},
+                        {"failure_reason", "UNKNOWN_ORDER"},
+                        {"order_id", entry.order_id}
+                    });
+                    continue;
+                }
+                if (entry.reject_reason != OrdRejectReason::NONE) {
+                    results.push_back({
+                        {"success", false},
+                        {"failure_reason", to_string(entry.reject_reason)},
+                        {"order_id", entry.order_id}
+                    });
+                } else {
+                    results.push_back({
+                        {"success", true},
+                        {"failure_reason", ""},
+                        {"order_id", entry.order_id}
+                    });
+                    order_id_to_symbol_.erase(entry.order_id);
+                }
+            }
+
+            auto rejected_count = static_cast<int>(std::count_if(entries.begin(), entries.end(),
+                [](const CancelEntry& e) { return e.submitted && e.reject_reason != OrdRejectReason::NONE; }));
+
+            res->writeStatus("200 OK")
+                ->writeHeader("Content-Type", "application/json")
+                ->end(json({{"results", results}}).dump());
+
+            LOG_INFO("batch_cancel completed: user={}, total={}, rejected={}",
+                     user_id, entries.size(), rejected_count);
+
+        } catch (const json::parse_error& e) {
+            res->writeStatus("400 Bad Request")
+                ->writeHeader("Content-Type", "application/json")
+                ->end(json({
+                    {"error", "INVALID_REQUEST"},
+                    {"message", std::string("Invalid JSON: ") + e.what()}
+                }).dump());
+            LOG_ERROR("JSON parse error in POST /orders/batch_cancel: {}", e.what());
+        } catch (const json::exception& e) {
+            res->writeStatus("400 Bad Request")
+                ->writeHeader("Content-Type", "application/json")
+                ->end(json({
+                    {"error", "INVALID_ARGUMENT"},
+                    {"message", std::string("Missing or invalid field: ") + e.what()}
+                }).dump());
+            LOG_ERROR("JSON field error in POST /orders/batch_cancel: {}", e.what());
+        } catch (const std::exception& e) {
+            res->writeStatus("500 Internal Server Error")
+                ->writeHeader("Content-Type", "application/json")
+                ->end(json({
+                    {"error", "INTERNAL_ERROR"},
+                    {"message", std::string("Unexpected error: ") + e.what()}
+                }).dump());
+            LOG_ERROR("Unexpected error in POST /orders/batch_cancel: {}", e.what());
+        }
+    });
+}
+
+void CoinbaseRestClientManager::handle_edit_order(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
+    auto [authenticated, user_id, error_response] = authenticate(req);
+    if (!authenticated) {
+        res->writeStatus("401 Unauthorized")
+            ->writeHeader("Content-Type", "application/json")
+            ->end(error_response);
+        return;
+    }
+
+    auto request_data = std::make_shared<PostRequestData>();
+    request_data->user_id = std::move(user_id);
+
+    res->onAborted([request_data]() {
+        LOG_WARN("HTTP connection aborted during POST /api/v3/brokerage/orders/edit");
+    });
+
+    res->onData([this, res, request_data](std::string_view chunk, bool is_last) mutable {
+        request_data->body_buffer.append(chunk);
+        if (!is_last) return;
+
+        try {
+            json request_body = json::parse(request_data->body_buffer);
+            std::string order_id = request_body["order_id"];
+            std::string user_id = request_data->user_id;
+
+            auto sym_it = order_id_to_symbol_.find(order_id);
+            if (sym_it == order_id_to_symbol_.end()) {
+                res->writeStatus("400 Bad Request")
+                    ->writeHeader("Content-Type", "application/json")
+                    ->end(json({
+                        {"success", false},
+                        {"errors", json::array({{{"edit_failure_reason", "UNKNOWN_ORDER"}}})}
+                    }).dump());
+                LOG_WARN("edit_order: unknown order_id={}", order_id);
+                return;
+            }
+            const std::string& symbol = sym_it->second;
+
+            price_t new_price = NULL_PRICE;
+            qty_t new_qty = 0;
+            if (request_body.contains("price")) {
+                new_price = to_price_t(std::stod(request_body["price"].get<std::string>()));
+            }
+            if (request_body.contains("size")) {
+                new_qty = to_qty_t(std::stod(request_body["size"].get<std::string>()));
+            }
+
+            uint64_t response_read_index = response_queue_.initial_reading_index();
+
+            auto request_index = request_queue_.reserve();
+            auto* request = request_queue_[request_index];
+            request->time_stamp = utils::get_current_time_ns();
+            std::memset(request->symbol, 0, sizeof(request->symbol));
+            std::memcpy(request->symbol, symbol.c_str(), std::min(sizeof(request->symbol), symbol.size()));
+            request->msg_type = MessageType::ORDER_REPLACE_REQUEST;
+
+            std::memset(&request->modify_order, 0, sizeof(request->modify_order));
+            std::memcpy(request->modify_order.user_id, user_id.c_str(),
+                        std::min(sizeof(request->modify_order.user_id), user_id.size()));
+            std::memcpy(request->modify_order.order_id, order_id.c_str(),
+                        std::min(sizeof(request->modify_order.order_id), order_id.size()));
+            request->modify_order.new_price = new_price;
+            request->modify_order.new_qty = new_qty;
+
+            request_queue_.publish(request_index);
+            LOG_INFO("Published edit request: user={}, order_id={}, symbol={}", user_id, order_id, symbol);
+
+            // Wait briefly for a reject. No response within timeout means success.
+            constexpr int timeout_ms = 200;
+            constexpr int poll_interval_us = 100;
+            OrdRejectReason reject_reason = OrdRejectReason::UNKNOWN;
+            auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
+
+            std::string client_order_id;
+            while (std::chrono::steady_clock::now() < deadline) {
+                auto [data, size] = response_queue_.read(response_read_index);
+                if (data != nullptr) {
+                    if (std::string(data->user_id) == user_id && data->request_time == request->time_stamp) {
+                        if (data->order_status == OrderStatus::REJECTED) {
+                            reject_reason = data->reject_reason;
+                        }
+                        else {
+                            reject_reason = OrdRejectReason::NONE;
+                        }
+                        client_order_id = data->client_order_id;
+                        break;
+                    }
+                }
+                std::this_thread::sleep_for(std::chrono::microseconds(poll_interval_us));
+            }
+
+            if (reject_reason != OrdRejectReason::NONE) {
+                res->writeStatus("400 Bad Request")
+                    ->writeHeader("Content-Type", "application/json")
+                    ->end(json({
+                        {"success", false},
+                        {"errors", json::array({{{"edit_failure_reason", to_string(reject_reason)}}})}
+                    }).dump());
+                LOG_ERROR("Edit order rejected: user={}, order_id={}, reason={}", user_id, order_id, to_string(reject_reason));
+            } else {
+                res->writeStatus("200 OK")
+                    ->writeHeader("Content-Type", "application/json")
+                    ->end(json({
+                        {"success", true},
+                        {"errors", json::array()}
+                    }).dump());
+                LOG_INFO("Edit order succeeded: user={}, order_id={}, client_order_id={}", user_id, order_id, client_order_id);
+            }
+
+        } catch (const json::parse_error& e) {
+            res->writeStatus("400 Bad Request")
+                ->writeHeader("Content-Type", "application/json")
+                ->end(json({
+                    {"error", "INVALID_REQUEST"},
+                    {"message", std::string("Invalid JSON: ") + e.what()}
+                }).dump());
+            LOG_ERROR("JSON parse error in POST /orders/edit: {}", e.what());
+        } catch (const json::exception& e) {
+            res->writeStatus("400 Bad Request")
+                ->writeHeader("Content-Type", "application/json")
+                ->end(json({
+                    {"error", "INVALID_ARGUMENT"},
+                    {"message", std::string("Missing or invalid field: ") + e.what()}
+                }).dump());
+            LOG_ERROR("JSON field error in POST /orders/edit: {}", e.what());
+        } catch (const std::exception& e) {
+            res->writeStatus("500 Internal Server Error")
+                ->writeHeader("Content-Type", "application/json")
+                ->end(json({
+                    {"error", "INTERNAL_ERROR"},
+                    {"message", std::string("Unexpected error: ") + e.what()}
+                }).dump());
+            LOG_ERROR("Unexpected error in POST /orders/edit: {}", e.what());
         }
     });
 }

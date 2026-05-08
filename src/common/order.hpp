@@ -7,6 +7,7 @@
 #include <nlohmann/json.hpp>
 #include <limits>
 #include "types.hpp"
+#include <utils/timestamp.hpp>
 
 using json = nlohmann::json;
 
@@ -96,48 +97,45 @@ enum class OrderType : char {
 
 enum class ExecType : char {
     NEW = '0',
-    PARTIAL_FILL = '1',
-    FILL = '2',
-    CANCELED = '3',
-    REPLACED = '4',
-    PENDING_NEW = '5',
+    CANCELED = '4',
+    REPLACED = '5',
     PENDING_CANCEL = '6',
-    TRADE = '8',
+    REJECTED = '8',
     EXPIRED = 'C',
     PENDING_REPLACE = 'E',
+    TRADE = 'F',
     TRADE_CORRECT = 'G',
     TRADE_CANCEL = 'H',
-    ORDER_STATUS = 'I'
+    ORDER_STATUS = 'I',
+    RESTATED = 'D',
 };
 
 inline constexpr std::string_view to_string(ExecType exec_type) {
     switch (exec_type) {
     case ExecType::NEW:
         return "NEW";
-    case ExecType::PARTIAL_FILL:
-        return "PARTIAL_FILL";
-    case ExecType::FILL:
-        return "FILL";
     case ExecType::CANCELED:
         return "CANCELED";
     case ExecType::REPLACED:
         return "REPLACED";
-    case ExecType::PENDING_NEW:
-        return "PENDING_NEW";
     case ExecType::PENDING_CANCEL:
-        return "PENDING_CENCEL";
-    case ExecType::TRADE:
-        return "TRADE";
+        return "PENDING_CANCEL";
+    case ExecType::REJECTED:
+        return "REJECTED";
     case ExecType::EXPIRED:
         return "EXPIRED";
     case ExecType::PENDING_REPLACE:
         return "PENDING_REPLACE";
+    case ExecType::TRADE:
+        return "TRADE";
     case ExecType::TRADE_CORRECT:
         return "TRADE_CORRECT";
     case ExecType::TRADE_CANCEL:
         return "TRADE_CANCEL";
     case ExecType::ORDER_STATUS:
         return "ORDER_STATUS";
+    case ExecType::RESTATED:
+        return "RESTATED";
     }
     return "UNKNOWN";
 }
@@ -278,8 +276,8 @@ struct Order {
     double filled_value = 0;
     
     int client_id = -1;
-    uint64_t created_time = std::chrono::system_clock::now().time_since_epoch().count();
-    uint64_t last_update_time = std::chrono::system_clock::now().time_since_epoch().count();
+    uint64_t created_time = utils::get_current_time_ns();
+    uint64_t last_update_time = created_time;
     std::optional<uint64_t> last_fill_time;
 
     std::string reject_message;

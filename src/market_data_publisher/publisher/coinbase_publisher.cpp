@@ -161,6 +161,10 @@ void CoinbasePublisher::publishMarketDataUpdate() {
                 publishSubscriptionResponse(update);
                 processed = max_batch;
                 break;
+            case MDUpdateType::BOOK_SNAPSHOT:
+                publishLevelSnapshot(update);
+                processed = max_batch;
+                break;
         }
 
         processed++;
@@ -341,7 +345,6 @@ void CoinbasePublisher::handleClose(wsT *ws, int code, std::string_view message)
 
 void CoinbasePublisher::unsubscribeMD(wsT *ws) {
     for (auto channel = 0; channel < static_cast<int>(coinbase::WebSocketChannel::__COUNT__); ++channel) {
-        auto &channel_sub = subscription_info_[channel];
         auto *user_data = ws->getUserData();
         for (const auto &symbol : user_data->subscription_info[channel].active_subscriptions) {
             LOG_INFO("Client {:p} unsubscribe channel {}: {}", ws, coinbase::to_string(static_cast<coinbase::WebSocketChannel>(channel)), symbol);
@@ -475,6 +478,8 @@ void CoinbasePublisher::publishSubscriptionResponse(MarketDataUpdate *update) {
                 snapshot_msg["sequence_num"] = user_data->seq_num++;
                 ws->send(snapshot_msg.dump(), uWS::OpCode::TEXT);
 
+                LOG_DEBUG("CoinbasePublisher send {} snapshot", update->symbol);
+
                 if (subscription_info.pending_subscriptions.empty()) {
                     // Send subscription confirmation
                     json subscription_msg = {
@@ -501,6 +506,56 @@ void CoinbasePublisher::publishSubscriptionResponse(MarketDataUpdate *update) {
                     ws->send(subscription_msg.dump(), uWS::OpCode::TEXT);
                 }
             }
+        }
+    }
+}
+
+void CoinbasePublisher::publishLevelSnapshot(MarketDataUpdate *update) {
+    auto *snapshot = reinterpret_cast<BookSnapshot*>(update->data);
+    auto it_range = symbol_channel_client_.find(update->symbol);
+    if (it_range != symbol_channel_client_.end()) {
+        auto range = it_range->second.equal_range(static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2));
+        if (range.first == range.second) {
+            return;
+        }
+        json::array_t updates;
+
+        auto total_levels = snapshot->num_bid + snapshot->num_ask;
+        uint32_t i = 0;
+
+        for (; i < snapshot->num_bid; ++i) {
+            updates.push_back({
+                {"side", "bid"},
+                {"price_level", std::to_string(to_price_double(snapshot->levels[i].price))},
+                {"new_quantity", std::to_string(to_qty_double(snapshot->levels[i].qty))}
+            });
+        }
+
+        for (; i < total_levels; ++i) {
+            updates.push_back({
+                {"side", "offer"},
+                {"price_level", std::to_string(to_price_double(snapshot->levels[i].price))},
+                {"new_quantity", std::to_string(to_qty_double(snapshot->levels[i].qty))}
+            });
+        }
+
+        // Create level2 snapshot message
+        json snapshot_msg = {
+            {"channel", "l2_data"},
+            {"client_id", ""},
+            {"timestamp", format_timestamp_iso8601(9)},
+            {"events", {{
+                {"type", "snapshot"},
+                {"product_id", update->symbol},
+                {"updates", updates}
+            }}}
+        };
+
+        for (auto it = range.first; it != range.second; ++it) {
+            auto *ws = it->second;
+            auto *user_data = ws->getUserData();
+            snapshot_msg["sequence_num"] = user_data->seq_num++;
+            ws->send(snapshot_msg.dump(), uWS::OpCode::TEXT);
         }
     }
 }

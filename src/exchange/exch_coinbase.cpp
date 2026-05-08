@@ -148,7 +148,7 @@ void CoinbaseExchange::handleMdUnsubscription(const Request &request) {
     }
 }
 
-void CoinbaseExchange::processSequencedEvents() {
+void CoinbaseExchange::processSequencedEvents(bool force) {
     const uint64_t now = utils::get_current_time_ns();
 
     // Process events from all symbols
@@ -159,16 +159,20 @@ void CoinbaseExchange::processSequencedEvents() {
         while (!pending_events.empty()) {
             const auto& top_event = pending_events.top();
 
-            // Condition 1: Event is at least 1 second older than last dispatched event
-            bool safe_by_time_gap = (state.last_event_time > 0) &&
-                                    (top_event.event_time + utils::ONE_SECOND_NS <= state.last_event_time);
+            bool ready = force;
+            if (!force) {
+                // Condition 1: Event is at least 1 second older than last dispatched event
+                bool safe_by_time_gap = (state.last_event_time > 0) &&
+                                        (top_event.event_time + utils::ONE_SECOND_NS <= state.last_event_time);
 
-            // Condition 2: Event has been in queue for more than 1 second (timeout)
-            uint64_t time_in_queue = now - top_event.received_time;
-            bool safe_by_timeout = time_in_queue >= utils::ONE_SECOND_NS;
+                // Condition 2: Event has been in queue for more than 1 second (timeout)
+                uint64_t time_in_queue = now - top_event.received_time;
+                bool safe_by_timeout = time_in_queue >= utils::ONE_SECOND_NS;
+                ready = safe_by_time_gap || safe_by_timeout;
+            }
 
             // Release if either condition is met
-            if (safe_by_time_gap || safe_by_timeout) {
+            if (ready) {
                 // Copy event before popping (since top() returns const ref)
                 Event event = top_event;
                 pending_events.pop();

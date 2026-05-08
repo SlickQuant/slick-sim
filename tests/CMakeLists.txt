@@ -66,7 +66,9 @@ set_target_properties(slick_sim_tests
 )
 
 # Discover tests for CTest
-gtest_discover_tests(slick_sim_tests)
+# DISCOVERY_TIMEOUT: Debug builds with many DLL dependencies (OpenSSL, Boost, slick-net)
+# can take several seconds to start on Windows. 30s gives enough headroom.
+gtest_discover_tests(slick_sim_tests DISCOVERY_TIMEOUT 30)
 
 # Add custom target for running tests
 add_custom_target(run_tests

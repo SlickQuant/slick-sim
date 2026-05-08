@@ -57,14 +57,14 @@ void CoinbaseWebsocketClientManager::handleOrderResponse(const OrderResponse &re
                 {"orders", json::array({
                     json::object({
                         {"avg_price", std::to_string(to_price_double(response.avg_fill_price))},
-                        {"clinet_order_id", std::string(response.client_order_id)},
+                        {"client_order_id", std::string(response.client_order_id)},
                         {"completion_percentage", std::to_string(response.qty > 0 ? (to_qty_double(response.cum_qty) / response.qty) * 100 : 0.0)},
                         {"contract_expiry_type", "UNKNOWN_CONTRACT_EXPIRY_TYPE"},
                         {"cumulative_quantity", std::to_string(to_qty_double(response.cum_qty))},
                         {"filled_value", std::to_string(filled_value)},
                         {"leaves_quantity", std::to_string(to_qty_double(response.leaves_qty))},
                         {"limit_price", std::to_string(to_price_double(response.price))},
-                        {"number_of_fills", std::to_string(response.cum_qty > 0 ? response.cum_qty / response.last_qty : 0)},
+                        {"number_of_fills", std::to_string(response.last_qty > 0 ? response.cum_qty / response.last_qty : 0)},
                         {"order_id", std::string(response.order_id)},
                         {"order_side", response.side == Side::BUY ? "BUY" : "SELL"},
                         {"order_type", to_string(response.order_type)},

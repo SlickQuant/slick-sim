@@ -45,7 +45,7 @@ TEST_F(FifoMatchingEngineTest, MatchBuyAgainstSingleSellOrder) {
 
     // Match the buy order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_FALSE(trades.empty());
@@ -63,7 +63,7 @@ TEST_F(FifoMatchingEngineTest, MatchSellAgainstSingleBuyOrder) {
 
     // Match the sell order
     auto [reject_reason, trades] = matching_engine_->match(
-        sell_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        sell_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_FALSE(trades.empty());
@@ -81,7 +81,7 @@ TEST_F(FifoMatchingEngineTest, PartialFillBuyOrder) {
 
     // Match the buy order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, kQty5);
@@ -98,7 +98,7 @@ TEST_F(FifoMatchingEngineTest, PartialFillSellOrder) {
 
     // Match the sell order
     auto [reject_reason, trades] = matching_engine_->match(
-        sell_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        sell_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(sell_order->cum_quantity, kQty5);
@@ -118,7 +118,7 @@ TEST_F(FifoMatchingEngineTest, MatchAcrossMultiplePriceLevels) {
 
     // Match the buy order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice101, kQty10, *order_book_, 2000, 3, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice101, kQty10, *order_book_, 2000, 2000, 3, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, kQty10);
@@ -136,7 +136,7 @@ TEST_F(FifoMatchingEngineTest, NoMatchWhenPricesDontCross) {
 
     // Attempt to match the buy order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice99, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice99, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, 0);
@@ -154,7 +154,7 @@ TEST_F(FifoMatchingEngineTest, TradeSummaryGeneration) {
 
     // Match the buy order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     ASSERT_FALSE(trades.empty());
     const auto& trade = trades[0];
@@ -176,7 +176,7 @@ TEST_F(FifoMatchingEngineTest, LastFilledPriceAndQuantityTracking) {
 
     // Match the buy order
     matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(buy_order->last_fill_price, kPrice100);
     EXPECT_EQ(buy_order->last_fill_qty, kQty10);

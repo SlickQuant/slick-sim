@@ -21,8 +21,8 @@ public:
         return MatchingEngine::Type::FIFO;
     }
 
-    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(Order* order, price_t order_price, qty_t order_qty, OrderBook &book, uint64_t event_time, uint64_t seq_num = 0, SelfMatchPreventionMode smp_mode = SelfMatchPreventionMode::NONE) override;
-    std::vector<TradeSummaryInfo> match(Side side, uint64_t order_id, price_t price, qty_t &qty, OrderBook &book, uint64_t event_time, uint64_t seq_num = 0) override;
+    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(Order* order, price_t order_price, qty_t order_qty, OrderBook &book, time_t request_time, time_t event_time, uint64_t seq_num = 0, SelfMatchPreventionMode smp_mode = SelfMatchPreventionMode::NONE) override;
+    std::vector<TradeSummaryInfo> match(Side side, uint64_t order_id, price_t price, qty_t &qty, OrderBook &book, time_t event_time, uint64_t seq_num = 0) override;
 };
 
     
