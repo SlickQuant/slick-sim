@@ -36,7 +36,7 @@ TEST_F(MatchingEngineSMPTest, SMP_None_AllowsSelfMatch) {
 
     // Match with SMP=NONE (allows self-matching)
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, kQty10);
@@ -53,7 +53,7 @@ TEST_F(MatchingEngineSMPTest, SMP_CancelResting_RemovesBookOrder) {
 
     // Match with SMP=CANCEL_RESTING (cancels resting order)
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::CANCEL_RESTING);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::CANCEL_RESTING);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     // Buy order should not be filled since resting order was canceled
@@ -70,7 +70,7 @@ TEST_F(MatchingEngineSMPTest, SMP_CancelNewest_RejectsIncomingOrder) {
 
     // Match with SMP=CANCEL_NEWEST (rejects incoming order)
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::CANCEL_NEWEST);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::CANCEL_NEWEST);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::SMP);
     EXPECT_EQ(buy_order->cum_quantity, 0);
@@ -87,7 +87,7 @@ TEST_F(MatchingEngineSMPTest, SMP_IgnoresWhenClientIdNegativeOne) {
 
     // Match with SMP=CANCEL_NEWEST (should not trigger SMP since client_id = -1)
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::CANCEL_NEWEST);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::CANCEL_NEWEST);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, kQty10);
@@ -106,7 +106,7 @@ TEST_F(MatchingEngineSMPTest, SMP_CancelResting_ContinuesMatching) {
 
     // Match with SMP=CANCEL_RESTING
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty20, *order_book_, 2000, 3, SelfMatchPreventionMode::CANCEL_RESTING);
+        buy_order, kPrice100, kQty20, *order_book_, 2000, 2000, 3, SelfMatchPreventionMode::CANCEL_RESTING);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     // Should have matched with the second order (from client 456)
@@ -123,7 +123,7 @@ TEST_F(MatchingEngineSMPTest, SMP_DifferentClients_NoSelfMatch) {
 
     // Match with any SMP mode - should not trigger SMP since clients are different
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::CANCEL_NEWEST);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::CANCEL_NEWEST);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, kQty10);

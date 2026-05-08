@@ -23,6 +23,8 @@ public:
 
     void start() override;
     void stop() override;
+
+    coinbase::WebSocketClient* getClient() const { return ws_client_.get(); }
 };
 
 

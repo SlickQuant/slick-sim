@@ -41,13 +41,17 @@ TEST_F(MessagesTest, OppositeSide_Function) {
 TEST_F(MessagesTest, ExecType_EnumValues) {
     // Verify enum values are correct (char-based)
     EXPECT_EQ(static_cast<char>(ExecType::NEW), '0');
-    EXPECT_EQ(static_cast<char>(ExecType::PARTIAL_FILL), '1');
-    EXPECT_EQ(static_cast<char>(ExecType::FILL), '2');
-    EXPECT_EQ(static_cast<char>(ExecType::CANCELED), '3');
-    EXPECT_EQ(static_cast<char>(ExecType::REPLACED), '4');
-    EXPECT_EQ(static_cast<char>(ExecType::PENDING_NEW), '5');
+    EXPECT_EQ(static_cast<char>(ExecType::CANCELED), '4');
+    EXPECT_EQ(static_cast<char>(ExecType::REPLACED), '5');
     EXPECT_EQ(static_cast<char>(ExecType::PENDING_CANCEL), '6');
-    EXPECT_EQ(static_cast<char>(ExecType::TRADE), '8');
+    EXPECT_EQ(static_cast<char>(ExecType::REJECTED), '8');
+    EXPECT_EQ(static_cast<char>(ExecType::EXPIRED), 'C');
+    EXPECT_EQ(static_cast<char>(ExecType::PENDING_REPLACE), 'E');
+    EXPECT_EQ(static_cast<char>(ExecType::TRADE), 'F');
+    EXPECT_EQ(static_cast<char>(ExecType::TRADE_CORRECT), 'G');
+    EXPECT_EQ(static_cast<char>(ExecType::TRADE_CANCEL), 'H');
+    EXPECT_EQ(static_cast<char>(ExecType::ORDER_STATUS), 'I');
+    EXPECT_EQ(static_cast<char>(ExecType::RESTATED), 'D');
 }
 
 TEST_F(MessagesTest, OrderStatus_EnumValues) {

@@ -112,22 +112,41 @@ bool canFillCompletely(const Order* order, price_t order_price, qty_t order_qty,
 }
 
 template<Side SIDE>
-std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine& engine, Order* order, price_t order_price, qty_t order_qty, OrderBook &book, uint64_t event_time, uint64_t seq_num, SelfMatchPreventionMode smp_mode) {
+std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine& engine, Order* order, price_t order_price, qty_t order_qty, OrderBook &book, slick::sim::time_t request_time, slick::sim::time_t event_time, uint64_t seq_num, SelfMatchPreventionMode smp_mode) {
     std::vector<TradeSummaryInfo> trade_summaries;
 
-    engine.publishOrderAck(order);
+    if (order->status == OrderStatus::PENDING_NEW) {
+        engine.publishOrderAck(order, request_time);
+    }
 
     // STEP 1: Fill-Or-Kill pre-validation
     if (order->time_in_force == TimeInForce::FILL_OR_KILL) {
         if (!canFillCompletely<SIDE>(order, order_price, order_qty, book, smp_mode)) {
-            engine.publishOrderCancel(order);   // Can't fill the order fully, immediate cancel
+            engine.publishOrderCancel(order, request_time);   // Can't fill the order fully, immediate cancel
             LOG_INFO("{} FOK order {} cannot be completely filled, canceling", order->symbol, order->id);
-            return std::make_tuple(OrdRejectReason::NONE, trade_summaries);
+            return std::make_tuple(OrdRejectReason::FOK_CANNOT_FILL, trade_summaries);
         }
+    }
+
+    if (order->status == OrderStatus::PENDING_REPLACE) {
+        order->leaves_quantity += order_qty - order->quantity;  // Restore any reduced quantity from previous modify
+        if (order->leaves_quantity < 0) {
+            order->leaves_quantity = 0;  // Guard against negative leaves quantity
+        }
+        order->quantity = order_qty;
+        order->price = order_price;
+        engine.publishOrderModify(order, order_price, order_qty, request_time);
+    }
+
+    if (order->leaves_quantity == 0) {
+        LOG_INFO("{} Order {} has zero leaves quantity after modification, canceling", order->symbol, order->id);
+        engine.publishOrderCancel(order, request_time);
+        return std::make_tuple(OrdRejectReason::NONE, trade_summaries);
     }
 
     // STEP 2: Matching loop with SMP
     auto last_fill_price = NULL_PRICE;
+    order_qty = order->leaves_quantity;  // Use leaves quantity for matching
 
     while (order_qty > 0) {
         auto best_level = book.getBestLevel<static_cast<slick::orderbook::Side>(SIDE)>();
@@ -152,7 +171,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
 
             if (!should_continue) {
                 // CANCEL_NEWEST mode: reject incoming order
-                engine.publishOrderCancel(order);
+                engine.publishOrderCancel(order, request_time);
                 LOG_INFO("{} Order {} rejected due to SMP (CANCEL_NEWEST mode)", order->symbol, order->id);
                 return std::make_tuple(OrdRejectReason::SMP, trade_summaries);
             }
@@ -163,21 +182,22 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
 
         auto price = best_level->price;
         auto book_order_id = book_order.order_id;
-        qty_t trad_qty = std::min<qty_t>(order_qty, book_order.quantity);
+        qty_t trade_qty = std::min<qty_t>(order_qty, book_order.quantity);
 
-        LOG_INFO("{} Matching order {} with book order {} for qty {} at price {}", order->symbol, order->id, book_order_id, trad_qty, price);
-
-        order->avg_fill_price = ((to_price_double(order->avg_fill_price) * to_qty_double(order->cum_quantity)) + (to_price_double(price) * to_qty_double(trad_qty))) / to_price_double(order->cum_quantity + trad_qty) * DOUBLE_MULTIPLIER;
+        LOG_INFO("{} Matching order {} with book order {} for qty {} at price {}", order->symbol, order->id, book_order_id, trade_qty, price);
+        assert(trade_qty > 0);
+        order->avg_fill_price = to_price_t(((to_price_double(order->avg_fill_price) * to_qty_double(order->cum_quantity)) + (to_price_double(price) * to_qty_double(trade_qty))) / to_price_double(order->cum_quantity + trade_qty));
         order->last_fill_price = price;
-        order->last_fill_qty = trad_qty;
-        order->cum_quantity += trad_qty;
-        order->leaves_quantity -= trad_qty;
+        order->last_fill_qty = trade_qty;
+        order->cum_quantity += trade_qty;
+        order->leaves_quantity -= trade_qty;
+        assert(order->leaves_quantity >= 0);
 
-        order_qty -= trad_qty;
+        order_qty -= trade_qty;
 
         engine.publishOrderExecution(order);
 
-        book.executeOrder(book_order_id, trad_qty, event_time, seq_num, order_qty == 0);
+        book.executeOrder(book_order_id, trade_qty, event_time, seq_num, order_qty == 0);
 
         if (last_fill_price != price) {
             // Create trade summary
@@ -186,10 +206,10 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
             summary.trade_id = MatchingEngine::nextTradeId();
             summary.aggressor_side = opposite_side<SIDE>();  // SIDE is the resting side, so aggressor is the opposite
             summary.price = price;
-            summary.qty = trad_qty;
+            summary.qty = trade_qty;
             summary.num_orders = 2;
-            summary.Trades.emplace_back(Trade{order->id, trad_qty});
-            summary.Trades.emplace_back(Trade{book_order_id, trad_qty});
+            summary.Trades.emplace_back(Trade{order->id, trade_qty});
+            summary.Trades.emplace_back(Trade{book_order_id, trade_qty});
 
             trade_summaries.emplace_back(std::move(summary));
             last_fill_price = price;
@@ -197,30 +217,29 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
             // Update last trade summary for this price level
             auto &last_summary = trade_summaries.back();
             last_summary.num_orders += 1;
-            last_summary.qty += trad_qty;
-            last_summary.Trades.front().qty += trad_qty; // Update aggressor trade qty
-            last_summary.Trades.emplace_back(Trade{book_order_id, trad_qty});
+            last_summary.qty += trade_qty;
+            last_summary.Trades.front().qty += trade_qty; // Update aggressor trade qty
+            last_summary.Trades.emplace_back(Trade{book_order_id, trade_qty});
         }
     }
 
     if (order->time_in_force == TimeInForce::IMMEDIATE_OR_CANCEL && order_qty > 0) {
         // FOK: Cancel any remaining quantity if we couldn't fill the entire order
-        engine.publishOrderCancel(order);
+        engine.publishOrderCancel(order, request_time);
         LOG_INFO("{} Order {} has TIF=IOC and was not completely filled, canceling remaining qty {}", order->symbol, order->id, order_qty);
-        return std::make_tuple(OrdRejectReason::FOK_CANNOT_FILL, trade_summaries);
     }
 
     return std::make_tuple(OrdRejectReason::NONE, trade_summaries);
 }
 
-std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> FifoMatchingEngine::match(Order* order, price_t order_price, qty_t order_qty, OrderBook &book, uint64_t event_time, uint64_t seq_num, SelfMatchPreventionMode smp_mode) {
+std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> FifoMatchingEngine::match(Order* order, price_t order_price, qty_t order_qty, OrderBook &book, slick::sim::time_t request_time, slick::sim::time_t event_time, uint64_t seq_num, SelfMatchPreventionMode smp_mode) {
     return order->side == Side::BUY
-        ? ::match<Side::SELL>(*this, order, order_price, order_qty, book, event_time, seq_num, smp_mode)
-        : ::match<Side::BUY>(*this, order, order_price, order_qty, book, event_time, seq_num, smp_mode);
+        ? ::match<Side::SELL>(*this, order, order_price, order_qty, book, request_time, event_time, seq_num, smp_mode)
+        : ::match<Side::BUY>(*this, order, order_price, order_qty, book, request_time, event_time, seq_num, smp_mode);
 }
 
 template<Side SIDE>
-std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, price_t price, qty_t &qty, OrderBook &book, uint64_t event_time, uint64_t seq_num) {
+std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, price_t price, qty_t &qty, OrderBook &book, slick::sim::time_t event_time, uint64_t seq_num) {
     std::vector<TradeSummaryInfo> trade_summaries;
 
     auto last_fill_price = NULL_PRICE;
@@ -240,44 +259,44 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
         auto order_it = orders.begin();
         auto &book_order = *order_it;
 
-        auto price = best_level->price;
+        auto trade_price = best_level->price;
         auto book_order_id = book_order.order_id;
         qty_t trad_qty = std::min<qty_t>(qty, book_order.quantity);
         
-        LOG_DEBUG("  Matching with {} book order {} for qty {} at price {}", order_id, book_order_id, trad_qty, book_order.price);
+        LOG_TRACE("  Matching with {} book order {} for qty {} at price {}", order_id, book_order_id, trad_qty, trade_price);
 
         auto* our_order = book.findOrder(book_order_id);
         book.executeOrder(book_order_id, trad_qty, event_time, seq_num, qty == 0);
 
         if (our_order) {
-            // our_order->avg_fill_price = ((our_order->avg_fill_price * our_order->cum_quantity) + (book_order.price * trad_qty)) / (our_order->cum_quantity + trad_qty);
-            // our_order->last_fill_price = book_order.price;
+            // our_order->avg_fill_price = ((our_order->avg_fill_price * our_order->cum_quantity) + (trade_price * trad_qty)) / (our_order->cum_quantity + trad_qty);
+            // our_order->last_fill_price = trade_price;
             // our_order->last_fill_qty = trad_qty;
             // our_order->cum_quantity += trad_qty;
             // our_order->leaves_quantity -= trad_qty;
             engine.publishOrderExecution(our_order);
-            LOG_INFO("{} order {} filled {}@{}, leaves_qty={}, executed_qty={}, avg_fill_price={}", our_order->symbol, order_id, to_qty_double(trad_qty), to_price_double(book_order.price), to_qty_double(our_order->leaves_quantity), to_qty_double(our_order->cum_quantity), to_price_double(our_order->avg_fill_price));
+            LOG_INFO("{} order {} filled {}@{}, leaves_qty={}, executed_qty={}, avg_fill_price={}", our_order->symbol, our_order->order_id, to_qty_double(trad_qty), to_price_double(trade_price), to_qty_double(our_order->leaves_quantity), to_qty_double(our_order->cum_quantity), to_price_double(our_order->avg_fill_price));
             if (our_order->leaves_quantity == 0) {
-                book.freeOrder(our_order);
+                book.deleteOrder(our_order);
             }
         }
 
         qty -= trad_qty;
 
-        if (last_fill_price != price) {
+        if (last_fill_price != trade_price) {
             // Create trade summary
             TradeSummaryInfo summary;
             summary.timestamp = event_time;
             summary.trade_id = MatchingEngine::nextTradeId();
             summary.aggressor_side = opposite_side<SIDE>();  // SIDE is the resting side, so aggressor is the opposite
-            summary.price = price;
+            summary.price = trade_price;
             summary.qty = trad_qty;
             summary.num_orders = 2;
             summary.Trades.emplace_back(Trade{order_id, trad_qty});
             summary.Trades.emplace_back(Trade{book_order_id, trad_qty});
 
             trade_summaries.emplace_back(std::move(summary));
-            last_fill_price = price;
+            last_fill_price = trade_price;
         } else {
             // Update last trade summary for this price level
             auto &last_summary = trade_summaries.back();
@@ -291,8 +310,8 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
     return trade_summaries;
 }
 
-std::vector<TradeSummaryInfo> FifoMatchingEngine::match(Side side, uint64_t order_id, price_t price, qty_t &qty, OrderBook &book, uint64_t event_time, uint64_t seq_num) {
+std::vector<TradeSummaryInfo> FifoMatchingEngine::match(Side side, uint64_t order_id, price_t price, qty_t &qty, OrderBook &book, slick::sim::time_t event_time, uint64_t seq_num) {
     return side == Side::BUY
         ? ::match<Side::SELL>(*this, order_id, price, qty, book, event_time, seq_num)
-        : ::match<Side::BUY>(*this, order_id, price, qty, book, event_time, seq_num); 
+        : ::match<Side::BUY>(*this, order_id, price, qty, book, event_time, seq_num);
 }

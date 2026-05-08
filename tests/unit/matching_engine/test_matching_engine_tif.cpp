@@ -36,7 +36,7 @@ TEST_F(MatchingEngineTIFTest, FOK_CompletelyFilled_Success) {
 
     // Match the FOK order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, kQty10);
@@ -53,7 +53,7 @@ TEST_F(MatchingEngineTIFTest, FOK_InsufficientLiquidity_Canceled) {
 
     // Attempt to match the FOK order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice100, kQty10, *order_book_, 2000,2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, 0);
@@ -70,7 +70,7 @@ TEST_F(MatchingEngineTIFTest, FOK_WithSMP_CancelNewest_Validation) {
 
     // Match with SMP=CANCEL_NEWEST
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::CANCEL_NEWEST);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::CANCEL_NEWEST);
 
     // FOK pre-validation should detect self-match and reject
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
@@ -87,7 +87,7 @@ TEST_F(MatchingEngineTIFTest, IOC_PartialFill_RemainderNotAdded) {
 
     // Match the IOC order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice100, kQty10, *order_book_, 2000, 2, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::FOK_CANNOT_FILL);
     EXPECT_EQ(buy_order->cum_quantity, kQty5);
@@ -137,7 +137,7 @@ TEST_F(MatchingEngineTIFTest, FOK_AcrossMultipleLevels_Success) {
 
     // Match the FOK order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice101, kQty10, *order_book_, 2000, 3, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice101, kQty10, *order_book_, 2000, 2000, 3, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, kQty10);
@@ -156,7 +156,7 @@ TEST_F(MatchingEngineTIFTest, FOK_AcrossMultipleLevels_Insufficient) {
 
     // Attempt to match the FOK order
     auto [reject_reason, trades] = matching_engine_->match(
-        buy_order, kPrice101, kQty10, *order_book_, 2000, 3, SelfMatchPreventionMode::NONE);
+        buy_order, kPrice101, kQty10, *order_book_, 2000, 2000, 3, SelfMatchPreventionMode::NONE);
 
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_EQ(buy_order->cum_quantity, 0);

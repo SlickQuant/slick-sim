@@ -24,7 +24,7 @@ using namespace slick::sim::engine;
 class TestableCoinbaseExchange : public CoinbaseExchange {
 public:
     using CoinbaseExchange::CoinbaseExchange;
-    void drainSequencedEvents() { processSequencedEvents(); }
+    void drainSequencedEvents() { processSequencedEvents(true); }
 };
 
 // ---------------------------------------------------------------------------
@@ -116,7 +116,6 @@ protected:
     }
 
     void drainEvents() {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
         exchange_->drainSequencedEvents();
     }
 

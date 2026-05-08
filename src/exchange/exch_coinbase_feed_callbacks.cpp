@@ -1,4 +1,5 @@
 #include "exch_coinbase.hpp"
+#include <md_feed/coinbase_live_ws_feed.hpp>
 #include <common/symbol_manager.hpp>
 #include <utils/timestamp.hpp>
 
@@ -14,7 +15,59 @@ void CoinbaseExchange::onMarketDataConnected(WebSocketClient* client) {
 }
 
 void CoinbaseExchange::onMarketDataDisconnected(WebSocketClient* client) {
-    LOG_INFO("WebSocket {:p} market data disonnected", (void*)client);
+    LOG_INFO("WebSocket {:p} market data disconnected", (void*)client);
+
+    // Find the feed that owns this client
+    std::shared_ptr<md_feed::MDFeed> disconnected_feed;
+    for (auto& feed : md_feeds_) {
+        auto* live_feed = dynamic_cast<md_feed::CoinbaseLiveWSFeed*>(feed.get());
+        if (live_feed && live_feed->getClient() == client) {
+            disconnected_feed = feed;
+            break;
+        }
+    }
+
+    if (!disconnected_feed) {
+        LOG_WARN("WebSocket {:p} disconnected but no matching feed found", (void*)client);
+        return;
+    }
+
+    // Collect symbols associated with this feed
+    std::vector<std::string> symbols;
+    for (auto& [sym, feed] : map_symbol_feed_) {
+        if (feed == disconnected_feed) {
+            symbols.push_back(sym);
+        }
+    }
+
+    // Remove old feed from tracking
+    md_feeds_.erase(std::remove(md_feeds_.begin(), md_feeds_.end(), disconnected_feed), md_feeds_.end());
+    for (const auto& sym : symbols) {
+        map_symbol_feed_.erase(sym);
+    }
+
+    if (symbols.empty()) {
+        return;
+    }
+
+    // Mark symbols as pending subscription so the snapshot is re-requested on reconnect
+    for (const auto& sym : symbols) {
+        auto* symbol = sym_mgr.getSymbol(sym);
+        if (symbol) {
+            pending_md_subscription_[coinbase::WebSocketChannel::LEVEL2].emplace(symbol);
+            pending_md_subscription_[coinbase::WebSocketChannel::MARKET_TRADES].emplace(symbol);
+        }
+    }
+
+    // Create and start a new feed
+    auto new_feed = std::make_shared<md_feed::CoinbaseLiveWSFeed>(this, symbols);
+    md_feeds_.emplace_back(new_feed);
+    for (const auto& sym : symbols) {
+        map_symbol_feed_.emplace(sym, new_feed);
+    }
+    new_feed->start();
+
+    LOG_INFO("WebSocket {:p} restarted market data feed for {} symbol(s)", (void*)client, symbols.size());
 }
 
 void CoinbaseExchange::onUserDataConnected(WebSocketClient* client) {
@@ -77,18 +130,15 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient* /* client */, uint64_t 
         symbol->order_book_->populateL2SubscriptionResponse(md_update_queue_, coinbase::WebSocketChannel::LEVEL2);
         pending_l2_subscriptions.erase(it);
         symbol->md_level_update_cache_.clear();
+        // TODO: publish MD order update
         symbol->md_order_update_cache_.clear();
     }
     else {
-        if (!symbol->md_level_update_cache_.empty()) {
-            publishLevelUpdate(symbol->symbol_.c_str(), symbol->md_level_update_cache_);
-            symbol->md_level_update_cache_.clear();
-        }
-
-        if (!symbol->md_order_update_cache_.empty()) {
-            // TODO: publish MD order update
-            symbol->md_order_update_cache_.clear();
-        }
+        symbol->order_book_->populateL2Snapshot(md_update_queue_);
+        pending_l2_subscriptions.erase(it);
+        symbol->md_level_update_cache_.clear();
+        // TODO: publish MD order update
+        symbol->md_order_update_cache_.clear();
     }
 
     // publishMDBookUpdate(symbol->id_, *symbol->order_book_.get(), indices);
@@ -166,7 +216,7 @@ void CoinbaseExchange::onMarketTradesSnapshot(WebSocketClient* /* client */, uin
     auto& state = symbol_event_state_[symbol];
 
     // Coinbase trades are in reverse chronological order
-    for (auto i = snapshots.size() - 1; i >= 0; i--) {
+    for (int i = snapshots.size() - 1; i >= 0; i--) {
         const auto& trade = snapshots[i];
         trades->price = to_price_t(trade.price);
         trades->qty = to_qty_t(trade.size);

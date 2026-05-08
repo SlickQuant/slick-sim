@@ -12,7 +12,7 @@ void OrderBookObserver::onOrderUpdate(const OrderUpdate& update) {
     symbol_->onOrderUpdate(update);
 }
 
-std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Order* order)
+std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Order* order, time_t request_time)
 {
     LOG_INFO("{} Adding order {}: oid={}, client_oid={}, price={}, qty={}, tif={}",
         symbol_, order->id, order->order_id, order->client_order_id,
@@ -21,7 +21,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
     // Pass Symbol's SMP mode to matching engine
     auto [reject_reason, trade_summaries] = matching_engine_->match(
         order, order->price, order->quantity, *order_book_.get(),
-        order->created_time, 0, smp_mode_
+        request_time, order->created_time, 0, smp_mode_
     );
 
     // Only add to book if no rejection and remaining quantity exists
@@ -43,28 +43,37 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
         }
     }
 
+    if (order->leaves_quantity == 0) {
+        order_book_->freeOrder(order);
+    }
+
     return std::make_tuple(reject_reason, trade_summaries);
 }
 
-std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::modifyOrder(Order* order, price_t new_price, qty_t new_qty)
+std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::modifyOrder(Order* order, price_t new_price, qty_t new_qty, time_t request_time)
 {
     LOG_INFO("{} Modifying order {}: oid={}, client_oid={}, new_price={}, new_qty={}", symbol_, order->id, order->order_id, order->client_order_id, new_price, new_qty);
     
-    auto [reject_reason, trade_summaries] = matching_engine_->match(order, new_price, new_qty, *order_book_.get(), order->last_update_time);
+    auto [reject_reason, trade_summaries] = matching_engine_->match(order, new_price, new_qty, *order_book_.get(), request_time, order->last_update_time);
     
+    order->last_update_time = utils::get_current_time_ns();
     if (reject_reason == OrdRejectReason::NONE) {
-        order_book_->modifyOrder(order, new_price, new_qty, order->last_update_time, 0, true);
+        order_book_->modifyOrder(order, new_price, order->leaves_quantity, order->last_update_time, 0, true);
+    }
+
+    if (order->leaves_quantity == 0) {
+        order_book_->freeOrder(order);
     }
     
-    order->last_update_time = std::chrono::system_clock::now().time_since_epoch().count();
     return std::make_tuple(reject_reason, trade_summaries);
 }
 
-void Symbol::cancelOrder(Order *order)
+void Symbol::cancelOrder(Order *order, time_t request_time)
 {
     LOG_INFO("{} Canceling order: oid={}, client_oid={}", symbol_, order->order_id, order->client_order_id);
-    order->last_update_time = std::chrono::system_clock::now().time_since_epoch().count();
+    order->last_update_time = utils::get_current_time_ns();
     order_book_->deleteOrder(order, order->last_update_time);
+    matching_engine_->publishOrderCancel(order, request_time);
     order_book_->freeOrder(order);
 }
 
@@ -76,7 +85,7 @@ void Symbol::onPriceLevelUpdate(const PriceLevelUpdate& update) {
         .qty = update.quantity,
         .num_orders = update.num_orders,
         .level_index = update.level_index,
-        .flags = (update.change_flags & slick::orderbook::PriceLevelChangeFlag::LastInBatch) ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE,
+        .flags = (update.change_flags & slick::orderbook::ChangeFlag::LastInBatch) ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE,
         .side = static_cast<Side>(update.side)
     });
 }

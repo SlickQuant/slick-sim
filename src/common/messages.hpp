@@ -298,6 +298,7 @@ struct OrderResponse {
     qty_t leaves_qty = 0;
     OrdRejectReason reject_reason = OrdRejectReason::NONE;
     time_t creation_time = 0;
+    time_t request_time = 0;
     time_t timestamp = 0;
     Side side = Side::UNKNOWN_SIDE;
     bool post_only = false;

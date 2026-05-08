@@ -71,12 +71,14 @@ public:
         return symbol();
     }
 
+    void onPriceLevelUpdate(const PriceLevelUpdate& update) override;
     void onOrderUpdate(const OrderUpdate& update) override;
 
     // The level quantity excludes exchange orders
     qty_t getMDLevelQty(price_t price) const;
 
     virtual void populateL2SubscriptionResponse(slick::SlickQueue<uint8_t> &md_update_queue, uint8_t channel) = 0;
+    virtual void populateL2Snapshot(slick::SlickQueue<uint8_t> &md_update_queue) = 0;
     virtual void populateMDBookUpdate(MDBookUpdate &book_update) = 0;
 
     using OrderBookL3::addOrder;
@@ -110,6 +112,20 @@ public:
             }
             orders_.erase(it);
         }
+    }
+
+    void deleteOrder(Order* order) {
+        auto it = orders_.find(order->id);
+        if (it != orders_.end()) {
+            if (!order->client_order_id.empty()) {
+                orders_by_client_order_id_.erase(order->client_order_id);
+            }
+            if (!order->order_id.empty()) {
+                orders_by_order_id_.erase(order->order_id);
+            }
+            orders_.erase(it);
+        }
+        freeOrder(order);
     }
 
     void modifyOrder(Order* order, price_t new_price, qty_t new_qty, uint64_t timestamp,
@@ -147,26 +163,28 @@ public:
     }
 
     bool executeOrder(slick::orderbook::OrderId order_id, slick::orderbook::Quantity executed_quantity, uint64_t timestamp, uint64_t seq_num = 0, bool is_last_in_batch = true) override {
-        auto rt = OrderBookL3::executeOrder(order_id, executed_quantity, timestamp, seq_num, is_last_in_batch);
         auto *order = findOrder(order_id);
         if (order) {
             order->leaves_quantity -= executed_quantity;
+            assert(order->leaves_quantity >= 0);
+            assert(executed_quantity > 0);
             order->last_update_time = timestamp;
-            order->avg_fill_price = ((to_price_double(order->avg_fill_price) * to_qty_double(order->cum_quantity)) + (to_price_double(order->price) * to_qty_double(executed_quantity))) / to_price_double(order->cum_quantity + executed_quantity) * DOUBLE_MULTIPLIER;
+            order->avg_fill_price = to_price_t(((to_price_double(order->avg_fill_price) * to_qty_double(order->cum_quantity)) + (to_price_double(order->price) * to_qty_double(executed_quantity))) / to_price_double(order->cum_quantity + executed_quantity));
             order->cum_quantity += executed_quantity;
             order->last_fill_price = order->price;
             order->last_fill_qty = executed_quantity;
             order->last_fill_time = timestamp;
             order->num_fills += 1;
-            if (order->leaves_quantity == 0) {
-                if (!order->client_order_id.empty()) {
-                    orders_by_client_order_id_.erase(order->client_order_id);
-                }
-                if (!order->order_id.empty()) {
-                    orders_by_order_id_.erase(order->order_id);
-                }
-                orders_.erase(order_id);
+        }
+        auto rt = OrderBookL3::executeOrder(order_id, executed_quantity, timestamp, seq_num, is_last_in_batch);
+        if (order && order->leaves_quantity == 0) {
+            if (!order->client_order_id.empty()) {
+                orders_by_client_order_id_.erase(order->client_order_id);
             }
+            if (!order->order_id.empty()) {
+                orders_by_order_id_.erase(order->order_id);
+            }
+            orders_.erase(order_id);
         }
         return rt;
     }
@@ -227,7 +245,8 @@ public:
 
     void populateMDBookUpdate(MDBookUpdate &book_update) override;
     void populateL2SubscriptionResponse(slick::SlickQueue<uint8_t> &md_update_queue, uint8_t channel) override;
-
+    void populateL2Snapshot(slick::SlickQueue<uint8_t> &md_update_queue) override;
+    
     // void modifyOrder(Order* order, price_t new_price, qty_t new_qty) override {}
 
 
@@ -243,7 +262,7 @@ inline Order* OrderBook::allocateOrder() {
     boost::uuids::uuid u = boost::uuids::random_generator()();
     order->order_id = boost::lexical_cast<std::string>(u);
     order->id = utils::nextOrderId();
-    order->created_time = std::chrono::system_clock::now().time_since_epoch().count();
+    order->created_time = utils::get_current_time_ns();
     order->last_update_time = order->created_time;
     return order;
 }
@@ -255,6 +274,13 @@ inline qty_t OrderBook::getMDLevelQty(price_t price) const {
     }
 
     return it->second;
+}
+
+inline void OrderBook::onPriceLevelUpdate(const PriceLevelUpdate& update) {
+    if (update.quantity == 0) {
+        SLICK_ASSERT(feed_md_level_quantity_.find(update.price) != feed_md_level_quantity_.end()
+            || feed_md_level_quantity_[update.price] == 0);
+    }
 }
 
 inline void OrderBook::onOrderUpdate(const OrderUpdate& update) {
@@ -283,6 +309,9 @@ inline void OrderBook::onOrderUpdate(const OrderUpdate& update) {
                 feed_md_level_quantity_[update.price] = update.quantity;
             }
         }
+    }
+    else if (update.quantity == 0 && our_order->quantity != update.quantity) {
+        our_order->leaves_quantity = 0;
     }
 }
 
@@ -390,7 +419,35 @@ inline void OrderBookImpl<OrderBookType::L2>::populateL2SubscriptionResponse(sli
     md_update_queue.publish(index, static_cast<uint32_t>(sz));
 }
 
+template<>
+inline void OrderBookImpl<OrderBookType::L2>::populateL2Snapshot(slick::SlickQueue<uint8_t> &md_update_queue) {
+    auto &ask_levels = getLevelsL3(orderbook::Side::Sell);
+    auto &bid_levels = getLevelsL3(orderbook::Side::Buy);
+    auto sz = sizeof(MarketDataUpdate) + sizeof(BookSnapshot) + (bid_levels.size() + ask_levels.size()) * sizeof(MDLevel);
+    auto index = md_update_queue.reserve(static_cast<uint32_t>(sz));
+    auto *update = reinterpret_cast<MarketDataUpdate*>(md_update_queue[index]);
+    memcpy(update->symbol, symbol_.c_str(), sizeof(update->symbol));
+    update->venue = venue_;
+    update->type = MDUpdateType::BOOK_SNAPSHOT;
 
+    auto *snapshot = reinterpret_cast<BookSnapshot*>(update->data);
+    snapshot->num_bid = static_cast<uint32_t>(bid_levels.size());
+    snapshot->num_ask = static_cast<uint32_t>(ask_levels.size());
+
+    auto *levels = reinterpret_cast<MDLevel*>(snapshot->levels);
+
+    for (auto it = bid_levels.begin(); it != bid_levels.end(); ++it, ++levels) {
+        levels->price = it->first;
+        levels->qty = it->second.total_quantity;
+        levels->num_orders = static_cast<uint32_t>(it->second.orderCount());
+    }
+    for (auto it = ask_levels.begin(); it != ask_levels.end(); ++it, ++levels) {
+        levels->price = it->first;
+        levels->qty = it->second.total_quantity;
+        levels->num_orders = static_cast<uint32_t>(it->second.orderCount());
+    }
+    md_update_queue.publish(index, static_cast<uint32_t>(sz));
+}
 
 // L3 Book Implementation
 
@@ -405,6 +462,10 @@ template<>
 inline void OrderBookImpl<OrderBookType::L3>::populateMDBookUpdate(MDBookUpdate& book_update) {
     // Stub implementation for testing
     // In production, this would populate MD book update
+}
+
+template<>
+inline void OrderBookImpl<OrderBookType::L3>::populateL2Snapshot(slick::SlickQueue<uint8_t> &md_update_queue) {
 }
 
 

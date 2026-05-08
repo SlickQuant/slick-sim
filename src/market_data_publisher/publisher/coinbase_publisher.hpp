@@ -47,6 +47,7 @@ private:
     void publishMarketDataUpdate();
     void handleMessage(wsT *ws, std::string_view message);
     void publishSubscriptionResponse(MarketDataUpdate *update);
+    void publishLevelSnapshot(MarketDataUpdate *update);
     void publishLevelUpdate(MarketDataUpdate *update);
     void publishOrderUpdate(MarketDataUpdate *update);
     // void publishTradeUpdate(MarketDataUpdate *update);

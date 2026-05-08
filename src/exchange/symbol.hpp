@@ -74,9 +74,9 @@ struct Symbol {
         order_book_->addObserver(book_observer_);
     }
 
-    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> addOrder(Order *order);
-    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> modifyOrder(Order* order, price_t new_price, qty_t new_qty);
-    void cancelOrder(Order *order);
+    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> addOrder(Order *order, time_t request_time);
+    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> modifyOrder(Order* order, price_t new_price, qty_t new_qty, time_t request_time);
+    void cancelOrder(Order *order, time_t request_time);
 
     Order* findOrderByClientOrderId(const char* client_order_id) const {
         return order_book_->findOrderByClientOrderId(client_order_id);

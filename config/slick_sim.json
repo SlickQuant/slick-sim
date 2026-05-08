@@ -2,6 +2,7 @@
     "order_request_queue_size": 16777216,
     "order_response_queue_size": 16777216,
     "md_event_queue": 16777216,
+    "log_level": "debug",
     "md_publisher": {
         "coinbase": {
             "port": 5000

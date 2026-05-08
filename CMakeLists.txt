@@ -64,7 +64,7 @@ else()
     message(STATUS "Found slick-object-pool: ${slick-object-pool_VERSION}")
 endif()
 
-find_package(coinbase-advanced-cpp 0.2.1 CONFIG QUIET)
+find_package(coinbase-advanced-cpp 0.2.2 CONFIG QUIET)
 if (NOT coinbase-advanced-cpp_FOUND)
     message(STATUS "Fetching coinbase-advanced-cpp...")
     FetchContent_Declare(
@@ -78,7 +78,7 @@ else()
 endif()
 
 # slick-net should be fetched after coinbase-advanced-cpp since it depends on it, and we want to avoid fetching the dependency twice if it's already available
-find_package(slick-net 2.0.0 CONFIG QUIET)
+find_package(slick-net 2.0.3 CONFIG QUIET)
 if (NOT slick-net_FOUND)
     message(STATUS "Fetching slick-net...")
     set(BUILD_SLICK_NET_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -86,12 +86,12 @@ if (NOT slick-net_FOUND)
     FetchContent_Declare(
         slick-net
         GIT_REPOSITORY https://github.com/SlickQuant/slick-net.git
-        GIT_TAG v2.0.0
+        GIT_TAG v2.0.3
     )
     FetchContent_MakeAvailable(slick-net)
 endif()
 
-find_package(slick-orderbook CONFIG QUIET)
+find_package(slick-orderbook 1.0.2 CONFIG QUIET)
 if (NOT slick-orderbook_FOUND)
     message(STATUS "Fetching slick-orderbook...")
     set(BUILD_COINBASE_ADVANCED_TESTS OFF CACHE BOOL "" FORCE)

@@ -6,7 +6,7 @@ using namespace slick::sim::engine;
 
 std::atomic<uint64_t> MatchingEngine::next_trade_id_{1};
 
-void MatchingEngine::publishOrderAck(const Order *order) {
+void MatchingEngine::publishOrderAck(const Order *order, time_t request_time) {
     auto index = order_response_queue_.reserve();
     auto &response = *order_response_queue_[index];
     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
@@ -26,6 +26,7 @@ void MatchingEngine::publishOrderAck(const Order *order) {
     response.leaves_qty = order->leaves_quantity;
     response.creation_time = order->created_time;
     response.timestamp = order->last_update_time;
+    response.request_time = request_time;
     response.side = order->side;
     response.post_only = order->post_only;
     order_response_queue_.publish(index);
@@ -57,7 +58,7 @@ void MatchingEngine::publishOrderExecution(const Order *order) {
     order_response_queue_.publish(index);
 }
 
-void MatchingEngine::publishOrderModify(const Order *order) {
+void MatchingEngine::publishOrderModify(const Order *order, price_t new_price, qty_t new_qty, time_t request_time) {
     auto index = order_response_queue_.reserve();
     auto &response = *order_response_queue_[index];
     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
@@ -69,19 +70,20 @@ void MatchingEngine::publishOrderModify(const Order *order) {
     response.order_status = OrderStatus::REPLACED;
     response.order_type = order->type;
     response.time_in_force = order->time_in_force;
-    response.price = order->price;
-    response.qty = order->quantity;
+    response.price = new_price;
+    response.qty = new_qty;
     response.last_qty = order->last_fill_qty;
     response.cum_qty = order->cum_quantity;
     response.leaves_qty = order->leaves_quantity;
     response.creation_time = order->created_time;
     response.timestamp = order->last_update_time;
+    response.request_time = request_time;
     response.side = order->side;
     response.post_only = order->post_only;
     order_response_queue_.publish(index);
 }
 
-void MatchingEngine::publishOrderCancel(const Order *order) {
+void MatchingEngine::publishOrderCancel(const Order *order, time_t request_time) {
     auto index = order_response_queue_.reserve();
     auto &response = *order_response_queue_[index];
     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
@@ -94,12 +96,15 @@ void MatchingEngine::publishOrderCancel(const Order *order) {
     response.order_type = order->type;
     response.time_in_force = order->time_in_force;
     response.price = order->price;
+    response.last_fill_price = order->last_fill_price;
     response.avg_fill_price = order->avg_fill_price;
     response.qty = order->quantity;
+    response.last_qty = order->last_fill_qty;
     response.cum_qty = order->cum_quantity;
     response.leaves_qty = 0;
     response.creation_time = order->created_time;
     response.timestamp = order->last_update_time;
+    response.request_time = request_time;
     response.side = order->side;
     response.post_only = order->post_only;
     order_response_queue_.publish(index);
