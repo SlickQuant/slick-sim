@@ -67,7 +67,15 @@ public:
     }
 
 private:
+    struct OrderValidationResult {
+        bool valid = true;
+        std::string error_type;
+        std::string error_details;
+    };
+
     std::unordered_map<std::string, std::string> order_id_to_symbol_;
+
+    OrderValidationResult validate_order(const std::string& product_id, double price_d, double qty_d, OrderType order_type) const;
 
     void setup_routes(uWS::App &app);
     void handle_get_product(uWS::HttpResponse<false>* res, uWS::HttpRequest* req);
@@ -75,6 +83,7 @@ private:
     void handle_create_order(uWS::HttpResponse<false>* res, uWS::HttpRequest* req);
     void handle_batch_cancel(uWS::HttpResponse<false>* res, uWS::HttpRequest* req);
     void handle_edit_order(uWS::HttpResponse<false>* res, uWS::HttpRequest* req);
+    void handle_get_transaction_summary(uWS::HttpResponse<false>* res, uWS::HttpRequest* req);
 };
 
 }

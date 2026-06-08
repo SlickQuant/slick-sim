@@ -276,7 +276,7 @@ void CoinbaseExchange::dispatchEvent(Symbol* symbol, const Event& event, SymbolE
                     auto to_reduce = std::min<qty_t>(diff, order.quantity);
                     symbol->order_book_->modifyOrder(order.order_id, event.price, order.quantity - to_reduce, event.event_time, order.priority, event.seq_num, (event.flags & UpdateFlags::F_END_EVENT) && (diff == 0));
                     diff -= to_reduce;
-                    if (diff == 0) {
+                    if (diff == 0 || symbol->order_book_->getMDLevelQty(event.price) == 0) {
                         break;
                     }
                 }

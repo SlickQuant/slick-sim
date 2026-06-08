@@ -56,6 +56,7 @@ void CoinbaseExchange::onMarketDataDisconnected(WebSocketClient* client) {
         if (symbol) {
             pending_md_subscription_[coinbase::WebSocketChannel::LEVEL2].emplace(symbol);
             pending_md_subscription_[coinbase::WebSocketChannel::MARKET_TRADES].emplace(symbol);
+            trade_snapshots_.erase(symbol);
         }
     }
 
@@ -135,7 +136,6 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient* /* client */, uint64_t 
     }
     else {
         symbol->order_book_->populateL2Snapshot(md_update_queue_);
-        pending_l2_subscriptions.erase(it);
         symbol->md_level_update_cache_.clear();
         // TODO: publish MD order update
         symbol->md_order_update_cache_.clear();
@@ -232,7 +232,6 @@ void CoinbaseExchange::onMarketTradesSnapshot(WebSocketClient* /* client */, uin
         evt.price = to_price_t(trade.price);
         evt.qty = to_qty_t(trade.size);
         evt.side = static_cast<Side>(trade.side);
-        it->second.push(evt);
         trade_snapshot.emplace(std::move(evt));
 
         trades++;
