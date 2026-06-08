@@ -1,6 +1,18 @@
 #include "coinbase_rest_client_manager.hpp"
+#include <coinbase/auth.hpp>
+#include <cmath>
 
 using namespace slick::sim::order_gateway::coinbase;
+
+namespace {
+
+bool is_multiple_of(double value, double increment) {
+    if (increment < 1e-12) return true;
+    double ratio = value / increment;
+    return std::abs(ratio - std::round(ratio)) < 1e-6;
+}
+
+}   // namespace
 
 std::tuple<bool, std::string, std::string> CoinbaseRestClientManager::authenticate(uWS::HttpRequest *req) {
     // Get the Authorization header
@@ -35,6 +47,49 @@ std::tuple<bool, std::string, std::string> CoinbaseRestClientManager::authentica
     }
 }
 
+CoinbaseRestClientManager::OrderValidationResult
+CoinbaseRestClientManager::validate_order(
+    const std::string& product_id, double price_d, double qty_d, OrderType order_type) const
+{
+    auto it = product_by_id_.find(product_id);
+    if (it == product_by_id_.end()) {
+        return {false, "INVALID_PRODUCT_ID", "Unknown product: " + product_id};
+    }
+
+    auto pj = json::parse(it->second);
+    auto get_d = [&](const char* key) -> double {
+        if (!pj.contains(key)) return 0.0;
+        auto& v = pj[key];
+        return v.is_string() ? std::stod(v.get<std::string>()) : v.get<double>();
+    };
+
+    const double price_inc = get_d("price_increment");
+    const double base_inc  = get_d("base_increment");
+    const double base_min  = get_d("base_min_size");
+
+    if (order_type != OrderType::MARKET && price_inc > 1e-12) {
+        if (!is_multiple_of(price_d, price_inc)) {
+            return {false, "INVALID_LIMIT_PRICE_POST_ONLY",
+                    "price " + std::to_string(price_d) +
+                    " is not a multiple of tick size " + std::to_string(price_inc)};
+        }
+    }
+
+    if (base_min > 1e-12 && qty_d < base_min - 1e-9) {
+        return {false, "INVALID_ORDER_CONFIG",
+                "qty " + std::to_string(qty_d) +
+                " is below minimum order size " + std::to_string(base_min)};
+    }
+
+    if (base_inc > 1e-12 && !is_multiple_of(qty_d, base_inc)) {
+        return {false, "INVALID_ORDER_CONFIG",
+                "qty " + std::to_string(qty_d) +
+                " is not a multiple of base increment " + std::to_string(base_inc)};
+    }
+
+    return {true, {}, {}};
+}
+
 void CoinbaseRestClientManager::start() {
     thread_ = std::move(std::thread([this]() {
         auto app = uWS::App();
@@ -67,6 +122,8 @@ void CoinbaseRestClientManager::setup_routes(uWS::App &app) {
         handle_batch_cancel(res, req);
     }).post("/api/v3/brokerage/orders/edit", [this](auto *res, auto *req) {
         handle_edit_order(res, req);
+    }).get("/api/v3/brokerage/transaction_summary", [this](auto *res, auto *req) {
+        handle_get_transaction_summary(res, req);
     });
 }
 
@@ -201,6 +258,29 @@ void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* re
             }
 
             Side side = (side_str == "BUY") ? Side::BUY : Side::SELL;
+
+            // Validate price and qty against product specs before queuing
+            {
+                const double price_d = (price != NULL_PRICE) ? to_price_double(price) : 0.0;
+                const double qty_d   = to_qty_double(qty);
+                auto vr = validate_order(product_id, price_d, qty_d, order_type);
+                if (!vr.valid) {
+                    json response_json = {
+                        {"success", false},
+                        {"error_response", {
+                            {"message",                  vr.error_type},
+                            {"error_details",            vr.error_details},
+                            {"new_order_failure_reason", vr.error_type}
+                        }}
+                    };
+                    res->writeStatus("400 Bad Request")
+                        ->writeHeader("Content-Type", "application/json")
+                        ->end(response_json.dump());
+                    LOG_ERROR("Order rejected (validation): user={}, client_order_id={}, reason={}",
+                              user_id, client_order_id, vr.error_details);
+                    return;
+                }
+            }
 
             // Reserve space in request queue
             auto request_index = request_queue_.reserve();
@@ -568,6 +648,25 @@ void CoinbaseRestClientManager::handle_edit_order(uWS::HttpResponse<false>* res,
                 new_qty = to_qty_t(std::stod(request_body["size"].get<std::string>()));
             }
 
+            // Validate modified price/qty against product specs before queuing
+            if (new_price != NULL_PRICE || new_qty != 0) {
+                const OrderType ot   = (new_price != NULL_PRICE) ? OrderType::LIMIT : OrderType::MARKET;
+                const double price_d = (new_price != NULL_PRICE) ? to_price_double(new_price) : 0.0;
+                const double qty_d   = (new_qty != 0) ? to_qty_double(new_qty) : 0.0;
+                auto vr = validate_order(symbol, price_d, qty_d, ot);
+                if (!vr.valid) {
+                    res->writeStatus("400 Bad Request")
+                        ->writeHeader("Content-Type", "application/json")
+                        ->end(json({
+                            {"success", false},
+                            {"errors", json::array({{{"edit_failure_reason", vr.error_type}}})}
+                        }).dump());
+                    LOG_ERROR("Edit order rejected (validation): user={}, order_id={}, reason={}",
+                              user_id, order_id, vr.error_details);
+                    return;
+                }
+            }
+
             uint64_t response_read_index = response_queue_.initial_reading_index();
 
             auto request_index = request_queue_.reserve();
@@ -656,4 +755,21 @@ void CoinbaseRestClientManager::handle_edit_order(uWS::HttpResponse<false>* res,
             LOG_ERROR("Unexpected error in POST /orders/edit: {}", e.what());
         }
     });
+}
+
+void CoinbaseRestClientManager::handle_get_transaction_summary(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
+    auto [authenticated, user_id, error_response] = authenticate(req);
+    if (!authenticated) {
+        res->writeStatus("401 Unauthorized")
+            ->writeHeader("Content-Type", "application/json")
+            ->end(error_response);
+        return;
+    }
+
+    auto rsp = Http::get("https://api.coinbase.com/api/v3/brokerage/transaction_summary", {
+            {"Authorization", "Bearer " + ::coinbase::generate_coinbase_jwt("GET api.coinbase.com/api/v3/brokerage/transaction_summary")}
+        });
+    res->writeStatus(std::to_string(rsp.result_code) + " " + rsp.reason)
+        ->writeHeader("Content-Type", "application/json")
+        ->end(rsp.result_text);
 }

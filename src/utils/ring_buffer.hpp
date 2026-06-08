@@ -22,6 +22,32 @@ public:
         buffer_ = nullptr;
     }
 
+    RingBuffer(const RingBuffer&) = delete;
+    RingBuffer& operator=(const RingBuffer&) = delete;
+
+    RingBuffer(RingBuffer&& other) noexcept
+        : capacity_(other.capacity_)
+        , buffer_(other.buffer_)
+        , head_(other.head_)
+        , tail_(other.tail_)
+        , mask_(other.mask_)
+    {
+        other.buffer_ = nullptr;
+    }
+
+    RingBuffer& operator=(RingBuffer&& other) noexcept {
+        if (this != &other) {
+            delete[] buffer_;
+            capacity_ = other.capacity_;
+            buffer_   = other.buffer_;
+            head_     = other.head_;
+            tail_     = other.tail_;
+            mask_     = other.mask_;
+            other.buffer_ = nullptr;
+        }
+        return *this;
+    }
+
     void push(const T& item) {
         buffer_[head_++ & mask_] = item;
         if ((head_ & mask_) == (tail_ & mask_)) {
