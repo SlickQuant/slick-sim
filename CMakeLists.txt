@@ -78,7 +78,7 @@ else()
 endif()
 
 # slick-net should be fetched after coinbase-advanced-cpp since it depends on it, and we want to avoid fetching the dependency twice if it's already available
-find_package(slick-net 2.0.3 CONFIG QUIET)
+find_package(slick-net 2.1.0 CONFIG QUIET)
 if (NOT slick-net_FOUND)
     message(STATUS "Fetching slick-net...")
     set(BUILD_SLICK_NET_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -86,9 +86,11 @@ if (NOT slick-net_FOUND)
     FetchContent_Declare(
         slick-net
         GIT_REPOSITORY https://github.com/SlickQuant/slick-net.git
-        GIT_TAG v2.0.3
+        GIT_TAG v2.1.0
     )
     FetchContent_MakeAvailable(slick-net)
+else()
+    message(STATUS "Found slick-net: ${slick-net_VERSION}")
 endif()
 
 find_package(slick-orderbook 1.0.2 CONFIG QUIET)
@@ -103,6 +105,19 @@ if (NOT slick-orderbook_FOUND)
     FetchContent_MakeAvailable(slick-orderbook)
 else()
     message(STATUS "Found slick-orderbook: ${slick-orderbook_VERSION}")
+endif()
+
+find_package(hyperliquid-cpp 0.1.2 CONFIG QUIET)
+if (NOT hyperliquid-cpp_FOUND)
+    message(STATUS "Fetching hyperliquid-cpp...")
+    FetchContent_Declare(
+        hyperliquid-cpp
+        GIT_REPOSITORY https://github.com/SlickQuant/hyperliquid-cpp.git
+        GIT_TAG v0.1.2
+    )
+    FetchContent_MakeAvailable(hyperliquid-cpp)
+else()
+    message(STATUS "Found hyperliquid-cpp: ${hyperliquid-cpp_VERSION}")
 endif()
 
 # Add QuickFIX dependency (prefer vcpkg installation)

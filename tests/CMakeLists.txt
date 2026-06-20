@@ -31,22 +31,28 @@ add_executable(slick_sim_tests
     unit/exchange/test_symbol.cpp
     unit/exchange/test_symbol_manager.cpp
     unit/exchange/test_coinbase_exchange.cpp
+    unit/exchange/test_hyperliquid_exchange.cpp
 
     # Priority 5: Type & Message Tests
     unit/common/test_types.cpp
     unit/common/test_messages.cpp
+
+    # Priority 6: Order Gateway Tests
+    unit/order_gateway/test_hyperliquid_rest_client_manager.cpp
 )
 
 target_link_libraries(slick_sim_tests
     PRIVATE
         matching_engine
         exchange
+        order_gateway
         GTest::gtest
         GTest::gtest_main
         slick::logger
         slick::queue
         slick::object-pool
         slick::orderbook
+        slick::net
         nlohmann_json::nlohmann_json
 )
 

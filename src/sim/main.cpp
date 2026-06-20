@@ -9,6 +9,7 @@
 #include <order_gateway/order_gateway.hpp>
 #include <order_gateway/message_parser.hpp>
 #include <exchange/exch_coinbase.hpp>
+#include <exchange/exch_hyperliquid.hpp>
 #include <common/messages.hpp>
 #include <market_data_publisher/market_data_publisher.hpp>
 #include <coinbase/logging.hpp>
@@ -197,6 +198,13 @@ int main(int argc, char* argv[]) {
     {
         if (it.key() == "coinbase") {
             exchanges.emplace_back(std::make_unique<slick::sim::exch::CoinbaseExchange>(
+                it.value(), request_queue, order_response_queue, md_update_queue)
+            );
+            exchanges.back()->run();
+            continue;
+        }
+        if (it.key() == "hyperliquid") {
+            exchanges.emplace_back(std::make_unique<slick::sim::exch::HyperliquidExchange>(
                 it.value(), request_queue, order_response_queue, md_update_queue)
             );
             exchanges.back()->run();

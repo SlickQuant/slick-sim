@@ -36,6 +36,7 @@ enum Venue : uint8_t {
     CME,
     ICE,
     COINBASE,
+    HYPERLIQUID,
     STOCK,
     __COUNT__,  // for internal use only
 };
@@ -48,6 +49,8 @@ inline const char* to_string(Venue venue) {
         return "ICE";
     case Venue::COINBASE:
         return "COINBASE";
+    case Venue::HYPERLIQUID:
+        return "HYPERLIQUID";
     case Venue::STOCK:
         return "STOCK";
     case Venue::__COUNT__:
@@ -67,6 +70,10 @@ inline Venue to_venue(std::string_view exch) {
 
     if (exch == "COINBASE" || exch == "coinbase") {
         return Venue::COINBASE;
+    }
+
+    if (exch == "HYPERLIQUID" || exch == "hyperliquid") {
+        return Venue::HYPERLIQUID;
     }
 
     if (exch == "STOCK" || exch == "stock") {

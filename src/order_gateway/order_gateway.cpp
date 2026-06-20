@@ -2,6 +2,7 @@
 #include "client_manager/tcp_client_manager.hpp"
 #include "client_manager/coinbase_rest_client_manager.hpp"
 #include "client_manager/coinbase_ws_client_manager.hpp"
+#include "client_manager/hyperliquid_rest_client_manager.hpp"
 
 using TCPServerConfig = slick::socket::TCPServerConfig;
 
@@ -17,46 +18,46 @@ OrderGateway::OrderGateway(
     , default_protocol_(default_protocol)
     , auto_detect_protocol_(true)
 {
-    if (config.contains("tcp")) {
-        auto &tcp = config["tcp"];
-        TCPServerConfig tcp_config;
-        tcp_config.port = tcp.value("port", tcp_config.port);
-        tcp_config.receive_buffer_size = tcp.value("receive_buffer_size", 65535);
-        tcp_config.cpu_affinity = tcp.value("cpu_affinity", tcp_config.cpu_affinity);
+    for (auto it = config.begin(); it != config.end(); ++it) {
+        const std::string& exch = it.key();
+        const json& exch_cfg = it.value();
 
-        std::string_view exchange = tcp.value("exchange", "");
-        client_managers_.emplace_back(std::make_unique<TcpClientManager>(tcp, request_queue_, order_response_queue_, tcp_config));
-    }
+        if (exch_cfg.contains("tcp")) {
+            const json& tcp = exch_cfg["tcp"];
+            TCPServerConfig tcp_config;
+            tcp_config.port = tcp.value("port", tcp_config.port);
+            tcp_config.receive_buffer_size = tcp.value("receive_buffer_size", 65535);
+            tcp_config.cpu_affinity = tcp.value("cpu_affinity", tcp_config.cpu_affinity);
+            json tcp_cfg = tcp; tcp_cfg["exchange"] = exch;
+            client_managers_.emplace_back(
+                std::make_unique<TcpClientManager>(tcp_cfg, request_queue_, order_response_queue_, tcp_config));
+        }
 
-    if (config.contains("rest")) {
-        auto &rest = config["rest"];
-        if (!rest.contains("exchange")) {
-            throw std::runtime_error("Missing exchange in order_gateway.rest config");
+        if (exch_cfg.contains("rest")) {
+            const json& rest = exch_cfg["rest"];
+            json rest_cfg = rest; rest_cfg["exchange"] = exch;
+            if (exch == "coinbase") {
+                client_managers_.emplace_back(
+                    std::make_unique<coinbase::CoinbaseRestClientManager>(rest_cfg, request_queue_, order_response_queue_));
+            } else if (exch == "hyperliquid") {
+                client_managers_.emplace_back(
+                    std::make_unique<hyperliquid_hl::HyperliquidRestClientManager>(rest_cfg, request_queue_, order_response_queue_));
+            } else {
+                throw std::runtime_error(std::format("Unsupported exchange '{}' for REST client", exch));
+            }
         }
-        std::string exch = rest.value("exchange", "");
-        if (exch == "coinbase") {
-            client_managers_.emplace_back(std::make_unique<coinbase::CoinbaseRestClientManager>(rest, request_queue_, order_response_queue_));
-        }
-        else {
-            throw std::runtime_error(std::format("Unsupported exchange {}", exch));
-        }
-    }
 
-    if (config.contains("ws")) {
-        auto &rest = config["ws"];
-        if (!rest.contains("exchange")) {
-            throw std::runtime_error("Missing exchange in order_gateway.rest config");
-        }
-        std::string exch = rest.value("exchange", "");
-        if (exch == "coinbase") {
-            client_managers_.emplace_back(std::make_unique<coinbase::CoinbaseWebsocketClientManager>(rest, request_queue_, order_response_queue_));
-        }
-        else {
-            throw std::runtime_error(std::format("Unsupported exchange {}", exch));
+        if (exch_cfg.contains("ws")) {
+            const json& ws = exch_cfg["ws"];
+            json ws_cfg = ws; ws_cfg["exchange"] = exch;
+            if (exch == "coinbase") {
+                client_managers_.emplace_back(
+                    std::make_unique<coinbase::CoinbaseWebsocketClientManager>(ws_cfg, request_queue_, order_response_queue_));
+            } else {
+                throw std::runtime_error(std::format("Unsupported exchange '{}' for WS client", exch));
+            }
         }
     }
-    // LOG_INFO("Multi-protocol OrderGateway initialized on port {} with default protocol: {}", 
-    //          config.port, static_cast<int>(default_protocol));
 }
 
 OrderGateway::~OrderGateway() {
