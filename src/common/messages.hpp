@@ -74,6 +74,7 @@ enum class OrdRejectReason : uint16_t {
     NONE,
     UNKNOWN,
     UNKNOWN_CONTRACT,
+    UNKNOWN_ORDER,
     MARKET_CLOSED,
     MARKET_HALTED,
     SMP,
@@ -90,6 +91,8 @@ enum class OrdRejectReason : uint16_t {
     INVALID_TICK_SIZE,
     INVALID_QTY,
     INVALID_MIN_QTY,
+    CLIENT_ORDER_ID_ALREADY_EXISTS,
+    FOK_CANNOT_FILL,
 };
 
 inline std::string to_string(OrdRejectReason reject)
@@ -101,6 +104,8 @@ inline std::string to_string(OrdRejectReason reject)
             return "UNKNOWN";
         case OrdRejectReason::UNKNOWN_CONTRACT:
             return "UNKNOWN_CONTRACT";
+        case OrdRejectReason::UNKNOWN_ORDER:
+            return "UNKNOWN_ORDER";
         case OrdRejectReason::MARKET_CLOSED:
             return "MARKET_CLOSED";
         case OrdRejectReason::MARKET_HALTED:
@@ -133,6 +138,10 @@ inline std::string to_string(OrdRejectReason reject)
             return "INVALID_QTY";
         case OrdRejectReason::INVALID_MIN_QTY:
             return "INVALID_MIN_QTY";
+        case OrdRejectReason::CLIENT_ORDER_ID_ALREADY_EXISTS:
+            return "CLIENT_ORDER_ID_ALREADY_EXISTS";
+        case OrdRejectReason::FOK_CANNOT_FILL:
+            return "FOK_CANNOT_FILL";
     }
     return std::format("UNHANDLED OrdRejectReason ({0})", static_cast<std::underlying_type<OrdRejectReason>::type>(reject));
 }
@@ -221,8 +230,8 @@ enum class MessageType : uint8_t {
 };
 
 struct AddOrderMessage {
-    char user_id[36];
-    char client_order_id[36];
+    char user_id[37];
+    char client_order_id[37];
     Side side;
     OrderType type;
     TimeInForce time_in_force;
@@ -234,17 +243,17 @@ struct AddOrderMessage {
 };
 
 struct ModifyOrderMessage {
-    char user_id[36];
-    char order_id[36];
-    char client_order_id[36];
+    char user_id[37];
+    char order_id[37];
+    char client_order_id[37];
     price_t new_price;
     qty_t new_qty;
 };
 
 struct CancelOrderMessage {
-    char user_id[36];
-    char order_id[36];
-    char client_order_id[36];
+    char user_id[37];
+    char order_id[37];
+    char client_order_id[37];
 };
 
 struct MDSubscriptionMessage {
@@ -270,17 +279,29 @@ struct Request {
 };
 
 struct OrderResponse {
-    char user_id[36];
-    char client_order_id[36];
-    char order_id[36];
-    MessageType request_type = MessageType::UNKNOWN;
+    char symbol[32];
+    char user_id[37];
+    char client_order_id[37];
+    char order_id[37];
+    char error_message[256];
+    MessageType response_type = MessageType::UNKNOWN;
+    ExecType exec_type = ExecType::NEW;
     OrderStatus order_status = OrderStatus::NEW;
+    OrderType order_type = OrderType::UNKNOWN;
+    TimeInForce time_in_force = TimeInForce::DAY;
     price_t price = NULL_PRICE;
+    price_t last_fill_price = NULL_PRICE;
+    price_t avg_fill_price = NULL_PRICE;
     qty_t qty = 0;
+    qty_t last_qty = 0;
     qty_t cum_qty = 0;
     qty_t leaves_qty = 0;
     OrdRejectReason reject_reason = OrdRejectReason::NONE;
+    time_t creation_time = 0;
+    time_t request_time = 0;
     time_t timestamp = 0;
+    Side side = Side::UNKNOWN_SIDE;
+    bool post_only = false;
 };
 
 struct Trade {
@@ -290,7 +311,8 @@ struct Trade {
 
 struct TradeSummary {
     time_t timestamp = 0;
-    int32_t security_id;
+    uint64_t trade_id;
+    int16_t security_id;
     Side aggressor_side;
     price_t price;
     qty_t qty;
@@ -299,5 +321,15 @@ struct TradeSummary {
 };
 
 #pragma pack(pop)
+
+struct TradeSummaryInfo {
+    time_t timestamp = 0;
+    uint64_t trade_id;
+    Side aggressor_side;
+    price_t price;
+    qty_t qty;
+    int32_t num_orders;
+    std::vector<Trade> Trades;
+};
 
 }   // end namespace slick::sim

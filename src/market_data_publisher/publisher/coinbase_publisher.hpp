@@ -47,7 +47,10 @@ private:
     void publishMarketDataUpdate();
     void handleMessage(wsT *ws, std::string_view message);
     void publishSubscriptionResponse(MarketDataUpdate *update);
+    void publishLevelSnapshot(MarketDataUpdate *update);
     void publishLevelUpdate(MarketDataUpdate *update);
+    void publishOrderUpdate(MarketDataUpdate *update);
+    // void publishTradeUpdate(MarketDataUpdate *update);
     void checkHeartbeats();
     void handleClose(wsT *ws, int code, std::string_view message);
     void sendError(wsT *ws, const std::string& error_msg);

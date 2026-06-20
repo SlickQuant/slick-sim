@@ -116,9 +116,9 @@ Order JsonParser::parse_new_order_json(const nlohmann::json& json_order, int cli
     // Price (if present)
     if (order_data.contains(field_mapping_.price) && !order_data[field_mapping_.price].is_null()) {
         if (order_data[field_mapping_.price].is_string()) {
-            order.price = std::stod(order_data[field_mapping_.price].get<std::string>());
+            order.price = to_price_t(std::stod(order_data[field_mapping_.price].get<std::string>()));
         } else {
-            order.price = order_data[field_mapping_.price].get<double>();
+            order.price = to_price_t(order_data[field_mapping_.price].get<double>());
         }
     }
     

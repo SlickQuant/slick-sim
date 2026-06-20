@@ -5,25 +5,37 @@
 #include <memory>
 #include <tuple>
 #include <unordered_set>
+#include <slick/orderbook/observer.hpp>
 
 namespace slick::sim::exch {
 
+struct Symbol;
+
+struct OrderBookObserver : public orderbook::IOrderBookObserver {
+    Symbol* symbol_;
+    OrderBookObserver(Symbol* symbol) : symbol_(symbol) {}
+
+    void onPriceLevelUpdate(const PriceLevelUpdate& update) override;
+
+    void onOrderUpdate(const OrderUpdate& update) override;
+};
+
 struct Symbol {
-    symid_t id_;
+    symid_t id_ = INVALID_SYMBOL_ID;
     Venue venue_;
     std::string symbol_;
     engine::MatchingEngine *matching_engine_;
-    std::unique_ptr<OrderBook> order_book_;
+    std::shared_ptr<OrderBook> order_book_;
     std::atomic_uint16_t num_subscriptions_ = 0;
+    SelfMatchPreventionMode smp_mode_ = SelfMatchPreventionMode::NONE;
+    std::vector<MDLevel> md_level_update_cache_;
+    std::vector<MDOrder> md_order_update_cache_;
+    std::shared_ptr<OrderBookObserver> book_observer_;
 
-    void setId(symid_t id) noexcept {
-        id_ = id;
-        if (order_book_) {
-            order_book_->setSid(id);
-        }
-    }
-
-    Symbol() = default;
+    Symbol() : book_observer_(std::make_shared<OrderBookObserver>(this)) {
+        md_level_update_cache_.reserve(64);
+        md_order_update_cache_.reserve(256);
+    };
     ~Symbol() = default;
 
     Symbol(const Symbol&) = delete;
@@ -36,7 +48,13 @@ struct Symbol {
         , matching_engine_(std::exchange(other.matching_engine_, nullptr))
         , order_book_(std::move(other.order_book_))
         , num_subscriptions_(other.num_subscriptions_.load(std::memory_order_relaxed))
-    {}
+        , book_observer_(std::make_shared<OrderBookObserver>(this))
+    {
+        if (order_book_) {
+            order_book_->removeObserver(other.book_observer_);
+            order_book_->addObserver(book_observer_);
+        }
+    }
     Symbol& operator= (Symbol&& other) {
         if (this != &other) {
             id_ = std::exchange(other.id_, 0);
@@ -49,26 +67,34 @@ struct Symbol {
         return *this;
     }
 
-    std::tuple<OrdRejectReason, Order*, std::vector<TradeSummary>> addOrder(const AddOrderMessage &msg);
-    std::tuple<OrdRejectReason, Order*, std::vector<TradeSummary>> modifyOrder(const ModifyOrderMessage &msg);
-    std::tuple<OrdRejectReason, Order*> cancelOrder(const CancelOrderMessage &msg);
+    template<OrderBookType BookType>
+    void createOrderBook() {
+        order_book_ = std::make_shared<OrderBookImpl<BookType>>(id_, symbol_, venue_);
+        order_book_->addObserver(order_book_->shared_from_this());
+        order_book_->addObserver(book_observer_);
+    }
+
+    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> addOrder(Order *order, time_t request_time);
+    std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> modifyOrder(Order* order, price_t new_price, qty_t new_qty, time_t request_time);
+    void cancelOrder(Order *order, time_t request_time);
+
+    Order* findOrderByClientOrderId(const char* client_order_id) const {
+        return order_book_->findOrderByClientOrderId(client_order_id);
+    }
+
+    Order* findOrderByOrderId(const char* order_id) const {
+        return order_book_->findOrderByOrderId(order_id);
+    }
+
+    Order* findOrder(uint64_t order_id) const {
+        return order_book_->findOrder(order_id);
+    }
+
+    void onPriceLevelUpdate(const PriceLevelUpdate& update);
+
+    /// Called when an individual order is updated (L3 event)
+    void onOrderUpdate(const OrderUpdate& update);
 };
 
 
-
-inline std::tuple<OrdRejectReason, Order*, std::vector<TradeSummary>> Symbol::addOrder(const AddOrderMessage &msg)
-{
-    return matching_engine_->addOrder(*order_book_.get(), msg);
-}
-
-inline std::tuple<OrdRejectReason, Order*, std::vector<TradeSummary>> Symbol::modifyOrder(const ModifyOrderMessage &msg)
-{
-    return matching_engine_->modifyOrder(*order_book_.get(), msg);
-}
-
-inline std::tuple<OrdRejectReason, Order*> Symbol::cancelOrder(const CancelOrderMessage &msg)
-{
-    return matching_engine_->cancelOrder(*order_book_.get(), msg);
-}
-
-}
+} // namespace exchange

@@ -1,11 +1,13 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <chrono>
 #include <cstdint>
 #include <nlohmann/json.hpp>
 #include <limits>
 #include "types.hpp"
+#include <utils/timestamp.hpp>
 
 using json = nlohmann::json;
 
@@ -17,7 +19,7 @@ enum Side : uint8_t {
     UNKNOWN_SIDE,
 };
 
-inline Side opposite_side(Side side) {
+inline constexpr Side opposite_side(Side side) {
     switch(side) {
     case Side::BUY:
         return Side::SELL;
@@ -29,7 +31,18 @@ inline Side opposite_side(Side side) {
     return Side::UNKNOWN_SIDE;
 }
 
-inline std::string to_string(Side side) {
+template<Side S>
+inline constexpr Side opposite_side() {
+    if constexpr (S == Side::BUY) {
+        return Side::SELL;
+    } else if constexpr (S == Side::SELL) {
+        return Side::BUY;
+    } else {
+        return Side::UNKNOWN_SIDE;
+    }
+}
+
+inline constexpr std::string_view to_string(Side side) {
     switch(side)
     {
     case Side::BUY:
@@ -56,7 +69,7 @@ enum class OrderType : char {
     SCALED = 'A',
  };
 
- inline std::string to_string(OrderType type) {
+ inline constexpr std::string_view to_string(OrderType type) {
     switch(type) {
     case OrderType::MARKET:
         return "MARKET";
@@ -82,6 +95,51 @@ enum class OrderType : char {
     return "UNKNOWN";
 }
 
+enum class ExecType : char {
+    NEW = '0',
+    CANCELED = '4',
+    REPLACED = '5',
+    PENDING_CANCEL = '6',
+    REJECTED = '8',
+    EXPIRED = 'C',
+    PENDING_REPLACE = 'E',
+    TRADE = 'F',
+    TRADE_CORRECT = 'G',
+    TRADE_CANCEL = 'H',
+    ORDER_STATUS = 'I',
+    RESTATED = 'D',
+};
+
+inline constexpr std::string_view to_string(ExecType exec_type) {
+    switch (exec_type) {
+    case ExecType::NEW:
+        return "NEW";
+    case ExecType::CANCELED:
+        return "CANCELED";
+    case ExecType::REPLACED:
+        return "REPLACED";
+    case ExecType::PENDING_CANCEL:
+        return "PENDING_CANCEL";
+    case ExecType::REJECTED:
+        return "REJECTED";
+    case ExecType::EXPIRED:
+        return "EXPIRED";
+    case ExecType::PENDING_REPLACE:
+        return "PENDING_REPLACE";
+    case ExecType::TRADE:
+        return "TRADE";
+    case ExecType::TRADE_CORRECT:
+        return "TRADE_CORRECT";
+    case ExecType::TRADE_CANCEL:
+        return "TRADE_CANCEL";
+    case ExecType::ORDER_STATUS:
+        return "ORDER_STATUS";
+    case ExecType::RESTATED:
+        return "RESTATED";
+    }
+    return "UNKNOWN";
+}
+
 enum class OrderStatus : char {
     NEW = '0',
     PARTIALLY_FILLED = '1',
@@ -100,6 +158,42 @@ enum class OrderStatus : char {
     PENDING_REPLACE = 'E'
 };
 
+inline constexpr std::string_view to_string(OrderStatus status) {
+    switch (status) {
+    case OrderStatus::NEW:
+        return "NEW";
+    case OrderStatus::PARTIALLY_FILLED:
+        return "PARTIALLY_FILLED";
+    case OrderStatus::FILLED:
+        return "FILLED";
+    case OrderStatus::DONE_FOR_DAY:
+        return "DONE_FOR_DAY";
+    case OrderStatus::CANCELED:
+        return "CANCELLED";
+    case OrderStatus::REPLACED:
+        return "REPLACED";
+    case OrderStatus::PENDING_CANCEL:
+        return "PENDING_CANCEL";
+    case OrderStatus::STOPPED:
+        return "STOPPED";
+    case OrderStatus::REJECTED:
+        return "REJECTED";
+    case OrderStatus::SUSPENDED:
+        return "SUSPENDED";
+    case OrderStatus::PENDING_NEW:
+        return "PENDING_NEW";
+    case OrderStatus::CALCULATED:
+        return "CALCULATED";
+    case OrderStatus::EXPIRED:
+        return "EXPIRED";
+    case OrderStatus::ACCEPTED_FOR_BIDDING:
+        return "ACCEPTED_FOR_BIDDING";
+    case OrderStatus::PENDING_REPLACE:
+        return "PENDING_REPLACE";
+    }
+    return "UNKNOWN";
+}
+
 enum class TimeInForce : char {
     DAY = '0',
     GOOD_TILL_CANCEL = '1',
@@ -110,13 +204,39 @@ enum class TimeInForce : char {
     GOOD_TILL_DATE = '6'
 };
 
+inline std::string_view to_string(TimeInForce tif) {
+    switch (tif) {
+    case TimeInForce::DAY:
+        return "DAY";
+    case TimeInForce::GOOD_TILL_CANCEL:
+        return "GOOD_TILL_CANCEL";
+    case TimeInForce::AT_THE_OPENING:
+        return "AT_THE_OPENING";
+    case TimeInForce::IMMEDIATE_OR_CANCEL:
+        return "IMMEDIATE_OR_CANCEL";
+    case TimeInForce::FILL_OR_KILL:
+        return "FILL_OR_KILL";
+    case TimeInForce::GOOD_TILL_CROSSING:
+        return "GOOD_TILL_CROSSING";
+    case TimeInForce::GOOD_TILL_DATE:
+        return "GOOD_TILL_DATE";
+    }
+    return "UNKNOWN";
+}
+
+enum class SelfMatchPreventionMode : uint8_t {
+    NONE = 0,           // No SMP, allow self-matching
+    CANCEL_RESTING = 1, // Cancel the resting order on the book
+    CANCEL_NEWEST = 2,  // Cancel/reject the incoming order
+};
+
 enum class ProductType : uint8_t {
     UNKNOWN,
     SPOT,
     FUTURE,
 };
 
-inline std::string to_string(ProductType type) {
+inline constexpr std::string_view to_string(ProductType type) {
     switch(type) {
     case ProductType::SPOT:
         return "SPOT";
@@ -147,17 +267,18 @@ struct Order {
     price_t price = 0;
     qty_t quantity = 0;
     qty_t leaves_quantity = 0;
-    price_t avg_filled_price = 0;
-    qty_t filled_quantity = 0;
-    price_t last_filled_price = 0; 
-    qty_t last_filled_qty = 0;
+    price_t avg_fill_price = 0;
+    qty_t cum_quantity = 0;
+    price_t last_fill_price = 0; 
+    qty_t last_fill_qty = 0;
     uint32_t num_fills = 0;
     double fee = 0;
     double filled_value = 0;
     
     int client_id = -1;
-    std::chrono::system_clock::time_point created_time = std::chrono::system_clock::now();
-    std::optional<std::chrono::system_clock::time_point> last_fill_time;
+    uint64_t created_time = utils::get_current_time_ns();
+    uint64_t last_update_time = created_time;
+    std::optional<uint64_t> last_fill_time;
 
     std::string reject_message;
     std::string cancel_message;
@@ -167,31 +288,31 @@ struct Order {
     Order() = default;
 
     double price_double() const noexcept {
-        return static_cast<double>(price) / DOUBLE_MULTIPLIER;
+        return to_price_double(price);
     }
 
     double qty_double() const noexcept {
-        return static_cast<double>(quantity) / DOUBLE_MULTIPLIER;
+        return to_qty_double(quantity);
     }
 
-    double filled_qty_double() const noexcept {
-        return static_cast<double>(filled_quantity) / DOUBLE_MULTIPLIER;
+    double cum_qty_double() const noexcept {
+        return to_qty_double(cum_quantity);
     }
 
     double leaves_qty_double() const noexcept {
-        return static_cast<double>(leaves_quantity) / DOUBLE_MULTIPLIER;
+        return to_qty_double(leaves_quantity);
     }
 
-    double last_filled_qty_double() const noexcept {
-        return static_cast<double>(last_filled_qty) / DOUBLE_MULTIPLIER;
+    double last_fill_qty_double() const noexcept {
+        return to_qty_double(last_fill_qty);
     }
 
-    double last_filled_price_double() const noexcept {
-        return static_cast<double>(last_filled_price) / DOUBLE_MULTIPLIER;
+    double last_fill_price_double() const noexcept {
+        return to_price_double(last_fill_price);
     }
 
-    double avg_filled_price_double() const noexcept {
-        return static_cast<double>(avg_filled_price) / DOUBLE_MULTIPLIER;
+    double avg_fill_price_double() const noexcept {
+        return to_price_double(avg_fill_price);
     }
 };
 

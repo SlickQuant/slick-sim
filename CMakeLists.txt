@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.25)
 
-set(BUILD_VERSION 0.1.0)
-project(ExchangeSimulator VERSION ${BUILD_VERSION} LANGUAGES CXX)
+project(ExchangeSimulator VERSION 0.1.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -17,7 +16,7 @@ endif()
 
 include(FetchContent)
 
-find_package(slick-logger 1.0.4 CONFIG QUIET)
+find_package(slick-logger 1.0.8 CONFIG QUIET)
 if (NOT slick-logger_FOUND)
     message(STATUS "Fetching slick-logger...")
     # Disable examples, tests, and benchmarks for slick_logger
@@ -27,12 +26,14 @@ if (NOT slick-logger_FOUND)
     FetchContent_Declare(
         slick-logger
         GIT_REPOSITORY https://github.com/SlickQuant/slick-logger.git
-        GIT_TAG v1.0.4
+        GIT_TAG v1.0.8
     )
     FetchContent_MakeAvailable(slick-logger)
+else()
+    message(STATUS "Found slick-logger: ${slick-logger_VERSION}")
 endif()
 
-find_package(slick-socket 1.0.4 CONFIG QUIET)
+find_package(slick-socket 1.0.6 CONFIG QUIET)
 if (NOT slick-socket_FOUND)
     message(STATUS "Fetching slick-socket...")
     # Disable slick-socket example, and tests
@@ -42,22 +43,11 @@ if (NOT slick-socket_FOUND)
     FetchContent_Declare(
         slick-socket
         GIT_REPOSITORY https://github.com/SlickQuant/slick-socket.git
-        GIT_TAG v1.0.4
+        GIT_TAG v1.0.6
     )
     FetchContent_MakeAvailable(slick-socket)
-endif()
-
-find_package(slick-net 1.2.2 CONFIG QUIET)
-if (NOT slick-net_FOUND)
-    message(STATUS "Fetching slick-net...")
-    set(BUILD_SLICK_NET_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(BUILD_SLICK_NET_TESTS OFF CACHE BOOL "" FORCE)
-    FetchContent_Declare(
-        slick-net
-        GIT_REPOSITORY https://github.com/SlickQuant/slick-net.git
-        GIT_TAG v1.2.2
-    )
-    FetchContent_MakeAvailable(slick-net)
+else()
+    message(STATUS "Found slick-socket: ${slick-socket_VERSION}")
 endif()
 
 find_package(slick-object-pool 0.1.3 CONFIG QUIET)
@@ -70,30 +60,64 @@ if (NOT slick-object-pool_FOUND)
         GIT_TAG v0.1.3
     )
     FetchContent_MakeAvailable(slick-object-pool)
+else()
+    message(STATUS "Found slick-object-pool: ${slick-object-pool_VERSION}")
 endif()
 
-find_package(coinbase-advanced-cpp 0.1.0 CONFIG QUIET)
+find_package(coinbase-advanced-cpp 0.2.2 CONFIG QUIET)
 if (NOT coinbase-advanced-cpp_FOUND)
     message(STATUS "Fetching coinbase-advanced-cpp...")
-    set(BUILD_COINBASE_ADVANCED_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         coinbase-advanced-cpp
         GIT_REPOSITORY https://github.com/SlickQuant/coinbase-advanced-cpp.git
         GIT_TAG main
     )
     FetchContent_MakeAvailable(coinbase-advanced-cpp)
+else()
+    message(STATUS "Found coinbase-advanced-cpp: ${coinbase-advanced-cpp_VERSION}")
 endif()
 
-find_package(slick-orderbook 1.0.0 CONFIG QUIET)
+# slick-net should be fetched after coinbase-advanced-cpp since it depends on it, and we want to avoid fetching the dependency twice if it's already available
+find_package(slick-net 2.1.0 CONFIG QUIET)
+if (NOT slick-net_FOUND)
+    message(STATUS "Fetching slick-net...")
+    set(BUILD_SLICK_NET_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(BUILD_SLICK_NET_TESTS OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(
+        slick-net
+        GIT_REPOSITORY https://github.com/SlickQuant/slick-net.git
+        GIT_TAG v2.1.0
+    )
+    FetchContent_MakeAvailable(slick-net)
+else()
+    message(STATUS "Found slick-net: ${slick-net_VERSION}")
+endif()
+
+find_package(slick-orderbook 1.0.2 CONFIG QUIET)
 if (NOT slick-orderbook_FOUND)
     message(STATUS "Fetching slick-orderbook...")
     set(BUILD_COINBASE_ADVANCED_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-orderbook
         GIT_REPOSITORY https://github.com/SlickQuant/slick-orderbook.git
-        GIT_TAG main
+        GIT_TAG main #v1.0.1
     )
     FetchContent_MakeAvailable(slick-orderbook)
+else()
+    message(STATUS "Found slick-orderbook: ${slick-orderbook_VERSION}")
+endif()
+
+find_package(hyperliquid-cpp 0.1.2 CONFIG QUIET)
+if (NOT hyperliquid-cpp_FOUND)
+    message(STATUS "Fetching hyperliquid-cpp...")
+    FetchContent_Declare(
+        hyperliquid-cpp
+        GIT_REPOSITORY https://github.com/SlickQuant/hyperliquid-cpp.git
+        GIT_TAG v0.1.2
+    )
+    FetchContent_MakeAvailable(hyperliquid-cpp)
+else()
+    message(STATUS "Found hyperliquid-cpp: ${hyperliquid-cpp_VERSION}")
 endif()
 
 # Add QuickFIX dependency (prefer vcpkg installation)
@@ -102,12 +126,32 @@ find_package(unofficial-uwebsockets CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(jwt-cpp CONFIG REQUIRED)
 find_package(foonathan_memory CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED COMPONENTS multi_index)
+find_package(Boost CONFIG REQUIRED COMPONENTS uuid)
+
+if(MSVC)
+    add_definitions(-D_WIN32_WINNT=0x0601)
+    add_compile_options(
+        /W4
+        /wd4324  # Suppress C4324: structure was padded due to alignment specifier (intentional for cache alignment)
+        /wd4200 
+        $<$<CONFIG:Release>:/O2>
+        $<$<CONFIG:Release>:/GL>  # Whole program optimization
+    )
+    add_link_options(
+        $<$<CONFIG:Release>:/LTCG>  # Link-time code generation (required with /GL)
+    )
+else()
+    add_compile_options(
+        -Wall -Wextra -Wpedantic
+        $<$<CONFIG:Release>:-O3>
+        $<$<CONFIG:Release>:-march=native>
+        $<$<CONFIG:Release>:-flto>
+    )
+endif()
 
 option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 if(ENABLE_ASAN)
   if(MSVC)
-    add_definitions(-D_WIN32_WINNT=0x0601)
     # MSVC AddressSanitizer (requires Visual Studio 2022 17.7+)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.37")
       add_compile_options(/fsanitize=address)
@@ -133,9 +177,9 @@ endif()
 add_subdirectory(src)
 
 # Tests
-# option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
-# if(BUILD_EXCH_SIMULATOR_TESTING)
-#   find_package(GTest CONFIG REQUIRED)
-#   enable_testing()
-#   add_subdirectory(tests)
-# endif()
+option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
+if(BUILD_EXCH_SIMULATOR_TESTING)
+  find_package(GTest CONFIG REQUIRED)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
