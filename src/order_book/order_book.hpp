@@ -162,6 +162,25 @@ public:
         }
     }
 
+    // Clears only phantom (market-data) orders from the L3 book, then re-inserts
+    // active simulator orders so they remain available for matching.  Call this
+    // instead of clear() when rebuilding from a full book snapshot (e.g. Hyperliquid).
+    void clearMDOrders() {
+        std::vector<std::tuple<uint64_t, orderbook::Side, price_t, qty_t, time_t, uint64_t>> sim_orders;
+        sim_orders.reserve(orders_.size());
+        for (auto& [id, order] : orders_) {
+            if (order->leaves_quantity > 0) {
+                sim_orders.emplace_back(id, to_book_side(order->side), order->price,
+                                        order->leaves_quantity, order->last_update_time, order->priority);
+            }
+        }
+        OrderBookL3::clear();
+        feed_md_level_quantity_.clear();
+        for (auto& [id, side, price, qty, ts, prio] : sim_orders) {
+            OrderBookL3::addOrder(id, side, price, qty, ts, prio, 0, false);
+        }
+    }
+
     bool executeOrder(slick::orderbook::OrderId order_id, slick::orderbook::Quantity executed_quantity, uint64_t timestamp, uint64_t seq_num = 0, bool is_last_in_batch = true) override {
         auto *order = findOrder(order_id);
         if (order) {

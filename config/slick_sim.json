@@ -6,16 +6,31 @@
     "md_publisher": {
         "coinbase": {
             "port": 5000
+        },
+        "hyperliquid": {
+            "port": 5001
         }
     },
     "order_gateway": {
-        "rest": {
-            "port": 4000,
-            "exchange": "coinbase"
+        "coinbase": {
+            "rest": {
+                "port": 4000
+            },
+            "ws": {
+                "port": 4001
+            }
         },
-        "ws": {
-            "port": 4001,
-            "exchange": "coinbase"
+        "cme": {
+            "tcp": {
+                "port": 4002
+            }
+        },
+        "hyperliquid": {
+            "rest": {
+                "port": 4003,
+                "base_url": "https://api.hyperliquid.xyz",
+                "default_wallet": "0x0000000000000000000000000000000000000001"
+            }
         }
     },
     "exchanges": {
@@ -23,6 +38,15 @@
             "md_feeds": [
                 {
                     "type": "coinbase_live_ws"
+                }
+            ]
+        },
+        "hyperliquid": {
+            "md_feeds": [
+                {
+                    "type": "hyperliquid_live_ws",
+                    "base_url": "https://api.hyperliquid.xyz",
+                    "coins": ["ETH", "BTC"]
                 }
             ]
         }
