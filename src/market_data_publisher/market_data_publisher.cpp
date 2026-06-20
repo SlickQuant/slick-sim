@@ -1,5 +1,6 @@
 #include "market_data_publisher.hpp"
 #include "publisher/coinbase_publisher.hpp"
+#include "publisher/hyperliquid_publisher.hpp"
 
 using namespace slick::sim;
 using namespace slick::sim::md_publisher;
@@ -13,6 +14,9 @@ MarketDataPublisher::MarketDataPublisher(const nlohmann::json &config, slick::Sl
         switch(venue) {
             case Venue::COINBASE:
                 publishers_[Venue::COINBASE] = std::make_unique<CoinbasePublisher>(it.value(), request_queue,  market_data_queue);
+                break;
+            case Venue::HYPERLIQUID:
+                publishers_[Venue::HYPERLIQUID] = std::make_unique<HyperliquidPublisher>(it.value(), request_queue, market_data_queue);
                 break;
         }
     }

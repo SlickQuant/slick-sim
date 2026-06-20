@@ -106,7 +106,7 @@ Order FixParser::parse_new_order_single(const FIX44::NewOrderSingle& message, in
     if (order.type == OrderType::LIMIT || order.type == OrderType::STOP_LIMIT) {
         FIX::Price price;
         message.get(price);
-        order.price = price.getValue();
+        order.price = to_price_t(price.getValue());
     }
     
     // Time in Force
@@ -139,9 +139,9 @@ FIX44::ExecutionReport FixParser::create_execution_report(const OrderResponse& r
     execReport.set(FIX::ExecType(static_cast<char>(response.order_status)));
     execReport.set(FIX::OrdStatus(static_cast<char>(response.order_status)));
     execReport.set(FIX::Side(FIX::Side_BUY)); // TODO: Should come from original order
-    execReport.set(FIX::LeavesQty(static_cast<int>(response.leaves_qty)));
-    execReport.set(FIX::CumQty(static_cast<int>(response.cum_qty)));
-    execReport.set(FIX::AvgPx(response.price));
+    execReport.set(FIX::LeavesQty(to_qty_double(response.leaves_qty)));
+    execReport.set(FIX::CumQty(to_qty_double(response.cum_qty)));
+    execReport.set(FIX::AvgPx(to_price_double(response.price)));
     
     // if (response.reject_reason != OrdRejectReason::NONE) {
     //     execReport.set(FIX::Text(response.reject_reason));

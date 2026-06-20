@@ -9,8 +9,10 @@
 #include <order_gateway/order_gateway.hpp>
 #include <order_gateway/message_parser.hpp>
 #include <exchange/exch_coinbase.hpp>
+#include <exchange/exch_hyperliquid.hpp>
 #include <common/messages.hpp>
 #include <market_data_publisher/market_data_publisher.hpp>
+#include <coinbase/logging.hpp>
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -28,7 +30,7 @@ using Exchange = slick::sim::exch::Exchange;
 namespace {
     std::atomic_bool run{true};
 
-    extern "C" void _signal_handler(int signum) {
+    extern "C" void _signal_handler(int /* signum */) {
         run.store(false, std::memory_order_release);
         // exit(signum); // Terminate the program
     }
@@ -114,6 +116,10 @@ int main(int argc, char* argv[]) {
     logger.add_file_sink("logs/slick-sim.log");
     logger.init(65535, 16777216);
 
+    coinbase::logging::set_log_handler([&logger](coinbase::logging::LogLevel level, const char* format_text, std::format_args args) {
+        logger.log(static_cast<slick::logger::LogLevel>(level), format_text, std::move(args));
+    });
+
     std::string config_file = "slick-sim.json";
     if (argc > 1) {
         config_file = argv[1];
@@ -123,7 +129,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Missing configuration JSON file. Usange\n" << "    slick-sim [config_file]\n"
             << "    options:\n"
             << "      config_file: config JSON file. Default to slick-sim.json";
-        LOG_ERROR("Missing configuration JSON file. Usange\n    slick-sim [config_file]\n    options:\n      config_file: config JSON file. Default to slick-sim.json");
+        LOG_ERROR("Missing configuration JSON file. Usage\n    slick-sim [config_file]\n    options:\n      config_file: config JSON file. Default to slick-sim.json");
         return EXIT_FAILURE;
     }
 
@@ -151,6 +157,9 @@ int main(int argc, char* argv[]) {
         LOG_ERROR("Missing exchanges config");
         return EXIT_FAILURE;
     }
+
+
+    logger.set_level(slick::logger::to_log_level(config.value("log_level", "info")));
 
     // print_protocol_info();
 
@@ -189,6 +198,13 @@ int main(int argc, char* argv[]) {
     {
         if (it.key() == "coinbase") {
             exchanges.emplace_back(std::make_unique<slick::sim::exch::CoinbaseExchange>(
+                it.value(), request_queue, order_response_queue, md_update_queue)
+            );
+            exchanges.back()->run();
+            continue;
+        }
+        if (it.key() == "hyperliquid") {
+            exchanges.emplace_back(std::make_unique<slick::sim::exch::HyperliquidExchange>(
                 it.value(), request_queue, order_response_queue, md_update_queue)
             );
             exchanges.back()->run();

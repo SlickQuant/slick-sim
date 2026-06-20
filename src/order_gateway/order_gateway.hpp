@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <slick/queue.h>
 #include "message_parser.hpp"
 #include <memory>
@@ -8,6 +7,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <format>
 #include <client_manager/client_manager.hpp>
 #include <common/messages.hpp>
 

@@ -34,16 +34,14 @@ public:
         return &symbols_[sid];
     }
 
-    exch::Symbol* addSymbol(exch::Symbol&& sym) {
-        auto *symbol = getSymbol(sym.symbol_);
-        if (!symbol) {
-            symbols_.emplace_back(std::move(sym));
-            auto &symbol = symbols_.back();
-            symbol.setId(symbols_.size() - 1);
-            symbols_by_name_.emplace(symbol.symbol_, &symbol);
-            return &symbol;
-        }
-        return symbol;
+    exch::Symbol* createSymbol(std::string_view sym, Venue venue) {
+        exch::Symbol symbol;
+        symbol.id_ = static_cast<symid_t>(symbols_.size());
+        symbol.symbol_ = std::string(sym);
+        symbol.venue_ = venue;
+        symbols_.emplace_back(std::move(symbol));
+        symbols_by_name_.emplace(std::string(sym), &symbols_.back());
+        return &symbols_.back();
     }
 
 private:

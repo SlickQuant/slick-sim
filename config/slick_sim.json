@@ -2,19 +2,35 @@
     "order_request_queue_size": 16777216,
     "order_response_queue_size": 16777216,
     "md_event_queue": 16777216,
+    "log_level": "debug",
     "md_publisher": {
         "coinbase": {
             "port": 5000
+        },
+        "hyperliquid": {
+            "port": 5001
         }
     },
     "order_gateway": {
-        "rest": {
-            "port": 3000,
-            "exchange": "coinbase"
+        "coinbase": {
+            "rest": {
+                "port": 4000
+            },
+            "ws": {
+                "port": 4001
+            }
         },
-        "ws": {
-            "port": 3001,
-            "exchange": "coinbase"
+        "cme": {
+            "tcp": {
+                "port": 4002
+            }
+        },
+        "hyperliquid": {
+            "rest": {
+                "port": 4003,
+                "base_url": "https://api.hyperliquid.xyz",
+                "default_wallet": "0x0000000000000000000000000000000000000001"
+            }
         }
     },
     "exchanges": {
@@ -22,6 +38,15 @@
             "md_feeds": [
                 {
                     "type": "coinbase_live_ws"
+                }
+            ]
+        },
+        "hyperliquid": {
+            "md_feeds": [
+                {
+                    "type": "hyperliquid_live_ws",
+                    "base_url": "https://api.hyperliquid.xyz",
+                    "coins": ["ETH", "BTC"]
                 }
             ]
         }

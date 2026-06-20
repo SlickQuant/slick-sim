@@ -1,6 +1,7 @@
 #pragma once
 
 #include <slick/queue.h>
+#include <slick/object_pool.h>
 #include <md_feed/md_feed.hpp>
 #include <vector>
 #include <memory>
@@ -35,25 +36,27 @@ public:
     void stop();
 
     
-    protected:
+protected:
     void processMdData();
     void processRequest();
+    void handleNewOrderRequest(const Request &request);
+    void handleModifyOrderRequest(const Request &request);
+    void handleCancelOrderRequest(const Request &request);
     void rejectMdSubscription(const Request &request, MDSubscriptionRejectReason reason);
     void rejectNewOrderRequest(const Request &request, OrdRejectReason reason);
     void rejectModifyOrderRequest(const Request &request, OrdRejectReason reason);
     void rejectCancelOrderRequest(const Request &request, OrdRejectReason reason);
-    void sendOrderNewPending(const Request &request);
-    void sendOrderAck(const Order *order);
-    void sendOrderReplacePending(const Request &request);
-    void sendOrderReplaced(const Order *order);
-    void sendOrderCancelPending(const Request &request);
-    void sendOrderCanceled(const Order *order);
+    void sendOrderNewPending(const Order *order, time_t request_time);
+    void sendOrderReplacePending(const Order *order, time_t request_time);
+    void sendOrderCancelPending(const Order *order, time_t request_time);
     void publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std::array<uint8_t, 2> &indices);
     void publishLevelUpdate(const char* symbol, const std::vector<MDLevel> &level_updates);
+    void publishMDOrderUpdate(const char* symbol, const std::vector<MDOrder> &order_updates);
     void publishMDTrades(const char* symbol, const std::vector<MDTrade> &trade_updates);
+    void publishTradeSummary(const char* symbol, const TradeSummaryInfo &trade_summary);
 
-    virtual void handleMdSubscription(const Request &request) {}
-    virtual void handleMdUnsubscription(const Request &request) {}
+    virtual void handleMdSubscription(const Request &/* request */) {}
+    virtual void handleMdUnsubscription(const Request &/* request */) {}
 
 protected:
     Venue venue_;
