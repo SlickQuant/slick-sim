@@ -128,14 +128,14 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient* /* client */, uint64_t 
     }
 
     if (it != pending_l2_subscriptions.end()) {
-        symbol->order_book_->populateL2SubscriptionResponse(md_update_queue_, coinbase::WebSocketChannel::LEVEL2);
+        symbol->order_book_->populateL2SubscriptionResponse(md_queue_, coinbase::WebSocketChannel::LEVEL2);
         pending_l2_subscriptions.erase(it);
         symbol->md_level_update_cache_.clear();
         // TODO: publish MD order update
         symbol->md_order_update_cache_.clear();
     }
     else {
-        symbol->order_book_->populateL2Snapshot(md_update_queue_);
+        symbol->order_book_->populateL2Snapshot(md_queue_);
         symbol->md_level_update_cache_.clear();
         // TODO: publish MD order update
         symbol->md_order_update_cache_.clear();
@@ -199,8 +199,8 @@ void CoinbaseExchange::onMarketTradesSnapshot(WebSocketClient* /* client */, uin
     auto &trade_snapshot = it->second;
 
     auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(MDTradeUpdate) + snapshots.size() * sizeof(MDTrade));
-    auto index = md_update_queue_.reserve(sz);
-    auto *update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
+    auto index = md_queue_.reserve(sz);
+    auto *update = reinterpret_cast<MarketDataUpdate*>(md_queue_[index]);
     memcpy(update->symbol, symbol->symbol_.c_str(), sizeof(update->symbol));
     update->venue = venue_;
     update->type = MDUpdateType::SUB_RESPONSE;
@@ -216,7 +216,7 @@ void CoinbaseExchange::onMarketTradesSnapshot(WebSocketClient* /* client */, uin
     auto& state = symbol_event_state_[symbol];
 
     // Coinbase trades are in reverse chronological order
-    for (int i = snapshots.size() - 1; i >= 0; i--) {
+    for (auto i = snapshots.size() - 1; i >= 0; i--) {
         const auto& trade = snapshots[i];
         trades->price = to_price_t(trade.price);
         trades->qty = to_qty_t(trade.size);
@@ -242,7 +242,7 @@ void CoinbaseExchange::onMarketTradesSnapshot(WebSocketClient* /* client */, uin
         trades->side = static_cast<Side>(trade.side);
         trades++;
     }
-    md_update_queue_.publish(index, sz);
+    md_queue_.publish(index, sz);
     pending_subscriptions.erase(symbol);
 }
 

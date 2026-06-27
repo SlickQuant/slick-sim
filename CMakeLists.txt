@@ -16,7 +16,7 @@ endif()
 
 include(FetchContent)
 
-find_package(slick-logger 1.0.8 CONFIG QUIET)
+find_package(slick-logger 1.0.9 CONFIG QUIET)
 if (NOT slick-logger_FOUND)
     message(STATUS "Fetching slick-logger...")
     # Disable examples, tests, and benchmarks for slick_logger
@@ -26,11 +26,11 @@ if (NOT slick-logger_FOUND)
     FetchContent_Declare(
         slick-logger
         GIT_REPOSITORY https://github.com/SlickQuant/slick-logger.git
-        GIT_TAG v1.0.8
+        GIT_TAG v1.0.9
     )
     FetchContent_MakeAvailable(slick-logger)
 else()
-    message(STATUS "Found slick-logger: ${slick-logger_VERSION}")
+    message(STATUS "Found slick-logger ${slick-logger_VERSION}: ${slick-logger_DIR}")
 endif()
 
 find_package(slick-socket 1.0.6 CONFIG QUIET)
@@ -47,7 +47,7 @@ if (NOT slick-socket_FOUND)
     )
     FetchContent_MakeAvailable(slick-socket)
 else()
-    message(STATUS "Found slick-socket: ${slick-socket_VERSION}")
+    message(STATUS "Found slick-socket ${slick-socket_VERSION}: ${slick-socket_DIR}")
 endif()
 
 find_package(slick-object-pool 0.1.3 CONFIG QUIET)
@@ -61,10 +61,10 @@ if (NOT slick-object-pool_FOUND)
     )
     FetchContent_MakeAvailable(slick-object-pool)
 else()
-    message(STATUS "Found slick-object-pool: ${slick-object-pool_VERSION}")
+    message(STATUS "Found slick-object-pool ${slick-object-pool_VERSION}: ${slick-object-pool_DIR}")
 endif()
 
-find_package(coinbase-advanced-cpp 0.2.2 CONFIG QUIET)
+find_package(coinbase-advanced-cpp 1.0.0 CONFIG QUIET)
 if (NOT coinbase-advanced-cpp_FOUND)
     message(STATUS "Fetching coinbase-advanced-cpp...")
     FetchContent_Declare(
@@ -74,50 +74,40 @@ if (NOT coinbase-advanced-cpp_FOUND)
     )
     FetchContent_MakeAvailable(coinbase-advanced-cpp)
 else()
-    message(STATUS "Found coinbase-advanced-cpp: ${coinbase-advanced-cpp_VERSION}")
+    message(STATUS "Found coinbase-advanced-cpp ${coinbase-advanced-cpp_VERSION}: ${coinbase-advanced-cpp_DIR}")
 endif()
 
-# slick-net should be fetched after coinbase-advanced-cpp since it depends on it, and we want to avoid fetching the dependency twice if it's already available
-find_package(slick-net 2.1.0 CONFIG QUIET)
-if (NOT slick-net_FOUND)
-    message(STATUS "Fetching slick-net...")
-    set(BUILD_SLICK_NET_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(BUILD_SLICK_NET_TESTS OFF CACHE BOOL "" FORCE)
+find_package(hyperliquid 0.2.0 CONFIG QUIET)
+if (NOT hyperliquid_FOUND)
+    message(STATUS "Fetching hyperliquid-cpp...")
     FetchContent_Declare(
-        slick-net
-        GIT_REPOSITORY https://github.com/SlickQuant/slick-net.git
-        GIT_TAG v2.1.0
+        hyperliquid-cpp
+        GIT_REPOSITORY https://github.com/SlickQuant/hyperliquid-cpp.git
+        GIT_TAG v0.2.0
     )
-    FetchContent_MakeAvailable(slick-net)
+    FetchContent_MakeAvailable(hyperliquid-cpp)
 else()
-    message(STATUS "Found slick-net: ${slick-net_VERSION}")
+    message(STATUS "Found hyperliquid ${hyperliquid_VERSION}: ${hyperliquid_DIR}")
 endif()
 
-find_package(slick-orderbook 1.0.2 CONFIG QUIET)
+# slick-net should be fetched after coinbase-advanced-cpp/hyperliquid-cpp since it depends on it, and we want to avoid fetching the dependency twice if it's already available
+find_package(slick-net CONFIG QUIET)
+if (slick-net_FOUND)
+    message(STATUS "Found slick-net ${slick-net_VERSION}: ${slick-net_VERSION}")
+endif()
+
+find_package(slick-orderbook 1.0.3 CONFIG QUIET)
 if (NOT slick-orderbook_FOUND)
     message(STATUS "Fetching slick-orderbook...")
     set(BUILD_COINBASE_ADVANCED_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-orderbook
         GIT_REPOSITORY https://github.com/SlickQuant/slick-orderbook.git
-        GIT_TAG main #v1.0.1
+        GIT_TAG v1.0.3
     )
     FetchContent_MakeAvailable(slick-orderbook)
 else()
-    message(STATUS "Found slick-orderbook: ${slick-orderbook_VERSION}")
-endif()
-
-find_package(hyperliquid-cpp 0.1.2 CONFIG QUIET)
-if (NOT hyperliquid-cpp_FOUND)
-    message(STATUS "Fetching hyperliquid-cpp...")
-    FetchContent_Declare(
-        hyperliquid-cpp
-        GIT_REPOSITORY https://github.com/SlickQuant/hyperliquid-cpp.git
-        GIT_TAG v0.1.2
-    )
-    FetchContent_MakeAvailable(hyperliquid-cpp)
-else()
-    message(STATUS "Found hyperliquid-cpp: ${hyperliquid-cpp_VERSION}")
+    message(STATUS "Found slick-orderbook ${slick-orderbook_VERSION}: ${slick-orderbook_DIR}")
 endif()
 
 # Add QuickFIX dependency (prefer vcpkg installation)

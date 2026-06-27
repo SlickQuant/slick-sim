@@ -19,9 +19,9 @@ public:
     };
 
     MatchingEngine(
-        slick::SlickQueue<OrderResponse> &order_response_queue
+        slick::queue<OrderResponse> &response_queue
     )
-        : order_response_queue_(order_response_queue)
+        : response_queue_(response_queue)
     {}
 
     virtual ~MatchingEngine() = default;
@@ -42,7 +42,7 @@ public:
     void publishOrderCancel(const Order *order, time_t request_time);
 
 protected:
-    slick::SlickQueue<OrderResponse> &order_response_queue_;
+    slick::queue<OrderResponse> &response_queue_;
     static std::atomic<uint64_t> next_trade_id_;
 };
 

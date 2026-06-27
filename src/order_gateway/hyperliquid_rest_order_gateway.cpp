@@ -1,4 +1,4 @@
-#include "hyperliquid_rest_client_manager.hpp"
+#include "hyperliquid_rest_order_gateway.hpp"
 #include <slick/logger.hpp>
 #include <slick/net/http.hpp>
 #include <utils/timestamp.hpp>
@@ -7,55 +7,65 @@
 #include <cstring>
 #include <format>
 
-using namespace slick::sim::order_gateway::hyperliquid_hl;
+using namespace slick::sim::order_gateway;
 using namespace slick::sim;
 using namespace slick::sim::utils;
 using Http = slick::net::Http;
 
-HyperliquidRestClientManager::HyperliquidRestClientManager(
+HyperliquidRestOrderGateway::HyperliquidRestOrderGateway(
     const json& config,
-    slick::SlickQueue<Request>& request_queue,
-    slick::SlickQueue<OrderResponse>& response_queue)
-    : ClientManager(config, request_queue, response_queue)
-    , port_(config_.value("port", 4003))
-    , base_url_(config_.value("base_url", "https://api.hyperliquid.xyz"))
-    , default_wallet_(config_.value("default_wallet", "0x0000000000000000000000000000000000000001"))
+    slick::queue<Request>& request_queue,
+    slick::queue<OrderResponse>& response_queue)
+    : RestWsOrderGateway(Venue::HYPERLIQUID, request_queue, response_queue, config.value("port", 4003))
+    , base_url_(config.value("base_url", "https://api.hyperliquid.xyz"))
+    , default_wallet_(config.value("default_wallet", "0x0000000000000000000000000000000000000001"))
+    , info_(base_url_, false)
 {
-    load_meta();
-}
-
-void HyperliquidRestClientManager::load_meta() {
     try {
-        json meta_req = {{"type", "meta"}};
-        auto rsp = Http::post(base_url_ + "/info", meta_req.dump());
-        if (!rsp.is_ok()) {
-            LOG_WARN("HyperliquidREST: failed to load meta: {}", rsp.result_text);
-            return;
-        }
-        auto meta = json::parse(rsp.result_text);
-        if (!meta.contains("universe")) return;
-        int idx = 0;
-        for (const auto& asset : meta["universe"]) {
-            std::string name = asset.value("name", "");
-            if (!name.empty()) {
-                asset_to_coin_[idx] = name;
-                coin_to_asset_[name] = idx;
-            }
-            ++idx;
-        }
-        LOG_INFO("HyperliquidREST: loaded {} assets", asset_to_coin_.size());
+        info_.load_meta();
+        LOG_INFO("HyperliquidREST: loaded {} assets", info_.coin_to_asset.size());
     } catch (const std::exception& e) {
         LOG_WARN("HyperliquidREST: exception loading meta: {}", e.what());
     }
 }
 
-std::string HyperliquidRestClientManager::coin_for_asset(int asset_index) const {
-    auto it = asset_to_coin_.find(asset_index);
-    if (it != asset_to_coin_.end()) return it->second;
+// void HyperliquidRestOrderGateway::load_meta() {
+//     try {
+//         json meta_req = {{"type", "meta"}};
+//         auto rsp = Http::post(base_url_ + "/info", meta_req.dump(), {{"Content-Type", "application/json"}});
+//         if (!rsp.is_ok()) {
+//             LOG_WARN("HyperliquidREST: failed to load meta: {}", rsp.result_text);
+//             return;
+//         }
+//         auto meta = json::parse(rsp.result_text);
+//         if (!meta.contains("universe")) return;
+//         int idx = 0;
+//         for (const auto& asset : meta["universe"]) {
+//             std::string name = asset.value("name", "");
+//             if (!name.empty()) {
+//                 asset_to_coin_[idx] = name;
+//                 coin_to_asset_[name] = idx;
+//             }
+//             ++idx;
+//         }
+//         LOG_INFO("HyperliquidREST: loaded {} assets", asset_to_coin_.size());
+//     } catch (const std::exception& e) {
+//         LOG_WARN("HyperliquidREST: exception loading meta: {}", e.what());
+//     }
+// }
+
+std::string HyperliquidRestOrderGateway::coin_for_asset(int asset_index) const {
+    // auto it = asset_to_coin_.find(asset_index);
+    // if (it != asset_to_coin_.end()) return it->second;
+    // return {};
+    auto it = info_.name_to_coin.find("@" + std::to_string(asset_index));
+    if (it != info_.name_to_coin.end()) {
+        return it->second;
+    }
     return {};
 }
 
-std::string HyperliquidRestClientManager::extract_wallet(const json& body, uWS::HttpRequest* req) {
+std::string HyperliquidRestOrderGateway::extract_wallet(const json& body, uWS::HttpRequest* req) {
     // 1. X-Wallet-Address header
     std::string_view hdr = req->getHeader("x-wallet-address");
     if (!hdr.empty()) return std::string(hdr);
@@ -67,23 +77,23 @@ std::string HyperliquidRestClientManager::extract_wallet(const json& body, uWS::
     return default_wallet_;
 }
 
-void HyperliquidRestClientManager::start() {
-    thread_ = std::thread([this]() {
-        auto app = uWS::App();
-        setup_routes(app);
-        app.listen(port_, [this](auto* listen_socket) {
-            listen_socket_ = listen_socket;
-            if (listen_socket) {
-                loop_ = uWS::Loop::get();
-                LOG_INFO("HyperliquidREST started on port {}", port_);
-            } else {
-                LOG_ERROR("HyperliquidREST failed to listen on port {}", port_);
-            }
-        }).run();
-    });
-}
+// void HyperliquidRestOrderGateway::start() {
+//     thread_ = std::thread([this]() {
+//         auto app = uWS::App();
+//         setup_routes(app);
+//         app.listen(port_, [this](auto* listen_socket) {
+//             listen_socket_ = listen_socket;
+//             if (listen_socket) {
+//                 loop_ = uWS::Loop::get();
+//                 LOG_INFO("HyperliquidREST started on port {}", port_);
+//             } else {
+//                 LOG_ERROR("HyperliquidREST failed to listen on port {}", port_);
+//             }
+//         }).run();
+//     });
+// }
 
-void HyperliquidRestClientManager::setup_routes(uWS::App& app) {
+void HyperliquidRestOrderGateway::setup_routes(uWS::App& app) {
     app.post("/exchange", [this](auto* res, auto* req) {
         handle_exchange(res, req);
     }).post("/info", [this](auto* res, auto* req) {
@@ -93,7 +103,7 @@ void HyperliquidRestClientManager::setup_routes(uWS::App& app) {
     });
 }
 
-void HyperliquidRestClientManager::handle_exchange(
+void HyperliquidRestOrderGateway::handle_exchange(
     uWS::HttpResponse<false>* res, uWS::HttpRequest* req)
 {
     auto request_data = std::make_shared<PostRequestData>();
@@ -140,7 +150,7 @@ void HyperliquidRestClientManager::handle_exchange(
     });
 }
 
-void HyperliquidRestClientManager::handle_info(
+void HyperliquidRestOrderGateway::handle_info(
     uWS::HttpResponse<false>* res, uWS::HttpRequest*)
 {
     // Simple proxy — forward to real Hyperliquid info endpoint
@@ -149,7 +159,7 @@ void HyperliquidRestClientManager::handle_info(
        ->end(R"({"status":"ok","response":"info endpoint not fully implemented in sim"})");
 }
 
-void HyperliquidRestClientManager::process_order_action(
+void HyperliquidRestOrderGateway::process_order_action(
     uWS::HttpResponse<false>* res, const json& action, const std::string& user_id)
 {
     if (!action.contains("orders") || !action["orders"].is_array()) {
@@ -285,7 +295,7 @@ void HyperliquidRestClientManager::process_order_action(
     res->writeHeader("Content-Type", "application/json")->end(response.dump());
 }
 
-void HyperliquidRestClientManager::process_cancel_action(
+void HyperliquidRestOrderGateway::process_cancel_action(
     uWS::HttpResponse<false>* res, const json& action, const std::string& user_id)
 {
     if (!action.contains("cancels") || !action["cancels"].is_array()) {
@@ -340,7 +350,7 @@ void HyperliquidRestClientManager::process_cancel_action(
     res->writeHeader("Content-Type", "application/json")->end(response.dump());
 }
 
-void HyperliquidRestClientManager::process_cancel_by_cloid_action(
+void HyperliquidRestOrderGateway::process_cancel_by_cloid_action(
     uWS::HttpResponse<false>* res, const json& action, const std::string& user_id)
 {
     if (!action.contains("cancels") || !action["cancels"].is_array()) {
@@ -393,7 +403,7 @@ void HyperliquidRestClientManager::process_cancel_by_cloid_action(
     res->writeHeader("Content-Type", "application/json")->end(response.dump());
 }
 
-void HyperliquidRestClientManager::process_batch_modify_action(
+void HyperliquidRestOrderGateway::process_batch_modify_action(
     uWS::HttpResponse<false>* res, const json& action, const std::string& user_id)
 {
     if (!action.contains("modifies") || !action["modifies"].is_array()) {

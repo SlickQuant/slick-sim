@@ -15,6 +15,7 @@ using namespace slick::sim;
 using namespace slick::sim::test;
 using namespace slick::sim::exch;
 using namespace slick::sim::engine;
+using namespace nlohmann::literals;
 
 // ---------------------------------------------------------------------------
 // TestableCoinbaseExchange
@@ -77,15 +78,27 @@ static coinbase::MarketTrade makeMarketTrade(
 class CoinbaseExchangeTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        request_queue_  = std::make_unique<slick::SlickQueue<Request>>(4096, "test_exch_requests");
-        response_queue_ = std::make_unique<slick::SlickQueue<OrderResponse>>(4096, "test_exch_responses");
-        md_queue_       = std::make_unique<slick::SlickQueue<uint8_t>>(1 << 20, "test_exch_md");
-        collector_      = std::make_unique<OrderResponseCollector>(*response_queue_);
-        matching_engine_ = std::make_unique<FifoMatchingEngine>(*response_queue_);
 
-        nlohmann::json config;  // empty config → use_live_feed_ = false
-        exchange_ = std::make_unique<TestableCoinbaseExchange>(
-            config, *request_queue_, *response_queue_, *md_queue_);
+        auto config = R"({
+            "request_queue_size": 4096,
+            "response_queue_size": 4096,
+            "md_queue_size": 1048576,
+            "request_queue_shm_name": "test_exch_requests",
+            "response_queue_shm_name": "test_exch_responses",
+            "md_queue_shm_name": "test_exch_md",
+            "order_gateway": {
+                "rest": {
+                    "port": 4000
+                }
+            },
+            "md_publisher": {
+                "port": 5000
+            }
+        })"_json;
+
+        exchange_ = std::make_unique<TestableCoinbaseExchange>(config);
+        collector_      = std::make_unique<OrderResponseCollector>(exchange_->response_queue());
+        matching_engine_ = std::make_unique<FifoMatchingEngine>(exchange_->response_queue());
     }
 
     // Register a symbol in SymbolManager and wire it up with an order book and
@@ -119,10 +132,7 @@ protected:
         exchange_->drainSequencedEvents();
     }
 
-    std::unique_ptr<slick::SlickQueue<Request>>       request_queue_;
-    std::unique_ptr<slick::SlickQueue<OrderResponse>> response_queue_;
-    std::unique_ptr<slick::SlickQueue<uint8_t>>       md_queue_;
-    std::unique_ptr<OrderResponseCollector>           collector_;
+    std::unique_ptr<OrderResponseCollector> collector_;
 
     // Shared matching engine across all symbols in one test; initialized in
     // SetUp() so it uses the same response_queue_ the collector reads from.

@@ -94,7 +94,7 @@ inline void verifyOrderResponse(
 // Mock: Simple OrderResponse collector
 class OrderResponseCollector {
 public:
-    explicit OrderResponseCollector(slick::SlickQueue<OrderResponse>& queue)
+    explicit OrderResponseCollector(slick::queue<OrderResponse>& queue)
         : queue_(queue), cursor_(0) {}
 
     std::vector<OrderResponse> collect() {
@@ -123,7 +123,7 @@ public:
     }
 
 private:
-    slick::SlickQueue<OrderResponse>& queue_;
+    slick::queue<OrderResponse>& queue_;
     uint64_t cursor_;
 };
 

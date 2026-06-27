@@ -13,7 +13,7 @@ using Logger = slick::logger::Logger;
 class FifoMatchingEngine : public MatchingEngine {
 public:
     FifoMatchingEngine(
-        slick::SlickQueue<OrderResponse> &order_response_queue
+        slick::queue<OrderResponse> &response_queue
     );
     ~FifoMatchingEngine() override = default;
 
