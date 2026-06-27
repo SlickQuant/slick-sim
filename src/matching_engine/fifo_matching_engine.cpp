@@ -6,9 +6,9 @@ using namespace slick::sim;
 using namespace slick::sim::utils;
 
 FifoMatchingEngine::FifoMatchingEngine(
-    slick::SlickQueue<OrderResponse> &order_response_queue
+    slick::queue<OrderResponse> &response_queue
 )
-    : MatchingEngine(order_response_queue)
+    : MatchingEngine(response_queue)
 {
 }
 

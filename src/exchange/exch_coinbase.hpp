@@ -16,16 +16,11 @@ using WebSocketClient = coinbase::WebSocketClient;
 
 class CoinbaseExchange : public Exchange, public coinbase::UserThreadWebsocketCallbacks {
 public:
-    CoinbaseExchange(
-        const nlohmann::json &config,
-        slick::SlickQueue<Request> &request_queue,
-        slick::SlickQueue<OrderResponse> &order_response_queue,
-        slick::SlickQueue<uint8_t> &md_update_queue
-    );
+    CoinbaseExchange(const nlohmann::json &config);
 
     ~CoinbaseExchange() override = default;
 
-    void run() override;
+    void start() override;
 
     void onMarketDataConnected(WebSocketClient* client) override;
     void onMarketDataDisconnected(WebSocketClient* client) override;
@@ -95,7 +90,7 @@ private:
     std::vector<std::shared_ptr<md_feed::MDFeed>> md_feeds_;
     std::unordered_map<md_feed::MDFeed*, std::unordered_set<std::string>> feed_symbols_;
     std::unordered_map<std::string, std::shared_ptr<md_feed::MDFeed>> map_symbol_feed_;
-    std::array<std::unordered_set<Symbol*>, static_cast<size_t>(coinbase::WebSocketChannel::__COUNT__)> pending_md_subscription_;
+    std::array<std::unordered_set<Symbol*>, static_cast<size_t>(coinbase::WebSocketChannel::_CHANNEL_COUNT_)> pending_md_subscription_;
 
     bool use_live_feed_ = false;
 

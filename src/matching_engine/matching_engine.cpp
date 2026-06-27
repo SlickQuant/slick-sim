@@ -7,8 +7,8 @@ using namespace slick::sim::engine;
 std::atomic<uint64_t> MatchingEngine::next_trade_id_{1};
 
 void MatchingEngine::publishOrderAck(const Order *order, time_t request_time) {
-    auto index = order_response_queue_.reserve();
-    auto &response = *order_response_queue_[index];
+    auto index = response_queue_.reserve();
+    auto &response = *response_queue_[index];
     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
     memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
     memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
@@ -29,12 +29,12 @@ void MatchingEngine::publishOrderAck(const Order *order, time_t request_time) {
     response.request_time = request_time;
     response.side = order->side;
     response.post_only = order->post_only;
-    order_response_queue_.publish(index);
+    response_queue_.publish(index);
 }
 
 void MatchingEngine::publishOrderExecution(const Order *order) {
-    auto index = order_response_queue_.reserve();
-    auto &response = *order_response_queue_[index];
+    auto index = response_queue_.reserve();
+    auto &response = *response_queue_[index];
     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
     memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
     memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
@@ -55,12 +55,12 @@ void MatchingEngine::publishOrderExecution(const Order *order) {
     response.timestamp = order->last_update_time;
     response.side = order->side;
     response.post_only = order->post_only;
-    order_response_queue_.publish(index);
+    response_queue_.publish(index);
 }
 
 void MatchingEngine::publishOrderModify(const Order *order, price_t new_price, qty_t new_qty, time_t request_time) {
-    auto index = order_response_queue_.reserve();
-    auto &response = *order_response_queue_[index];
+    auto index = response_queue_.reserve();
+    auto &response = *response_queue_[index];
     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
     memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
     memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
@@ -80,12 +80,12 @@ void MatchingEngine::publishOrderModify(const Order *order, price_t new_price, q
     response.request_time = request_time;
     response.side = order->side;
     response.post_only = order->post_only;
-    order_response_queue_.publish(index);
+    response_queue_.publish(index);
 }
 
 void MatchingEngine::publishOrderCancel(const Order *order, time_t request_time) {
-    auto index = order_response_queue_.reserve();
-    auto &response = *order_response_queue_[index];
+    auto index = response_queue_.reserve();
+    auto &response = *response_queue_[index];
     memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
     memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
     memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
@@ -107,6 +107,6 @@ void MatchingEngine::publishOrderCancel(const Order *order, time_t request_time)
     response.request_time = request_time;
     response.side = order->side;
     response.post_only = order->post_only;
-    order_response_queue_.publish(index);
+    response_queue_.publish(index);
 }
 

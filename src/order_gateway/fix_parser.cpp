@@ -64,7 +64,7 @@ ParseResult FixParser::parse_message(const uint8_t* data, size_t length, int cli
     return result;
 }
 
-void FixParser::onMessage(const FIX44::NewOrderSingle& message, const FIX::SessionID& sessionID) {
+void FixParser::onMessage(const FIX44::NewOrderSingle& message, [[maybe_unused]] const FIX::SessionID& sessionID) {
     try {
         Order order = parse_new_order_single(message, current_client_id_);
         last_result_.order = std::move(order);

@@ -6,25 +6,40 @@
 #include <utils/timestamp.hpp>
 #include <utils/price.hpp>
 #include <chrono>
+#include <order_gateway/coinbase_rest_order_gateway.hpp>
+#include <order_gateway/coinbase_ws_order_gateway.hpp>
+#include <market_data_publisher/coinbase_publisher.hpp>
 
-using namespace slick::sim::exch;
 using namespace slick::sim;
+using namespace slick::sim::exch;
+using namespace slick::sim::order_gateway;
+using namespace slick::sim::md_publisher;
 
 namespace {
     auto &sym_mgr = SymbolManager::instance();
 }
 
-CoinbaseExchange::CoinbaseExchange(
-    const nlohmann::json &config,
-    slick::SlickQueue<Request> &request_queue,
-    slick::SlickQueue<OrderResponse> &order_response_queue,
-    slick::SlickQueue<uint8_t> &md_update_queue
-)
-    : Exchange(Venue::COINBASE, config, request_queue, order_response_queue, md_update_queue)
+CoinbaseExchange::CoinbaseExchange(const nlohmann::json &config)
+    : Exchange(Venue::COINBASE, config)
     , coinbase::UserThreadWebsocketCallbacks()
 {
-    if (config_.contains("md_feeds")) {
-        for (const auto &md_feed_config : config_["md_feeds"]) {
+    md_publisher_ = std::make_unique<CoinbasePublisher>(config["md_publisher"], request_queue_,  md_queue_);
+
+    auto &og_config = config["order_gateway"];
+    if (!og_config.contains("rest")) {
+        throw std::runtime_error("COINBASE Exchange order_gateway missing rest config");
+    }
+    order_gateways_.emplace_back(
+        std::make_unique<CoinbaseRestOrderGateway>(og_config["rest"], request_queue_, response_queue_)
+    );
+    if (og_config.contains("ws")) {
+        order_gateways_.emplace_back(
+            std::make_unique<CoinbaseWebsocketOrderGateway>(og_config["ws"], request_queue_, response_queue_)
+        );
+    }
+
+    if (config.contains("md_feeds")) {
+        for (const auto &md_feed_config : config["md_feeds"]) {
             std::string type = md_feed_config.value("type", "");
             if (type == "coinbase_live_ws") {
                 use_live_feed_ = true;
@@ -33,11 +48,18 @@ CoinbaseExchange::CoinbaseExchange(
     }
 }
 
-void CoinbaseExchange::run() {
+void CoinbaseExchange::start() {
     run_.store(true, std::memory_order_release);
+    
+    for (auto &og : order_gateways_) {
+        og->start();
+    }
+    md_publisher_->start();
+
     if (md_feed_) {
         md_feed_->start();
     }
+
     thread_ = std::thread([this]() {
         while (run_.load(std::memory_order_relaxed)) {
             if (md_feed_ || !md_feeds_.empty()) {
@@ -47,9 +69,9 @@ void CoinbaseExchange::run() {
             processRequest();
         }
     });
-    if (md_feed_) {
-        md_feed_->stop();
-    }
+    // if (md_feed_) {
+    //     md_feed_->stop();
+    // }
 }
 
 Symbol* CoinbaseExchange::addSymbol(std::string_view product_id) {
@@ -57,7 +79,7 @@ Symbol* CoinbaseExchange::addSymbol(std::string_view product_id) {
     auto symbol = sym_mgr.createSymbol(product_id, Venue::COINBASE);
     assert(symbol);
     if (!matching_engines_[engine::MatchingEngine::Type::FIFO]) {
-        matching_engines_[engine::MatchingEngine::Type::FIFO] = std::make_unique<engine::FifoMatchingEngine>(order_response_queue_);
+        matching_engines_[engine::MatchingEngine::Type::FIFO] = std::make_unique<engine::FifoMatchingEngine>(response_queue_);
     }
     symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
     symbol->createOrderBook<OrderBookType::L2>();
@@ -90,7 +112,7 @@ void CoinbaseExchange::handleMdSubscription(const Request &request) {
             // TODO: reject?
             switch(static_cast<coinbase::WebSocketChannel>(msg.channel)) {
                 case coinbase::WebSocketChannel::LEVEL2: {
-                    symbol->order_book_->populateL2SubscriptionResponse(md_update_queue_, msg.channel);
+                    symbol->order_book_->populateL2SubscriptionResponse(md_queue_, msg.channel);
                     break;
                 }
                 case coinbase::WebSocketChannel::MARKET_TRADES: {
@@ -108,7 +130,7 @@ void CoinbaseExchange::handleMdSubscription(const Request &request) {
             auto &pending_l2_subscriptions = pending_md_subscription_[coinbase::WebSocketChannel::LEVEL2];
             if (pending_l2_subscriptions.find(symbol) == pending_l2_subscriptions.end()) {
                 // subscription already received, publish snapshot immediately
-                symbol->order_book_->populateL2SubscriptionResponse(md_update_queue_, msg.channel);
+                symbol->order_book_->populateL2SubscriptionResponse(md_queue_, msg.channel);
             }
             else {
                 // Already pending, do nothing
@@ -351,8 +373,8 @@ void CoinbaseExchange::populateMDTradesResponse(Symbol* symbol) {
     }
 
     auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(MDTradeUpdate) + num_trades * sizeof(MDTrade)); // Empty snapshot
-    auto index = md_update_queue_.reserve(sz);
-    auto *update = reinterpret_cast<MarketDataUpdate*>(md_update_queue_[index]);
+    auto index = md_queue_.reserve(sz);
+    auto *update = reinterpret_cast<MarketDataUpdate*>(md_queue_[index]);
     memcpy(update->symbol, symbol->symbol_.c_str(), sizeof(update->symbol));
     update->venue = venue_;
     update->type = MDUpdateType::SUB_RESPONSE;
@@ -378,5 +400,5 @@ void CoinbaseExchange::populateMDTradesResponse(Symbol* symbol) {
             trades++;
         }
     }
-    md_update_queue_.publish(index, sz);
+    md_queue_.publish(index, sz);
 }

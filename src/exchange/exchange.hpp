@@ -9,13 +9,14 @@
 #include <thread>
 #include <array>
 #include <atomic>
-#include <chrono>
 #include <nlohmann/json.hpp>
 #include <common/messages.hpp>
 #include <common/order.hpp>
 #include <common/market_data.hpp>
 #include <order_book/order_book.hpp>
 #include <matching_engine/matching_engine.hpp>
+#include <order_gateway/order_gateway.hpp>
+#include <market_data_publisher/market_data_publisher.hpp>
 
 namespace slick::sim::exch {
 
@@ -23,21 +24,26 @@ struct Symbol;
 
 class Exchange {
 public:
-    Exchange(
-        Venue venue,
-        const nlohmann::json &config,
-        slick::SlickQueue<Request> &request_queue,
-        slick::SlickQueue<OrderResponse> &order_response_queue,
-        slick::SlickQueue<uint8_t> &md_update_queue
-    );
+    Exchange(Venue venue, const nlohmann::json &config);
 
-    virtual ~Exchange();
-    virtual void run();
-    void stop();
+    virtual ~Exchange() {
+        stop();
+    }
 
+    virtual void start();
+    virtual void stop();
+
+    queue<Request>& request_queue() noexcept {
+        return request_queue_;
+    }
+    queue<OrderResponse>& response_queue() noexcept {
+        return response_queue_;
+    }
+    queue<uint8_t>& md_queue() noexcept {
+        return md_queue_;
+    }
     
 protected:
-    void processMdData();
     void processRequest();
     void handleNewOrderRequest(const Request &request);
     void handleModifyOrderRequest(const Request &request);
@@ -58,18 +64,20 @@ protected:
     virtual void handleMdSubscription(const Request &/* request */) {}
     virtual void handleMdUnsubscription(const Request &/* request */) {}
 
+
 protected:
     Venue venue_;
-    nlohmann::json config_;
-    slick::SlickQueue<Request> &request_queue_;
-    slick::SlickQueue<OrderResponse> &order_response_queue_;
-    slick::SlickQueue<uint8_t> &md_update_queue_;
+    queue<Request> request_queue_;
+    queue<OrderResponse> response_queue_;
+    queue<uint8_t> md_queue_;
     std::shared_ptr<md_feed::MDFeed> md_feed_;
     std::thread thread_;
     std::thread md_thread_;
     std::atomic_bool run_{true};
     uint_fast64_t order_request_cursor_{0};
     std::array<std::unique_ptr<engine::MatchingEngine>, engine::MatchingEngine::Type::__count__> matching_engines_;
+    std::vector<std::unique_ptr<order_gateway::OrderGateway>> order_gateways_;
+    std::unique_ptr<md_publisher::MarketDataPublisher> md_publisher_;
 };
 
 }   // end namespace slick::sim::exch

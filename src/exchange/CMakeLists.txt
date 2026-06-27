@@ -10,5 +10,9 @@ target_include_directories(exchange PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
-target_link_libraries(exchange PRIVATE slick::queue slick::logger slick::object-pool matching_engine slick::orderbook Boost::uuid)
-target_link_libraries(exchange PUBLIC slick::coinbase-advanced-cpp hyperliquid)
+target_link_libraries(exchange PUBLIC 
+    order_gateway
+    market_data_publisher 
+    matching_engine 
+    Boost::uuid
+)

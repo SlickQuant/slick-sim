@@ -77,8 +77,8 @@ public:
     // The level quantity excludes exchange orders
     qty_t getMDLevelQty(price_t price) const;
 
-    virtual void populateL2SubscriptionResponse(slick::SlickQueue<uint8_t> &md_update_queue, uint8_t channel) = 0;
-    virtual void populateL2Snapshot(slick::SlickQueue<uint8_t> &md_update_queue) = 0;
+    virtual void populateL2SubscriptionResponse(slick::queue<uint8_t> &md_update_queue, uint8_t channel) = 0;
+    virtual void populateL2Snapshot(slick::queue<uint8_t> &md_update_queue) = 0;
     virtual void populateMDBookUpdate(MDBookUpdate &book_update) = 0;
 
     using OrderBookL3::addOrder;
@@ -263,8 +263,8 @@ public:
     void addBookOrder(uint64_t order_id, slick::orderbook::Side book_side, price_t price, qty_t qty, uint64_t timestamp, uint64_t seq_num) override;
 
     void populateMDBookUpdate(MDBookUpdate &book_update) override;
-    void populateL2SubscriptionResponse(slick::SlickQueue<uint8_t> &md_update_queue, uint8_t channel) override;
-    void populateL2Snapshot(slick::SlickQueue<uint8_t> &md_update_queue) override;
+    void populateL2SubscriptionResponse(slick::queue<uint8_t> &md_update_queue, uint8_t channel) override;
+    void populateL2Snapshot(slick::queue<uint8_t> &md_update_queue) override;
     
     // void modifyOrder(Order* order, price_t new_price, qty_t new_qty) override {}
 
@@ -406,7 +406,7 @@ inline void OrderBookImpl<OrderBookType::L2>::populateMDBookUpdate(MDBookUpdate 
 }
 
 template<>
-inline void OrderBookImpl<OrderBookType::L2>::populateL2SubscriptionResponse(slick::SlickQueue<uint8_t> &md_update_queue, uint8_t channel) {
+inline void OrderBookImpl<OrderBookType::L2>::populateL2SubscriptionResponse(slick::queue<uint8_t> &md_update_queue, uint8_t channel) {
     auto &ask_levels = getLevelsL3(orderbook::Side::Sell);
     auto &bid_levels = getLevelsL3(orderbook::Side::Buy);
     auto sz = sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(BookSnapshot) + (bid_levels.size() + ask_levels.size()) * sizeof(MDLevel);
@@ -439,7 +439,7 @@ inline void OrderBookImpl<OrderBookType::L2>::populateL2SubscriptionResponse(sli
 }
 
 template<>
-inline void OrderBookImpl<OrderBookType::L2>::populateL2Snapshot(slick::SlickQueue<uint8_t> &md_update_queue) {
+inline void OrderBookImpl<OrderBookType::L2>::populateL2Snapshot(slick::queue<uint8_t> &md_update_queue) {
     auto &ask_levels = getLevelsL3(orderbook::Side::Sell);
     auto &bid_levels = getLevelsL3(orderbook::Side::Buy);
     auto sz = sizeof(MarketDataUpdate) + sizeof(BookSnapshot) + (bid_levels.size() + ask_levels.size()) * sizeof(MDLevel);
@@ -472,19 +472,19 @@ inline void OrderBookImpl<OrderBookType::L2>::populateL2Snapshot(slick::SlickQue
 
 
 template<>
-inline void OrderBookImpl<OrderBookType::L3>::populateL2SubscriptionResponse(slick::SlickQueue<uint8_t>& md_update_queue, uint8_t channel) {
+inline void OrderBookImpl<OrderBookType::L3>::populateL2SubscriptionResponse([[maybe_unused]] slick::queue<uint8_t>& md_update_queue, [[maybe_unused]] uint8_t channel) {
     // Stub implementation for testing
     // In production, this would populate subscription response
 }
 
 template<>
-inline void OrderBookImpl<OrderBookType::L3>::populateMDBookUpdate(MDBookUpdate& book_update) {
+inline void OrderBookImpl<OrderBookType::L3>::populateMDBookUpdate([[maybe_unused]] MDBookUpdate& book_update) {
     // Stub implementation for testing
     // In production, this would populate MD book update
 }
 
 template<>
-inline void OrderBookImpl<OrderBookType::L3>::populateL2Snapshot(slick::SlickQueue<uint8_t> &md_update_queue) {
+inline void OrderBookImpl<OrderBookType::L3>::populateL2Snapshot([[maybe_unused]] slick::queue<uint8_t> &md_update_queue) {
 }
 
 

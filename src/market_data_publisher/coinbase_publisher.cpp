@@ -13,169 +13,194 @@ namespace {
 
 uint_fast64_t PerSocketData::heartbeat_count = 0;
 
-CoinbasePublisher::CoinbasePublisher(const nlohmann::json &config, slick::SlickQueue<Request> &request_queue, slick::SlickQueue<uint8_t> &market_data_queue)
-    : Publisher(request_queue, market_data_queue)
-    , port_(config.value("port", 5000))
+CoinbasePublisher::CoinbasePublisher(const nlohmann::json &config, slick::queue<Request> &request_queue, slick::queue<uint8_t> &market_data_queue)
+    : WebsocketMarketDataPublisher(Venue::COINBASE, request_queue, market_data_queue, config.value("port", 5000))
 {
 }
 
-void CoinbasePublisher::start() {
-    running_.store(true, std::memory_order_release);
-    // Start WebSocket server thread (handles everything in event loop)
-    ws_thread_ = std::thread([this]() {
-        auto app = uWS::App();
+// void CoinbasePublisher::start() {
+//     running_.store(true, std::memory_order_release);
+//     // Start WebSocket server thread (handles everything in event loop)
+//     ws_thread_ = std::thread([this]() {
+//         auto app = uWS::App();
 
-        app.ws<PerSocketData>("/*", {
-                /* WebSocket settings */
-                .compression = uWS::SHARED_COMPRESSOR,
-                .maxPayloadLength = 2 << 24,
-                .idleTimeout = 120,
-                .maxBackpressure = 2 << 25,
+//         app.ws<PerSocketData>("/*", {
+//                 /* WebSocket settings */
+//                 .compression = uWS::SHARED_COMPRESSOR,
+//                 .maxPayloadLength = 2 << 24,
+//                 .idleTimeout = 120,
+//                 .maxBackpressure = 2 << 25,
 
-                /* WebSocket handlers */
-                .upgrade = nullptr,
+//                 /* WebSocket handlers */
+//                 .upgrade = nullptr,
 
-                .open = [this](auto *ws) {
-                    // Initialize connection timestamp
-                    ws->getUserData()->last_pong = std::chrono::steady_clock::now();
-                    clients_.emplace(ws);
-                    LOG_INFO("CoinbasePublisher WebSocket client connected");
-                },
+//                 .open = [this](auto *ws) {
+//                     // Initialize connection timestamp
+//                     ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+//                     clients_.emplace(ws);
+//                     LOG_INFO("CoinbasePublisher WebSocket client connected");
+//                 },
 
-                .message = [this](auto *ws, std::string_view message, uWS::OpCode /* opCode */) {
-                    handleMessage(ws, message);
-                },
+//                 .message = [this](auto *ws, std::string_view message, uWS::OpCode /* opCode */) {
+//                     handleMessage(ws, message);
+//                 },
 
-                .drain = [](auto */* ws */) {
-                    // Check backpressure
-                },
+//                 .drain = [](auto */* ws */) {
+//                     // Check backpressure
+//                 },
 
-                .ping = [](auto *ws, std::string_view /* message */) {
-                    // Automatically respond to client ping with pong
-                    // uWebSockets handles this automatically, but we log it
-                    LOG_TRACE("CoinbasePublisher Received ping from client {:p}", (void*)ws);
-                },
+//                 .ping = [](auto *ws, std::string_view /* message */) {
+//                     // Automatically respond to client ping with pong
+//                     // uWebSockets handles this automatically, but we log it
+//                     LOG_TRACE("CoinbasePublisher Received ping from client {:p}", (void*)ws);
+//                 },
 
-                .pong = [this](auto *ws, std::string_view /* message */) {
-                    // Client responded to our ping
-                    ws->getUserData()->last_pong = std::chrono::steady_clock::now();
-                    LOG_TRACE("CoinbasePublisher Received pong from client {:p}", (void*)ws);
-                },
+//                 .pong = [this](auto *ws, std::string_view /* message */) {
+//                     // Client responded to our ping
+//                     ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+//                     LOG_TRACE("CoinbasePublisher Received pong from client {:p}", (void*)ws);
+//                 },
 
-                .close = [this](auto *ws, int code, std::string_view message) {
-                    handleClose(ws, code, message);
-                }
-            })
-            .listen(port_, [this, &app](auto *listen_socket) {
-                listen_socket_ = listen_socket;
-                if (listen_socket) {
-                    LOG_INFO("CoinbasePublisher started on port {}", port_);
+//                 .close = [this](auto *ws, int code, std::string_view message) {
+//                     handleClose(ws, code, message);
+//                 }
+//             })
+//             .listen(port_, [this, &app](auto *listen_socket) {
+//                 listen_socket_ = listen_socket;
+//                 if (listen_socket) {
+//                     LOG_INFO("CoinbasePublisher started on port {}", port_);
 
-                    // Get the event loop
-                    loop_ = uWS::Loop::get();
+//                     // Get the event loop
+//                     loop_ = uWS::Loop::get();
 
-                    // Create heartbeat timer in the event loop
-                    // Use defer() to create timer with proper lambda capture
-                    loop_->defer([this]() {
-                        heartbeat_timer_ = us_create_timer((struct us_loop_t*)loop_, 0, 0);
+//                     // Create heartbeat timer in the event loop
+//                     // Use defer() to create timer with proper lambda capture
+//                     loop_->defer([this]() {
+//                         heartbeat_timer_ = us_create_timer((struct us_loop_t*)loop_, 0, 0);
 
-                        // Store 'this' pointer in timer extension data
-                        *((CoinbasePublisher**)us_timer_ext(heartbeat_timer_)) = this;
+//                         // Store 'this' pointer in timer extension data
+//                         *((CoinbasePublisher**)us_timer_ext(heartbeat_timer_)) = this;
 
-                        // Set timer callback that retrieves 'this' from extension data
-                        us_timer_set(heartbeat_timer_, [](struct us_timer_t *timer) {
-                            // Dereference the pointer stored in extension data
-                            auto* self = *((CoinbasePublisher**)us_timer_ext(timer));
-                            self->checkHeartbeats();
-                        }, ping_interval_ms_, ping_interval_ms_);
-                    });
+//                         // Set timer callback that retrieves 'this' from extension data
+//                         us_timer_set(heartbeat_timer_, [](struct us_timer_t *timer) {
+//                             // Dereference the pointer stored in extension data
+//                             auto* self = *((CoinbasePublisher**)us_timer_ext(timer));
+//                             self->checkHeartbeats();
+//                         }, ping_interval_ms_, ping_interval_ms_);
+//                     });
 
-                    LOG_INFO("CoinbasePublisher Event loop configured (heartbeat: {}ms)", ping_interval_ms_);
+//                     LOG_INFO("CoinbasePublisher Event loop configured (heartbeat: {}ms)", ping_interval_ms_);
 
-                    // Start continuous response processing
-                    schedulePublishProcessing();
+//                     // Start continuous response processing
+//                     schedulePublishProcessing();
 
-                } else {
-                    LOG_ERROR("CoinbasePublisher Failed to listen on port {}", port_);
-                }
-            })
-            .run();
+//                 } else {
+//                     LOG_ERROR("CoinbasePublisher Failed to listen on port {}", port_);
+//                 }
+//             })
+//             .run();
+//     });
+// }
+
+void CoinbasePublisher::setup_routes(uWS::App &app) {
+    app.ws<PerSocketData>("/*", {
+        /* WebSocket settings */
+        .compression = uWS::SHARED_COMPRESSOR,
+        .maxPayloadLength = 1 << 24,
+        .idleTimeout = 120,
+        .maxBackpressure = 1 << 25,
+
+        /* WebSocket handlers */
+        .upgrade = nullptr,
+
+        .open = [this](auto *ws) {
+            // Initialize connection timestamp
+            ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+            clients_.emplace(ws);
+            LOG_INFO("CoinbasePublisher WebSocket client connected");
+        },
+
+        .message = [this](auto *ws, std::string_view message, uWS::OpCode /* opCode */) {
+            handle_message(ws, message);
+        },
+
+        .drain = [](auto */* ws */) {
+            // Check backpressure
+        },
+
+        .ping = [](auto *ws, std::string_view /* message */) {
+            // Automatically respond to client ping with pong
+            // uWebSockets handles this automatically, but we log it
+            LOG_TRACE("CoinbasePublisher Received ping from client {:p}", (void*)ws);
+        },
+
+        .pong = [this](auto *ws, std::string_view /* message */) {
+            // Client responded to our ping
+            ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+            LOG_TRACE("CoinbasePublisher Received pong from client {:p}", (void*)ws);
+        },
+
+        .close = [this](auto *ws, int code, std::string_view message) {
+            handle_close(ws, code, message);
+        }
     });
 }
 
-void CoinbasePublisher::stop() {
-    running_.store(false, std::memory_order_release);
+// void CoinbasePublisher::stop() {
+//     running_.store(false, std::memory_order_release);
 
-    // Close heartbeat timer
-    if (heartbeat_timer_) {
-        us_timer_close(heartbeat_timer_);
-        heartbeat_timer_ = nullptr;
-    }
+//     // Close heartbeat timer
+//     if (heartbeat_timer_) {
+//         us_timer_close(heartbeat_timer_);
+//         heartbeat_timer_ = nullptr;
+//     }
 
-    // Close WebSocket server
-    if (listen_socket_) {
-        us_listen_socket_close(0, listen_socket_);
-        listen_socket_ = nullptr;
-    }
+//     if (listen_socket_ && loop_) {
+//         // Closing the listen socket must happen on the loop's own thread;
+//         // doing it cross-thread races with the loop's poll handles.
+//         loop_->defer([this]() {
+//             if (listen_socket_) {
+//                 us_listen_socket_close(0, listen_socket_);
+//                 listen_socket_ = nullptr;
+//             }
+//         });
+//     }
 
-    if (ws_thread_.joinable()) {
-        ws_thread_.join();
-    }
-}
+//     if (ws_thread_.joinable()) {
+//         ws_thread_.join();
+//     }
+// }
 
-void CoinbasePublisher::schedulePublishProcessing() {
-    if (!running_.load(std::memory_order_acquire) || !loop_) {
-        return;
-    }
+// void CoinbasePublisher::schedulePublishProcessing() {
+//     if (!running_.load(std::memory_order_acquire) || !loop_) {
+//         return;
+//     }
 
-    loop_->defer([this]() {
-        publishMarketDataUpdate();
-    });
-}
+//     loop_->defer([this]() {
+//         publishMarketDataUpdate();
+//     });
+// }
 
-void CoinbasePublisher::publishMarketDataUpdate() {
-    // Process up to 100 update per call to avoid blocking event loop too long
-    constexpr int max_batch = 100;
-    int processed = 0;
-
-    while (processed < max_batch) {
-        // Try to read from the queue (non-blocking)
-        auto [data, size] = market_data_queue_.read(data_cursor_);
-
-        if (data == nullptr) {
-            // No more data available
+void CoinbasePublisher::publish_market_data_update(MarketDataUpdate *update) {
+    switch(update->type) {
+        case MDUpdateType::BOOK:
             break;
-        }
-
-        auto *update = reinterpret_cast<MarketDataUpdate*>(data);
-        switch(update->type) {
-            case MDUpdateType::BOOK:
-                break;
-            case MDUpdateType::LEVEL:
-                publishLevelUpdate(update);
-                break;
-            case MDUpdateType::ORDER:
-                publishOrderUpdate(update);
-                break;
-            case MDUpdateType::SUB_RESPONSE:
-                publishSubscriptionResponse(update);
-                processed = max_batch;
-                break;
-            case MDUpdateType::BOOK_SNAPSHOT:
-                publishLevelSnapshot(update);
-                processed = max_batch;
-                break;
-        }
-
-        processed++;
+        case MDUpdateType::LEVEL:
+            publish_level_update(update);
+            break;
+        case MDUpdateType::ORDER:
+            publish_order_update(update);
+            break;
+        case MDUpdateType::SUB_RESPONSE:
+            publish_subscription_response(update);
+            break;
+        case MDUpdateType::BOOK_SNAPSHOT:
+            publish_level_snapshot(update);
+            break;
     }
-
-    // Reschedule ourselves to run again on next event loop iteration
-    // schedulePublishProcessing() checks running_ flag
-    schedulePublishProcessing();
 }
 
-void CoinbasePublisher::handleMessage(wsT *ws, std::string_view message) {
+void CoinbasePublisher::handle_message(wsT *ws, std::string_view message) {
     try {
         json msg = json::parse(message);
 
@@ -282,11 +307,11 @@ void CoinbasePublisher::handleMessage(wsT *ws, std::string_view message) {
             ws->send(response.dump(), uWS::OpCode::TEXT);
         }
     } catch (const json::parse_error& e) {
-        sendError(ws, std::string("Invalid JSON: ") + e.what());
+        send_error(ws, std::string("Invalid JSON: ") + e.what());
     }
 }
 
-void CoinbasePublisher::checkHeartbeats() {
+void CoinbasePublisher::check_heartbeats() {
     auto now = std::chrono::steady_clock::now();
     std::vector<wsT*> disconnected_clients;
 
@@ -337,14 +362,14 @@ void CoinbasePublisher::checkHeartbeats() {
     }
 }
 
-void CoinbasePublisher::handleClose(wsT *ws, int code, std::string_view message) {
+void CoinbasePublisher::handle_close(wsT *ws, int code, std::string_view message) {
     LOG_INFO("Client {:p} disconnected: code={}, msg={}", ws, code, message);
-    unsubscribeMD(ws);
+    unsubscribe_md(ws);
     clients_.erase(ws);
 }
 
-void CoinbasePublisher::unsubscribeMD(wsT *ws) {
-    for (auto channel = 0; channel < static_cast<int>(coinbase::WebSocketChannel::__COUNT__); ++channel) {
+void CoinbasePublisher::unsubscribe_md(wsT *ws) {
+    for (auto channel = 0; channel < static_cast<int>(coinbase::WebSocketChannel::_CHANNEL_COUNT_); ++channel) {
         auto *user_data = ws->getUserData();
         for (const auto &symbol : user_data->subscription_info[channel].active_subscriptions) {
             LOG_INFO("Client {:p} unsubscribe channel {}: {}", ws, coinbase::to_string(static_cast<coinbase::WebSocketChannel>(channel)), symbol);
@@ -379,7 +404,7 @@ void CoinbasePublisher::unsubscribeMD(wsT *ws) {
     }
 }
 
-void CoinbasePublisher::sendError(wsT *ws, const std::string& error_msg) {
+void CoinbasePublisher::send_error(wsT *ws, const std::string& error_msg) {
     json error = {
         {"type", "error"},
         {"message", error_msg}
@@ -388,7 +413,7 @@ void CoinbasePublisher::sendError(wsT *ws, const std::string& error_msg) {
     LOG_ERROR("WebSocket error: {}", error_msg);
 }
 
-void CoinbasePublisher::publishSubscriptionResponse(MarketDataUpdate *update) {
+void CoinbasePublisher::publish_subscription_response(MarketDataUpdate *update) {
     auto *response = reinterpret_cast<MDSubscriptionResponse*>(update->data);
     auto &channel_sub = subscription_info_[response->channel];
     auto it = channel_sub.find(update->symbol);
@@ -494,7 +519,7 @@ void CoinbasePublisher::publishSubscriptionResponse(MarketDataUpdate *update) {
                         }}}
                     };
 
-                    for (auto i = 0u; i < coinbase::WebSocketChannel::__COUNT__; ++i) {
+                    for (auto i = 0u; i < coinbase::WebSocketChannel::_CHANNEL_COUNT_; ++i) {
                         if (i == response->channel) {
                             continue;
                         }
@@ -510,7 +535,7 @@ void CoinbasePublisher::publishSubscriptionResponse(MarketDataUpdate *update) {
     }
 }
 
-void CoinbasePublisher::publishLevelSnapshot(MarketDataUpdate *update) {
+void CoinbasePublisher::publish_level_snapshot(MarketDataUpdate *update) {
     auto *snapshot = reinterpret_cast<BookSnapshot*>(update->data);
     auto it_range = symbol_channel_client_.find(update->symbol);
     if (it_range != symbol_channel_client_.end()) {
@@ -560,7 +585,7 @@ void CoinbasePublisher::publishLevelSnapshot(MarketDataUpdate *update) {
     }
 }
 
-void CoinbasePublisher::publishLevelUpdate(MarketDataUpdate *update) {
+void CoinbasePublisher::publish_level_update(MarketDataUpdate *update) {
     auto *level_update = reinterpret_cast<MDLevelUpdate*>(update->data);
     auto it_range = symbol_channel_client_.find(update->symbol);
     if (it_range != symbol_channel_client_.end()) {
@@ -608,8 +633,7 @@ void CoinbasePublisher::publishLevelUpdate(MarketDataUpdate *update) {
     }
 }
 
-void CoinbasePublisher::publishOrderUpdate(MarketDataUpdate *update) {
-    auto *order_update = reinterpret_cast<MDOrderUpdate*>(update->data);
+void CoinbasePublisher::publish_order_update(MarketDataUpdate *update) {
     auto it_range = symbol_channel_client_.find(update->symbol);
     if (it_range != symbol_channel_client_.end()) {
         auto range = it_range->second.equal_range(static_cast<uint8_t>(coinbase::WebSocketChannel::USER));

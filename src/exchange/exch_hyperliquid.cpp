@@ -8,27 +8,32 @@
 #include <slick/logger.hpp>
 #include <chrono>
 #include <cstring>
+#include <market_data_publisher/hyperliquid_publisher.hpp>
+#include <order_gateway/hyperliquid_rest_order_gateway.hpp>
 
-using namespace slick::sim::exch;
 using namespace slick::sim;
+using namespace slick::sim::exch;
+using namespace slick::sim::order_gateway;
+using namespace slick::sim::md_publisher;
 
 namespace {
     auto &sym_mgr = SymbolManager::instance();
 }
 
-HyperliquidExchange::HyperliquidExchange(
-    const nlohmann::json &config,
-    slick::SlickQueue<Request> &request_queue,
-    slick::SlickQueue<OrderResponse> &order_response_queue,
-    slick::SlickQueue<uint8_t> &md_update_queue
-)
-    : Exchange(Venue::HYPERLIQUID, config, request_queue, order_response_queue, md_update_queue)
+HyperliquidExchange::HyperliquidExchange(const nlohmann::json &config)
+    : Exchange(Venue::HYPERLIQUID, config)
 {
-    if (!config_.contains("md_feeds")) {
+    md_publisher_ = std::make_unique<HyperliquidPublisher>(config["md_publisher"], request_queue_, md_queue_);
+
+    order_gateways_.emplace_back(
+        std::make_unique<HyperliquidRestOrderGateway>(config["order_gateway"], request_queue_, response_queue_)
+    );
+
+    if (!config.contains("md_feeds")) {
         return;
     }
 
-    for (const auto &feed_cfg : config_["md_feeds"]) {
+    for (const auto &feed_cfg : config["md_feeds"]) {
         std::string type = feed_cfg.value("type", "");
         if (type == "hyperliquid_live_ws") {
             use_live_feed_ = true;
@@ -46,8 +51,17 @@ HyperliquidExchange::HyperliquidExchange(
     }
 }
 
-void HyperliquidExchange::run() {
+void HyperliquidExchange::start() {
     run_.store(true, std::memory_order_release);
+
+    for (auto &og : order_gateways_) {
+        og->start();
+    }
+    md_publisher_->start();
+
+    if (md_feed_) {
+        md_feed_->start();
+    }
 
     for (auto &feed : md_feeds_) {
         feed->start();
@@ -66,7 +80,7 @@ Symbol* HyperliquidExchange::addSymbol(std::string_view coin) {
     assert(symbol);
     if (!matching_engines_[engine::MatchingEngine::Type::FIFO]) {
         matching_engines_[engine::MatchingEngine::Type::FIFO] =
-            std::make_unique<engine::FifoMatchingEngine>(order_response_queue_);
+            std::make_unique<engine::FifoMatchingEngine>(response_queue_);
     }
     symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
     symbol->createOrderBook<OrderBookType::L2>();
@@ -162,10 +176,10 @@ void HyperliquidExchange::processL2BookEvent(const nlohmann::json& data) {
     if (it != pending_l2.end()) {
         // First snapshot for a pending subscription — send as SUB_RESPONSE
         symbol->order_book_->populateL2SubscriptionResponse(
-            md_update_queue_, static_cast<uint8_t>(HyperliquidChannel::L2_BOOK));
+            md_queue_, static_cast<uint8_t>(HyperliquidChannel::L2_BOOK));
         pending_l2.erase(it);
     } else {
-        symbol->order_book_->populateL2Snapshot(md_update_queue_);
+        symbol->order_book_->populateL2Snapshot(md_queue_);
     }
 
     symbol->md_level_update_cache_.clear();
@@ -252,7 +266,7 @@ void HyperliquidExchange::handleMdSubscription(const Request &request) {
                 // Already have a snapshot, send it immediately
                 if (channel == HyperliquidChannel::L2_BOOK) {
                     symbol->order_book_->populateL2SubscriptionResponse(
-                        md_update_queue_, static_cast<uint8_t>(channel));
+                        md_queue_, static_cast<uint8_t>(channel));
                 }
             }
         }
@@ -260,7 +274,7 @@ void HyperliquidExchange::handleMdSubscription(const Request &request) {
         // No live feed — send snapshot from whatever is in the book
         if (channel == HyperliquidChannel::L2_BOOK) {
             symbol->order_book_->populateL2SubscriptionResponse(
-                md_update_queue_, static_cast<uint8_t>(channel));
+                md_queue_, static_cast<uint8_t>(channel));
         }
     }
 }

@@ -12,137 +12,157 @@ uint_fast64_t HyperliquidPerSocketData::heartbeat_count = 0;
 
 HyperliquidPublisher::HyperliquidPublisher(
     const json& config,
-    slick::SlickQueue<Request>& request_queue,
-    slick::SlickQueue<uint8_t>& market_data_queue)
-    : Publisher(request_queue, market_data_queue)
-    , port_(config.value("port", 5001))
+    slick::queue<Request>& request_queue,
+    slick::queue<uint8_t>& market_data_queue
+)
+    : WebsocketMarketDataPublisher(Venue::HYPERLIQUID, request_queue, market_data_queue, config.value("port", 5001))
 {}
 
-void HyperliquidPublisher::start() {
-    running_.store(true, std::memory_order_release);
-    ws_thread_ = std::thread([this]() {
-        auto app = uWS::App();
+// void HyperliquidPublisher::start() {
+//     running_.store(true, std::memory_order_release);
+//     ws_thread_ = std::thread([this]() {
+//         auto app = uWS::App();
 
-        app.ws<HyperliquidPerSocketData>("/*", {
-            .compression     = uWS::SHARED_COMPRESSOR,
-            .maxPayloadLength = 2 << 24,
-            .idleTimeout     = 120,
-            .maxBackpressure = 2 << 25,
-            .upgrade         = nullptr,
+//         app.ws<HyperliquidPerSocketData>("/*", {
+//             .compression     = uWS::SHARED_COMPRESSOR,
+//             .maxPayloadLength = 2 << 24,
+//             .idleTimeout     = 120,
+//             .maxBackpressure = 2 << 25,
+//             .upgrade         = nullptr,
 
-            .open = [this](auto* ws) {
-                ws->getUserData()->last_pong = std::chrono::steady_clock::now();
-                clients_.emplace(ws);
-                LOG_INFO("HyperliquidPublisher client connected {:p}", (void*)ws);
-            },
+//             .open = [this](auto* ws) {
+//                 ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+//                 clients_.emplace(ws);
+//                 LOG_INFO("HyperliquidPublisher client connected {:p}", (void*)ws);
+//             },
 
-            .message = [this](auto* ws, std::string_view message, uWS::OpCode) {
-                handleMessage(ws, message);
-            },
+//             .message = [this](auto* ws, std::string_view message, uWS::OpCode) {
+//                 handleMessage(ws, message);
+//             },
 
-            .drain = [](auto*) {},
+//             .drain = [](auto*) {},
 
-            .ping = [](auto* ws, std::string_view) {
-                LOG_TRACE("HyperliquidPublisher ping from {:p}", (void*)ws);
-            },
+//             .ping = [](auto* ws, std::string_view) {
+//                 LOG_TRACE("HyperliquidPublisher ping from {:p}", (void*)ws);
+//             },
 
-            .pong = [this](auto* ws, std::string_view) {
-                ws->getUserData()->last_pong = std::chrono::steady_clock::now();
-            },
+//             .pong = [this](auto* ws, std::string_view) {
+//                 ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+//             },
 
-            .close = [this](auto* ws, int code, std::string_view msg) {
-                handleClose(ws, code, msg);
-            }
-        })
-        .listen(port_, [this](auto* listen_socket) {
-            listen_socket_ = listen_socket;
-            if (listen_socket) {
-                LOG_INFO("HyperliquidPublisher started on port {}", port_);
-                loop_ = uWS::Loop::get();
-                loop_->defer([this]() {
-                    heartbeat_timer_ = us_create_timer((struct us_loop_t*)loop_, 0, 0);
-                    *((HyperliquidPublisher**)us_timer_ext(heartbeat_timer_)) = this;
-                    us_timer_set(heartbeat_timer_, [](struct us_timer_t* t) {
-                        (*((HyperliquidPublisher**)us_timer_ext(t)))->checkHeartbeats();
-                    }, ping_interval_ms_, ping_interval_ms_);
-                });
-                schedulePublishProcessing();
-            } else {
-                LOG_ERROR("HyperliquidPublisher failed to listen on port {}", port_);
-            }
-        })
-        .run();
+//             .close = [this](auto* ws, int code, std::string_view msg) {
+//                 handleClose(ws, code, msg);
+//             }
+//         })
+//         .listen(port_, [this](auto* listen_socket) {
+//             listen_socket_ = listen_socket;
+//             if (listen_socket) {
+//                 LOG_INFO("HyperliquidPublisher started on port {}", port_);
+//                 loop_ = uWS::Loop::get();
+//                 loop_->defer([this]() {
+//                     heartbeat_timer_ = us_create_timer((struct us_loop_t*)loop_, 0, 0);
+//                     *((HyperliquidPublisher**)us_timer_ext(heartbeat_timer_)) = this;
+//                     us_timer_set(heartbeat_timer_, [](struct us_timer_t* t) {
+//                         (*((HyperliquidPublisher**)us_timer_ext(t)))->checkHeartbeats();
+//                     }, ping_interval_ms_, ping_interval_ms_);
+//                 });
+//                 schedulePublishProcessing();
+//             } else {
+//                 LOG_ERROR("HyperliquidPublisher failed to listen on port {}", port_);
+//             }
+//         })
+//         .run();
+//     });
+// }
+
+// void HyperliquidPublisher::stop() {
+//     running_.store(false, std::memory_order_release);
+//     if (heartbeat_timer_) {
+//         us_timer_close(heartbeat_timer_);
+//         heartbeat_timer_ = nullptr;
+//     }
+//     if (listen_socket_ && loop_) {
+//         // Closing the listen socket must happen on the loop's own thread;
+//         // doing it cross-thread races with the loop's poll handles.
+//         loop_->defer([this]() {
+//             if (listen_socket_) {
+//                 us_listen_socket_close(0, listen_socket_);
+//                 listen_socket_ = nullptr;
+//             }
+//         });
+//     }
+//     if (ws_thread_.joinable()) {
+//         ws_thread_.join();
+//     }
+// }
+
+// void HyperliquidPublisher::schedulePublishProcessing() {
+//     if (!running_.load(std::memory_order_acquire) || !loop_) return;
+//     loop_->defer([this]() { publishMarketDataUpdate(); });
+// }
+
+void HyperliquidPublisher::setup_routes(uWS::App &app) {
+    app.ws<HyperliquidPerSocketData>("/*", {
+        .compression     = uWS::SHARED_COMPRESSOR,
+        .maxPayloadLength = 2 << 24,
+        .idleTimeout     = 120,
+        .maxBackpressure = 2 << 25,
+        .upgrade         = nullptr,
+
+        .open = [this](auto* ws) {
+            ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+            clients_.emplace(ws);
+            LOG_INFO("HyperliquidPublisher client connected {:p}", (void*)ws);
+        },
+
+        .message = [this](auto* ws, std::string_view message, uWS::OpCode) {
+            handle_message(ws, message);
+        },
+
+        .drain = [](auto*) {},
+
+        .ping = [](auto* ws, std::string_view) {
+            LOG_TRACE("HyperliquidPublisher ping from {:p}", (void*)ws);
+        },
+
+        .pong = [this](auto* ws, std::string_view) {
+            ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+        },
+
+        .close = [this](auto* ws, int code, std::string_view msg) {
+            handle_close(ws, code, msg);
+        }
     });
 }
 
-void HyperliquidPublisher::stop() {
-    running_.store(false, std::memory_order_release);
-    if (heartbeat_timer_) {
-        us_timer_close(heartbeat_timer_);
-        heartbeat_timer_ = nullptr;
-    }
-    if (listen_socket_) {
-        us_listen_socket_close(0, listen_socket_);
-        listen_socket_ = nullptr;
-    }
-    if (ws_thread_.joinable()) {
-        ws_thread_.join();
+void HyperliquidPublisher::publish_market_data_update(MarketDataUpdate* update) {
+    switch (update->type) {
+        case MDUpdateType::SUB_RESPONSE:
+            publish_subscription_response(update);
+            break;
+        case MDUpdateType::BOOK_SNAPSHOT:
+            publish_book_snapshot(update);
+            break;
+        case MDUpdateType::TRADE:
+            publish_trade_update(update);
+            break;
+        default:
+            break;
     }
 }
 
-void HyperliquidPublisher::schedulePublishProcessing() {
-    if (!running_.load(std::memory_order_acquire) || !loop_) return;
-    loop_->defer([this]() { publishMarketDataUpdate(); });
-}
-
-void HyperliquidPublisher::publishMarketDataUpdate() {
-    constexpr int max_batch = 100;
-    int processed = 0;
-
-    while (processed < max_batch) {
-        auto [data, size] = market_data_queue_.read(data_cursor_);
-        if (!data) break;
-
-        auto* update = reinterpret_cast<MarketDataUpdate*>(data);
-        // Only handle updates from HYPERLIQUID venue
-        if (update->venue != Venue::HYPERLIQUID) {
-            processed++;
-            continue;
-        }
-
-        switch (update->type) {
-            case MDUpdateType::SUB_RESPONSE:
-                publishSubscriptionResponse(update);
-                processed = max_batch;
-                break;
-            case MDUpdateType::BOOK_SNAPSHOT:
-                publishBookSnapshot(update);
-                processed = max_batch;
-                break;
-            case MDUpdateType::TRADE:
-                publishTradeUpdate(update);
-                break;
-            default:
-                break;
-        }
-        processed++;
-    }
-
-    schedulePublishProcessing();
-}
-
-void HyperliquidPublisher::handleMessage(wsT* ws, std::string_view message) {
+void HyperliquidPublisher::handle_message(wsT* ws, std::string_view message) {
     try {
         json msg = json::parse(message);
 
         std::string method = msg.value("method", "");
         if (method != "subscribe" && method != "unsubscribe") {
-            sendError(ws, std::format("method `{}` is not supported", method));
+            send_error(ws, std::format("method `{}` is not supported", method));
             return;
         }
 
         if (!msg.contains("subscription")) {
-            sendError(ws, "missing `subscription` field");
+            send_error(ws, "missing `subscription` field");
             return;
         }
 
@@ -151,29 +171,29 @@ void HyperliquidPublisher::handleMessage(wsT* ws, std::string_view message) {
 
         if (type == "l2Book") {
             std::string coin = sub.value("coin", "");
-            if (coin.empty()) { sendError(ws, "missing `coin` in subscription"); return; }
+            if (coin.empty()) { send_error(ws, "missing `coin` in subscription"); return; }
             if (method == "subscribe") {
-                subscribeChannel(ws, HyperliquidChannel::L2_BOOK, coin);
+                subscribe_channel(ws, HyperliquidChannel::L2_BOOK, coin);
             }
         } else if (type == "trades") {
             std::string coin = sub.value("coin", "");
-            if (coin.empty()) { sendError(ws, "missing `coin` in subscription"); return; }
+            if (coin.empty()) { send_error(ws, "missing `coin` in subscription"); return; }
             if (method == "subscribe") {
-                subscribeChannel(ws, HyperliquidChannel::TRADES, coin);
+                subscribe_channel(ws, HyperliquidChannel::TRADES, coin);
             }
         } else if (type == "heartbeat") {
             ws->getUserData()->subscribed_heartbeat = true;
             json rsp = {{"channel", "subscriptions"}, {"data", {{"type", "heartbeat"}}}};
             ws->send(rsp.dump(), uWS::OpCode::TEXT);
         } else {
-            sendError(ws, std::format("subscription type `{}` is not supported", type));
+            send_error(ws, std::format("subscription type `{}` is not supported", type));
         }
     } catch (const json::parse_error& e) {
-        sendError(ws, std::string("invalid JSON: ") + e.what());
+        send_error(ws, std::string("invalid JSON: ") + e.what());
     }
 }
 
-void HyperliquidPublisher::subscribeChannel(wsT* ws, HyperliquidChannel channel, const std::string& coin) {
+void HyperliquidPublisher::subscribe_channel(wsT* ws, HyperliquidChannel channel, const std::string& coin) {
     auto ch = static_cast<uint8_t>(channel);
     LOG_INFO("HyperliquidPublisher {:p} subscribe {}: {}", (void*)ws,
              channel == HyperliquidChannel::L2_BOOK ? "l2Book" : "trades", coin);
@@ -194,7 +214,7 @@ void HyperliquidPublisher::subscribeChannel(wsT* ws, HyperliquidChannel channel,
     ud->subs[ch].pending.emplace(coin);
 }
 
-void HyperliquidPublisher::publishSubscriptionResponse(MarketDataUpdate* update) {
+void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* update) {
     auto* response = reinterpret_cast<MDSubscriptionResponse*>(update->data);
     uint8_t ch = response->channel;
     auto& channel_sub = subscription_info_[ch];
@@ -261,7 +281,7 @@ void HyperliquidPublisher::publishSubscriptionResponse(MarketDataUpdate* update)
     }
 }
 
-void HyperliquidPublisher::publishBookSnapshot(MarketDataUpdate* update) {
+void HyperliquidPublisher::publish_book_snapshot(MarketDataUpdate* update) {
     auto ch = static_cast<uint8_t>(HyperliquidChannel::L2_BOOK);
     auto& channel_sub = subscription_info_[ch];
     auto it = channel_sub.find(update->symbol);
@@ -299,7 +319,7 @@ void HyperliquidPublisher::publishBookSnapshot(MarketDataUpdate* update) {
     }
 }
 
-void HyperliquidPublisher::publishTradeUpdate(MarketDataUpdate* update) {
+void HyperliquidPublisher::publish_trade_update(MarketDataUpdate* update) {
     auto ch = static_cast<uint8_t>(HyperliquidChannel::TRADES);
     auto& channel_sub = subscription_info_[ch];
     auto it = channel_sub.find(update->symbol);
@@ -325,7 +345,7 @@ void HyperliquidPublisher::publishTradeUpdate(MarketDataUpdate* update) {
     }
 }
 
-void HyperliquidPublisher::checkHeartbeats() {
+void HyperliquidPublisher::check_heartbeats() {
     auto now = std::chrono::steady_clock::now();
     for (auto it = clients_.begin(); it != clients_.end();) {
         auto* ws   = *it;
@@ -349,13 +369,13 @@ void HyperliquidPublisher::checkHeartbeats() {
     }
 }
 
-void HyperliquidPublisher::handleClose(wsT* ws, int code, std::string_view message) {
+void HyperliquidPublisher::handle_close(wsT* ws, int code, std::string_view message) {
     LOG_INFO("HyperliquidPublisher: client {:p} disconnected code={} msg={}", (void*)ws, code, message);
-    unsubscribeMD(ws);
+    unsubscribe_md(ws);
     clients_.erase(ws);
 }
 
-void HyperliquidPublisher::unsubscribeMD(wsT* ws) {
+void HyperliquidPublisher::unsubscribe_md(wsT* ws) {
     auto* ud = ws->getUserData();
     for (uint8_t ch = 0; ch < static_cast<uint8_t>(HyperliquidChannel::__COUNT__); ++ch) {
         for (const auto& coin : ud->subs[ch].active) {
@@ -384,7 +404,7 @@ void HyperliquidPublisher::unsubscribeMD(wsT* ws) {
     }
 }
 
-void HyperliquidPublisher::sendError(wsT* ws, const std::string& error_msg) {
+void HyperliquidPublisher::send_error(wsT* ws, const std::string& error_msg) {
     json err = {{"channel", "error"}, {"data", error_msg}};
     ws->send(err.dump(), uWS::OpCode::TEXT);
     LOG_ERROR("HyperliquidPublisher error: {}", error_msg);

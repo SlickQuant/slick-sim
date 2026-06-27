@@ -1,8 +1,12 @@
-#include "coinbase_rest_client_manager.hpp"
+#include <slick/logger.hpp> 
+#include "coinbase_rest_order_gateway.hpp"
 #include <coinbase/auth.hpp>
 #include <cmath>
+#include "coinbase_common.hpp"
 
-using namespace slick::sim::order_gateway::coinbase;
+using namespace slick::sim;
+using namespace slick::sim::order_gateway;
+using Http = slick::net::Http;
 
 namespace {
 
@@ -12,9 +16,37 @@ bool is_multiple_of(double value, double increment) {
     return std::abs(ratio - std::round(ratio)) < 1e-6;
 }
 
-}   // namespace
+// Per-request data for HTTP POST handling
+struct PostRequestData {
+    std::string body_buffer;
+    std::string user_id;
+};
 
-std::tuple<bool, std::string, std::string> CoinbaseRestClientManager::authenticate(uWS::HttpRequest *req) {
+}  // namespace
+
+CoinbaseRestOrderGateway::CoinbaseRestOrderGateway(const json& config, slick::queue<Request> &request_queue, slick::queue<OrderResponse> &response_queue)
+    : RestWsOrderGateway(Venue::COINBASE, request_queue, response_queue, config.value("port", 3000))
+{
+    if (config.contains("initial_products")) {
+        products_ = config["initial_products"].get<std::string>();
+    } else {
+        auto base_url = config.value("base_url", "https://api.coinbase.com");
+        auto rsp = Http::get(base_url + "/api/v3/brokerage/market/products");
+        if (rsp.is_ok()) {
+            products_ = rsp.result_text;
+        } else {
+            LOG_WARN("Failed to get products. error: {}", rsp.result_text);
+        }
+    }
+    if (!products_.empty()) {
+        auto products = json::parse(products_);
+        for (auto &prod : products["products"]) {
+            product_by_id_[prod["product_id"]] = prod.dump();
+        }
+    }
+}
+
+std::tuple<bool, std::string, std::string> CoinbaseRestOrderGateway::authenticate(uWS::HttpRequest *req) {
     // Get the Authorization header
     std::string_view auth_header = req->getHeader("authorization");
     
@@ -47,8 +79,8 @@ std::tuple<bool, std::string, std::string> CoinbaseRestClientManager::authentica
     }
 }
 
-CoinbaseRestClientManager::OrderValidationResult
-CoinbaseRestClientManager::validate_order(
+CoinbaseRestOrderGateway::OrderValidationResult
+CoinbaseRestOrderGateway::validate_order(
     const std::string& product_id, double price_d, double qty_d, OrderType order_type) const
 {
     auto it = product_by_id_.find(product_id);
@@ -90,22 +122,22 @@ CoinbaseRestClientManager::validate_order(
     return {true, {}, {}};
 }
 
-void CoinbaseRestClientManager::start() {
-    thread_ = std::move(std::thread([this]() {
-        auto app = uWS::App();
-        setup_routes(app);
-        app.listen(port_, [this](auto *listen_socket) {
-            listen_socket_ = listen_socket;
-            if (listen_socket) {
-                LOG_INFO("Coinbase REST OrderGateway started on port {}", port_);
-            } else {
-                LOG_ERROR("Failed to listen to port");
-            }
-        }).run();
-    }));
-}
+// void CoinbaseRestOrderGateway::start() {
+//     thread_ = std::move(std::thread([this]() {
+//         auto app = uWS::App();
+//         setup_routes(app);
+//         app.listen(port_, [this](auto *listen_socket) {
+//             listen_socket_ = listen_socket;
+//             if (listen_socket) {
+//                 LOG_INFO("Coinbase REST OrderGateway started on port {}", port_);
+//             } else {
+//                 LOG_ERROR("Failed to listen to port");
+//             }
+//         }).run();
+//     }));
+// }
 
-void CoinbaseRestClientManager::setup_routes(uWS::App &app) {
+void CoinbaseRestOrderGateway::setup_routes(uWS::App &app) {
     app.get("/api/v3/brokerage/market/products", [this](auto *res, auto */* req */) {
         res->writeHeader("Content-Type", "application/json")->end(products_);
     }).get("/api/v3/brokerage/products", [this](auto *res, auto */* req */) {
@@ -127,7 +159,7 @@ void CoinbaseRestClientManager::setup_routes(uWS::App &app) {
     });
 }
 
-void CoinbaseRestClientManager::handle_get_product(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
+void CoinbaseRestOrderGateway::handle_get_product(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
     std::string_view product_id = req->getParameter("product_id");
     LOG_INFO("Fetching product: {}", product_id);
     auto iter = product_by_id_.find(std::string(product_id));
@@ -141,7 +173,7 @@ void CoinbaseRestClientManager::handle_get_product(uWS::HttpResponse<false>* res
     }
 }
 
-void CoinbaseRestClientManager::handle_get_orders(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
+void CoinbaseRestOrderGateway::handle_get_orders(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
     auto [authenticated, user_id, error_response] = authenticate(req);
     if (!authenticated) {
         res->writeStatus("401 Unauthorized")
@@ -157,7 +189,7 @@ void CoinbaseRestClientManager::handle_get_orders(uWS::HttpResponse<false>* res,
     // TODO: get orders from order gateway's internal state or database instead of maintaining separate state in REST client manager
 }
 
-void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
+void CoinbaseRestOrderGateway::handle_create_order(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
     auto [authenticated, user_id, error_response] = authenticate(req);
     if (!authenticated) {
         res->writeStatus("401 Unauthorized")
@@ -438,7 +470,7 @@ void CoinbaseRestClientManager::handle_create_order(uWS::HttpResponse<false>* re
     });
 }
 
-void CoinbaseRestClientManager::handle_batch_cancel(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
+void CoinbaseRestOrderGateway::handle_batch_cancel(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
     auto [authenticated, user_id, error_response] = authenticate(req);
     if (!authenticated) {
         res->writeStatus("401 Unauthorized")
@@ -601,7 +633,7 @@ void CoinbaseRestClientManager::handle_batch_cancel(uWS::HttpResponse<false>* re
     });
 }
 
-void CoinbaseRestClientManager::handle_edit_order(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
+void CoinbaseRestOrderGateway::handle_edit_order(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
     auto [authenticated, user_id, error_response] = authenticate(req);
     if (!authenticated) {
         res->writeStatus("401 Unauthorized")
@@ -757,7 +789,7 @@ void CoinbaseRestClientManager::handle_edit_order(uWS::HttpResponse<false>* res,
     });
 }
 
-void CoinbaseRestClientManager::handle_get_transaction_summary(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
+void CoinbaseRestOrderGateway::handle_get_transaction_summary(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
     auto [authenticated, user_id, error_response] = authenticate(req);
     if (!authenticated) {
         res->writeStatus("401 Unauthorized")

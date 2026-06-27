@@ -78,15 +78,24 @@ static Request makeMDSubRequest(const std::string& coin, HyperliquidChannel ch) 
 class HyperliquidExchangeTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        request_queue_   = std::make_unique<slick::SlickQueue<Request>>(4096, "hl_test_req");
-        response_queue_  = std::make_unique<slick::SlickQueue<OrderResponse>>(4096, "hl_test_resp");
-        md_queue_        = std::make_unique<slick::SlickQueue<uint8_t>>(1 << 20, "hl_test_md");
-        collector_       = std::make_unique<OrderResponseCollector>(*response_queue_);
-        matching_engine_ = std::make_unique<FifoMatchingEngine>(*response_queue_);
+        auto config = R"({
+            "request_queue_size": 4096,
+            "response_queue_size": 4096,
+            "md_queue_size": 1048576,
+            "request_queue_shm_name": "hl_test_req",
+            "response_queue_shm_name": "hl_test_resp",
+            "md_queue_shm_name": "hl_test_md",
+            "order_gateway": {
+                "port": 4000
+            },
+            "md_publisher": {
+                "port": 5000
+            }
+        })"_json;
+        exchange_ = std::make_unique<TestableHyperliquidExchange>(config);
+        collector_       = std::make_unique<OrderResponseCollector>(exchange_->response_queue());
+        matching_engine_ = std::make_unique<FifoMatchingEngine>(exchange_->response_queue());
 
-        json config;  // empty — use_live_feed_ = false
-        exchange_ = std::make_unique<TestableHyperliquidExchange>(
-            config, *request_queue_, *response_queue_, *md_queue_);
     }
 
     Symbol* registerCoin(const std::string& coin) {
@@ -113,9 +122,6 @@ protected:
         return order;
     }
 
-    std::unique_ptr<slick::SlickQueue<Request>>       request_queue_;
-    std::unique_ptr<slick::SlickQueue<OrderResponse>> response_queue_;
-    std::unique_ptr<slick::SlickQueue<uint8_t>>       md_queue_;
     std::unique_ptr<OrderResponseCollector>           collector_;
     std::unique_ptr<FifoMatchingEngine>               matching_engine_;
     std::unique_ptr<TestableHyperliquidExchange>      exchange_;
@@ -424,7 +430,7 @@ TEST_F(HyperliquidExchangeTest, Subscription_NewCoin_WritesMdQueueEntry) {
     exchange_->subscribeToMD(req);
 
     uint64_t cursor = 0;
-    auto [data, sz] = md_queue_->read(cursor);
+    auto [data, sz] = exchange_->md_queue().read(cursor);
     ASSERT_NE(data, nullptr);
     auto* update = reinterpret_cast<MarketDataUpdate*>(data);
     EXPECT_EQ(update->type, MDUpdateType::SUB_RESPONSE);
@@ -438,14 +444,16 @@ TEST_F(HyperliquidExchangeTest, Subscription_ExistingCoin_ResendsSnapshot) {
     auto req = makeMDSubRequest("HL-D3", HyperliquidChannel::L2_BOOK);
     exchange_->subscribeToMD(req);
 
+    auto &md_queue = exchange_->md_queue();
+
     // Read first entry
     uint64_t cursor = 0;
-    auto [data1, sz1] = md_queue_->read(cursor);
+    auto [data1, sz1] = md_queue.read(cursor);
     ASSERT_NE(data1, nullptr);
 
     // Second subscription should also write a snapshot
     exchange_->subscribeToMD(req);
-    auto [data2, sz2] = md_queue_->read(cursor);
+    auto [data2, sz2] = md_queue.read(cursor);
     ASSERT_NE(data2, nullptr);
 
     auto* update2 = reinterpret_cast<MarketDataUpdate*>(data2);

@@ -1,8 +1,9 @@
 add_library(order_gateway
-    client_manager/coinbase_rest_client_manager.cpp
-    client_manager/coinbase_ws_client_manager.cpp
-    client_manager/hyperliquid_rest_client_manager.cpp
-    order_gateway.cpp
+    rest_ws_order_gateway.cpp
+    tcp_order_gateway.cpp
+    coinbase_rest_order_gateway.cpp
+    coinbase_ws_order_gateway.cpp
+    hyperliquid_rest_order_gateway.cpp
     message_parser.cpp
     fix_parser.cpp
     sbe_parser.cpp
@@ -16,6 +17,12 @@ target_include_directories(order_gateway
 )
 
 # Link libraries - handle both vcpkg and FetchContent QuickFIX
-target_link_libraries(order_gateway 
-    PUBLIC slick::net slick::socket slick::logger slick::queue slick::coinbase-advanced-cpp nlohmann_json::nlohmann_json quickfix unofficial::uwebsockets::uwebsockets hyperliquid
+target_link_libraries(order_gateway PUBLIC
+    slick::socket
+    slick::logger
+    nlohmann_json::nlohmann_json
+    unofficial::uwebsockets::uwebsockets
+    quickfix
+    slick::coinbase-advanced-cpp
+    hyperliquid
 )

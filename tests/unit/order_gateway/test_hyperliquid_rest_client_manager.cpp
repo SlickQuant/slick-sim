@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <order_gateway/client_manager/hyperliquid_rest_client_manager.hpp>
+#include <order_gateway/hyperliquid_rest_order_gateway.hpp>
 #include <common/messages.hpp>
 #include <common/order.hpp>
 #include <common/types.hpp>
@@ -15,7 +15,7 @@
 
 using namespace slick::sim;
 using namespace slick::sim::test;
-using namespace slick::sim::order_gateway::hyperliquid_hl;
+using namespace slick::sim::order_gateway;
 using json = nlohmann::json;
 using Http = slick::net::Http;
 
@@ -30,25 +30,22 @@ static const char* const  kTestWallet    = "0xTestWallet000000000000000000000000
 class HyperliquidRestTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        // // Use local (non-shared-memory) queues: named shared memory segments persist
-        // // across process runs on Windows, leaking stale cursors/data between test runs.
-        // request_queue_  = std::make_unique<slick::SlickQueue<Request>>(4096);
-        // response_queue_ = std::make_unique<slick::SlickQueue<OrderResponse>>(4096);
-        request_queue_  = std::make_unique<slick::SlickQueue<Request>>(4096, "hl_rest_req");
-        response_queue_ = std::make_unique<slick::SlickQueue<OrderResponse>>(4096, "hl_rest_resp");
+        // Use local (non-shared-memory) queues: named shared memory segments persist
+        // across process runs on Windows, leaking stale cursors/data between test runs.
+        request_queue_  = std::make_unique<slick::queue<Request>>(4096, "hl_rest_req");
+        response_queue_ = std::make_unique<slick::queue<OrderResponse>>(4096, "hl_rest_resp");
         req_cursor_     = 0;
         running_        = true;
 
         json cfg = {
             {"port",           kTestPort},
-            {"exchange",       "hyperliquid"},
             {"base_url",       kTestBaseUrl},  // fails fast, no asset map loaded
             {"default_wallet", kTestWallet}
         };
-        manager_ = std::make_unique<HyperliquidRestClientManager>(
+        gateway_ = std::make_unique<HyperliquidRestOrderGateway>(
             cfg, *request_queue_, *response_queue_);
 
-        manager_->start();
+        gateway_->start();
         // Wait for uWS to bind
         std::this_thread::sleep_for(std::chrono::milliseconds(80));
 
@@ -57,8 +54,10 @@ protected:
 
     void TearDown() override {
         running_ = false;
-        if (auto_responder_.joinable()) auto_responder_.join();
-        manager_->stop();
+        if (auto_responder_.joinable()) {
+            auto_responder_.join();
+        }
+        gateway_->stop();
         request_queue_->reset();
         response_queue_->reset();
     }
@@ -129,9 +128,9 @@ protected:
         });
     }
 
-    std::unique_ptr<slick::SlickQueue<Request>>       request_queue_;
-    std::unique_ptr<slick::SlickQueue<OrderResponse>> response_queue_;
-    std::unique_ptr<HyperliquidRestClientManager>     manager_;
+    std::unique_ptr<slick::queue<Request>>       request_queue_;
+    std::unique_ptr<slick::queue<OrderResponse>> response_queue_;
+    std::unique_ptr<HyperliquidRestOrderGateway> gateway_;
     std::thread  auto_responder_;
     uint64_t     req_cursor_ = 0;
     std::atomic<bool> running_{false};

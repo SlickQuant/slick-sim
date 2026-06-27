@@ -1,6 +1,6 @@
 #pragma once
 
-#include "publisher.hpp"
+#include "ws_md_publisher.hpp"
 #include <exchange/exch_hyperliquid.hpp>
 #include <uwebsockets/App.h>
 #include <nlohmann/json.hpp>
@@ -34,28 +34,29 @@ struct HyperliquidPerSocketData {
     std::array<SubInfo, static_cast<uint8_t>(HyperliquidChannel::__COUNT__)> subs;
 };
 
-class HyperliquidPublisher : public Publisher {
+class HyperliquidPublisher : public WebsocketMarketDataPublisher {
     using wsT = uWS::WebSocket<false, true, HyperliquidPerSocketData>;
 
 public:
     HyperliquidPublisher(const json& config,
-                         slick::SlickQueue<Request>& request_queue,
-                         slick::SlickQueue<uint8_t>& market_data_queue);
-    void start() override;
-    void stop() override;
+                         slick::queue<Request>& request_queue,
+                         slick::queue<uint8_t>& market_data_queue);
+    // void start() override;
+    // void stop() override;
 
 private:
-    void schedulePublishProcessing();
-    void publishMarketDataUpdate();
-    void handleMessage(wsT* ws, std::string_view message);
-    void publishSubscriptionResponse(MarketDataUpdate* update);
-    void publishBookSnapshot(MarketDataUpdate* update);
-    void publishTradeUpdate(MarketDataUpdate* update);
-    void checkHeartbeats();
-    void handleClose(wsT* ws, int code, std::string_view message);
-    void sendError(wsT* ws, const std::string& error_msg);
-    void unsubscribeMD(wsT* ws);
-    void subscribeChannel(wsT* ws, HyperliquidChannel channel, const std::string& coin);
+    void setup_routes(uWS::App &app) override;
+    // void schedulePublishProcessing();
+    void publish_market_data_update(MarketDataUpdate* update);
+    void handle_message(wsT* ws, std::string_view message);
+    void publish_subscription_response(MarketDataUpdate* update);
+    void publish_book_snapshot(MarketDataUpdate* update);
+    void publish_trade_update(MarketDataUpdate* update);
+    void check_heartbeats() override;
+    void handle_close(wsT* ws, int code, std::string_view message);
+    void send_error(wsT* ws, const std::string& error_msg);
+    void unsubscribe_md(wsT* ws);
+    void subscribe_channel(wsT* ws, HyperliquidChannel channel, const std::string& coin);
 
 private:
     std::thread ws_thread_;

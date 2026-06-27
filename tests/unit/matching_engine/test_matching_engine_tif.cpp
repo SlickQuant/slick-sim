@@ -15,13 +15,13 @@ using namespace slick::sim::engine;
 class MatchingEngineTIFTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        order_response_queue_ = std::make_unique<slick::SlickQueue<OrderResponse>>(4096, "test_tif_responses");
-        matching_engine_ = std::make_unique<FifoMatchingEngine>(*order_response_queue_);
+        response_queue_ = std::make_unique<slick::queue<OrderResponse>>(4096, "test_tif_responses");
+        matching_engine_ = std::make_unique<FifoMatchingEngine>(*response_queue_);
         order_book_ = std::make_shared<OrderBookImpl<OrderBookType::L2>>(kSymbolId, "BTC-USD", Venue::COINBASE);
         order_book_->addObserver(order_book_->shared_from_this());
     }
 
-    std::unique_ptr<slick::SlickQueue<OrderResponse>> order_response_queue_;
+    std::unique_ptr<slick::queue<OrderResponse>> response_queue_;
     std::unique_ptr<FifoMatchingEngine> matching_engine_;
     std::shared_ptr<OrderBook> order_book_;
 };

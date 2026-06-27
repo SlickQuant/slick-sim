@@ -22,16 +22,10 @@ class HyperliquidExchange
     , public md_feed::HyperliquidFeedCallbacks
 {
 public:
-    HyperliquidExchange(
-        const nlohmann::json &config,
-        slick::SlickQueue<Request> &request_queue,
-        slick::SlickQueue<OrderResponse> &order_response_queue,
-        slick::SlickQueue<uint8_t> &md_update_queue
-    );
-
+    HyperliquidExchange(const nlohmann::json &config);
     ~HyperliquidExchange() override = default;
 
-    void run() override;
+    void start() override;
 
     // HyperliquidFeedCallbacks — called from the hyperliquid WS thread
     void onL2BookUpdate(const nlohmann::json& msg) override;

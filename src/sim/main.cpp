@@ -5,14 +5,14 @@
 #endif
 
 #include <slick/logger.hpp>
-#include <slick/socket/tcp_server.h>
-#include <order_gateway/order_gateway.hpp>
-#include <order_gateway/message_parser.hpp>
+// #include <slick/socket/tcp_server.h>
+// #include <order_gateway/order_gateway.hpp>
+// #include <order_gateway/message_parser.hpp>
 #include <exchange/exch_coinbase.hpp>
 #include <exchange/exch_hyperliquid.hpp>
 #include <common/messages.hpp>
-#include <market_data_publisher/market_data_publisher.hpp>
-#include <coinbase/logging.hpp>
+// #include <market_data_publisher/market_data_publisher.hpp>
+#include <slick/net/logging.hpp>
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -81,24 +81,24 @@ void print_protocol_info() {
     LOG_INFO("");
 }
 
-void print_client_status(OrderGateway& gateway) {
-    auto protocols = gateway.get_client_protocols();
-    if (!protocols.empty()) {
-        LOG_INFO("=== Connected Clients ===");
-        for (const auto& [client_id, protocol] : protocols) {
-            std::string protocol_name;
-            switch (protocol) {
-                case ProtocolType::FIX: protocol_name = "FIX"; break;
-                case ProtocolType::SBE: protocol_name = "SBE"; break;
-                case ProtocolType::JSON: protocol_name = "JSON"; break;
-                default: protocol_name = "Unknown"; break;
-            }
-            LOG_INFO("Client {}: Using {} protocol", client_id, protocol_name);
-        }
-    } else {
-        LOG_INFO("No clients connected");
-    }
-}
+// void print_client_status(OrderGateway& gateway) {
+//     auto protocols = gateway.get_client_protocols();
+//     if (!protocols.empty()) {
+//         LOG_INFO("=== Connected Clients ===");
+//         for (const auto& [client_id, protocol] : protocols) {
+//             std::string protocol_name;
+//             switch (protocol) {
+//                 case ProtocolType::FIX: protocol_name = "FIX"; break;
+//                 case ProtocolType::SBE: protocol_name = "SBE"; break;
+//                 case ProtocolType::JSON: protocol_name = "JSON"; break;
+//                 default: protocol_name = "Unknown"; break;
+//             }
+//             LOG_INFO("Client {}: Using {} protocol", client_id, protocol_name);
+//         }
+//     } else {
+//         LOG_INFO("No clients connected");
+//     }
+// }
 
 int main(int argc, char* argv[]) {
 
@@ -116,9 +116,14 @@ int main(int argc, char* argv[]) {
     logger.add_file_sink("logs/slick-sim.log");
     logger.init(65535, 16777216);
 
-    coinbase::logging::set_log_handler([&logger](coinbase::logging::LogLevel level, const char* format_text, std::format_args args) {
-        logger.log(static_cast<slick::logger::LogLevel>(level), format_text, std::move(args));
-    });
+    slick::net::set_log_handler(
+        [&logger](slick::net::LogLevel level, const char* format_text, std::format_args args) {
+            logger.log(static_cast<slick::logger::LogLevel>(level), format_text, std::move(args));
+        },
+        [&logger]() -> slick::net::LogLevel {
+            return static_cast<slick::net::LogLevel>(logger.get_level());
+        }
+    );
 
     std::string config_file = "slick-sim.json";
     if (argc > 1) {
@@ -146,11 +151,11 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    if (!config.contains("order_gateway")) {
-        std::cerr << "Missing order_gateway config";
-        LOG_ERROR("Missing order_gateway config");
-        return EXIT_FAILURE;
-    }
+    // if (!config.contains("order_gateway")) {
+    //     std::cerr << "Missing order_gateway config";
+    //     LOG_ERROR("Missing order_gateway config");
+    //     return EXIT_FAILURE;
+    // }
 
     if (!config.contains("exchanges")) {
         std::cerr << "Missing exchanges config";
@@ -158,21 +163,20 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-
     logger.set_level(slick::logger::to_log_level(config.value("log_level", "info")));
 
     // print_protocol_info();
 
-    auto order_request_queue_size = config.value("order_request_queue_size", 1048576);
-    auto order_response_queue_size = config.value("order_response_queue_size", 1048576);
-    auto md_update_queue_size = config.value("md_update_queue_size", 16777216);
+    // auto order_request_queue_size = config.value("order_request_queue_size", 1048576);
+    // auto response_queue_size = config.value("response_queue_size", 1048576);
+    // auto md_queue_size = config.value("md_queue_size", 16777216);
 
-    slick::SlickQueue<Request> request_queue(order_request_queue_size);
-    slick::SlickQueue<OrderResponse> order_response_queue(order_response_queue_size);
-    slick::SlickQueue<uint8_t> md_update_queue(md_update_queue_size);
+    // slick::queue<Request> request_queue(order_request_queue_size);
+    // slick::queue<OrderResponse> response_queue(response_queue_size);
+    // slick::queue<uint8_t> md_update_queue(md_queue_size);
 
     // Create OrderGateway with auto-detection enabled (default)
-    OrderGateway gateway(config["order_gateway"], request_queue, order_response_queue, ProtocolType::FIX);
+    // OrderGateway gateway(config["order_gateway"], request_queue, response_queue, ProtocolType::FIX);
     // gateway.enable_auto_protocol_detection(true);
     
     // Set order callback
@@ -190,34 +194,33 @@ int main(int argc, char* argv[]) {
     // gateway.set_client_protocol(3, ProtocolType::SBE);
 
     // Start the gateway
-    gateway.start();
+    // gateway.start();
 
     auto &exch_coinfig = config["exchanges"];
     std::vector<std::unique_ptr<Exchange>> exchanges;
     for (auto it = exch_coinfig.begin(); it != exch_coinfig.end(); ++it)
     {
         if (it.key() == "coinbase") {
-            exchanges.emplace_back(std::make_unique<slick::sim::exch::CoinbaseExchange>(
-                it.value(), request_queue, order_response_queue, md_update_queue)
-            );
-            exchanges.back()->run();
-            continue;
+            auto enabled = it.value().value("enabled", true);
+            if (enabled) {
+                exchanges.emplace_back(std::make_unique<slick::sim::exch::CoinbaseExchange>(it.value()));
+                exchanges.back()->start();
+            }
         }
-        if (it.key() == "hyperliquid") {
-            exchanges.emplace_back(std::make_unique<slick::sim::exch::HyperliquidExchange>(
-                it.value(), request_queue, order_response_queue, md_update_queue)
-            );
-            exchanges.back()->run();
-            continue;
+        else if (it.key() == "hyperliquid") {
+            auto enabled = it.value().value("enabled", true);
+            if (enabled) {
+                exchanges.emplace_back(std::make_unique<slick::sim::exch::HyperliquidExchange>(it.value()));
+                exchanges.back()->start();
+            }
+        } else {
+            exchanges.emplace_back(std::make_unique<Exchange>(to_venue(it.key()), it.value()));
+            exchanges.back()->start();
         }
-        exchanges.emplace_back(std::make_unique<Exchange>(to_venue(
-            it.key()), it.value(), request_queue, order_response_queue, md_update_queue)
-        );
-        exchanges.back()->run();
     }
 
-    MarketDataPublisher market_data_publisher(config["md_publisher"], request_queue, md_update_queue);
-    market_data_publisher.start();
+    // MarketDataPublisher market_data_publisher(config["md_publisher"], request_queue, md_update_queue);
+    // market_data_publisher.start();
 
     // LOG_INFO("Multi-protocol OrderGateway started on port {}", config.port);
     // LOG_INFO("Auto-protocol detection: ENABLED");
@@ -248,7 +251,11 @@ int main(int argc, char* argv[]) {
     while (run.load(std::memory_order_relaxed)) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-    // gateway.stop();
-    LOG_INFO("Multi-protocol ExchangeSimulator stopped");
+
+    for (auto &exch : exchanges) {
+        exch->stop();
+    }
+
+    LOG_INFO("ExchangeSimulator stopped");
     return EXIT_SUCCESS;
 }
