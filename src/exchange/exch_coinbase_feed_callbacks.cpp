@@ -1,3 +1,4 @@
+#include <slick/logger.hpp>
 #include "exch_coinbase.hpp"
 #include <md_feed/coinbase_live_ws_feed.hpp>
 #include <common/symbol_manager.hpp>
@@ -61,7 +62,7 @@ void CoinbaseExchange::onMarketDataDisconnected(WebSocketClient* client) {
     }
 
     // Create and start a new feed
-    auto new_feed = std::make_shared<md_feed::CoinbaseLiveWSFeed>(this, symbols);
+    auto new_feed = std::make_shared<md_feed::CoinbaseLiveWSFeed>(ws_mux_, this, symbols);
     md_feeds_.emplace_back(new_feed);
     for (const auto& sym : symbols) {
         map_symbol_feed_.emplace(sym, new_feed);

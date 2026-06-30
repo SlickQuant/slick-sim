@@ -13,8 +13,11 @@ class CoinbaseLiveWSFeed : public MDFeed
     std::vector<std::string> symbols_;
 
 public:
-    CoinbaseLiveWSFeed(coinbase::UserThreadWebsocketCallbacks *callbacks, const std::vector<std::string> &symbols = {})
-        : ws_client_(std::make_shared<coinbase::WebSocketClient>(callbacks))
+    CoinbaseLiveWSFeed(
+        slick::stream_buffer_multiplexer& mux,
+        coinbase::UserThreadWebsocketCallbacks *callbacks,
+        const std::vector<std::string> &symbols = {})
+        : ws_client_(std::make_shared<coinbase::WebSocketClient>(callbacks, mux))
         , symbols_(std::move(symbols))
     {
         ws_client_->logData("logs/coinbase_data");

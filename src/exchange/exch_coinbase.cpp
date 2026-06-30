@@ -21,6 +21,7 @@ namespace {
 
 CoinbaseExchange::CoinbaseExchange(const nlohmann::json &config)
     : Exchange(Venue::COINBASE, config)
+    , ws_mux_(config.value("md_queue_size", 16777216))
     , coinbase::UserThreadWebsocketCallbacks()
 {
     md_publisher_ = std::make_unique<CoinbasePublisher>(config["md_publisher"], request_queue_,  md_queue_);
@@ -103,7 +104,7 @@ void CoinbaseExchange::handleMdSubscription(const Request &request) {
                     break;
                 }
             }
-            md_feeds_.emplace_back(std::make_shared<md_feed::CoinbaseLiveWSFeed>(this, std::vector<std::string>{sym}));
+            md_feeds_.emplace_back(std::make_shared<md_feed::CoinbaseLiveWSFeed>(ws_mux_, this, std::vector<std::string>{sym}));
             auto &feed = md_feeds_.back();
             feed->start();
             map_symbol_feed_.emplace(sym, feed);
