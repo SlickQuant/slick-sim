@@ -1,7 +1,7 @@
 #pragma once
 
 #include "exchange.hpp"
-#include <slick/logger.hpp>
+#include <slick/stream_buffer_multiplexer.hpp>
 #include <coinbase/websocket.hpp>
 #include <queue>
 #include <array>
@@ -87,6 +87,7 @@ private:
     void populateMDTradesResponse(Symbol* symbol);
 
 private:
+    slick::stream_buffer_multiplexer ws_mux_;
     std::vector<std::shared_ptr<md_feed::MDFeed>> md_feeds_;
     std::unordered_map<md_feed::MDFeed*, std::unordered_set<std::string>> feed_symbols_;
     std::unordered_map<std::string, std::shared_ptr<md_feed::MDFeed>> map_symbol_feed_;
