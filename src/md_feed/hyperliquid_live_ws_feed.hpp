@@ -2,6 +2,7 @@
 
 #include "md_feed.hpp"
 #include <hyperliquid/info.hpp>
+#include <hyperliquid/utils/l2_diff.hpp>
 #include <nlohmann/json.hpp>
 #include <memory>
 #include <string>
@@ -30,7 +31,7 @@ public:
     HyperliquidLiveWSFeed(HyperliquidFeedCallbacks* callbacks,
                           std::string_view base_url,
                           const std::vector<std::string>& coins = {})
-        : info_(std::make_shared<hyperliquid::Info>(base_url, /*skip_ws=*/false))
+        : info_(std::make_shared<hyperliquid::Info>(base_url, /*skip_ws=*/false, /*user_thread_dispatch=*/true))
         , coins_(coins)
         , callbacks_(callbacks)
     {}
@@ -46,7 +47,7 @@ public:
 
     void stop() override {
         for (auto& [coin, ids] : sub_ids_) {
-            info_->unsubscribe({{"type", "l2Book"}, {"coin", coin}}, ids.first);
+            info_->unsubscribe({{"type", "l2"}, {"c", coin}}, ids.first);
             info_->unsubscribe({{"type", "trades"}, {"coin", coin}}, ids.second);
         }
         sub_ids_.clear();
@@ -68,8 +69,10 @@ public:
 private:
     void subscribeCoin(const std::string& coin) {
         int l2_id = info_->subscribe(
-            {{"type", "l2Book"}, {"coin", coin}},
-            [this](const nlohmann::json& msg) { callbacks_->onL2BookUpdate(msg); }
+            {{"type", "l2"}, {"c", coin}},
+            [this](const nlohmann::json& msg) { 
+                this->on_l2(msg);
+            }
         );
         int trades_id = info_->subscribe(
             {{"type", "trades"}, {"coin", coin}},
@@ -77,6 +80,8 @@ private:
         );
         sub_ids_[coin] = {l2_id, trades_id};
     }
+
+    void on_l2(const nlohmann::json& msg);
 };
 
 }   // end namespace slick::sim::md_feed

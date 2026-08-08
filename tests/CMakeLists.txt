@@ -36,9 +36,13 @@ add_executable(slick_sim_tests
     # Priority 5: Type & Message Tests
     unit/common/test_types.cpp
     unit/common/test_messages.cpp
+    unit/common/test_hyperliquid_info_proxy.cpp
 
     # Priority 6: Order Gateway Tests
     unit/order_gateway/test_hyperliquid_rest_client_manager.cpp
+
+    # Priority 7: Market Data Publisher Tests
+    unit/market_data_publisher/test_hyperliquid_l2_diff.cpp
 )
 
 target_link_libraries(slick_sim_tests

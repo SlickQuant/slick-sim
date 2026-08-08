@@ -299,11 +299,20 @@ TEST_F(HyperliquidRestTest, CancelByCloid_RequestEnqueued) {
 // Group C — Info endpoint
 // ===========================================================================
 
-TEST_F(HyperliquidRestTest, InfoEndpoint_ReturnsOkJson) {
+// /info proxies to the real Hyperliquid API at base_url (see
+// common/hyperliquid_info_proxy.hpp). The fixture's kTestBaseUrl is
+// intentionally unreachable, so the proxy must never report success.
+//
+// This only checks that invariant, not the exact status/body: slick::net::Http
+// has a hardcoded, non-configurable 30s timeout, so this test chains two
+// independent 30s-timeout calls (this test's client -> our gateway -> the
+// unreachable upstream) whose clocks race — the outer call can time out on
+// its own before our gateway's inner proxy call finishes and writes its
+// clean 502, making the exact observed status/body flaky. See
+// HyperliquidInfoProxy in test_hyperliquid_info_proxy.cpp for deterministic,
+// network-free coverage of the actual 502-vs-relay decision logic.
+TEST_F(HyperliquidRestTest, InfoEndpoint_UnreachableUpstream_NeverReturnsOk) {
     auto rsp = Http::post(std::string(kServerUrl) + "/info",
                           json({{"type","meta"}}).dump());
-    ASSERT_TRUE(rsp.is_ok());
-    json body;
-    ASSERT_NO_THROW(body = json::parse(rsp.result_text));
-    EXPECT_EQ(body.value("status", ""), "ok");
+    EXPECT_FALSE(rsp.is_ok());
 }

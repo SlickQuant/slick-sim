@@ -31,6 +31,9 @@ public:
 // ---------------------------------------------------------------------------
 // JSON message helpers
 // ---------------------------------------------------------------------------
+// Full l2 snapshot shape (documented l2Book, and Hyperliquid's undocumented
+// l2 channel's first message after subscribing) — unwrapped, matching what
+// HyperliquidLiveWSFeed::on_l2 hands to onL2BookUpdate.
 static json makeL2BookMsg(
     const std::string& coin,
     uint64_t time_ms,
@@ -44,11 +47,43 @@ static json makeL2BookMsg(
         }
         return arr;
     };
-    return {{"data", {
+    return {
         {"coin", coin},
         {"time", time_ms},
         {"levels", {make_side(bids), make_side(asks)}}
-    }}};
+    };
+}
+
+// Incremental l2 diff shape (Hyperliquid's undocumented l2 channel, decoded
+// from the compressed "c" field). r_bid_indices/r_ask_indices are indices
+// into whatever ordered mirror the exchange has already tracked for that
+// side (i.e. the order levels were most recently seeded in).
+static json makeL2DiffMsg(
+    const std::string& coin,
+    uint64_t time_ms,
+    const std::vector<std::pair<double, double>>& l_bids,
+    const std::vector<std::pair<double, double>>& l_asks,
+    const std::vector<size_t>& r_bid_indices = {},
+    const std::vector<size_t>& r_ask_indices = {})
+{
+    auto make_l_side = [](const std::vector<std::pair<double, double>>& lvls) {
+        auto arr = json::array();
+        for (auto [px, sz] : lvls) {
+            arr.push_back({{"p", std::to_string(px)}, {"s", std::to_string(sz)}});
+        }
+        return arr;
+    };
+    auto make_r_side = [](const std::vector<size_t>& indices) {
+        auto arr = json::array();
+        for (auto idx : indices) arr.push_back(idx);
+        return arr;
+    };
+    return {
+        {"c", coin},
+        {"l", {make_l_side(l_bids), make_l_side(l_asks)}},
+        {"r", {make_r_side(r_bid_indices), make_r_side(r_ask_indices)}},
+        {"t", time_ms}
+    };
 }
 
 static json makeTradesMsg(
@@ -194,8 +229,8 @@ TEST_F(HyperliquidExchangeTest, L2Book_ZeroSizeLevel_Skipped) {
     EXPECT_EQ(level99->total_quantity, kQty5);
 }
 
-TEST_F(HyperliquidExchangeTest, L2Book_MissingDataKey_MessageIgnored) {
-    json bad_msg = {{"other_key", "value"}};  // no "data" key
+TEST_F(HyperliquidExchangeTest, L2Book_UnrecognizedShape_MessageIgnored) {
+    json bad_msg = {{"other_key", "value"}};  // neither "levels" nor "l"+"r"
     exchange_->onL2BookUpdate(bad_msg);
     exchange_->drainEvents();  // must not crash
     // No symbol created
@@ -354,6 +389,192 @@ TEST_F(HyperliquidExchangeTest, Matching_SimOrderSurvivesAcrossNonCrossingUpdate
 }
 
 // ===========================================================================
+// Group F — Incremental l2 diff application
+// ===========================================================================
+
+TEST_F(HyperliquidExchangeTest, Diff_UntouchedLevelsSurvive_RegressionForClearBug) {
+    // Seed 3 bid levels via a snapshot.
+    auto snap = makeL2BookMsg("HL-F1", 1000, {{100.0, 10.0}, {99.0, 5.0}, {98.0, 3.0}}, {});
+    exchange_->onL2BookUpdate(snap);
+    exchange_->drainEvents();
+
+    // A diff that only changes the 99.0 level must not disturb the others.
+    auto diff = makeL2DiffMsg("HL-F1", 2000, {{99.0, 7.0}}, {});
+    exchange_->onL2BookUpdate(diff);
+    exchange_->drainEvents();
+
+    auto* sym = SymbolManager::instance().getSymbol("HL-F1");
+    ASSERT_NE(sym, nullptr);
+
+    auto [lv100, i1] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(lv100, nullptr);
+    EXPECT_EQ(lv100->total_quantity, kQty10);
+
+    auto [lv99, i2] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice99);
+    ASSERT_NE(lv99, nullptr);
+    EXPECT_EQ(lv99->total_quantity, qty(7.0));
+
+    auto [lv98, i3] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice98);
+    ASSERT_NE(lv98, nullptr);
+    EXPECT_EQ(lv98->total_quantity, kQty3);
+}
+
+TEST_F(HyperliquidExchangeTest, Diff_NewPriceCrossesSimOrder_FullFill) {
+    auto* sym = registerCoin("HL-F2");
+    auto* sim_sell = addSimOrder(sym, Side::SELL, kPrice100, kQty10);
+
+    auto diff = makeL2DiffMsg("HL-F2", 1000, {{100.0, 10.0}}, {});
+    exchange_->onL2BookUpdate(diff);
+    exchange_->drainEvents();
+
+    EXPECT_EQ(sim_sell->cum_quantity, kQty10);
+    EXPECT_EQ(sim_sell->leaves_quantity, 0);
+}
+
+TEST_F(HyperliquidExchangeTest, Diff_ExistingLevelQtyIncrease_GrowsByDelta) {
+    auto snap = makeL2BookMsg("HL-F3", 1000, {{100.0, 10.0}}, {});
+    exchange_->onL2BookUpdate(snap);
+    exchange_->drainEvents();
+
+    // Delta is +5 (10 -> 15) — must add exactly the delta, not the full new qty again.
+    auto diff = makeL2DiffMsg("HL-F3", 2000, {{100.0, 15.0}}, {});
+    exchange_->onL2BookUpdate(diff);
+    exchange_->drainEvents();
+
+    auto* sym = SymbolManager::instance().getSymbol("HL-F3");
+    ASSERT_NE(sym, nullptr);
+    auto [lv, i] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(lv, nullptr);
+    EXPECT_EQ(lv->total_quantity, qty(15.0));
+}
+
+TEST_F(HyperliquidExchangeTest, Diff_ExistingLevelQtyDecrease_UserOrderSurvives) {
+    auto* sym = registerCoin("HL-F4");
+    auto* sim_buy = addSimOrder(sym, Side::BUY, kPrice99, kQty5);
+
+    // Snapshot adds phantom liquidity at the SAME price as the user's own
+    // resting order: total = user 5 + phantom 12 = 17.
+    auto snap = makeL2BookMsg("HL-F4", 1000, {{99.0, 12.0}}, {});
+    exchange_->onL2BookUpdate(snap);
+    exchange_->drainEvents();
+
+    // Diff shrinks the real-market (phantom) size to 6 -> only phantom shrinks.
+    auto diff = makeL2DiffMsg("HL-F4", 2000, {{99.0, 6.0}}, {});
+    exchange_->onL2BookUpdate(diff);
+    exchange_->drainEvents();
+
+    auto [lv, i] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice99);
+    ASSERT_NE(lv, nullptr);
+    EXPECT_EQ(lv->total_quantity, qty(11.0));  // user 5 + phantom 6
+
+    EXPECT_EQ(sim_buy->leaves_quantity, kQty5);
+    EXPECT_EQ(sim_buy->cum_quantity, 0);
+}
+
+TEST_F(HyperliquidExchangeTest, Diff_RemovedLevel_ClearsPhantomKeepsUserOrder) {
+    auto* sym = registerCoin("HL-F5");
+    auto* sim_buy = addSimOrder(sym, Side::BUY, kPrice99, kQty5);
+
+    // Snapshot: bid index0=100 (phantom only), index1=99 (user 5 + phantom 12 = 17).
+    auto snap = makeL2BookMsg("HL-F5", 1000, {{100.0, 8.0}, {99.0, 12.0}}, {});
+    exchange_->onL2BookUpdate(snap);
+    exchange_->drainEvents();
+
+    // Remove index 1 (price 99) entirely via diff.
+    auto diff = makeL2DiffMsg("HL-F5", 2000, {}, {}, {1}, {});
+    exchange_->onL2BookUpdate(diff);
+    exchange_->drainEvents();
+
+    // Phantom at 99 is fully gone, but the user's own order keeps the level alive.
+    auto [lv99, i99] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice99);
+    ASSERT_NE(lv99, nullptr);
+    EXPECT_EQ(lv99->total_quantity, kQty5);
+    EXPECT_EQ(sim_buy->leaves_quantity, kQty5);
+
+    // Untouched level survives.
+    auto [lv100, i100] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(lv100, nullptr);
+    EXPECT_EQ(lv100->total_quantity, qty(8.0));
+}
+
+TEST_F(HyperliquidExchangeTest, Diff_RemovalIndex_ResolvesCorrectPrice) {
+    // Snapshot: bid index0=100, index1=99, index2=98 (best-first).
+    auto snap = makeL2BookMsg("HL-F6", 1000, {{100.0, 10.0}, {99.0, 5.0}, {98.0, 3.0}}, {});
+    exchange_->onL2BookUpdate(snap);
+    exchange_->drainEvents();
+
+    // Remove indices 0 and 2 (100 and 98) — 99 (index 1) must survive.
+    auto diff = makeL2DiffMsg("HL-F6", 2000, {}, {}, {0, 2}, {});
+    exchange_->onL2BookUpdate(diff);
+    exchange_->drainEvents();
+
+    auto* sym = SymbolManager::instance().getSymbol("HL-F6");
+    ASSERT_NE(sym, nullptr);
+
+    auto [lv100, i1] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    EXPECT_EQ(lv100, nullptr);
+
+    auto [lv99, i2] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice99);
+    ASSERT_NE(lv99, nullptr);
+    EXPECT_EQ(lv99->total_quantity, kQty5);
+
+    auto [lv98, i3] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice98);
+    EXPECT_EQ(lv98, nullptr);
+}
+
+TEST_F(HyperliquidExchangeTest, Diff_OutOfRangeRemovalIndex_SkippedGracefully) {
+    auto snap = makeL2BookMsg("HL-F7", 1000, {{100.0, 10.0}}, {});
+    exchange_->onL2BookUpdate(snap);
+    exchange_->drainEvents();
+
+    // Index 5 is out of range (only 1 bid level tracked) — must not crash,
+    // and the "l" entry in the same diff must still apply.
+    auto diff = makeL2DiffMsg("HL-F7", 2000, {{99.0, 3.0}}, {}, {5}, {});
+    exchange_->onL2BookUpdate(diff);
+    exchange_->drainEvents();
+
+    auto* sym = SymbolManager::instance().getSymbol("HL-F7");
+    ASSERT_NE(sym, nullptr);
+
+    auto [lv100, i1] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(lv100, nullptr);
+    EXPECT_EQ(lv100->total_quantity, kQty10);
+
+    auto [lv99, i2] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice99);
+    ASSERT_NE(lv99, nullptr);
+    EXPECT_EQ(lv99->total_quantity, qty(3.0));
+}
+
+TEST_F(HyperliquidExchangeTest, Diff_ThenNewSnapshot_FullyReplacesState) {
+    auto snap1 = makeL2BookMsg("HL-F8", 1000, {{100.0, 10.0}, {99.0, 5.0}}, {});
+    exchange_->onL2BookUpdate(snap1);
+    exchange_->drainEvents();
+
+    auto diff = makeL2DiffMsg("HL-F8", 1500, {{98.0, 2.0}}, {});
+    exchange_->onL2BookUpdate(diff);
+    exchange_->drainEvents();
+
+    // A fresh snapshot (e.g. after a reconnect) replaces everything, including
+    // whatever the diff added, and resets the removal-index mirror too.
+    auto snap2 = makeL2BookMsg("HL-F8", 2000, {{100.0, 4.0}}, {});
+    exchange_->onL2BookUpdate(snap2);
+    exchange_->drainEvents();
+
+    auto* sym = SymbolManager::instance().getSymbol("HL-F8");
+    ASSERT_NE(sym, nullptr);
+
+    auto [lv100, i1] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(lv100, nullptr);
+    EXPECT_EQ(lv100->total_quantity, qty(4.0));
+
+    auto [lv99, i2] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice99);
+    EXPECT_EQ(lv99, nullptr);
+
+    auto [lv98, i3] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice98);
+    EXPECT_EQ(lv98, nullptr);
+}
+
+// ===========================================================================
 // Group C — Trades update
 // ===========================================================================
 
@@ -456,6 +677,70 @@ TEST_F(HyperliquidExchangeTest, Subscription_ExistingCoin_ResendsSnapshot) {
     auto [data2, sz2] = md_queue.read(cursor);
     ASSERT_NE(data2, nullptr);
 
+    auto* update2 = reinterpret_cast<MarketDataUpdate*>(data2);
+    EXPECT_EQ(update2->type, MDUpdateType::SUB_RESPONSE);
+}
+
+TEST_F(HyperliquidExchangeTest, Subscription_NewCoin_L2Channel_CreatesSymbol) {
+    auto req = makeMDSubRequest("HL-D4", HyperliquidChannel::L2);
+    exchange_->subscribeToMD(req);
+
+    EXPECT_NE(SymbolManager::instance().getSymbol("HL-D4"), nullptr);
+}
+
+TEST_F(HyperliquidExchangeTest, Subscription_NewCoin_L2Channel_WritesTaggedSubResponse) {
+    auto req = makeMDSubRequest("HL-D5", HyperliquidChannel::L2);
+    exchange_->subscribeToMD(req);
+
+    uint64_t cursor = 0;
+    auto [data, sz] = exchange_->md_queue().read(cursor);
+    ASSERT_NE(data, nullptr);
+    auto* update = reinterpret_cast<MarketDataUpdate*>(data);
+    EXPECT_EQ(update->type, MDUpdateType::SUB_RESPONSE);
+
+    auto* response = reinterpret_cast<MDSubscriptionResponse*>(update->data);
+    EXPECT_EQ(response->channel, static_cast<uint8_t>(HyperliquidChannel::L2));
+}
+
+TEST_F(HyperliquidExchangeTest, Subscription_L2AndL2Book_AreIndependentChannels) {
+    // Subscribing the same coin to both channels yields two separate
+    // SUB_RESPONSE entries, each tagged with its own channel.
+    auto req_book = makeMDSubRequest("HL-D6", HyperliquidChannel::L2_BOOK);
+    auto req_l2   = makeMDSubRequest("HL-D6", HyperliquidChannel::L2);
+    exchange_->subscribeToMD(req_book);
+    exchange_->subscribeToMD(req_l2);
+
+    auto &md_queue = exchange_->md_queue();
+    uint64_t cursor = 0;
+
+    auto [data1, sz1] = md_queue.read(cursor);
+    ASSERT_NE(data1, nullptr);
+    auto* update1 = reinterpret_cast<MarketDataUpdate*>(data1);
+    auto* response1 = reinterpret_cast<MDSubscriptionResponse*>(update1->data);
+    EXPECT_EQ(response1->channel, static_cast<uint8_t>(HyperliquidChannel::L2_BOOK));
+
+    auto [data2, sz2] = md_queue.read(cursor);
+    ASSERT_NE(data2, nullptr);
+    auto* update2 = reinterpret_cast<MarketDataUpdate*>(data2);
+    auto* response2 = reinterpret_cast<MDSubscriptionResponse*>(update2->data);
+    EXPECT_EQ(response2->channel, static_cast<uint8_t>(HyperliquidChannel::L2));
+}
+
+TEST_F(HyperliquidExchangeTest, Subscription_ExistingCoin_L2Channel_ResendsSnapshot) {
+    auto* sym = registerCoin("HL-D7");
+    addSimOrder(sym, Side::BUY, kPrice99, kQty5);
+
+    auto req = makeMDSubRequest("HL-D7", HyperliquidChannel::L2);
+    exchange_->subscribeToMD(req);
+
+    auto &md_queue = exchange_->md_queue();
+    uint64_t cursor = 0;
+    auto [data1, sz1] = md_queue.read(cursor);
+    ASSERT_NE(data1, nullptr);
+
+    exchange_->subscribeToMD(req);
+    auto [data2, sz2] = md_queue.read(cursor);
+    ASSERT_NE(data2, nullptr);
     auto* update2 = reinterpret_cast<MarketDataUpdate*>(data2);
     EXPECT_EQ(update2->type, MDUpdateType::SUB_RESPONSE);
 }

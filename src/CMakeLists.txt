@@ -1,3 +1,4 @@
+add_subdirectory(md_feed)
 add_subdirectory(exchange)
 add_subdirectory(matching_engine)
 add_subdirectory(order_gateway)

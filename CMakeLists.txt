@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
+option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
+
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG)
 endif()
@@ -16,7 +19,8 @@ endif()
 
 include(FetchContent)
 
-find_package(slick-logger 1.0.9 CONFIG QUIET)
+set(SLICK_LOGGER_ENABLE_SOURCE_LOCATION OFF CACHE BOOL "" FORCE)
+find_package(slick-logger 1.1.2 CONFIG QUIET)
 if (NOT slick-logger_FOUND)
     message(STATUS "Fetching slick-logger...")
     # Disable examples, tests, and benchmarks for slick_logger
@@ -26,7 +30,7 @@ if (NOT slick-logger_FOUND)
     FetchContent_Declare(
         slick-logger
         GIT_REPOSITORY https://github.com/SlickQuant/slick-logger.git
-        GIT_TAG v1.0.9
+        GIT_TAG v1.1.2
     )
     FetchContent_MakeAvailable(slick-logger)
 else()
@@ -77,13 +81,13 @@ else()
     message(STATUS "Found coinbase-advanced-cpp ${coinbase-advanced-cpp_VERSION}: ${coinbase-advanced-cpp_DIR}")
 endif()
 
-find_package(hyperliquid 0.2.0 CONFIG QUIET)
+find_package(hyperliquid 0.3.0 CONFIG QUIET)
 if (NOT hyperliquid_FOUND)
     message(STATUS "Fetching hyperliquid-cpp...")
     FetchContent_Declare(
         hyperliquid-cpp
         GIT_REPOSITORY https://github.com/SlickQuant/hyperliquid-cpp.git
-        GIT_TAG v0.2.0
+        GIT_TAG v0.3.0
     )
     FetchContent_MakeAvailable(hyperliquid-cpp)
 else()
@@ -139,7 +143,6 @@ else()
     )
 endif()
 
-option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 if(ENABLE_ASAN)
   if(MSVC)
     # MSVC AddressSanitizer (requires Visual Studio 2022 17.7+)
@@ -167,7 +170,6 @@ endif()
 add_subdirectory(src)
 
 # Tests
-option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
 if(BUILD_EXCH_SIMULATOR_TESTING)
   find_package(GTest CONFIG REQUIRED)
   enable_testing()

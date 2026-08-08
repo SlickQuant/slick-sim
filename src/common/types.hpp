@@ -2,6 +2,7 @@
 
 #include <limits>
 #include <cstdint>
+#include <string_view>
 
 namespace slick::sim {
 

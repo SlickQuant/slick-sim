@@ -41,7 +41,12 @@
 *.dwo
 
 # Build directories
-/build/
+build/
+out/
+
+.agents/
+.claude/
+.codex/
 .vscode/
 logs/
-out/
+*.log

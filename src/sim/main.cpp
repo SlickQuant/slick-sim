@@ -108,8 +108,6 @@ int main(int argc, char* argv[]) {
     logger.clear_sinks();
 #ifdef DEBUG
     logger.add_console_sink(true, true);
-    // logger.set_level(slick::logger::LogLevel::L_TRACE);
-    logger.set_level(slick::logger::LogLevel::L_DEBUG);
 #else
     logger.set_level(slick::logger::LogLevel::L_INFO);
 #endif

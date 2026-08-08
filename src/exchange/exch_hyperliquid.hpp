@@ -2,8 +2,10 @@
 
 #include "exchange.hpp"
 #include <md_feed/hyperliquid_live_ws_feed.hpp>
+#include <utils/price.hpp>
 #include <slick/logger.hpp>
 #include <nlohmann/json.hpp>
+#include <array>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -14,7 +16,8 @@ namespace slick::sim::exch {
 enum class HyperliquidChannel : uint8_t {
     L2_BOOK = 0,
     TRADES  = 1,
-    __COUNT__ = 2,
+    L2      = 2,
+    __COUNT__ = 3,
 };
 
 class HyperliquidExchange
@@ -40,6 +43,11 @@ protected:
 private:
     Symbol* addSymbol(std::string_view coin);
     void processL2BookEvent(const nlohmann::json& data);
+    void processL2Snapshot(const nlohmann::json& data);
+    void processL2Diff(const nlohmann::json& data);
+    void applyPhantomLevelUpdate(Symbol* symbol, Side side, price_t price,
+                                  qty_t target_qty, uint64_t event_time_ns);
+    void finalizeL2Event(Symbol* symbol);
     void processTradesEvent(const nlohmann::json& data);
 
     // Feed management
@@ -50,6 +58,12 @@ private:
     std::array<std::unordered_set<Symbol*>,
                static_cast<size_t>(HyperliquidChannel::__COUNT__)> pending_md_subscription_;
 
+    // coin's Symbol* -> (bid, ask) ordered price mirror — reflects the
+    // upstream exchange's OWN l2 book ordering (real-market only),
+    // independent of user orders resting in our simulated book. Used solely
+    // to resolve "r" (removed-by-index) diff entries back to a price.
+    std::unordered_map<Symbol*, std::array<std::vector<price_t>, 2>> l2_ref_levels_;
+
     bool use_live_feed_ = false;
     std::string live_ws_base_url_{"https://api.hyperliquid.xyz"};
 
@@ -59,9 +73,7 @@ private:
         Type type;
         nlohmann::json data;
     };
-    std::mutex event_queue_mutex_;
     std::vector<FeedEvent> event_queue_;
-    std::vector<FeedEvent> event_drain_buf_;
 
     std::vector<MDLevel> level_update_buffer_;
     std::vector<MDTrade> trade_update_buffer_;
