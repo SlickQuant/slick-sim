@@ -10,9 +10,10 @@ target_include_directories(exchange PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
-target_link_libraries(exchange PUBLIC 
+target_link_libraries(exchange PUBLIC
+    md_feed
     order_gateway
-    market_data_publisher 
-    matching_engine 
+    market_data_publisher
+    matching_engine
     Boost::uuid
 )

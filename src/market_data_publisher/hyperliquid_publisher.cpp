@@ -1,5 +1,6 @@
 #include "hyperliquid_publisher.hpp"
 #include <slick/logger.hpp>
+#include <common/hyperliquid_info_proxy.hpp>
 #include <utils/timestamp.hpp>
 #include <cstring>
 #include <format>
@@ -16,6 +17,7 @@ HyperliquidPublisher::HyperliquidPublisher(
     slick::queue<uint8_t>& market_data_queue
 )
     : WebsocketMarketDataPublisher(Venue::HYPERLIQUID, request_queue, market_data_queue, config.value("port", 5001))
+    , upstream_base_url_(config.value("upstream_base_url", "https://api.hyperliquid.xyz"))
 {}
 
 // void HyperliquidPublisher::start() {
@@ -133,6 +135,14 @@ void HyperliquidPublisher::setup_routes(uWS::App &app) {
             handle_close(ws, code, msg);
         }
     });
+
+    app.post("/info", [this](auto* res, auto* req) {
+        handle_info(res, req);
+    });
+}
+
+void HyperliquidPublisher::handle_info(uWS::HttpResponse<false>* res, uWS::HttpRequest*) {
+    proxy_hyperliquid_info_request(res, upstream_base_url_);
 }
 
 void HyperliquidPublisher::publish_market_data_update(MarketDataUpdate* update) {
@@ -156,6 +166,12 @@ void HyperliquidPublisher::handle_message(wsT* ws, std::string_view message) {
         json msg = json::parse(message);
 
         std::string method = msg.value("method", "");
+        if (method == "ping") {
+            json pong = {{"channel", "pong"}};
+            ws->send(pong.dump(), uWS::OpCode::TEXT);
+            return;
+        }
+
         if (method != "subscribe" && method != "unsubscribe") {
             send_error(ws, std::format("method `{}` is not supported", method));
             return;
@@ -181,6 +197,20 @@ void HyperliquidPublisher::handle_message(wsT* ws, std::string_view message) {
             if (method == "subscribe") {
                 subscribe_channel(ws, HyperliquidChannel::TRADES, coin);
             }
+        } else if (type == "l2") {
+            // Undocumented channel — coin is field "c", not "coin".
+            std::string coin = sub.value("c", "");
+            if (coin.empty()) { send_error(ws, "missing `c` in subscription"); return; }
+            if (method == "subscribe") {
+                // Real Hyperliquid acks "l2" subscriptions immediately by
+                // echoing the subscription back, ahead of any snapshot data.
+                json ack = {
+                    {"channel", "subscriptionResponse"},
+                    {"data", {{"method", "subscribe"}, {"subscription", sub}}}
+                };
+                ws->send(ack.dump(), uWS::OpCode::TEXT);
+                subscribe_channel(ws, HyperliquidChannel::L2, coin);
+            }
         } else if (type == "heartbeat") {
             ws->getUserData()->subscribed_heartbeat = true;
             json rsp = {{"channel", "subscriptions"}, {"data", {{"type", "heartbeat"}}}};
@@ -195,8 +225,10 @@ void HyperliquidPublisher::handle_message(wsT* ws, std::string_view message) {
 
 void HyperliquidPublisher::subscribe_channel(wsT* ws, HyperliquidChannel channel, const std::string& coin) {
     auto ch = static_cast<uint8_t>(channel);
-    LOG_INFO("HyperliquidPublisher {:p} subscribe {}: {}", (void*)ws,
-             channel == HyperliquidChannel::L2_BOOK ? "l2Book" : "trades", coin);
+    const char* channel_name = channel == HyperliquidChannel::L2_BOOK ? "l2Book"
+                              : channel == HyperliquidChannel::L2      ? "l2"
+                                                                        : "trades";
+    LOG_INFO("HyperliquidPublisher {:p} subscribe {}: {}", (void*)ws, channel_name, coin);
 
     auto index = request_queue_.reserve();
     auto* request = request_queue_[index];
@@ -224,17 +256,21 @@ void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* updat
     auto channel = static_cast<HyperliquidChannel>(ch);
     json snapshot_msg;
 
-    if (channel == HyperliquidChannel::L2_BOOK) {
+    if (channel == HyperliquidChannel::L2_BOOK || channel == HyperliquidChannel::L2) {
         auto* snapshot = reinterpret_cast<BookSnapshot*>(response->data);
         auto* levels   = reinterpret_cast<MDLevel*>(snapshot->levels);
 
         json::array_t bids, asks;
+        L2Levels curr_bid, curr_ask;
+        curr_bid.reserve(snapshot->num_bid);
+        curr_ask.reserve(snapshot->num_ask);
         for (uint32_t i = 0; i < snapshot->num_bid; ++i) {
             bids.push_back({
                 {"px", std::to_string(to_price_double(levels[i].price))},
                 {"sz", std::to_string(to_qty_double(levels[i].qty))},
                 {"n",  levels[i].num_orders}
             });
+            curr_bid.emplace_back(levels[i].price, levels[i].qty);
         }
         for (uint32_t i = snapshot->num_bid; i < snapshot->num_bid + snapshot->num_ask; ++i) {
             asks.push_back({
@@ -242,15 +278,33 @@ void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* updat
                 {"sz", std::to_string(to_qty_double(levels[i].qty))},
                 {"n",  levels[i].num_orders}
             });
+            curr_ask.emplace_back(levels[i].price, levels[i].qty);
         }
-        snapshot_msg = {
-            {"channel", "l2Book"},
-            {"data", {
-                {"coin",   update->symbol},
-                {"time",   get_current_time_ns() / ONE_MILLISECOND_NS},
-                {"levels", {bids, asks}}
-            }}
-        };
+
+        if (channel == HyperliquidChannel::L2_BOOK) {
+            snapshot_msg = {
+                {"channel", "l2Book"},
+                {"data", {
+                    {"coin",   update->symbol},
+                    {"time",   get_current_time_ns() / ONE_MILLISECOND_NS},
+                    {"levels", {bids, asks}}
+                }}
+            };
+        } else {
+            // Undocumented "l2" channel: first delivery after subscribing is
+            // an uncompressed full snapshot under key "s" — there is nothing
+            // to diff against yet. Seed the diff baseline from it so the
+            // next routine book update can be sent as a compressed diff.
+            l2_diff_baseline_[update->symbol] = {std::move(curr_bid), std::move(curr_ask)};
+            snapshot_msg = {
+                {"channel", "l2"},
+                {"data", {{"s", {
+                    {"coin",   update->symbol},
+                    {"time",   get_current_time_ns() / ONE_MILLISECOND_NS},
+                    {"levels", {bids, asks}}
+                }}}}
+            };
+        }
     } else if (channel == HyperliquidChannel::TRADES) {
         snapshot_msg = {
             {"channel", "trades"},
@@ -282,21 +336,28 @@ void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* updat
 }
 
 void HyperliquidPublisher::publish_book_snapshot(MarketDataUpdate* update) {
-    auto ch = static_cast<uint8_t>(HyperliquidChannel::L2_BOOK);
-    auto& channel_sub = subscription_info_[ch];
-    auto it = channel_sub.find(update->symbol);
-    if (it == channel_sub.end() || it->second.empty()) return;
+    auto l2book_ch = static_cast<uint8_t>(HyperliquidChannel::L2_BOOK);
+    auto l2_ch     = static_cast<uint8_t>(HyperliquidChannel::L2);
+    auto it_l2book = subscription_info_[l2book_ch].find(update->symbol);
+    auto it_l2     = subscription_info_[l2_ch].find(update->symbol);
+    bool has_l2book = it_l2book != subscription_info_[l2book_ch].end() && !it_l2book->second.empty();
+    bool has_l2     = it_l2     != subscription_info_[l2_ch].end()     && !it_l2->second.empty();
+    if (!has_l2book && !has_l2) return;
 
     auto* snapshot = reinterpret_cast<BookSnapshot*>(update->data);
     auto* levels   = reinterpret_cast<MDLevel*>(snapshot->levels);
 
     json::array_t bids, asks;
+    L2Levels curr_bid, curr_ask;
+    curr_bid.reserve(snapshot->num_bid);
+    curr_ask.reserve(snapshot->num_ask);
     for (uint32_t i = 0; i < snapshot->num_bid; ++i) {
         bids.push_back({
             {"px", std::to_string(to_price_double(levels[i].price))},
             {"sz", std::to_string(to_qty_double(levels[i].qty))},
             {"n",  levels[i].num_orders}
         });
+        curr_bid.emplace_back(levels[i].price, levels[i].qty);
     }
     for (uint32_t i = snapshot->num_bid; i < snapshot->num_bid + snapshot->num_ask; ++i) {
         asks.push_back({
@@ -304,18 +365,45 @@ void HyperliquidPublisher::publish_book_snapshot(MarketDataUpdate* update) {
             {"sz", std::to_string(to_qty_double(levels[i].qty))},
             {"n",  levels[i].num_orders}
         });
+        curr_ask.emplace_back(levels[i].price, levels[i].qty);
     }
-    json msg = {
-        {"channel", "l2Book"},
-        {"data", {
-            {"coin",   update->symbol},
-            {"time",   get_current_time_ns() / ONE_MILLISECOND_NS},
-            {"levels", {bids, asks}}
-        }}
-    };
-    std::string payload = msg.dump();
-    for (auto* ws : it->second) {
-        ws->send(payload, uWS::OpCode::TEXT);
+    uint64_t time_ms = get_current_time_ns() / ONE_MILLISECOND_NS;
+
+    if (has_l2book) {
+        json msg = {
+            {"channel", "l2Book"},
+            {"data", {
+                {"coin",   update->symbol},
+                {"time",   time_ms},
+                {"levels", {bids, asks}}
+            }}
+        };
+        std::string payload = msg.dump();
+        for (auto* ws : it_l2book->second) {
+            ws->send(payload, uWS::OpCode::TEXT);
+        }
+    }
+
+    if (has_l2) {
+        auto& baseline = l2_diff_baseline_[update->symbol];
+        L2Diff diff = compute_l2_diff(baseline.first, baseline.second, curr_bid, curr_ask);
+        baseline.first  = curr_bid;
+        baseline.second = curr_ask;
+
+        json diff_payload = {
+            {"c", update->symbol},
+            {"l", diff.l},
+            {"r", diff.r},
+            {"t", time_ms}
+        };
+        json msg = {
+            {"channel", "l2"},
+            {"data", {{"c", encode_l2_diff(diff_payload)}}}
+        };
+        std::string payload = msg.dump();
+        for (auto* ws : it_l2->second) {
+            ws->send(payload, uWS::OpCode::TEXT);
+        }
     }
 }
 
@@ -396,7 +484,11 @@ void HyperliquidPublisher::unsubscribe_md(wsT* ws) {
                 }
                 if (it_sym->second.empty()) symbol_channel_client_.erase(it_sym);
             }
-            subscription_info_[ch][coin].erase(ws);
+            auto& coin_subs = subscription_info_[ch][coin];
+            coin_subs.erase(ws);
+            if (ch == static_cast<uint8_t>(HyperliquidChannel::L2) && coin_subs.empty()) {
+                l2_diff_baseline_.erase(coin);
+            }
         }
         ud->subs[ch].active.clear();
         ud->subs[ch].pending.clear();

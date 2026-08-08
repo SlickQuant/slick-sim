@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ws_md_publisher.hpp"
+#include "hyperliquid_l2_diff.hpp"
 #include <exchange/exch_hyperliquid.hpp>
 #include <uwebsockets/App.h>
 #include <nlohmann/json.hpp>
@@ -12,6 +13,7 @@
 #include <atomic>
 #include <chrono>
 #include <array>
+#include <utility>
 
 struct us_listen_socket_t;
 
@@ -41,14 +43,12 @@ public:
     HyperliquidPublisher(const json& config,
                          slick::queue<Request>& request_queue,
                          slick::queue<uint8_t>& market_data_queue);
-    // void start() override;
-    // void stop() override;
 
 private:
     void setup_routes(uWS::App &app) override;
-    // void schedulePublishProcessing();
     void publish_market_data_update(MarketDataUpdate* update);
     void handle_message(wsT* ws, std::string_view message);
+    void handle_info(uWS::HttpResponse<false>* res, uWS::HttpRequest* req);
     void publish_subscription_response(MarketDataUpdate* update);
     void publish_book_snapshot(MarketDataUpdate* update);
     void publish_trade_update(MarketDataUpdate* update);
@@ -65,6 +65,7 @@ private:
     us_timer_t* heartbeat_timer_ = nullptr;
     uint32_t port_ = 5001;
     std::atomic<bool> running_{false};
+    std::string upstream_base_url_;
 
     uint64_t data_cursor_ = 0;
 
@@ -74,6 +75,8 @@ private:
     // channel -> symbol -> set<ws>
     std::array<std::unordered_map<std::string, std::unordered_set<wsT*>>,
                static_cast<uint8_t>(HyperliquidChannel::__COUNT__)> subscription_info_;
+    // coin -> (bid, ask) — last book state broadcast to "l2" subscribers, used to compute the next diff
+    std::unordered_map<std::string, std::pair<L2Levels, L2Levels>> l2_diff_baseline_;
 
     int ping_interval_ms_{15000};
     std::chrono::seconds pong_timeout_{60};

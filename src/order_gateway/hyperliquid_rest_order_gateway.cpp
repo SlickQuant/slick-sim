@@ -1,6 +1,7 @@
 #include "hyperliquid_rest_order_gateway.hpp"
 #include <slick/logger.hpp>
 #include <slick/net/http.hpp>
+#include <common/hyperliquid_info_proxy.hpp>
 #include <utils/timestamp.hpp>
 #include <thread>
 #include <chrono>
@@ -153,10 +154,7 @@ void HyperliquidRestOrderGateway::handle_exchange(
 void HyperliquidRestOrderGateway::handle_info(
     uWS::HttpResponse<false>* res, uWS::HttpRequest*)
 {
-    // Simple proxy — forward to real Hyperliquid info endpoint
-    res->writeStatus("200 OK")
-       ->writeHeader("Content-Type", "application/json")
-       ->end(R"({"status":"ok","response":"info endpoint not fully implemented in sim"})");
+    proxy_hyperliquid_info_request(res, base_url_);
 }
 
 void HyperliquidRestOrderGateway::process_order_action(
