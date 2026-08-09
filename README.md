@@ -1,5 +1,10 @@
 # ExchangeSimulator
 
+[![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://en.cppreference.com/w/cpp/23)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/SlickTech/exchange_simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/SlickTech/exchange_simulator/actions/workflows/ci.yml)
+[![GitHub release](https://img.shields.io/github/v/release/SlickTech/exchange_simulator)](https://github.com/SlickTech/exchange_simulator/releases)
+
 A market simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and exposes that exchange's own REST/WebSocket order-entry API — so a trading client can connect and trade against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
 
 Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.1.0`).
@@ -180,10 +185,21 @@ cmake --build build
 ctest --test-dir build
 ```
 
+## Continuous integration & releases
+
+[`ci.yml`](.github/workflows/ci.yml) builds and tests every push/PR to `main` across Windows, Ubuntu, and macOS (Debug + Release). Since there's no `vcpkg.json` manifest, each job clones and bootstraps vcpkg itself and installs the required ports in classic mode (cached per-OS) before configuring CMake.
+
+[`release.yml`](.github/workflows/release.yml) triggers on `v*` tags: it builds a Release Windows binary, packages `slick-sim.exe` with its vcpkg-provided runtime DLLs and the sample config, and drafts a GitHub Release. Release notes are pulled from the matching `# vX.Y.Z` section of the [`CHANGELOG`](CHANGELOG) file, if present.
+
 ## Project structure
 
 ```
 slick-sim/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml               # build + test on push/PR (Windows, Ubuntu, macOS)
+│       └── release.yml          # tag-triggered GitHub Release with Windows binary
+├── CHANGELOG                    # per-version notes, consumed by release.yml
 ├── CMakeLists.txt
 ├── config/
 │   └── slick_sim.json          # sample runtime configuration
