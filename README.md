@@ -5,7 +5,7 @@
 [![CI](https://github.com/SlickTech/exchange_simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/SlickTech/exchange_simulator/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/SlickTech/exchange_simulator)](https://github.com/SlickTech/exchange_simulator/releases)
 
-A market simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and exposes that exchange's own REST/WebSocket order-entry API — so a trading client can connect and trade against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
+A exchange simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and exposes that exchange's own FIX/REST/WebSocket order-entry API — so a trading client can connect and trade against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
 
 Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.1.0`).
 
