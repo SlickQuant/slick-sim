@@ -44,8 +44,8 @@ class OrderBook : public OrderBookL3, public orderbook::IOrderBookObserver, publ
 public:
     OrderBook(symid_t sid, std::string symbol, Venue venue, uint_fast32_t buffer_size = 65536)
         : OrderBookL3(sid, buffer_size, 500)
-        , symbol_(std::move(symbol))
         , venue_(venue)
+        , symbol_(std::move(symbol))
         , order_buffer_(buffer_size)
     {
     }
