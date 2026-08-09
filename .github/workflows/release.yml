@@ -7,168 +7,66 @@ on:
 
 permissions:
   contents: write
+  actions: read  # needed to look up and download artifacts from the CI run for this commit
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Clone vcpkg
-        shell: bash
-        run: git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ runner.temp }}/vcpkg"
-
-      - name: Cache vcpkg
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ runner.temp }}/vcpkg/installed
-            ${{ runner.temp }}/vcpkg/downloads
-            ${{ runner.temp }}/vcpkg/packages
-          key: vcpkg-Windows-${{ hashFiles('.github/workflows/ci.yml') }}
-
-      - name: Bootstrap vcpkg
-        shell: pwsh
-        run: |
-          & "${{ runner.temp }}\vcpkg\bootstrap-vcpkg.bat" -disableMetrics
-
-      - name: Install dependencies via vcpkg
-        shell: bash
-        run: |
-          "${{ runner.temp }}/vcpkg/vcpkg" install \
-            quickfix \
-            nlohmann-json \
-            jwt-cpp \
-            foonathan-memory \
-            boost-uuid \
-            gtest \
-            slick-logger \
-            slick-socket \
-            slick-object-pool \
-            coinbase-advanced-cpp \
-            slickquant-hyperliquid-cpp \
-            "uwebsockets[core,ssl,zlib]"
-
-      - name: Configure CMake
-        shell: bash
-        run: >
-          cmake -B build
-          -DCMAKE_BUILD_TYPE=Release
-          -DCMAKE_TOOLCHAIN_FILE="${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-          -DBUILD_EXCH_SIMULATOR_TESTING=OFF
-
-      - name: Build
-        run: cmake --build build --config Release --parallel
-
-      - name: Package
-        shell: pwsh
-        run: |
-          $version = "${{ github.ref_name }}" -replace '^v',''
-          $stage = "slick-sim-$version-windows-x64"
-          New-Item -ItemType Directory -Force -Path $stage | Out-Null
-          $exe = Get-ChildItem -Path build -Recurse -Filter slick-sim.exe | Select-Object -First 1
-          Copy-Item $exe.FullName -Destination $stage
-          Copy-Item "${{ runner.temp }}\vcpkg\installed\x64-windows\bin\*.dll" -Destination $stage -ErrorAction SilentlyContinue
-          Copy-Item -Recurse config -Destination $stage
-          Copy-Item README.md,LICENSE -Destination $stage
-          Compress-Archive -Path $stage -DestinationPath "$stage.zip"
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: slick-sim-windows
-          path: slick-sim-*-windows-x64.zip
-
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Clone vcpkg
-        shell: bash
-        run: git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ runner.temp }}/vcpkg"
-
-      - name: Cache vcpkg
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ runner.temp }}/vcpkg/installed
-            ${{ runner.temp }}/vcpkg/downloads
-            ${{ runner.temp }}/vcpkg/packages
-          key: vcpkg-Linux-${{ hashFiles('.github/workflows/ci.yml') }}
-
-      - name: Bootstrap vcpkg
-        shell: bash
-        run: |
-          "${{ runner.temp }}/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
-
-      - name: Install dependencies via vcpkg
-        shell: bash
-        run: |
-          "${{ runner.temp }}/vcpkg/vcpkg" install \
-            quickfix \
-            nlohmann-json \
-            jwt-cpp \
-            foonathan-memory \
-            boost-uuid \
-            gtest \
-            slick-logger \
-            slick-socket \
-            slick-object-pool \
-            coinbase-advanced-cpp \
-            slickquant-hyperliquid-cpp \
-            "uwebsockets[core,ssl,zlib]"
-
-      - name: Configure CMake
-        shell: bash
-        run: >
-          cmake -B build
-          -DCMAKE_BUILD_TYPE=Release
-          -DCMAKE_TOOLCHAIN_FILE="${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-          -DBUILD_EXCH_SIMULATOR_TESTING=OFF
-
-      - name: Build
-        run: cmake --build build --config Release --parallel
-
-      - name: Package
-        shell: bash
-        run: |
-          VERSION="${GITHUB_REF#refs/tags/v}"
-          STAGE="slick-sim-${VERSION}-linux-x64"
-          mkdir -p "$STAGE"
-          EXE=$(find build -type f -name slick-sim | head -n1)
-          cp "$EXE" "$STAGE/"
-          cp "${{ runner.temp }}/vcpkg/installed/x64-linux/lib/"*.so* "$STAGE/" 2>/dev/null || true
-          cp -r config "$STAGE/"
-          cp README.md LICENSE "$STAGE/"
-          tar -czf "${STAGE}.tar.gz" "$STAGE"
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: slick-sim-linux
-          path: slick-sim-*-linux-x64.tar.gz
-
   create-release:
-    needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download Windows build
+      # Reuses the exact Release-config binaries ci.yml already built and tested
+      # for this commit, instead of rebuilding from scratch. Requires the tagged
+      # commit to already have a successful ci.yml run (e.g. tag a commit that's
+      # already on main and has passed CI).
+      - name: Find CI run for this commit
+        id: ci_run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RUN_ID=$(gh run list --repo "${{ github.repository }}" --workflow ci.yml --commit "${{ github.sha }}" --status success --json databaseId --jq '.[0].databaseId')
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" == "null" ]; then
+            echo "::error::No successful CI run found for commit ${{ github.sha }}. Tag a commit on main that has already passed CI before releasing."
+            exit 1
+          fi
+          echo "Found CI run $RUN_ID for commit ${{ github.sha }}"
+          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Download Windows release build from CI
         uses: actions/download-artifact@v4
         with:
-          name: slick-sim-windows
+          name: slick-sim-Windows-release
+          path: windows-build
+          run-id: ${{ steps.ci_run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download Linux build
+      - name: Download Linux release build from CI
         uses: actions/download-artifact@v4
         with:
-          name: slick-sim-linux
+          name: slick-sim-Linux-release
+          path: linux-build
+          run-id: ${{ steps.ci_run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract version from tag
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      - name: Package
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+
+          WIN_STAGE="slick-sim-${VERSION}-windows-x64"
+          mkdir -p "$WIN_STAGE"
+          cp windows-build/* "$WIN_STAGE/"
+          cp -r config "$WIN_STAGE/"
+          cp README.md LICENSE "$WIN_STAGE/"
+          zip -r "${WIN_STAGE}.zip" "$WIN_STAGE"
+
+          LINUX_STAGE="slick-sim-${VERSION}-linux-x64"
+          mkdir -p "$LINUX_STAGE"
+          cp linux-build/* "$LINUX_STAGE/"
+          chmod +x "$LINUX_STAGE/slick-sim"
+          cp -r config "$LINUX_STAGE/"
+          cp README.md LICENSE "$LINUX_STAGE/"
+          tar -czf "${LINUX_STAGE}.tar.gz" "$LINUX_STAGE"
 
       - name: Extract changelog for this version
         id: changelog
