@@ -47,7 +47,6 @@ jobs:
             slick-object-pool \
             coinbase-advanced-cpp \
             slickquant-hyperliquid-cpp \
-            slick-orderbook \
             "uwebsockets[core,ssl,zlib]"
 
       - name: Configure CMake
