@@ -187,7 +187,7 @@ ctest --test-dir build
 
 ## Continuous integration & releases
 
-[`ci.yml`](.github/workflows/ci.yml) builds and tests every push/PR to `main` across Windows, Ubuntu, and macOS (Debug + Release). Since there's no `vcpkg.json` manifest, each job clones and bootstraps vcpkg itself and installs the required ports in classic mode (cached per-OS) before configuring CMake.
+[`ci.yml`](.github/workflows/ci.yml) builds and tests every push/PR to `main` across Windows and Ubuntu (Debug + Release). macOS is currently excluded — GitHub's Intel (`macos-13`) runners have very limited hosted capacity and queue indefinitely, and the ARM `macos-latest` runners can't build `quickfix` (its vcpkg port excludes `arm64-osx`). Since there's no `vcpkg.json` manifest, each job clones and bootstraps vcpkg itself and installs the required ports in classic mode (cached per-OS) before configuring CMake.
 
 [`release.yml`](.github/workflows/release.yml) triggers on `v*` tags: it builds Release binaries for Windows and Linux, packages each with its vcpkg-provided runtime libraries and the sample config, and drafts a GitHub Release with both archives attached. Release notes are pulled from the matching `# vX.Y.Z` section of the [`CHANGELOG.md`](CHANGELOG.md) file, if present.
 
