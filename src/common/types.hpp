@@ -55,6 +55,7 @@ inline const char* to_string(Venue venue) {
     case Venue::STOCK:
         return "STOCK";
     case Venue::__COUNT__:
+    case Venue::UNKNOWN_VENUE:
         break;
     }
     return "UNKNOWN";
