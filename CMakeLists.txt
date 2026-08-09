@@ -100,14 +100,14 @@ if (slick-net_FOUND)
     message(STATUS "Found slick-net ${slick-net_VERSION}: ${slick-net_VERSION}")
 endif()
 
-find_package(slick-orderbook 1.0.3 CONFIG QUIET)
+find_package(slick-orderbook 1.0.4 CONFIG QUIET)
 if (NOT slick-orderbook_FOUND)
     message(STATUS "Fetching slick-orderbook...")
     set(BUILD_COINBASE_ADVANCED_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-orderbook
         GIT_REPOSITORY https://github.com/SlickQuant/slick-orderbook.git
-        GIT_TAG v1.0.3
+        GIT_TAG v1.0.4
     )
     FetchContent_MakeAvailable(slick-orderbook)
 else()
