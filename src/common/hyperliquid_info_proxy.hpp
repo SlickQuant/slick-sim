@@ -28,7 +28,7 @@ struct ProxiedHttpResponse {
 inline ProxiedHttpResponse build_proxied_response(const slick::net::Http::Response& rsp) {
     bool upstream_reached = false;
     try {
-        nlohmann::json::parse(rsp.result_text);
+        [[maybe_unused]] auto result = nlohmann::json::parse(rsp.result_text);
         upstream_reached = true;
     } catch (...) {}
 

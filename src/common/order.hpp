@@ -50,7 +50,7 @@ inline constexpr std::string_view to_string(Side side) {
     case Side::SELL:
         return "SELL";
     case Side::UNKNOWN_SIDE:
-        return "UNKNOWN";
+        break;
     }
     return "UNKNOWN";
 }
@@ -91,6 +91,8 @@ enum class OrderType : char {
         return "LIQUIDATION";
     case OrderType::SCALED:
         return "SCALED";
+    case OrderType::UNKNOWN:
+        break;
     }
     return "UNKNOWN";
 }
@@ -242,6 +244,8 @@ inline constexpr std::string_view to_string(ProductType type) {
         return "SPOT";
     case ProductType::FUTURE:
         return "FUTURE";
+    case ProductType::UNKNOWN:
+        break;
     }
     return "UNKNOWN_PRODUCT_TYPE";
 }
