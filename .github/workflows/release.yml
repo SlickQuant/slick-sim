@@ -1,0 +1,135 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v0.1.0, v1.0.0, etc.
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone vcpkg
+        shell: bash
+        run: git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ runner.temp }}/vcpkg"
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/vcpkg/installed
+            ${{ runner.temp }}/vcpkg/downloads
+            ${{ runner.temp }}/vcpkg/packages
+          key: vcpkg-Windows-${{ hashFiles('.github/workflows/ci.yml') }}
+
+      - name: Bootstrap vcpkg
+        shell: pwsh
+        run: |
+          & "${{ runner.temp }}\vcpkg\bootstrap-vcpkg.bat" -disableMetrics
+
+      - name: Install dependencies via vcpkg
+        shell: bash
+        run: |
+          "${{ runner.temp }}/vcpkg/vcpkg" install \
+            quickfix \
+            nlohmann-json \
+            jwt-cpp \
+            foonathan-memory \
+            boost-uuid \
+            gtest \
+            slick-logger \
+            slick-socket \
+            slick-object-pool \
+            coinbase-advanced-cpp \
+            hyperliquid \
+            slick-orderbook \
+            "uwebsockets[core,ssl,zlib]"
+
+      - name: Configure CMake
+        shell: bash
+        run: >
+          cmake -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_TOOLCHAIN_FILE="${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          -DBUILD_EXCH_SIMULATOR_TESTING=OFF
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v',''
+          $stage = "slick-sim-$version-windows-x64"
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          $exe = Get-ChildItem -Path build -Recurse -Filter slick-sim.exe | Select-Object -First 1
+          Copy-Item $exe.FullName -Destination $stage
+          Copy-Item "${{ runner.temp }}\vcpkg\installed\x64-windows\bin\*.dll" -Destination $stage -ErrorAction SilentlyContinue
+          Copy-Item -Recurse config -Destination $stage
+          Copy-Item README.md,LICENSE -Destination $stage
+          Compress-Archive -Path $stage -DestinationPath "$stage.zip"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: slick-sim-windows
+          path: slick-sim-*-windows-x64.zip
+
+  create-release:
+    needs: build-windows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Windows build
+        uses: actions/download-artifact@v4
+        with:
+          name: slick-sim-windows
+
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Extract changelog for this version
+        id: changelog
+        run: |
+          if [ -f CHANGELOG ]; then
+            # Extract the section for this version from CHANGELOG
+            VERSION="${{ github.ref_name }}"
+            # Escape dots in version for regex
+            VERSION_ESCAPED=$(echo "$VERSION" | sed 's/\./\\./g')
+            # Use awk to extract content: start at version header, stop at next ## header
+            CHANGES=$(awk "BEGIN{p=0} /^# $VERSION_ESCAPED/{p=1;next} /^# /{p=0} p" CHANGELOG | sed '/^$/d')
+
+            if [ -z "$CHANGES" ]; then
+              echo "CHANGELOG_CONTENT=No changelog entry found for this version." >> $GITHUB_OUTPUT
+            else
+              # Escape newlines for GitHub output
+              echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_OUTPUT
+              echo "$CHANGES" >> $GITHUB_OUTPUT
+              echo "EOF" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "CHANGELOG_CONTENT=CHANGELOG not found." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## Changes
+
+            ${{ steps.changelog.outputs.CHANGELOG_CONTENT }}
+
+          draft: true
+          prerelease: false
+          generate_release_notes: false
+          files: |
+            slick-sim-*-windows-x64.zip
