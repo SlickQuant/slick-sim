@@ -22,6 +22,7 @@ Exchange::Exchange(
     , request_queue_(config.value("request_queue_size", 1048576), config.contains("request_queue_shm_name") ? config["request_queue_shm_name"].get_ref<const std::string&>().c_str() : nullptr)
     , response_queue_(config.value("response_queue_size", 1048576), config.contains("response_queue_shm_name") ? config["response_queue_shm_name"].get_ref<const std::string&>().c_str() : nullptr)
     , md_queue_(config.value("md_queue_size", 16777216), config.contains("md_queue_shm_name") ? config["md_queue_shm_name"].get_ref<const std::string&>().c_str() : nullptr)
+    , enabled_(config.value("enabled", true))
 {
     if (!config.contains("order_gateway")) {
         throw std::runtime_error(std::format("Exchange {} Missing order_gateway config", to_string(venue)));
@@ -33,12 +34,20 @@ Exchange::Exchange(
 
 void Exchange::start() 
 {
+    if (!enabled_) {
+        LOG_WARN("Exchange {} is disabled, skipping start", to_string(venue_));
+        return;
+    }
+    
     run_.store(true, std::memory_order_release);
 
     for (auto &og : order_gateways_) {
         og->start();
     }
-    md_publisher_->start();
+
+    if (md_publisher_) {
+        md_publisher_->start();
+    }
 
     // start MD thread
     // if (md_feed_)

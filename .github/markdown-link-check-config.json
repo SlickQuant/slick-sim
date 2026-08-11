@@ -1,0 +1,53 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^http://localhost"
+    },
+    {
+      "pattern": "^ws://localhost"
+    },
+    {
+      "pattern": "^https://github.com/SlickTech"
+    },
+    {
+      "pattern": "^https://github.com/SlickQuant"
+    },
+    {
+      "pattern": "^https://slicktech.github.io"
+    },
+    {
+      "pattern": "^https://en.cppreference.com"
+    },
+    {
+      "pattern": "^\\.\\./"
+    },
+    {
+      "pattern": "^\\./"
+    },
+    {
+      "pattern": "^[^/]*\\.md"
+    },
+    {
+      "pattern": "^config/"
+    },
+    {
+      "pattern": "^docs/"
+    },
+    {
+      "pattern": "^src/"
+    },
+    {
+      "pattern": "^tests/"
+    },
+    {
+      "pattern": "^\\.github/"
+    }
+  ],
+  "replacementPatterns": [],
+  "httpHeaders": [],
+  "timeout": "20s",
+  "retryOn429": true,
+  "retryCount": 3,
+  "fallbackRetryDelay": "30s",
+  "aliveStatusCodes": [200, 206]
+}

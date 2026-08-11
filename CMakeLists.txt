@@ -175,3 +175,26 @@ if(BUILD_EXCH_SIMULATOR_TESTING)
   enable_testing()
   add_subdirectory(tests)
 endif()
+
+# Doxygen API documentation.
+#
+# Convenience target for local use: `cmake --build build --target docs`.
+# CI does not use it — .github/workflows/documentation.yml runs doxygen
+# directly so the docs build does not depend on the full vcpkg/FetchContent
+# configure. Output lands in build/doxygen/html (see Doxyfile.in).
+find_package(Doxygen QUIET)
+if(DOXYGEN_FOUND)
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
+        ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+        @ONLY
+    )
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen (version ${PROJECT_VERSION})"
+        VERBATIM
+    )
+else()
+    message(STATUS "Doxygen not found - `docs` target unavailable")
+endif()
