@@ -26,12 +26,11 @@
             "md_feeds": [
                 {
                     "type": "hyperliquid_live_ws",
-                    "base_url": "https://api.hyperliquid.xyz",
-                    "coins": ["ETH", "BTC"]
+                    "base_url": "https://api.hyperliquid.xyz"
                 }
             ],
             "order_gateway": {
-                "port": 4003,
+                "port": 4002,
                 "base_url": "https://api.hyperliquid.xyz",
                 "default_wallet": "0x0000000000000000000000000000000000000001"
             },
@@ -40,18 +39,19 @@
             }
         },
         "cme": {
+            "enabled": false,
             "md_feeds": [
                 {
-                    "type": "hyperliquid_live_ws",
-                    "base_url": "https://api.hyperliquid.xyz",
-                    "coins": ["ETH", "BTC"]
+                    "type": "mbo_live_feed",
+                    "address": "",
+                    "port": ""
                 }
             ],
             "order_gateway": {
-                "port": 4002
+                "port": 4003
             },
             "md_publisher": {
-                "port": 5001
+                "port": 5002
             }
         }
     }

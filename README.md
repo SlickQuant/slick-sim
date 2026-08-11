@@ -3,11 +3,25 @@
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://en.cppreference.com/w/cpp/23)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/SlickTech/exchange_simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/SlickTech/exchange_simulator/actions/workflows/ci.yml)
+[![Documentation](https://github.com/SlickTech/exchange_simulator/actions/workflows/documentation.yml/badge.svg)](https://slicktech.github.io/exchange_simulator/)
 [![GitHub release](https://img.shields.io/github/v/release/SlickTech/exchange_simulator)](https://github.com/SlickTech/exchange_simulator/releases)
 
-A exchange simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and exposes that exchange's own FIX/REST/WebSocket order-entry API — so a trading client can connect and trade against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
+A exchange simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and exposes that exchange's own REST/WebSocket order-entry API — so a trading client can connect and trade against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
+
+The live feed is optional. Configure one and your orders compete against real quoted liquidity; omit it and `slick-sim` runs as a conventional exchange simulator, with books driven purely by the orders clients send. A historical-replay feed — matching against recorded market data — is planned but not yet implemented. See [Operating modes](https://slicktech.github.io/exchange_simulator/architecture/#operating-modes).
 
 Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.1.0`).
+
+## Documentation
+
+Full documentation is published at **<https://slicktech.github.io/exchange_simulator/>**:
+
+- **Internals** — [architecture and threading model](https://slicktech.github.io/exchange_simulator/architecture/), [order lifecycle](https://slicktech.github.io/exchange_simulator/order-lifecycle/), [matching engine](https://slicktech.github.io/exchange_simulator/matching-engine/), [order book](https://slicktech.github.io/exchange_simulator/order-book/), [market data](https://slicktech.github.io/exchange_simulator/market-data/), [adding an exchange](https://slicktech.github.io/exchange_simulator/extending/)
+- **Integration** — [configuration reference](https://slicktech.github.io/exchange_simulator/configuration/), [Coinbase](https://slicktech.github.io/exchange_simulator/integration-coinbase/), [Hyperliquid](https://slicktech.github.io/exchange_simulator/integration-hyperliquid/)
+- **[Known gaps](https://slicktech.github.io/exchange_simulator/known-gaps/)** — unimplemented and half-wired code paths, worth reading before you debug anything surprising
+- **[API reference](https://slicktech.github.io/exchange_simulator/api/)** — Doxygen
+
+The sources live in [`docs/`](docs/) and render on GitHub too.
 
 ## Status
 
@@ -22,9 +36,9 @@ Early-stage, under active development. Two exchanges are implemented today:
 
 ## Architecture
 
-Each enabled exchange runs its own instance of the pipeline below:
+Each enabled exchange runs its own instance of the pipeline below. The market-data feed at the top is optional — without it the same pipeline runs with an initially empty book:
 
-```
+```text
    Real exchange              live public market data (WS)
  (Coinbase, Hyperliquid) ────────────────────────────────────────▶  md_feed
                                                                        │
@@ -134,7 +148,7 @@ cmake -S . -B build -DBUILD_EXCH_SIMULATOR_TESTING=OFF    # skip building unit t
             "md_feeds": [
                 {
                     "type": "hyperliquid_live_ws",
-                    "base_url": "https://api.hyperliquid.xyz",
+                    "base_url": "https://api.hyperliquid.xyz"
                 }
             ],
             "order_gateway": {
@@ -144,7 +158,7 @@ cmake -S . -B build -DBUILD_EXCH_SIMULATOR_TESTING=OFF    # skip building unit t
             },
             "md_publisher": {
                 "port": 5001,
-                "base_url": "https://api.hyperliquid.xyz"
+                "upstream_base_url": "https://api.hyperliquid.xyz"
             }
         }
     }
@@ -153,25 +167,31 @@ cmake -S . -B build -DBUILD_EXCH_SIMULATOR_TESTING=OFF    # skip building unit t
 
 - `log_level` — one of the `slick::logger` levels (`trace`, `debug`, `info`, `warn`, `error`, `fatal`); defaults to `info` if omitted.
 - `exchanges` — required. Each key is a venue name (`coinbase`, `hyperliquid`); a venue is skipped unless `enabled` is `true` (defaults to `true` if omitted).
-  - `md_feeds` — live market data feeds to subscribe to on the real exchange.
-  - `order_gateway` — the venue-native order-entry endpoint(s) `slick-sim` serves. Coinbase exposes separate REST and WS ports; Hyperliquid exposes a single REST port plus the upstream `base_url` used for request signing/proxying and a placeholder `default_wallet`.
-  - `md_publisher` — the port `slick-sim` serves its own venue-formatted market data WebSocket on.
+  - `md_feeds` — market data feeds to subscribe to on the real exchange. Hyperliquid also takes `coins`, the list subscribed at startup. **Optional**: omit it (or use an unrecognised `type`) to run the venue self-contained, with books driven only by client orders.
+  - `order_gateway` — the venue-native order-entry endpoint(s) `slick-sim` serves. Coinbase exposes separate REST and WS ports; Hyperliquid exposes a single REST port plus the upstream `base_url` used for proxying `/info` and a placeholder `default_wallet`.
+  - `md_publisher` — the port `slick-sim` serves its own venue-formatted market data WebSocket on. Hyperliquid also takes `upstream_base_url` (note: not `base_url`) for its `/info` proxy.
   - Coinbase additionally sets `request_queue_size` / `response_queue_size` / `md_queue_size`, the capacities of its internal lock-free queues.
+
+See the [configuration reference](https://slicktech.github.io/exchange_simulator/configuration/) for every key the code actually reads, with defaults.
 
 > **Note:** if no config path is given on the command line, `slick-sim` looks for `slick-sim.json` in the current directory — which does not match the committed sample's name or location (`config/slick_sim.json`). Always pass the path explicitly.
 
 ## Running
 
 ```bash
+mkdir -p logs                       # startup aborts if this directory is missing
 slick-sim config/slick_sim.json
 ```
 
-(The built binary's exact path depends on your CMake generator/config, e.g. `build/src/sim/slick-sim` or `build/src/sim/Debug/slick-sim.exe`.)
+(The built binary's exact path depends on your CMake generator/config, e.g. `build/src/slick-sim` or `build/src/Debug/slick-sim.exe`.)
+
+> **Note:** any venue key other than `coinbase`/`hyperliquid` builds a generic `Exchange` that binds no ports and processes at most one request. The sample config's `cme` block is `"enabled": false` for that reason, and is skipped at startup with a warning. See [Known gaps](https://slicktech.github.io/exchange_simulator/known-gaps/).
 
 Press `Ctrl+C` to stop — `slick-sim` catches `SIGINT` and shuts every enabled exchange down gracefully before exiting.
 
 Logs:
-- `logs/slick-sim.log` — always written.
+
+- `logs/slick-sim.log` — always written. The `logs/` directory must already exist.
 - Console — Debug builds only.
 - `logs/coinbase_data/` — raw Coinbase WebSocket capture, written whenever the Coinbase feed is active.
 
@@ -185,24 +205,48 @@ cmake --build build
 ctest --test-dir build
 ```
 
+## Building the documentation locally
+
+The published site is MkDocs Material for the narrative docs plus Doxygen for the API reference.
+
+```bash
+# narrative docs — live preview on http://127.0.0.1:8000
+pip install -r requirements-docs.txt
+mkdocs serve
+
+# API reference (needs doxygen + graphviz on PATH)
+cmake -S . -B build
+cmake --build build --target docs      # output in build/doxygen/html
+```
+
+The `docs` CMake target only appears when `find_package(Doxygen)` succeeds; a normal build is
+unaffected if Doxygen is absent.
+
 ## Continuous integration & releases
 
 [`ci.yml`](.github/workflows/ci.yml) builds and tests every push/PR to `main` across Windows and Ubuntu (Debug + Release). macOS is currently excluded — GitHub's Intel (`macos-13`) runners have very limited hosted capacity and queue indefinitely, and the ARM `macos-latest` runners can't build `quickfix` (its vcpkg port excludes `arm64-osx`). Since there's no `vcpkg.json` manifest, each job clones and bootstraps vcpkg itself and installs the required ports in classic mode (cached per-OS) before configuring CMake.
+
+[`documentation.yml`](.github/workflows/documentation.yml) builds the MkDocs site and the Doxygen API reference, merges them into one tree (`/` and `/api` respectively), and publishes to the `gh-pages` branch on pushes to `main`. It deliberately does *not* configure CMake — Doxygen parses the sources directly, so the job needs only `doxygen`, `graphviz` and Python, and runs in about a minute instead of inheriting `ci.yml`'s vcpkg dependency chain. Pull requests build and upload the site as an artifact without deploying. Two further jobs lint the Markdown and check its links.
 
 [`release.yml`](.github/workflows/release.yml) triggers on `v*` tags. Rather than rebuilding, it reuses the Release-config Windows and Linux binaries `ci.yml` already built and tested for that exact commit (downloaded from that CI run's artifacts), packages each with its runtime libraries and the sample config, and drafts a GitHub Release with both archives attached. This means the tagged commit must already have a successful `ci.yml` run on `main` — tag what you've already merged, not an untested commit. Release notes are pulled from the matching `# vX.Y.Z` section of the [`CHANGELOG.md`](CHANGELOG.md) file, if present.
 
 ## Project structure
 
-```
+```text
 slick-sim/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml               # build + test on push/PR (Windows, Ubuntu, macOS)
+│       ├── ci.yml               # build + test on push/PR (Windows, Ubuntu)
+│       ├── documentation.yml    # MkDocs + Doxygen → GitHub Pages
 │       └── release.yml          # tag-triggered GitHub Release with Windows binary
 ├── CHANGELOG.md                 # per-version notes, consumed by release.yml
 ├── CMakeLists.txt
+├── Doxyfile.in                  # API reference config (`--target docs` locally)
+├── mkdocs.yml                   # documentation site config
+├── requirements-docs.txt        # mkdocs-material toolchain
 ├── config/
 │   └── slick_sim.json          # sample runtime configuration
+├── docs/                        # published documentation sources
 ├── scripts/
 │   ├── download_cme_schemas.py # fetches CME SBE schemas (not currently used by the build)
 │   └── create_fallback_schema.py

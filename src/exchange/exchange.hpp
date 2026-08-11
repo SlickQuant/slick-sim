@@ -78,6 +78,7 @@ protected:
     std::array<std::unique_ptr<engine::MatchingEngine>, engine::MatchingEngine::Type::__count__> matching_engines_;
     std::vector<std::unique_ptr<order_gateway::OrderGateway>> order_gateways_;
     std::unique_ptr<md_publisher::MarketDataPublisher> md_publisher_;
+    bool enabled_ = true;
 };
 
 }   // end namespace slick::sim::exch

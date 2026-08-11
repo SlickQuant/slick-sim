@@ -50,6 +50,11 @@ CoinbaseExchange::CoinbaseExchange(const nlohmann::json &config)
 }
 
 void CoinbaseExchange::start() {
+    if (!enabled_) {
+        LOG_WARN("Exchange {} is disabled, skipping start", to_string(venue_));
+        return;
+    }
+    
     run_.store(true, std::memory_order_release);
     
     for (auto &og : order_gateways_) {
