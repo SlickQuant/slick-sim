@@ -112,15 +112,23 @@ flowchart TB
     EX -->|"response_queue"| OG
     OG -->|"acks / fills / cancels"| CO
 
+    CM -->|"subscribe (WS)"| MDP
+    MDP -->|"request_queue"| EX
     EX -->|"md_queue"| MDP
     MDP -->|"venue-native WS"| CM
-    CM -->|"subscribe (request_queue)"| OG
 ```
 
-Note that `order_gateway` is bidirectional and independent of the market-data path: it accepts orders
-on one side and returns execution reports on the other, both over the same client connection.
-Market-data subscriptions from the publisher also travel on `request_queue` — the publisher is a
-producer for that queue just as the gateways are.
+The two client-facing paths are fully independent, and each is bidirectional:
+
+- **Order entry** — `order_gateway` accepts orders from the client and returns acks, fills, cancels
+  and rejects to that same client, over the same connection.
+- **Market data** — `market_data_publisher` accepts `subscribe`/`unsubscribe` messages from the client
+  and streams book and trade updates back.
+
+A client's **subscription request never touches `order_gateway`**. The publisher receives it on its
+own WebSocket and writes an `MD_SUBSCRIPTION` `Request` onto `request_queue_` itself — so the
+publisher is a producer for that queue exactly as the gateways are, and `Exchange::processRequest`
+sees order requests and subscription requests interleaved on one queue.
 
 ## Library targets
 
@@ -187,6 +195,7 @@ threads and invoke callbacks from them.
 | `HyperliquidExchange::processL2Snapshot`, `processL2Diff` | Exchange thread | Drained from `event_queue_` by `drainEventQueue()` |
 | REST route handlers, WS message handlers | That gateway's uWS loop thread | Write to `request_queue`, poll `response_queue` |
 | `CoinbasePublisher::publish_*`, `HyperliquidPublisher::publish_*` | Publisher's uWS loop thread | Read `md_queue`, write to client sockets |
+| `CoinbasePublisher::handle_message`, `HyperliquidPublisher::handle_message` | Publisher's uWS loop thread | Client `subscribe`/`unsubscribe` — writes `MD_SUBSCRIPTION` to `request_queue` |
 
 The gateway threads deserve a closer look. `POST /api/v3/brokerage/orders` publishes a request and
 then **blocks its uWS loop thread**, polling `response_queue` every 100 µs for up to 5 seconds waiting
