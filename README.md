@@ -6,7 +6,7 @@
 [![Documentation](https://github.com/SlickTech/exchange_simulator/actions/workflows/documentation.yml/badge.svg)](https://slicktech.github.io/exchange_simulator/)
 [![GitHub release](https://img.shields.io/github/v/release/SlickTech/exchange_simulator)](https://github.com/SlickTech/exchange_simulator/releases)
 
-A exchange simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and exposes that exchange's own REST/WebSocket order-entry API — so a trading client can connect and trade against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
+A exchange simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and serves that exchange's own APIs on local ports — the same **order-entry** endpoints you would send orders to, and the same **market-data** channels you would subscribe to for prices. A trading client connects and trades against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
 
 The live feed is optional. Configure one and your orders compete against real quoted liquidity; omit it and `slick-sim` runs as a conventional exchange simulator, with books driven purely by the orders clients send. A historical-replay feed — matching against recorded market data — is planned but not yet implemented. See [Operating modes](https://slicktech.github.io/exchange_simulator/architecture/#operating-modes).
 
@@ -27,12 +27,12 @@ The sources live in [`docs/`](docs/) and render on GitHub too.
 
 Early-stage, under active development. Two exchanges are implemented today:
 
-| Exchange | Status | Order entry | Market data |
-|---|---|---|---|
-| Coinbase | Implemented | REST + WebSocket | WebSocket |
-| Hyperliquid | Implemented | REST | WebSocket |
-| CME | Not implemented — adapter file exists but is empty | — | — |
-| Eurex / ICE | Not implemented | — | — |
+| Exchange | Status | Submit orders | Receive fills | Market data |
+|---|---|---|---|---|
+| Coinbase | Implemented | REST | WebSocket (`user` channel) | WebSocket |
+| Hyperliquid | Implemented | REST | in the same HTTP response — no push channel | WebSocket |
+| CME | Not implemented — adapter file exists but is empty | — | — | — |
+| Eurex / ICE | Not implemented | — | — | — |
 
 ## Architecture
 

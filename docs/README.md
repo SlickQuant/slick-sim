@@ -1,9 +1,10 @@
 # Slick Sim
 
-`slick-sim` is an exchange simulator that re-exposes a real venue's *own* order-entry and market-data
-APIs on local ports. A trading client connects to it exactly as it would to the real exchange — same
-REST routes, same WebSocket channels, same message shapes — but orders are matched by an in-process
-FIFO matching engine, so no capital is ever at risk.
+`slick-sim` is an exchange simulator that re-exposes a real venue's *own* APIs on local ports — the
+same **order-entry** endpoints you would send orders to, and the same **market-data** channels you
+would subscribe to for prices. A trading client connects to it exactly as it would to the real
+exchange — same REST routes, same WebSocket channels, same message shapes — but orders are matched by
+an in-process FIFO matching engine, so no capital is ever at risk.
 
 What your orders match against depends on how you configure the market-data feed:
 
@@ -13,9 +14,17 @@ What your orders match against depends on how you configure the market-data feed
   start empty and clients trade only against each other.
 - **Historical replay** — planned, not yet implemented.
 
-See [Operating modes](architecture.md#operating-modes). Two venues are implemented today:
-**Coinbase** (REST + WebSocket order entry, WebSocket market data) and **Hyperliquid** (REST order
-entry, WebSocket market data).
+See [Operating modes](architecture.md#operating-modes).
+
+Two venues are implemented today, and they differ in how order results get back to you:
+
+- **[Coinbase](integration-coinbase.md)** — you submit orders over **REST**, but acks, fills and
+  cancels arrive on a **separate WebSocket** (`user` channel). The REST call returns only a
+  `PENDING_NEW` acknowledgement, so a REST-only client never learns that its order traded. Market
+  data is a third endpoint, its own WebSocket.
+- **[Hyperliquid](integration-hyperliquid.md)** — you submit orders over **REST** and the result
+  comes back in that same HTTP response. There is no push channel for fills at all. Market data is a
+  separate WebSocket.
 
 ## Understanding the system
 

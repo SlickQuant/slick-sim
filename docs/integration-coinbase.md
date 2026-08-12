@@ -1,12 +1,17 @@
 # Integrating a Coinbase client
 
-`slick-sim` exposes three local endpoints that speak Coinbase Advanced Trade's own protocols:
+`slick-sim` exposes three local endpoints that speak Coinbase Advanced Trade's own protocols — two for
+**order entry** (submitting orders and receiving what happens to them) and one for **market data**
+(streaming prices and trades):
 
-| Endpoint | Sample port | Purpose |
-| --- | --- | --- |
-| REST order entry | 4000 | Products, create/cancel/edit orders |
-| WebSocket order entry | 4001 | `user` channel — acks, fills, cancels |
-| WebSocket market data | 5000 | `level2`, `market_trades`, `ticker`, `heartbeats` |
+| Endpoint | Sample port | Direction | Purpose |
+| --- | --- | --- | --- |
+| REST order entry | 4000 | client → sim | Products, and create/cancel/edit orders |
+| WebSocket order entry | 4001 | sim → client | `user` channel — acks, fills, cancels |
+| WebSocket market data | 5000 | sim → client | `level2`, `market_trades`, `ticker`, `heartbeats` |
+
+The two order-entry endpoints are **not** alternatives — they are the two halves of one round trip.
+You send on REST and hear back on the WebSocket.
 
 Point your client's REST base URL and WebSocket URLs at these and it should work unchanged, subject to
 the gaps noted throughout.

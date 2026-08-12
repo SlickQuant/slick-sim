@@ -1,6 +1,8 @@
 # Integrating a Hyperliquid client
 
-`slick-sim` exposes two local endpoints that speak Hyperliquid's own protocol:
+`slick-sim` exposes two local endpoints that speak Hyperliquid's own protocol — one for **order entry**
+(submitting orders and receiving what happens to them) and one for **market data** (streaming prices
+and trades):
 
 | Endpoint | Sample port | Purpose |
 | --- | --- | --- |
