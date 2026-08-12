@@ -2,6 +2,13 @@
 
 ## Fixed
 
+- The Ubuntu Release CI job no longer fails intermittently with `SIGILL`. The vcpkg cache is now
+  keyed on the runner's CPU feature set, not just the OS. The SlickQuant dependency libraries
+  (`slick-net`, `hyperliquid-cpp`, …) build their Release config with `-march=native`, so vcpkg
+  produced binaries tuned to whichever runner compiled them; restoring that cache onto a runner with
+  a narrower instruction set made the tests die on an AVX-512 opcode (`vmovdqu8`) inside
+  `slick::net::Websocket`'s constructor, reached from `HyperliquidRestOrderGateway`. That is why a
+  re-run sometimes passed — it depended on the CPU the cache came from.
 - Release builds on GCC/Clang no longer pass `-march=native`. It is now behind a new
   `ENABLE_NATIVE_ARCH` option, off by default. Baking the build machine's instruction set into the
   binary broke two things: the Ubuntu Release CI job started failing with `SIGILL` in every test

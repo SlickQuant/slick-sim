@@ -26,8 +26,35 @@ jobs:
       shell: bash
       run: git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ runner.temp }}/vcpkg"
 
+    # The SlickQuant dependency libraries (slick-net, hyperliquid-cpp, ...) build
+    # their Release config with -march=native, so the binaries vcpkg produces are
+    # tuned to whatever CPU the runner that built them happened to have. Restoring
+    # such a cache onto a runner with a narrower instruction set makes the tests
+    # die with SIGILL on an AVX-512 opcode inside the dependency:
+    #
+    #   Program received signal SIGILL
+    #   => vmovdqu8 %xmm0,0x20(%rbx)
+    #      in slick::net::Websocket<...>::Websocket(...)
+    #      from hyperliquid::WebsocketManager::init(...)
+    #
+    # That is why the Linux Release job failed intermittently and passed on
+    # re-run: it depended on which CPU the cache came from. Key the cache on the
+    # runner's CPU features so a cache is only ever reused on compatible hardware.
+    - name: CPU signature for the vcpkg cache key
+      id: cpusig
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" = "Linux" ]; then
+          raw=$(grep -m1 '^flags' /proc/cpuinfo | cut -d: -f2 | tr ' ' '\n' \
+                | grep -E '^(sse4_[12]|avx|avx2|avx512[a-z0-9_]*|bmi[12]|fma)$' | sort -u | tr '\n' ',')
+        else
+          raw=$(wmic cpu get Name /value 2>/dev/null | tr -d '\r' | grep '=' || echo "windows-unknown")
+        fi
+        echo "CPU signature source: $raw"
+        echo "sig=$(printf '%s' "$raw" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
     # No vcpkg.json manifest is committed in this repo by design (see CLAUDE.md), so
-    # dependencies are installed explicitly in classic mode below and cached by OS.
+    # dependencies are installed explicitly in classic mode below.
     - name: Cache vcpkg
       uses: actions/cache@v4
       with:
@@ -35,7 +62,7 @@ jobs:
           ${{ runner.temp }}/vcpkg/installed
           ${{ runner.temp }}/vcpkg/downloads
           ${{ runner.temp }}/vcpkg/packages
-        key: vcpkg-${{ runner.os }}-${{ hashFiles('.github/workflows/ci.yml') }}
+        key: vcpkg-${{ runner.os }}-cpu${{ steps.cpusig.outputs.sig }}-${{ hashFiles('.github/workflows/ci.yml') }}
 
     - name: Bootstrap vcpkg (Windows)
       if: runner.os == 'Windows'
