@@ -624,10 +624,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#feed-callbacks-and-thread-safety" class="md-nav__link">
+  <a href="#feed-callbacks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Feed callbacks and thread safety
+        Feed callbacks
       
     </span>
   </a>
@@ -1042,10 +1042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#feed-callbacks-and-thread-safety" class="md-nav__link">
+  <a href="#feed-callbacks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Feed callbacks and thread safety
+        Feed callbacks
       
     </span>
   </a>
@@ -1270,16 +1270,45 @@ could collide with an existing venue's, namespace them.</p>
 symbol that already has an active subscription on the first.</p>
 <p>Also implement <code>handleMdUnsubscription</code> for symmetry, but know that
 <a href="../known-gaps/#market-data-unsubscribe-requests-are-dropped">the request loop never calls it</a>.</p>
-<h3 id="feed-callbacks-and-thread-safety">Feed callbacks and thread safety<a class="headerlink" href="#feed-callbacks-and-thread-safety" title="Permanent link">&para;</a></h3>
-<p>The rule: <strong>feed callbacks must not touch the order book.</strong> They run on the SDK's network thread; the
-book is owned by the exchange thread. Queue the payload and let the exchange thread apply it.</p>
+<h3 id="feed-callbacks">Feed callbacks<a class="headerlink" href="#feed-callbacks" title="Permanent link">&para;</a></h3>
+<p><strong>Configure the venue SDK for user-thread dispatch, and pump it from the exchange loop.</strong> Both
+existing adapters do this, and it is what keeps the whole market-data path single-threaded and
+lock-free:</p>
+<table>
+<thead>
+<tr>
+<th>Venue</th>
+<th>Mechanism</th>
+<th>Pumped by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coinbase</td>
+<td>Implement <code>coinbase::UserThreadWebsocketCallbacks</code>; the WS client fills a <code>slick::stream_buffer_multiplexer</code></td>
+<td><code>processData()</code> in the exchange loop</td>
+</tr>
+<tr>
+<td>Hyperliquid</td>
+<td>Construct <code>hyperliquid::Info</code> with <code>user_thread_dispatch = true</code></td>
+<td><code>getInfo()-&gt;dispatch(100)</code> in <code>drainEventQueue()</code></td>
+</tr>
+</tbody>
+</table>
+<p>With that in place the SDK's network thread only buffers bytes, and your callbacks fire <strong>on the
+exchange thread</strong> — so they may touch the book directly. If your SDK offers no such mode and insists
+on calling back from its own thread, then you must enqueue and drain, because the book has no locking
+whatsoever.</p>
+<p>The existing adapters still queue events, but for <strong>sequencing</strong>, not thread safety:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">KrakenExchange::onBookUpdate</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">nlohmann</span><span class="o">::</span><span class="n">json</span><span class="o">&amp;</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">event_queue_</span><span class="p">.</span><span class="n">push_back</span><span class="p">({</span><span class="n">FeedEvent</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">BOOK</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">});</span><span class="w">   </span><span class="c1">// WS thread: enqueue only</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">event_queue_</span><span class="p">.</span><span class="n">push_back</span><span class="p">({</span><span class="n">FeedEvent</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">BOOK</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">});</span><span class="w">   </span><span class="c1">// deferred, not cross-thread</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="p">}</span>
 </code></pre></div>
-<p>Hyperliquid uses a plain <code>std::vector&lt;FeedEvent&gt;</code> drained each loop iteration; Coinbase uses a
-per-symbol <code>std::priority_queue</code> to re-order by exchange timestamp. Pick based on whether your venue
-can deliver out-of-order events — see <a href="../market-data/#coinbase-time-ordered-event-sequencing">Market data</a>.</p>
+<p>Hyperliquid uses a plain <code>std::vector&lt;FeedEvent&gt;</code> drained immediately after the <code>dispatch()</code> call
+that filled it, which keeps book mutation out of the SDK's callback re-entrancy. Coinbase uses a
+per-symbol <code>std::priority_queue</code> to re-order by exchange timestamp, because its channels can deliver
+out of order — see <a href="../market-data/#coinbase-time-ordered-event-sequencing">Market data</a>. Pick based on
+what your venue actually needs; a venue that delivers in order needs neither.</p>
 <h3 id="applying-book-updates">Applying book updates<a class="headerlink" href="#applying-book-updates" title="Permanent link">&para;</a></h3>
 <p>For a <strong>new price level</strong>, match against the opposite side before resting the phantom order, so a
 quote that crosses a resting simulator order fills it:</p>

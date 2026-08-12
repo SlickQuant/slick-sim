@@ -1303,7 +1303,7 @@ unchanged and the book holds only client orders.</p>
     end
 
     RE -.-&gt;|"live book + trades"| FEED
-    FEED -.-&gt;|"callbacks on WS thread"| EX
+    FEED -.-&gt;|"buffered frames, decoded&lt;br/&gt;on the exchange thread"| EX
     EX --&gt; SYM
     SYM --&gt; BOOK
     SYM --&gt; ME
@@ -1403,8 +1403,22 @@ exchange that binds no ports and processes at most one request. See
 and <code>WebsocketMarketDataPublisher::start()</code> each spawn a thread that builds a <code>uWS::App</code>, installs
 routes, and calls <code>.run()</code>. For Coinbase that is three such threads (REST gateway, WS gateway, MD
 publisher); for Hyperliquid, two.</p>
-<p><strong>Venue-SDK WebSocket threads.</strong> The Coinbase and Hyperliquid client libraries run their own network
-threads and invoke callbacks from them.</p>
+<p><strong>Venue-SDK WebSocket threads.</strong> Both client libraries run their own network thread, but neither one
+invokes our callbacks from it. Each is configured for <strong>user-thread dispatch</strong>: the network thread
+only parks raw frames in a buffer, and the callbacks fire on whichever thread later drains that
+buffer — which here is always the exchange thread.</p>
+<ul>
+<li><strong>Coinbase</strong> — <code>CoinbaseExchange</code> implements <code>coinbase::UserThreadWebsocketCallbacks</code>, and the WS
+  client writes into a <code>slick::stream_buffer_multiplexer</code>. The exchange loop calls
+  <code>processData()</code>, which decodes the buffered frames and invokes <code>onLevel2Updates</code>,
+  <code>onMarketTrades</code>, <code>onLevel2Snapshot</code> and the rest <strong>inline, on the exchange thread</strong>.</li>
+<li><strong>Hyperliquid</strong> — <code>HyperliquidLiveWSFeed</code> constructs <code>hyperliquid::Info</code> with
+  <code>user_thread_dispatch = true</code> ("<em>if true, callbacks fire on dispatch() caller thread</em>"). The
+  exchange loop calls <code>getInfo()-&gt;dispatch(100)</code> from <code>drainEventQueue()</code>, so <code>onL2BookUpdate</code> and
+  <code>onTradesUpdate</code> likewise run <strong>on the exchange thread</strong>.</li>
+</ul>
+<p>The upshot is that a single thread per venue decodes market data, mutates the book, matches orders,
+and publishes — no locking is needed anywhere in that path.</p>
 <h3 id="which-thread-runs-what">Which thread runs what<a class="headerlink" href="#which-thread-runs-what" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -1422,23 +1436,28 @@ threads and invoke callbacks from them.</p>
 </tr>
 <tr>
 <td><code>CoinbaseExchange::onLevel2Updates</code>, <code>onMarketTrades</code></td>
-<td>Coinbase WS thread</td>
-<td>Push <code>Event</code>s into the per-symbol priority queue; no book mutation</td>
+<td><strong>Exchange thread</strong>, via <code>processData()</code></td>
+<td>Push <code>Event</code>s into the per-symbol priority queue for time-ordering</td>
 </tr>
 <tr>
 <td><code>CoinbaseExchange::onLevel2Snapshot</code></td>
-<td>Coinbase WS thread</td>
-<td><strong>Does</strong> mutate the book directly, unlike the incremental path</td>
+<td><strong>Exchange thread</strong>, via <code>processData()</code></td>
+<td>Mutates the book directly, bypassing the priority queue</td>
 </tr>
 <tr>
 <td><code>HyperliquidExchange::onL2BookUpdate</code>, <code>onTradesUpdate</code></td>
-<td>Hyperliquid WS thread</td>
-<td>Append to <code>event_queue_</code> only</td>
+<td><strong>Exchange thread</strong>, via <code>dispatch()</code></td>
+<td>Append to <code>event_queue_</code>, processed later in the same <code>drainEventQueue()</code> call</td>
 </tr>
 <tr>
 <td><code>HyperliquidExchange::processL2Snapshot</code>, <code>processL2Diff</code></td>
 <td>Exchange thread</td>
 <td>Drained from <code>event_queue_</code> by <code>drainEventQueue()</code></td>
+</tr>
+<tr>
+<td>Venue-SDK network threads</td>
+<td>Their own threads</td>
+<td>Receive bytes into the buffer only — never enter our code</td>
 </tr>
 <tr>
 <td>REST route handlers, WS message handlers</td>

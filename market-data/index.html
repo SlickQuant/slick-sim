@@ -1200,9 +1200,10 @@ order would corrupt the book. <code>CoinbaseExchange</code> therefore buffers an
 </code></pre></div>
 <p><code>EventCompare</code> orders by <code>event_time</code> ascending, tie-broken by the internal <code>sequence_id</code> so events
 with identical exchange timestamps keep arrival order.</p>
-<p>The WS callbacks (<code>onLevel2Updates</code>, <code>onMarketTrades</code>) only push into this queue — they never touch
-the book. Release happens on the exchange thread in <code>processSequencedEvents()</code>, which pops an event
-only when one of two conditions holds:</p>
+<p>The callbacks (<code>onLevel2Updates</code>, <code>onMarketTrades</code>) only push into this queue — they never touch the
+book. They already run on the exchange thread, delivered by <code>processData()</code>, so this is buffering for
+<strong>ordering</strong>, not for thread safety. Release happens later in the same loop iteration, in
+<code>processSequencedEvents()</code>, which pops an event only when one of two conditions holds:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// 1. a full second of newer data has arrived, so nothing older can still be in flight</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kt">bool</span><span class="w"> </span><span class="n">safe_by_time_gap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">last_event_time</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">                        </span><span class="n">top</span><span class="p">.</span><span class="n">event_time</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ONE_SECOND_NS</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">last_event_time</span><span class="p">;</span>
@@ -1219,8 +1220,9 @@ or adjusts an existing one via the <code>getMDLevelQty</code> delta logic descri
 <code>book.lastUpdateTime()</code> — are logged and dropped.</p>
 <p>Level and trade updates are batched into <code>level_update_buffer_</code> / <code>trade_update_buffer_</code> and flushed
 to <code>md_queue_</code> when the sequence number changes, so one upstream batch becomes one downstream message.</p>
-<p>Snapshots take a different route entirely: <code>onLevel2Snapshot</code> runs <strong>on the WS thread</strong> and mutates
-the book directly rather than going through the priority queue.</p>
+<p>Snapshots take a different route: <code>onLevel2Snapshot</code> mutates the book directly rather than going
+through the priority queue — safe to do, since it is on the exchange thread like everything else, and
+correct because a snapshot is authoritative and supersedes anything still queued.</p>
 <h2 id="hyperliquid-l2-diffs-and-index-resolution">Hyperliquid: L2 diffs and index resolution<a class="headerlink" href="#hyperliquid-l2-diffs-and-index-resolution" title="Permanent link">&para;</a></h2>
 <p>Hyperliquid's undocumented <code>l2</code> channel sends compressed incremental diffs:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ETH&quot;</span><span class="p">,</span>
