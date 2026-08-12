@@ -111,7 +111,10 @@ This builds the `slick-sim` executable and, by default, the `slick_sim_tests` te
 ```bash
 cmake -S . -B build -DENABLE_ASAN=ON                     # AddressSanitizer (MSVC needs VS2022 17.7+; auto-disabled otherwise)
 cmake -S . -B build -DBUILD_EXCH_SIMULATOR_TESTING=OFF    # skip building unit tests (default: ON)
+cmake -S . -B build -DENABLE_NATIVE_ARCH=ON               # -march=native in Release (default: OFF)
 ```
+
+`ENABLE_NATIVE_ARCH` is off by default because CI's Release binaries are what `release.yml` attaches to GitHub Releases — a binary built with `-march=native` on a runner with AVX-512 crashes with `SIGILL` on any older CPU. Turn it on for local or self-hosted production builds, where the target CPU is the build CPU and the extra vectorisation is worth having.
 
 ## Configuration
 
@@ -216,7 +219,7 @@ mkdocs serve
 
 # API reference (needs doxygen + graphviz on PATH)
 cmake -S . -B build
-cmake --build build --target docs      # output in build/doxygen/html
+cmake --build build --target docs      # output in doxygen-out/html
 ```
 
 The `docs` CMake target only appears when `find_package(Doxygen)` succeeds; a normal build is

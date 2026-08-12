@@ -2,6 +2,14 @@
 
 ## Fixed
 
+- Release builds on GCC/Clang no longer pass `-march=native`. It is now behind a new
+  `ENABLE_NATIVE_ARCH` option, off by default. Baking the build machine's instruction set into the
+  binary broke two things: the Ubuntu Release CI job started failing with `SIGILL` in every test
+  that exercises the exchange and order-book paths, and — more seriously — `ci.yml` uploads those
+  Release binaries for `release.yml` to attach to GitHub Releases, so published builds would fault
+  on any user CPU older than the runner that produced them. The flag is still available for local
+  and self-hosted production builds via `-DENABLE_NATIVE_ARCH=ON`.
+
 - `Exchange::start()` no longer dereferences a null `md_publisher_`. Only `CoinbaseExchange` and
   `HyperliquidExchange` construct a publisher, so any other venue key — which falls through to the
   generic `Exchange` — segfaulted the process on startup. Because `nlohmann::json` iterates object

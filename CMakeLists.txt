@@ -9,6 +9,22 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
 
+# -march=native bakes the build machine's instruction set into the binary.
+#
+# That is wrong for anything CI builds, because ci.yml uploads the Release
+# binaries and release.yml attaches them to GitHub Releases: a runner with
+# AVX-512 produces a binary that dies with SIGILL on any older user CPU.
+#
+# It is also unreliable on cloud VMs even when build and run happen on the same
+# machine — the hypervisor can mask features off via XCR0 that the compiler's
+# native detection still sees in CPUID, so the binary faults on instructions
+# the CPU advertised but will not execute.
+#
+# Off by default so distributed binaries are portable. Turn it on for local or
+# self-hosted production builds, where the target CPU is the build CPU:
+#   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_NATIVE_ARCH=ON
+option(ENABLE_NATIVE_ARCH "Optimise for the build machine's CPU (-march=native)" OFF)
+
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG)
 endif()
@@ -138,9 +154,12 @@ else()
     add_compile_options(
         -Wall -Wextra -Wpedantic
         $<$<CONFIG:Release>:-O3>
-        $<$<CONFIG:Release>:-march=native>
         $<$<CONFIG:Release>:-flto>
     )
+    if(ENABLE_NATIVE_ARCH)
+        message(STATUS "Building for the local CPU (-march=native) - binary is NOT portable")
+        add_compile_options($<$<CONFIG:Release>:-march=native>)
+    endif()
 endif()
 
 if(ENABLE_ASAN)
@@ -160,8 +179,9 @@ if(ENABLE_ASAN)
       set(ENABLE_ASAN OFF CACHE BOOL "ASan disabled - compiler too old" FORCE)
     endif()
   else()
-    # GCC/Clang AddressSanitizer
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -flto")
+    # GCC/Clang AddressSanitizer.
+    # Release flags stay portable here too; see ENABLE_NATIVE_ARCH above.
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto")
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined -fno-omit-frame-pointer")
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-fsanitize=address,undefined")
   endif()
@@ -181,7 +201,7 @@ endif()
 # Convenience target for local use: `cmake --build build --target docs`.
 # CI does not use it — .github/workflows/documentation.yml runs doxygen
 # directly so the docs build does not depend on the full vcpkg/FetchContent
-# configure. Output lands in build/doxygen/html (see Doxyfile.in).
+# configure. Output lands in doxygen-out/html (see Doxyfile.in).
 find_package(Doxygen QUIET)
 if(DOXYGEN_FOUND)
     configure_file(
