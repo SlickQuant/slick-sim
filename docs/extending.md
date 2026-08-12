@@ -8,7 +8,7 @@ Concretely you need five pieces: a `Venue` enum entry, an `Exchange` subclass, a
 
 ## 1. Register the venue
 
-[`src/common/types.hpp`](https://github.com/SlickTech/exchange_simulator/blob/main/src/common/types.hpp):
+[`src/common/types.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp):
 
 ```cpp
 enum Venue : uint8_t {
@@ -187,7 +187,7 @@ described below. Nothing downstream needs to know the data is not live. None exi
 ## 4. Implement the order gateway
 
 For an HTTP/WebSocket venue, subclass
-[`RestWsOrderGateway`](https://github.com/SlickTech/exchange_simulator/blob/main/src/order_gateway/rest_ws_order_gateway.hpp),
+[`RestWsOrderGateway`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/rest_ws_order_gateway.hpp),
 which handles the uWS thread, listen socket, and clean shutdown. You implement two methods:
 
 ```cpp
@@ -224,7 +224,7 @@ For the response side you have two options:
 ## 5. Implement the market-data publisher
 
 Subclass
-[`WebsocketMarketDataPublisher`](https://github.com/SlickTech/exchange_simulator/blob/main/src/market_data_publisher/ws_md_publisher.hpp)
+[`WebsocketMarketDataPublisher`](https://github.com/SlickQuant/slick-sim/blob/main/src/market_data_publisher/ws_md_publisher.hpp)
 and implement three methods:
 
 ```cpp

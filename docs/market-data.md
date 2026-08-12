@@ -22,7 +22,7 @@ flowchart LR
 ## Feeds
 
 `MDFeed`
-([`md_feed.hpp`](https://github.com/SlickTech/exchange_simulator/blob/main/src/md_feed/md_feed.hpp))
+([`md_feed.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/md_feed.hpp))
 is a two-method interface — `start()` and `stop()`. Two implementations exist, both live; a
 historical replay feed would slot in at the same interface but
 [does not exist yet](known-gaps.md#the-historical-data-feed-does-not-exist).

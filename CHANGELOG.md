@@ -32,7 +32,7 @@
 ## Added
 
 - Documentation site published to GitHub Pages at
-  <https://slicktech.github.io/exchange_simulator/> — MkDocs Material for the narrative
+  <https://slickquant.github.io/slick-sim/> — MkDocs Material for the narrative
   documentation at the root, Doxygen for the C++ API reference at `/api`.
 - Eleven documentation pages under `docs/`, in two tracks:
   - **Internals** — architecture and threading model, order lifecycle, matching engine, order book,

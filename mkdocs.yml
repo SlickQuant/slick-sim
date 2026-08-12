@@ -1,8 +1,8 @@
 site_name: Slick Sim
 site_description: Exchange simulator that shadows real venues for risk-free strategy testing
-site_url: https://slicktech.github.io/exchange_simulator/
-repo_url: https://github.com/SlickTech/exchange_simulator
-repo_name: SlickTech/exchange_simulator
+site_url: https://slickquant.github.io/slick-sim/
+repo_url: https://github.com/SlickQuant/slick-sim
+repo_name: SlickQuant/slick-sim
 edit_uri: edit/main/docs/
 copyright: MIT licensed
 
@@ -55,7 +55,7 @@ nav:
   - Known gaps: known-gaps.md
   # Absolute URL: the Doxygen output is copied into site/api/ after the MkDocs
   # build, so it does not exist under docs_dir and a relative path would warn.
-  - API Reference: https://slicktech.github.io/exchange_simulator/api/
+  - API Reference: https://slickquant.github.io/slick-sim/api/
 
 markdown_extensions:
   - abbr
@@ -96,4 +96,4 @@ validation:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/SlickTech/exchange_simulator
+      link: https://github.com/SlickQuant/slick-sim

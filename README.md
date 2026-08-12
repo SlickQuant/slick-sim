@@ -2,24 +2,24 @@
 
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://en.cppreference.com/w/cpp/23)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI](https://github.com/SlickTech/exchange_simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/SlickTech/exchange_simulator/actions/workflows/ci.yml)
-[![Documentation](https://github.com/SlickTech/exchange_simulator/actions/workflows/documentation.yml/badge.svg)](https://slicktech.github.io/exchange_simulator/)
-[![GitHub release](https://img.shields.io/github/v/release/SlickTech/exchange_simulator)](https://github.com/SlickTech/exchange_simulator/releases)
+[![CI](https://github.com/SlickQuant/slick-sim/actions/workflows/ci.yml/badge.svg)](https://github.com/SlickQuant/slick-sim/actions/workflows/ci.yml)
+[![Documentation](https://github.com/SlickQuant/slick-sim/actions/workflows/documentation.yml/badge.svg)](https://slickquant.github.io/slick-sim/)
+[![GitHub release](https://img.shields.io/github/v/release/SlickQuant/slick-sim)](https://github.com/SlickQuant/slick-sim/releases)
 
 A exchange simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and serves that exchange's own APIs on local ports — the same **order-entry** endpoints you would send orders to, and the same **market-data** channels you would subscribe to for prices. A trading client connects and trades against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
 
-The live feed is optional. Configure one and your orders compete against real quoted liquidity; omit it and `slick-sim` runs as a conventional exchange simulator, with books driven purely by the orders clients send. A historical-replay feed — matching against recorded market data — is planned but not yet implemented. See [Operating modes](https://slicktech.github.io/exchange_simulator/architecture/#operating-modes).
+The live feed is optional. Configure one and your orders compete against real quoted liquidity; omit it and `slick-sim` runs as a conventional exchange simulator, with books driven purely by the orders clients send. A historical-replay feed — matching against recorded market data — is planned but not yet implemented. See [Operating modes](https://slickquant.github.io/slick-sim/architecture/#operating-modes).
 
 Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.1.0`).
 
 ## Documentation
 
-Full documentation is published at **<https://slicktech.github.io/exchange_simulator/>**:
+Full documentation is published at **<https://slickquant.github.io/slick-sim/>**:
 
-- **Internals** — [architecture and threading model](https://slicktech.github.io/exchange_simulator/architecture/), [order lifecycle](https://slicktech.github.io/exchange_simulator/order-lifecycle/), [matching engine](https://slicktech.github.io/exchange_simulator/matching-engine/), [order book](https://slicktech.github.io/exchange_simulator/order-book/), [market data](https://slicktech.github.io/exchange_simulator/market-data/), [adding an exchange](https://slicktech.github.io/exchange_simulator/extending/)
-- **Integration** — [configuration reference](https://slicktech.github.io/exchange_simulator/configuration/), [Coinbase](https://slicktech.github.io/exchange_simulator/integration-coinbase/), [Hyperliquid](https://slicktech.github.io/exchange_simulator/integration-hyperliquid/)
-- **[Known gaps](https://slicktech.github.io/exchange_simulator/known-gaps/)** — unimplemented and half-wired code paths, worth reading before you debug anything surprising
-- **[API reference](https://slicktech.github.io/exchange_simulator/api/)** — Doxygen
+- **Internals** — [architecture and threading model](https://slickquant.github.io/slick-sim/architecture/), [order lifecycle](https://slickquant.github.io/slick-sim/order-lifecycle/), [matching engine](https://slickquant.github.io/slick-sim/matching-engine/), [order book](https://slickquant.github.io/slick-sim/order-book/), [market data](https://slickquant.github.io/slick-sim/market-data/), [adding an exchange](https://slickquant.github.io/slick-sim/extending/)
+- **Integration** — [configuration reference](https://slickquant.github.io/slick-sim/configuration/), [Coinbase](https://slickquant.github.io/slick-sim/integration-coinbase/), [Hyperliquid](https://slickquant.github.io/slick-sim/integration-hyperliquid/)
+- **[Known gaps](https://slickquant.github.io/slick-sim/known-gaps/)** — unimplemented and half-wired code paths, worth reading before you debug anything surprising
+- **[API reference](https://slickquant.github.io/slick-sim/api/)** — Doxygen
 
 The sources live in [`docs/`](docs/) and render on GitHub too.
 
@@ -175,7 +175,7 @@ cmake -S . -B build -DENABLE_NATIVE_ARCH=ON               # -march=native in Rel
   - `md_publisher` — the port `slick-sim` serves its own venue-formatted market data WebSocket on. Hyperliquid also takes `upstream_base_url` (note: not `base_url`) for its `/info` proxy.
   - Coinbase additionally sets `request_queue_size` / `response_queue_size` / `md_queue_size`, the capacities of its internal lock-free queues.
 
-See the [configuration reference](https://slicktech.github.io/exchange_simulator/configuration/) for every key the code actually reads, with defaults.
+See the [configuration reference](https://slickquant.github.io/slick-sim/configuration/) for every key the code actually reads, with defaults.
 
 > **Note:** if no config path is given on the command line, `slick-sim` looks for `slick-sim.json` in the current directory — which does not match the committed sample's name or location (`config/slick_sim.json`). Always pass the path explicitly.
 
@@ -188,7 +188,7 @@ slick-sim config/slick_sim.json
 
 (The built binary's exact path depends on your CMake generator/config, e.g. `build/src/slick-sim` or `build/src/Debug/slick-sim.exe`.)
 
-> **Note:** any venue key other than `coinbase`/`hyperliquid` builds a generic `Exchange` that binds no ports and processes at most one request. The sample config's `cme` block is `"enabled": false` for that reason, and is skipped at startup with a warning. See [Known gaps](https://slicktech.github.io/exchange_simulator/known-gaps/).
+> **Note:** any venue key other than `coinbase`/`hyperliquid` builds a generic `Exchange` that binds no ports and processes at most one request. The sample config's `cme` block is `"enabled": false` for that reason, and is skipped at startup with a warning. See [Known gaps](https://slickquant.github.io/slick-sim/known-gaps/).
 
 Press `Ctrl+C` to stop — `slick-sim` catches `SIGINT` and shuts every enabled exchange down gracefully before exiting.
 

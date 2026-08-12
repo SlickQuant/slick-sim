@@ -200,7 +200,7 @@ venues.
 ## Fixed-point arithmetic
 
 Prices and quantities are `int_fast64_t` scaled by `DOUBLE_MULTIPLIER = 1e8`
-([`types.hpp`](https://github.com/SlickTech/exchange_simulator/blob/main/src/common/types.hpp)):
+([`types.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp)):
 
 ```cpp
 using price_t = int_fast64_t;
@@ -214,7 +214,7 @@ to_price_double(…)    // → back to double
 
 Eight decimal places suits crypto; a price of 123.456 is exact, and quantities down to one satoshi
 are representable. All comparisons in the matching loop are integer comparisons via
-[`utils::isPriceBetterOrEqual`](https://github.com/SlickTech/exchange_simulator/blob/main/src/utils/price.hpp),
+[`utils::isPriceBetterOrEqual`](https://github.com/SlickQuant/slick-sim/blob/main/src/utils/price.hpp),
 which flips direction on side.
 
 `NULL_PRICE` is `INT64_MAX`. Because it is also a valid `price_t`, code must test for it explicitly
