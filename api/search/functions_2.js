@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['can_5fhandle_0',['can_handle',['../classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#ad060ec0a6f94894fe1874afd82637119',1,'slick::sim::order_gateway::JsonParser::can_handle()'],['../classslick_1_1sim_1_1order__gateway_1_1MessageParser.html#a813b94945b8760185e02a266f2a19a34',1,'slick::sim::order_gateway::MessageParser::can_handle()'],['../classslick_1_1sim_1_1order__gateway_1_1SbeParser.html#aa879812c11add743627e97ea87e7f9fa',1,'slick::sim::order_gateway::SbeParser::can_handle()'],['../classslick_1_1sim_1_1order__gateway_1_1FixParser.html#ac6ef2e07dab8664cbc86ff920e18f2e6',1,'slick::sim::order_gateway::FixParser::can_handle()']]],
+  ['cancelorder_1',['cancelOrder',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a18c683bc33d1d60c8b19568c9299bdbc',1,'slick::sim::exch::Symbol']]],
+  ['canfillcompletely_2',['canFillCompletely',['../fifo__matching__engine_8cpp.html#a7356aa1f35ac816f10466f9723949019',1,'fifo_matching_engine.cpp']]],
+  ['check_5fheartbeats_3',['check_heartbeats',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a59af07dc025ba1bbdd3df5dd454e4053',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]],
+  ['clearmdorders_4',['clearMDOrders',['../classslick_1_1sim_1_1OrderBook.html#a278c6fc41358cbf90e827ebc976c7cc3',1,'slick::sim::OrderBook']]],
+  ['coinbaseexchange_5',['CoinbaseExchange',['../classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#acf07610e31493d2c0b5f8e0009e6d88b',1,'slick::sim::exch::CoinbaseExchange']]],
+  ['coinbaselivewsfeed_6',['CoinbaseLiveWSFeed',['../classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#ac5907475081ed81417c2e401880ce1c6',1,'slick::sim::md_feed::CoinbaseLiveWSFeed']]],
+  ['coinbasepublisher_7',['CoinbasePublisher',['../classslick_1_1sim_1_1md__publisher_1_1CoinbasePublisher.html#aa3781b1dfd3c939ea41e856cd0dce746',1,'slick::sim::md_publisher::CoinbasePublisher']]],
+  ['coinbaserestordergateway_8',['CoinbaseRestOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a',1,'slick::sim::order_gateway::CoinbaseRestOrderGateway']]],
+  ['coinbasewebsocketordergateway_9',['CoinbaseWebsocketOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway.html#aeb1ef34395b100524bafb4d93ee1309d',1,'slick::sim::order_gateway::CoinbaseWebsocketOrderGateway']]],
+  ['compute_5fl2_5fdiff_10',['compute_l2_diff',['../namespaceslick_1_1sim_1_1md__publisher.html#ac2064c7329f8e8b126c07a4119b6c200',1,'slick::sim::md_publisher']]],
+  ['create_5fparser_11',['create_parser',['../classslick_1_1sim_1_1order__gateway_1_1MessageParserFactory.html#a658d61acf4b3250b13c28fe89017ce2a',1,'slick::sim::order_gateway::MessageParserFactory']]],
+  ['create_5fparser_5ffor_5fclient_12',['create_parser_for_client',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a3c0cd7d4c64cb5804873806304c82eeb',1,'slick::sim::order_gateway::TcpOrderGateway']]],
+  ['create_5fparser_5ffrom_5fdata_13',['create_parser_from_data',['../classslick_1_1sim_1_1order__gateway_1_1MessageParserFactory.html#a8331241d1549155ad4d360f59a65104b',1,'slick::sim::order_gateway::MessageParserFactory']]],
+  ['createorderbook_14',['createOrderBook',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a2269cb792fef5cd97fb4d2f704981146',1,'slick::sim::exch::Symbol']]],
+  ['createsymbol_15',['createSymbol',['../classslick_1_1sim_1_1SymbolManager.html#a2ab024153a88318b3704d98ca489bf50',1,'slick::sim::SymbolManager']]],
+  ['cum_5fqty_5fdouble_16',['cum_qty_double',['../structslick_1_1sim_1_1Order.html#aec5df094af69fd9e546bfa3d9025d06c',1,'slick::sim::Order']]]
+];

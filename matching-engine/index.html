@@ -1,0 +1,1443 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Exchange simulator that shadows real venues for risk-free strategy testing">
+      
+      
+      
+        <link rel="canonical" href="https://slickquant.github.io/slick-sim/matching-engine/">
+      
+      
+        <link rel="prev" href="../order-lifecycle/">
+      
+      
+        <link rel="next" href="../order-book/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Matching engine - Slick Sim</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#matching-engine" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Slick Sim" class="md-header__button md-logo" aria-label="Slick Sim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Slick Sim
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Matching engine
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SlickQuant/slick-sim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SlickQuant/slick-sim
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Slick Sim" class="md-nav__button md-logo" aria-label="Slick Sim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Slick Sim
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SlickQuant/slick-sim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SlickQuant/slick-sim
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internals
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Internals
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../order-lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Order lifecycle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matching engine
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matching engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#two-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two entry points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-client-matching-path-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The client matching path, step by step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The client matching path, step by step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-0-ack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0 — ack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-fill-or-kill-pre-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — fill-or-kill pre-check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-apply-a-pending-replace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — apply a pending replace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-the-matching-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — the matching loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-immediate-or-cancel-remainder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — immediate-or-cancel remainder
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-match-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-match prevention
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modifies-re-enter-the-matching-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modifies re-enter the matching loop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trade-summaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trade summaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fixed-point-arithmetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed-point arithmetic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-engine-does-not-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the engine does not do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../order-book/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Order book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Market data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding an exchange
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-coinbase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coinbase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-hyperliquid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hyperliquid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../known-gaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Known gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://slickquant.github.io/slick-sim/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#two-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two entry points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-client-matching-path-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The client matching path, step by step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The client matching path, step by step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-0-ack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0 — ack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-fill-or-kill-pre-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — fill-or-kill pre-check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-apply-a-pending-replace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — apply a pending replace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-the-matching-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — the matching loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-immediate-or-cancel-remainder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — immediate-or-cancel remainder
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-match-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-match prevention
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modifies-re-enter-the-matching-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modifies re-enter the matching loop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trade-summaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trade summaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fixed-point-arithmetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed-point arithmetic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-engine-does-not-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the engine does not do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/SlickQuant/slick-sim/edit/main/docs/matching-engine.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="matching-engine">Matching engine<a class="headerlink" href="#matching-engine" title="Permanent link">&para;</a></h1>
+<p><code>FifoMatchingEngine</code> implements price/time priority matching. It is the only engine that exists —
+<code>MatchingEngine::Type::ProRata</code> is declared but
+<a href="../known-gaps/#pro-rata-matching-does-not-exist">unimplemented</a>.</p>
+<p>One engine instance is shared by every symbol on a venue; it holds no per-symbol state, taking the
+<code>OrderBook</code> as a parameter on each call. Per-symbol configuration (currently just the SMP mode) is
+passed in from <code>Symbol</code>.</p>
+<h2 id="two-entry-points">Two entry points<a class="headerlink" href="#two-entry-points" title="Permanent link">&para;</a></h2>
+<p>The interface has two <code>match</code> overloads, and they exist for genuinely different reasons.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// 1. A client order arrives.</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">OrdRejectReason</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TradeSummaryInfo</span><span class="o">&gt;&gt;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">match</span><span class="p">(</span><span class="n">Order</span><span class="o">*</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">order_price</span><span class="p">,</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">order_qty</span><span class="p">,</span><span class="w"> </span><span class="n">OrderBook</span><span class="o">&amp;</span><span class="w"> </span><span class="n">book</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="kt">time_t</span><span class="w"> </span><span class="n">request_time</span><span class="p">,</span><span class="w"> </span><span class="kt">time_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">seq_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="n">SelfMatchPreventionMode</span><span class="w"> </span><span class="n">smp_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SelfMatchPreventionMode</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1">// 2. Phantom liquidity arrives from the market-data feed.</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TradeSummaryInfo</span><span class="o">&gt;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">match</span><span class="p">(</span><span class="n">Side</span><span class="w"> </span><span class="n">side</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">order_id</span><span class="p">,</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">,</span><span class="w"> </span><span class="n">qty_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">qty</span><span class="p">,</span><span class="w"> </span><span class="n">OrderBook</span><span class="o">&amp;</span><span class="w"> </span><span class="n">book</span><span class="p">,</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">      </span><span class="kt">time_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">seq_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>Overload 1</strong> is the client path, called from <code>Symbol::addOrder</code> and <code>Symbol::modifyOrder</code>. It owns
+a real <code>Order</code>, publishes acks and execution reports, and honours time-in-force and SMP.</p>
+<p><strong>Overload 2</strong> is the market-data path, called whenever the feed introduces a new price level. Before
+a phantom order can rest at a price, the engine checks whether that price crosses any <em>simulator</em>
+order resting on the opposite side — if the real market just quoted 100.00 bid and you have a resting
+offer at 99.99, you would have been filled on the real venue, so you get filled here. It takes <code>qty</code>
+<strong>by reference</strong> and decrements it: whatever is left after sweeping your orders is what actually rests
+as phantom liquidity. No ack is published (there is no client order to ack), and fully-filled
+simulator orders are deleted from the book inside the loop.</p>
+<p>Both dispatch on side into a shared <code>template&lt;Side SIDE&gt;</code> implementation, where <code>SIDE</code> is the
+<strong>resting</strong> side being swept — so the aggressor is <code>opposite_side&lt;SIDE&gt;()</code>. A buy order matches
+against <code>match&lt;Side::SELL&gt;</code>.</p>
+<h2 id="the-client-matching-path-step-by-step">The client matching path, step by step<a class="headerlink" href="#the-client-matching-path-step-by-step" title="Permanent link">&para;</a></h2>
+<h3 id="step-0-ack">Step 0 — ack<a class="headerlink" href="#step-0-ack" title="Permanent link">&para;</a></h3>
+<p>If <code>order-&gt;status == PENDING_NEW</code>, <code>publishOrderAck</code> fires immediately, before any matching. The
+client's <code>NEW</code> execution report therefore always precedes its fills.</p>
+<h3 id="step-1-fill-or-kill-pre-check">Step 1 — fill-or-kill pre-check<a class="headerlink" href="#step-1-fill-or-kill-pre-check" title="Permanent link">&para;</a></h3>
+<p>For <code>TimeInForce::FILL_OR_KILL</code>, <code>canFillCompletely&lt;SIDE&gt;()</code> walks the opposite side of the book
+accumulating available quantity until it either covers the order or hits a price level worse than the
+limit. The scan is SMP-aware: under <code>CANCEL_NEWEST</code> any self-match aborts the scan and returns false;
+under <code>CANCEL_RESTING</code> self-matched orders are skipped, because they would be cancelled rather than
+filled.</p>
+<p>If the scan fails, <code>publishOrderCancel</code> fires and the engine returns <code>FOK_CANNOT_FILL</code> with no trades.</p>
+<h3 id="step-2-apply-a-pending-replace">Step 2 — apply a pending replace<a class="headerlink" href="#step-2-apply-a-pending-replace" title="Permanent link">&para;</a></h3>
+<p>If <code>order-&gt;status == PENDING_REPLACE</code>, the new quantity and price are applied before matching:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">leaves_quantity</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">order_qty</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">quantity</span><span class="p">;</span><span class="w">  </span><span class="c1">// restore any earlier reduction</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">order</span><span class="o">-&gt;</span><span class="n">leaves_quantity</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">leaves_quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order_qty</span><span class="p">;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">price</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">order_price</span><span class="p">;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">publishOrderModify</span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">order_price</span><span class="p">,</span><span class="w"> </span><span class="n">order_qty</span><span class="p">,</span><span class="w"> </span><span class="n">request_time</span><span class="p">);</span>
+</code></pre></div>
+<p>The delta arithmetic preserves fills: an order for 10 that has filled 4 and is amended to 7 ends up
+with <code>leaves_quantity == 3</code>. If the amendment drives leaves to zero, the order is cancelled and the
+engine returns immediately.</p>
+<h3 id="step-3-the-matching-loop">Step 3 — the matching loop<a class="headerlink" href="#step-3-the-matching-loop" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">order_qty</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">best_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">book</span><span class="p">.</span><span class="n">getBestLevel</span><span class="o">&lt;</span><span class="n">SIDE</span><span class="o">&gt;</span><span class="p">();</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">best_level</span><span class="w"> </span><span class="o">||</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="p">(</span><span class="n">order_price</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">NULL_PRICE</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">isPriceBetterOrEqual</span><span class="o">&lt;</span><span class="n">SIDE</span><span class="o">&gt;</span><span class="p">(</span><span class="n">best_level</span><span class="o">-&gt;</span><span class="n">price</span><span class="p">,</span><span class="w"> </span><span class="n">order_price</span><span class="p">)))</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span><span class="k">break</span><span class="p">;</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">book_order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">best_level</span><span class="o">-&gt;</span><span class="n">orders</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span><span class="w">   </span><span class="c1">// FIFO: front of the level</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="c1">// … SMP check …</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="n">qty_t</span><span class="w"> </span><span class="n">trade_qty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">order_qty</span><span class="p">,</span><span class="w"> </span><span class="n">book_order</span><span class="p">.</span><span class="n">quantity</span><span class="p">);</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="c1">// … update aggressor fields, publishOrderExecution(order) …</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="n">book</span><span class="p">.</span><span class="n">executeOrder</span><span class="p">(</span><span class="n">book_order_id</span><span class="p">,</span><span class="w"> </span><span class="n">trade_qty</span><span class="p">,</span><span class="w"> </span><span class="n">event_time</span><span class="p">,</span><span class="w"> </span><span class="n">seq_num</span><span class="p">,</span><span class="w"> </span><span class="n">order_qty</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="c1">// … accumulate trade summary …</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">}</span>
+</code></pre></div>
+<p>Time priority comes from always taking <code>orders.begin()</code> — the front of the price level, ordered by
+the <code>priority</code> counter. Price priority comes from <code>getBestLevel&lt;SIDE&gt;()</code> walking levels best-first.</p>
+<p><code>NULL_PRICE</code> doubles as the market-order sentinel: when <code>order_price == NULL_PRICE</code> the price test is
+skipped entirely and the order sweeps until filled or the book is empty.</p>
+<p>The <code>is_last_in_batch</code> argument to <code>executeOrder</code> is <code>order_qty == 0</code>, so observers see the batch
+close on the final fill.</p>
+<h3 id="step-4-immediate-or-cancel-remainder">Step 4 — immediate-or-cancel remainder<a class="headerlink" href="#step-4-immediate-or-cancel-remainder" title="Permanent link">&para;</a></h3>
+<p>After the loop, if the TIF is <code>IMMEDIATE_OR_CANCEL</code> and quantity remains, <code>publishOrderCancel</code> fires.
+The order is not removed from anything here — it was never added to the book. <code>Symbol::addOrder</code>
+handles that:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">bool</span><span class="w"> </span><span class="n">should_rest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">tif</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">DAY</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">tif</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">GOOD_TILL_CANCEL</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">tif</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">GOOD_TILL_DATE</span><span class="p">);</span>
+</code></pre></div>
+<p>Only those three rest. IOC and FOK remainders are dropped, and — because the test is a positive
+allow-list — so are <code>AT_THE_OPENING</code> and <code>GOOD_TILL_CROSSING</code>.</p>
+<p>Finally, <code>Symbol::addOrder</code> returns the <code>Order</code> to the object pool if <code>leaves_quantity == 0</code>.</p>
+<h2 id="self-match-prevention">Self-match prevention<a class="headerlink" href="#self-match-prevention" title="Permanent link">&para;</a></h2>
+<p>SMP compares <code>Order::client_id</code> between the incoming order and each resting order:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">incoming</span><span class="o">-&gt;</span><span class="n">client_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">book_order</span><span class="o">-&gt;</span><span class="n">client_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">return</span><span class="w"> </span><span class="n">incoming</span><span class="o">-&gt;</span><span class="n">client_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">book_order</span><span class="o">-&gt;</span><span class="n">client_id</span><span class="p">;</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behaviour on a self-match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NONE</code></td>
+<td>Allow the match</td>
+</tr>
+<tr>
+<td><code>CANCEL_RESTING</code></td>
+<td>Delete the resting order and continue matching against the next one</td>
+</tr>
+<tr>
+<td><code>CANCEL_NEWEST</code></td>
+<td>Cancel the incoming order, return <code>OrdRejectReason::SMP</code>, no trades</td>
+</tr>
+</tbody>
+</table>
+<p>The mode is per-<code>Symbol</code> (<code>smp_mode_</code>), passed into <code>match()</code> by <code>Symbol::addOrder</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">SMP is inert in production</p>
+<p><code>Order::client_id</code> defaults to <strong>-1</strong> and nothing outside the unit tests ever assigns it, so
+<code>isSelfMatch</code> always returns false on a live run. <code>Symbol::smp_mode_</code> is likewise initialised to
+<code>NONE</code> and has no configuration key. The feature is fully implemented and tested
+(<code>tests/unit/matching_engine/test_matching_engine_smp.cpp</code>) but unreachable from a running
+simulator.</p>
+</div>
+<p>Note also that <code>Symbol::modifyOrder</code> calls <code>match()</code> <strong>without</strong> an SMP argument, so amendments always
+use the <code>NONE</code> default even on a symbol configured otherwise.</p>
+<h2 id="modifies-re-enter-the-matching-loop">Modifies re-enter the matching loop<a class="headerlink" href="#modifies-re-enter-the-matching-loop" title="Permanent link">&para;</a></h2>
+<p><code>Symbol::modifyOrder</code> does not adjust the book in place and stop. It calls the full <code>match()</code> path
+with the new price and quantity, which means an amendment that makes the order marketable trades
+immediately. Only afterwards does it call <code>order_book_-&gt;modifyOrder(...)</code> to reposition whatever is
+left.</p>
+<p>Queue priority is handled by the book, not the engine:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// OrderBook::modifyOrder</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">new_price</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">price</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_price</span><span class="p">;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">priority</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nextOrderPriority</span><span class="p">();</span><span class="w">   </span><span class="c1">// price change ⇒ lose queue position</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">}</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_qty</span><span class="p">;</span>
+</code></pre></div>
+<p>A pure quantity change keeps its place in the queue; a price change goes to the back of the new
+level. That matches real venue behaviour. Note the asymmetry: quantity <em>increases</em> also keep
+priority, which most real venues would not allow.</p>
+<h2 id="trade-summaries">Trade summaries<a class="headerlink" href="#trade-summaries" title="Permanent link">&para;</a></h2>
+<p>Each <code>match()</code> call returns <code>std::vector&lt;TradeSummaryInfo&gt;</code> — the public print of what happened, which
+the exchange forwards to <code>md_queue_</code> via <code>publishTradeSummary</code>.</p>
+<p>Summaries are aggregated <strong>per price level</strong>. While consecutive fills happen at the same price the
+engine merges them into the current summary:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">last_fill_price</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">price</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="c1">// new summary: num_orders = 2, Trades = [aggressor, resting]</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="n">last_summary</span><span class="p">.</span><span class="n">num_orders</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="n">last_summary</span><span class="p">.</span><span class="n">qty</span><span class="w">        </span><span class="o">+=</span><span class="w"> </span><span class="n">trade_qty</span><span class="p">;</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="n">last_summary</span><span class="p">.</span><span class="n">Trades</span><span class="p">.</span><span class="n">front</span><span class="p">().</span><span class="n">qty</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">trade_qty</span><span class="p">;</span><span class="w">   </span><span class="c1">// grow the aggressor&#39;s leg</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="n">last_summary</span><span class="p">.</span><span class="n">Trades</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">Trade</span><span class="p">{</span><span class="n">book_order_id</span><span class="p">,</span><span class="w"> </span><span class="n">trade_qty</span><span class="p">});</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">}</span>
+</code></pre></div>
+<p>So <code>Trades[0]</code> is always the aggressor with its running total, and <code>Trades[1..]</code> are the resting
+orders it hit. <code>num_orders</code> counts participants, not trades — it starts at 2 and increments by one per
+additional resting order.</p>
+<p><code>trade_id</code> comes from <code>MatchingEngine::nextTradeId()</code>, a process-global atomic shared across all
+venues.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>num_orders</code> is used by <code>Exchange::publishTradeSummary</code> to size the queue reservation
+(<code>sizeof(TradeSummary) + num_orders * sizeof(Trade)</code>), while the copy loop iterates
+<code>trade_summary.Trades.size()</code>. The two agree because <code>num_orders</code> is incremented exactly once per
+<code>Trades</code> entry after the initial pair — but they are independent counters, so any future change to
+one must update the other.</p>
+</div>
+<h2 id="fixed-point-arithmetic">Fixed-point arithmetic<a class="headerlink" href="#fixed-point-arithmetic" title="Permanent link">&para;</a></h2>
+<p>Prices and quantities are <code>int_fast64_t</code> scaled by <code>DOUBLE_MULTIPLIER = 1e8</code>
+(<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp"><code>types.hpp</code></a>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">using</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">int_fast64_t</span><span class="p">;</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">using</span><span class="w"> </span><span class="n">qty_t</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="kt">int_fast64_t</span><span class="p">;</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">constexpr</span><span class="w"> </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">DOUBLE_MULTIPLIER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1e8</span><span class="p">);</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="k">constexpr</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">NULL_PRICE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">price_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="n">to_price_t</span><span class="p">(</span><span class="mf">1.23</span><span class="p">)</span><span class="w">      </span><span class="c1">// → 123000000</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="n">to_price_double</span><span class="p">(</span><span class="err">…</span><span class="p">)</span><span class="w">    </span><span class="c1">// → back to double</span>
+</code></pre></div>
+<p>Eight decimal places suits crypto; a price of 123.456 is exact, and quantities down to one satoshi
+are representable. All comparisons in the matching loop are integer comparisons via
+<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/utils/price.hpp"><code>utils::isPriceBetterOrEqual</code></a>,
+which flips direction on side.</p>
+<p><code>NULL_PRICE</code> is <code>INT64_MAX</code>. Because it is also a valid <code>price_t</code>, code must test for it explicitly
+before doing arithmetic — the matching loop does, but be careful when adding new paths.</p>
+<div class="admonition warning">
+<p class="admonition-title">Average fill price drifts</p>
+<p><code>avg_fill_price</code> is recomputed by converting to <code>double</code>, doing the weighted average, and
+converting back, on <em>every</em> fill — in both the engine and <code>OrderBook::executeOrder</code>. Errors
+compound across partial fills. See
+<a href="../known-gaps/#avg_fill_price-is-recomputed-in-floating-point-on-every-fill">Known gaps</a>.</p>
+</div>
+<h2 id="what-the-engine-does-not-do">What the engine does not do<a class="headerlink" href="#what-the-engine-does-not-do" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><code>post_only</code> is not enforced.</strong> The flag is parsed from Coinbase's <code>limit_limit_gtc.post_only</code>,
+  stored on the <code>Order</code>, and echoed in execution reports, but the matching loop never checks it. A
+  post-only order that crosses will trade.</li>
+<li><strong>Stop and trigger orders do not exist.</strong> <code>AddOrderMessage</code> carries <code>take_profit_price</code> and
+  <code>stop_loss_price</code>; both gateways always set them to <code>NULL_PRICE</code>, and nothing reads them. The
+  Hyperliquid gateway explicitly downgrades <code>trigger</code> orders to plain limits.</li>
+<li><strong><code>GOOD_TILL_DATE</code> never expires.</strong> <code>AddOrderMessage::expire_time</code> is always written as 0 and never
+  evaluated.</li>
+<li><strong>There is no market state.</strong> No open/close/halt, so <code>MARKET_CLOSED</code> and <code>MARKET_HALTED</code> are
+  unreachable.</li>
+<li><strong>There are no fees in the engine.</strong> <code>Order::fee</code> stays 0; the Coinbase WS gateway computes a
+  display-only fee from a <code>fee_rate_</code> when building execution reports.</li>
+</ul>
+<h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
+<p>The engine is the best-covered part of the codebase:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/unit/matching_engine/test_fifo_matching_engine.cpp</code></td>
+<td>Core price/time priority, partial fills</td>
+</tr>
+<tr>
+<td><code>tests/unit/matching_engine/test_matching_engine_tif.cpp</code></td>
+<td>DAY/GTC resting, IOC remainder cancel, FOK pre-check</td>
+</tr>
+<tr>
+<td><code>tests/unit/matching_engine/test_matching_engine_smp.cpp</code></td>
+<td>All three SMP modes, including the FOK interaction</td>
+</tr>
+<tr>
+<td><code>tests/unit/matching_engine/test_coinbase_market_data_matching.cpp</code></td>
+<td>The overload-2 market-data path</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      MIT licensed
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/SlickQuant/slick-sim" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "toc.follow", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

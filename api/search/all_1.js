@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['accepted_5ffor_5fbidding_0',['ACCEPTED_FOR_BIDDING',['../namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a187a76a876fd2764d4cecc763068561d',1,'slick::sim']]],
+  ['action_5fchange_1',['ACTION_CHANGE',['../namespaceslick_1_1sim.html#ab1e934b8e03a21e64365d200420af2b7af7b35e193279e313db4f3da6a6b7b01c',1,'slick::sim']]],
+  ['action_5fdelete_2',['ACTION_DELETE',['../namespaceslick_1_1sim.html#ab1e934b8e03a21e64365d200420af2b7a2316531a3eeebfd896e6d881c5fd195a',1,'slick::sim']]],
+  ['action_5fnew_3',['ACTION_NEW',['../namespaceslick_1_1sim.html#ab1e934b8e03a21e64365d200420af2b7aaefbb6e53def2794848582ea6aeee4f5',1,'slick::sim']]],
+  ['active_4',['active',['../structslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData_1_1SubInfo.html#a6a2ed3676db073ce81aaa24f86a05472',1,'slick::sim::md_publisher::HyperliquidPerSocketData::SubInfo']]],
+  ['active_5fsubscriptions_5',['active_subscriptions',['../structslick_1_1sim_1_1md__publisher_1_1PerSocketData_1_1SubscriptionInfo.html#a1ebb01cf1d67bce75b5f8aef78d29634',1,'slick::sim::md_publisher::PerSocketData::SubscriptionInfo']]],
+  ['add_5forder_6',['add_order',['../structslick_1_1sim_1_1Request.html#a395e53ceda7723596ef117f74b0fc0d0',1,'slick::sim::Request']]],
+  ['addbookorder_7',['addbookorder',['../classslick_1_1sim_1_1OrderBook.html#a50248c0f052f19783f95b6950fd8e7c2',1,'slick::sim::OrderBook::addBookOrder()'],['../classslick_1_1sim_1_1OrderBookImpl.html#a752c0340d7e77df51dd127babb570c9a',1,'slick::sim::OrderBookImpl::addBookOrder()']]],
+  ['addcoin_8',['addCoin',['../classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html#a9a1fb074d6d5b74da58357c9dc5cf5b8',1,'slick::sim::md_feed::HyperliquidLiveWSFeed']]],
+  ['addorder_9',['addorder',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a29447c4edabb1a8a9eb70e8dc4ef11e7',1,'slick::sim::exch::Symbol::addOrder()'],['../classslick_1_1sim_1_1OrderBook.html#afa725e6f1d2d5cbbbcef399572542520',1,'slick::sim::OrderBook::addOrder()']]],
+  ['addordermessage_10',['AddOrderMessage',['../structslick_1_1sim_1_1AddOrderMessage.html',1,'slick::sim']]],
+  ['aggressor_5fside_11',['aggressor_side',['../structslick_1_1sim_1_1TradeSummaryInfo.html#a6d9b66266269d71dc7b4b4d675d993e9',1,'slick::sim::TradeSummaryInfo::aggressor_side'],['../structslick_1_1sim_1_1TradeSummary.html#aa095412b1b11451222069a3652a93179',1,'slick::sim::TradeSummary::aggressor_side']]],
+  ['allocateorder_12',['allocateOrder',['../classslick_1_1sim_1_1OrderBook.html#ae5f7981d61f1bb821cb8a3c82f8ebbe7',1,'slick::sim::OrderBook']]],
+  ['alpaca_5fhistorical_5fdata_5ffeed_2ehpp_13',['alpaca_historical_data_feed.hpp',['../alpaca__historical__data__feed_8hpp.html',1,'']]],
+  ['already_5flogged_5fin_14',['ALREADY_LOGGED_IN',['../namespaceslick_1_1sim.html#a297ba608de53df48468a6d44a907f989a98c9a339bc2b633b85dbf111a342416e',1,'slick::sim']]],
+  ['at_5fthe_5fopening_15',['AT_THE_OPENING',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ad117e6770a732d85d40bba12caa3f173',1,'slick::sim']]],
+  ['authenticate_16',['authenticate',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a1e13c3c083cb058fd0535e4c207d5f51',1,'slick::sim::order_gateway::CoinbaseRestOrderGateway']]],
+  ['authenticated_17',['authenticated',['../structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a84bc07bfdee736a7cd1f5c914f97e1d6',1,'slick::sim::order_gateway::PerSocketData']]],
+  ['auto_5fdetect_5fprotocol_5f_18',['auto_detect_protocol_',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a7dbb94581dbc804fb730906743990f5b',1,'slick::sim::order_gateway::TcpOrderGateway']]],
+  ['avg_5ffill_5fprice_19',['avg_fill_price',['../structslick_1_1sim_1_1Order.html#a04a6d3346a3726ddcef66d24cb019eef',1,'slick::sim::Order::avg_fill_price'],['../structslick_1_1sim_1_1OrderResponse.html#a7c2a7af521027d3e0b09905018b68c90',1,'slick::sim::OrderResponse::avg_fill_price']]],
+  ['avg_5ffill_5fprice_5fdouble_20',['avg_fill_price_double',['../structslick_1_1sim_1_1Order.html#a8c8269f0f4a6ce78371591ba1f733f9a',1,'slick::sim::Order']]]
+];

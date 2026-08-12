@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['ice_0',['ICE',['../namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04ac2540f13f68427266e864d05c7cbd217',1,'slick::sim']]],
+  ['iceberg_5fmust_5fbe_5fday_5for_5fgtc_1',['ICEBERG_MUST_BE_DAY_OR_GTC',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a495f3b983dcfe1fb44f3d83b2d811485',1,'slick::sim']]],
+  ['iceberg_5fmust_5fbe_5flimit_2',['ICEBERG_MUST_BE_LIMIT',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a48a4c1acac89544db3f7c5248fa5c31e',1,'slick::sim']]],
+  ['iceberg_5frequest_5fon_5fnon_5ficeberg_3',['ICEBERG_REQUEST_ON_NON_ICEBERG',['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562a6f6f358c5b1e4e49380f99eb84f4b12c',1,'slick::sim']]],
+  ['id_4',['id',['../structslick_1_1sim_1_1Order.html#ab8475e7611721df58d5a9b5ef44913a2',1,'slick::sim::Order']]],
+  ['id_5f_5',['id_',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a1eb73056e70c34ee4e4020a9d64c05af',1,'slick::sim::exch::Symbol']]],
+  ['immediate_5for_5fcancel_6',['IMMEDIATE_OR_CANCEL',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a623f31e0edb052f302774f306f5ddb1b',1,'slick::sim']]],
+  ['instance_7',['instance',['../classslick_1_1sim_1_1SymbolManager.html#a56058ec8635b6f492dfb9b2f66589baf',1,'slick::sim::SymbolManager']]],
+  ['intercepted_8',['INTERCEPTED',['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562a115091447923528df56918f88c6f39c0',1,'slick::sim']]],
+  ['invalid_5fdisplay_5fqty_9',['invalid_display_qty',['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562ae32fe84f1bc0d3cfa454c5bbd2946468',1,'slick::sim::INVALID_DISPLAY_QTY'],['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337ae32fe84f1bc0d3cfa454c5bbd2946468',1,'slick::sim::INVALID_DISPLAY_QTY']]],
+  ['invalid_5fmin_5fqty_10',['invalid_min_qty',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a93931db7fd9d745a24c73c5acb3a1a79',1,'slick::sim::INVALID_MIN_QTY'],['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562a93931db7fd9d745a24c73c5acb3a1a79',1,'slick::sim::INVALID_MIN_QTY']]],
+  ['invalid_5fqty_11',['invalid_qty',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a562c18b5a287c8f3a6d894a11d811c0f',1,'slick::sim::INVALID_QTY'],['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562a562c18b5a287c8f3a6d894a11d811c0f',1,'slick::sim::INVALID_QTY']]],
+  ['invalid_5fsession_5fid_12',['INVALID_SESSION_ID',['../namespaceslick_1_1sim.html#a297ba608de53df48468a6d44a907f989ae59a7fb636a4e551c360e2b5b7b16e4d',1,'slick::sim']]],
+  ['invalid_5fsymbol_5fid_13',['INVALID_SYMBOL_ID',['../namespaceslick_1_1sim.html#a4d6077eff7010971cb5c09ba8cd47f2c',1,'slick::sim']]],
+  ['invalid_5ftick_5fsize_14',['invalid_tick_size',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a750b83b5da2edb058e2ad4e5bfcfb949',1,'slick::sim::INVALID_TICK_SIZE'],['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562a750b83b5da2edb058e2ad4e5bfcfb949',1,'slick::sim::INVALID_TICK_SIZE']]],
+  ['iorderbookobserver_15',['IOrderBookObserver',['../namespaceslick_1_1sim.html#a9c1f8072ea547439852c1b28bc7be062',1,'slick::sim']]],
+  ['is_5fcomplete_5fmessage_16',['is_complete_message',['../structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#abf0f93610b780b95bd5cc05a25abcb08',1,'slick::sim::order_gateway::ParseResult']]],
+  ['isempty_17',['isEmpty',['../classslick_1_1sim_1_1utils_1_1RingBuffer.html#a928aacc46d3bc7ef0dfed74150ed45de',1,'slick::sim::utils::RingBuffer']]],
+  ['isfull_18',['isFull',['../classslick_1_1sim_1_1utils_1_1RingBuffer.html#ad3c7b03d90951455e7f85571b92587f3',1,'slick::sim::utils::RingBuffer']]],
+  ['ispricebetter_19',['ispricebetter',['../namespaceslick_1_1sim_1_1utils.html#a10cc090c71d83ee646f96b7cc34fe164',1,'slick::sim::utils::isPriceBetter(price_t a, price_t b)'],['../namespaceslick_1_1sim_1_1utils.html#afcec067c6927eda88ef6a3c5956becf5',1,'slick::sim::utils::isPriceBetter(Side side, price_t a, price_t b)']]],
+  ['ispricebetterorequal_20',['ispricebetterorequal',['../namespaceslick_1_1sim_1_1utils.html#a279c1650ff35a694ab7c77d1298f20d7',1,'slick::sim::utils::isPriceBetterOrEqual(price_t a, price_t b)'],['../namespaceslick_1_1sim_1_1utils.html#a885b8c91414df916abaf3c8831597830',1,'slick::sim::utils::isPriceBetterOrEqual(Side side, price_t a, price_t b)']]],
+  ['isselfmatch_21',['isSelfMatch',['../fifo__matching__engine_8cpp.html#ae815fe0372c16e70f59d3aaac80b4b83',1,'fifo_matching_engine.cpp']]]
+];

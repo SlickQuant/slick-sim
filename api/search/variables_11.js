@@ -1,0 +1,6 @@
+var searchData=
+[
+  ['update_5faction_0',['update_action',['../structslick_1_1sim_1_1MDLevel.html#a254cebf181039e973af2d5b34ce3348b',1,'slick::sim::MDLevel']]],
+  ['update_5findex_1',['update_index',['../structslick_1_1sim_1_1MDBookUpdate.html#ac61fae6c579db0cf2f350fde785aa486',1,'slick::sim::MDBookUpdate']]],
+  ['user_5fid_2',['user_id',['../structslick_1_1sim_1_1AddOrderMessage.html#ae36b0960b9c2f811bd6a6b86e7f44b6d',1,'slick::sim::AddOrderMessage::user_id'],['../structslick_1_1sim_1_1ModifyOrderMessage.html#ad6daa674d3e376c0557156d55cba879a',1,'slick::sim::ModifyOrderMessage::user_id'],['../structslick_1_1sim_1_1CancelOrderMessage.html#a3f848d9a7e929b7c338dd5332dc6a23f',1,'slick::sim::CancelOrderMessage::user_id'],['../structslick_1_1sim_1_1OrderResponse.html#ae46e0b083a16eb620b9ccfa18f68a8aa',1,'slick::sim::OrderResponse::user_id'],['../structslick_1_1sim_1_1Order.html#ab47dc9c06c52bd5688927dd3ff256b5e',1,'slick::sim::Order::user_id'],['../structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aae0cfe8095c62d4ba05e0ccf020826ab',1,'slick::sim::order_gateway::PerSocketData::user_id'],['../structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html#a1a209c1949d794af4891add05d9a82a0',1,'slick::sim::order_gateway::PostRequestData::user_id']]]
+];

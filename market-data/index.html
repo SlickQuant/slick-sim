@@ -1,0 +1,1529 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Exchange simulator that shadows real venues for risk-free strategy testing">
+      
+      
+      
+        <link rel="canonical" href="https://slickquant.github.io/slick-sim/market-data/">
+      
+      
+        <link rel="prev" href="../order-book/">
+      
+      
+        <link rel="next" href="../extending/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Market data - Slick Sim</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#market-data" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Slick Sim" class="md-header__button md-logo" aria-label="Slick Sim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Slick Sim
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Market data
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SlickQuant/slick-sim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SlickQuant/slick-sim
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Slick Sim" class="md-nav__button md-logo" aria-label="Slick Sim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Slick Sim
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SlickQuant/slick-sim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SlickQuant/slick-sim
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internals
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Internals
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../order-lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Order lifecycle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matching-engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matching engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../order-book/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Order book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Market data
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Market data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#feeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feeds
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Feeds">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coinbaselivewsfeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoinbaseLiveWSFeed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperliquidlivewsfeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HyperliquidLiveWSFeed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coinbase-time-ordered-event-sequencing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coinbase: time-ordered event sequencing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hyperliquid-l2-diffs-and-index-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hyperliquid: L2 diffs and index resolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-internal-market-data-wire-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The internal market-data wire format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The internal market-data wire format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#producing-a-frame" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Producing a frame
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frame-header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frame header
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payload-by-mdupdatetype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Payload by MDUpdateType
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payload-structs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Payload structs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateflags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UpdateFlags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mdsubscriptionrejectreason" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MDSubscriptionRejectReason
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#publishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publishing
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding an exchange
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-coinbase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coinbase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-hyperliquid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hyperliquid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../known-gaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Known gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://slickquant.github.io/slick-sim/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#feeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feeds
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Feeds">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coinbaselivewsfeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CoinbaseLiveWSFeed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperliquidlivewsfeed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HyperliquidLiveWSFeed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coinbase-time-ordered-event-sequencing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coinbase: time-ordered event sequencing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hyperliquid-l2-diffs-and-index-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hyperliquid: L2 diffs and index resolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-internal-market-data-wire-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The internal market-data wire format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The internal market-data wire format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#producing-a-frame" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Producing a frame
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frame-header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frame header
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payload-by-mdupdatetype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Payload by MDUpdateType
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payload-structs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Payload structs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updateflags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UpdateFlags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mdsubscriptionrejectreason" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MDSubscriptionRejectReason
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#publishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publishing
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/SlickQuant/slick-sim/edit/main/docs/market-data.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="market-data">Market data<a class="headerlink" href="#market-data" title="Permanent link">&para;</a></h1>
+<p>Market data flows in one direction: the real venue's WebSocket feed → an <code>MDFeed</code> → the exchange
+thread, which mutates the book → the internal binary <code>md_queue_</code> → the venue's publisher → the
+client's WebSocket.</p>
+<p>The inbound half is optional. With no feed configured the simulator runs
+<a href="../architecture/#self-contained-a-conventional-exchange-simulator">self-contained</a>: the first two
+stages below are simply absent, the book is driven purely by client orders, and everything from
+<code>md_queue_</code> onwards works exactly as described here.</p>
+<pre class="mermaid"><code>flowchart LR
+    A["Real venue WS"] --&gt; B["MDFeed&lt;br/&gt;(venue SDK thread)"]
+    B --&gt; C["Exchange callbacks&lt;br/&gt;queue events"]
+    C --&gt; D["Exchange thread&lt;br/&gt;apply to OrderBook"]
+    D --&gt; E["md_queue_&lt;br/&gt;binary frames"]
+    E --&gt; F["Publisher&lt;br/&gt;(uWS thread)"]
+    F --&gt; G["Client WS&lt;br/&gt;venue-native JSON"]</code></pre>
+<h2 id="feeds">Feeds<a class="headerlink" href="#feeds" title="Permanent link">&para;</a></h2>
+<p><code>MDFeed</code>
+(<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/md_feed.hpp"><code>md_feed.hpp</code></a>)
+is a two-method interface — <code>start()</code> and <code>stop()</code>. Two implementations exist, both live; a
+historical replay feed would slot in at the same interface but
+<a href="../known-gaps/#the-historical-data-feed-does-not-exist">does not exist yet</a>.</p>
+<h3 id="coinbaselivewsfeed"><code>CoinbaseLiveWSFeed</code><a class="headerlink" href="#coinbaselivewsfeed" title="Permanent link">&para;</a></h3>
+<p>A thin wrapper over <code>coinbase::WebSocketClient</code>. On <code>start()</code> it subscribes the configured symbols to
+the <code>LEVEL2</code> and <code>MARKET_TRADES</code> channels. Callbacks are delivered to the <code>CoinbaseExchange</code> (which
+implements <code>coinbase::UserThreadWebsocketCallbacks</code>) through a <code>slick::stream_buffer_multiplexer</code>
+sized by <code>md_queue_size</code>; the exchange thread drains it by calling <code>processData()</code>.</p>
+<p>Every feed also calls <code>ws_client_-&gt;logData("logs/coinbase_data")</code>, so a raw capture of the upstream
+WebSocket stream is written to disk whenever the Coinbase feed is running. This is unconditional and
+not configurable.</p>
+<p>Config selects it by <code>"type": "coinbase_live_ws"</code>, which merely sets <code>use_live_feed_ = true</code> — the
+actual feed objects are created lazily, one per symbol, in <code>handleMdSubscription</code>.</p>
+<h3 id="hyperliquidlivewsfeed"><code>HyperliquidLiveWSFeed</code><a class="headerlink" href="#hyperliquidlivewsfeed" title="Permanent link">&para;</a></h3>
+<p>Wraps <code>hyperliquid::Info</code> with <code>user_thread_dispatch = true</code>, meaning the SDK buffers messages rather
+than calling back on its own thread; the exchange thread pumps them with
+<code>getInfo()-&gt;dispatch(100)</code> inside <code>drainEventQueue()</code>.</p>
+<p>Per coin it opens two subscriptions:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">info_</span><span class="o">-&gt;</span><span class="n">subscribe</span><span class="p">({{</span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l2&quot;</span><span class="p">},</span><span class="w">     </span><span class="p">{</span><span class="s">&quot;c&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">coin</span><span class="p">}},</span><span class="w">     </span><span class="err">…</span><span class="p">);</span><span class="w">   </span><span class="c1">// undocumented compressed-diff channel</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">info_</span><span class="o">-&gt;</span><span class="n">subscribe</span><span class="p">({{</span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;trades&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;coin&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">coin</span><span class="p">}},</span><span class="w"> </span><span class="err">…</span><span class="p">);</span>
+</code></pre></div>
+<p>Note it subscribes upstream to <code>l2</code>, not the documented <code>l2Book</code> — the compressed diff channel is far
+less bandwidth. <code>addCoin()</code> allows subscribing more coins after <code>start()</code>.</p>
+<p>Config selects it by <code>"type": "hyperliquid_live_ws"</code>, and unlike Coinbase the feed object is built in
+the constructor from the <code>coins</code> array, so those coins are subscribed at startup.</p>
+<p>Any other <code>type</code> value is silently ignored. The
+<a href="../known-gaps/#the-historical-data-feed-does-not-exist">Alpaca historical feed does not exist</a>.</p>
+<h2 id="coinbase-time-ordered-event-sequencing">Coinbase: time-ordered event sequencing<a class="headerlink" href="#coinbase-time-ordered-event-sequencing" title="Permanent link">&para;</a></h2>
+<p>Coinbase delivers <code>l2_data</code> and <code>market_trades</code> on separate channels with independent latency, so
+messages can arrive out of order relative to their exchange timestamps. Applying them in arrival
+order would corrupt the book. <code>CoinbaseExchange</code> therefore buffers and re-orders.</p>
+<p>Each symbol gets a <code>SymbolEventState</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">SymbolEventState</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">priority_queue</span><span class="o">&lt;</span><span class="n">Event</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Event</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">EventCompare</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pending_events</span><span class="p">;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_event_time</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">   </span><span class="c1">// newest event_time seen</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_sequence_id</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_seq_num</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">next_sequence_id</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">   </span><span class="c1">// monotonic tiebreaker</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_published_level_seq_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_published_trade_seq_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">};</span>
+</code></pre></div>
+<p><code>EventCompare</code> orders by <code>event_time</code> ascending, tie-broken by the internal <code>sequence_id</code> so events
+with identical exchange timestamps keep arrival order.</p>
+<p>The WS callbacks (<code>onLevel2Updates</code>, <code>onMarketTrades</code>) only push into this queue — they never touch
+the book. Release happens on the exchange thread in <code>processSequencedEvents()</code>, which pops an event
+only when one of two conditions holds:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// 1. a full second of newer data has arrived, so nothing older can still be in flight</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kt">bool</span><span class="w"> </span><span class="n">safe_by_time_gap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">last_event_time</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">                        </span><span class="n">top</span><span class="p">.</span><span class="n">event_time</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ONE_SECOND_NS</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">last_event_time</span><span class="p">;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1">// 2. the event has waited a full second regardless</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="kt">bool</span><span class="w"> </span><span class="n">safe_by_timeout</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">top</span><span class="p">.</span><span class="n">received_time</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">ONE_SECOND_NS</span><span class="p">;</span>
+</code></pre></div>
+<p><strong>This buys ordering at the cost of a one-second delay.</strong> Book updates are held for at least a second
+before being applied, so the simulated book lags the real market by that much. <code>processSequencedEvents(true)</code>
+forces an immediate flush but is never called with <code>force = true</code> in the current code.</p>
+<p><code>dispatchEvent</code> then applies the event. For a level update it either creates a brand-new level
+(matching against the opposite side first, in case the new quote crosses a resting simulator order)
+or adjusts an existing one via the <code>getMDLevelQty</code> delta logic described in
+<a href="../order-book/#why-feed_md_level_quantity_-exists">Order book</a>. Stale events — <code>event_time</code> older than
+<code>book.lastUpdateTime()</code> — are logged and dropped.</p>
+<p>Level and trade updates are batched into <code>level_update_buffer_</code> / <code>trade_update_buffer_</code> and flushed
+to <code>md_queue_</code> when the sequence number changes, so one upstream batch becomes one downstream message.</p>
+<p>Snapshots take a different route entirely: <code>onLevel2Snapshot</code> runs <strong>on the WS thread</strong> and mutates
+the book directly rather than going through the priority queue.</p>
+<h2 id="hyperliquid-l2-diffs-and-index-resolution">Hyperliquid: L2 diffs and index resolution<a class="headerlink" href="#hyperliquid-l2-diffs-and-index-resolution" title="Permanent link">&para;</a></h2>
+<p>Hyperliquid's undocumented <code>l2</code> channel sends compressed incremental diffs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ETH&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;l&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;p&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3000.5&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;s&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;12.0&quot;</span><span class="p">}</span><span class="w"> </span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;p&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3001.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;s&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8.5&quot;</span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">],</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;r&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="p">],</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;t&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1723300000000</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><code>l</code> — changed or added levels as <strong>absolute</strong> new quantities, <code>[bids, asks]</code>.</li>
+<li><code>r</code> — levels removed entirely, given as <strong>indices into the previous per-side ordered price array</strong>,
+  not as prices.</li>
+<li><code>t</code> — event time in milliseconds.</li>
+</ul>
+<p>Those indices are the problem: to turn index 2 back into a price, you need the exact ordered price
+list the venue had before this event. The simulator's own book cannot supply it, because it also
+contains your orders and may have levels the real market does not.</p>
+<p>So <code>HyperliquidExchange</code> keeps a separate mirror:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// Symbol* -&gt; (bid prices, ask prices), best-first, real-market only</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">Symbol</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">price_t</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">l2_ref_levels_</span><span class="p">;</span>
+</code></pre></div>
+<p>It is rebuilt from every snapshot (which arrives best-first, so appending preserves order) and
+maintained across diffs with <code>std::lower_bound</code> insertion using the side-aware <code>utils::isPriceBetter</code>
+comparator.</p>
+<p><code>processL2Diff</code> resolves <strong>all</strong> removal indices against the pre-mutation array before applying any of
+them — removing while iterating would shift the later indices. Out-of-range indices are logged and
+skipped rather than treated as fatal.</p>
+<p>Removals and changes both funnel into <code>applyPhantomLevelUpdate(symbol, side, price, target_qty, ts)</code>,
+which sets phantom liquidity at one price to exactly <code>target_qty</code>:</p>
+<ul>
+<li><strong>New level</strong> — match against the opposite side first (this price has never been checked for
+  crossing), then rest whatever survives.</li>
+<li><strong>Existing level</strong> — already known non-crossing, so skip matching and just adjust the phantom-only
+  quantity toward the target, shrinking from the back and never touching simulator orders.</li>
+</ul>
+<p>A removal is simply <code>target_qty = 0</code>.</p>
+<p>Snapshots (<code>processL2Snapshot</code>) call <code>clearMDOrders()</code> — preserving resting simulator orders — then
+rebuild every level and reset the mirror.</p>
+<h2 id="the-internal-market-data-wire-format">The internal market-data wire format<a class="headerlink" href="#the-internal-market-data-wire-format" title="Permanent link">&para;</a></h2>
+<p><code>md_queue_</code> is a <code>slick::queue&lt;uint8_t&gt;</code> carrying variable-length frames. All structs are
+<code>#pragma pack(1)</code> and use the <code>data[0]</code> flexible-array-member idiom, so a frame is a header
+immediately followed by its payload in the same contiguous reservation.</p>
+<h3 id="producing-a-frame">Producing a frame<a class="headerlink" href="#producing-a-frame" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">auto</span><span class="w"> </span><span class="n">sz</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">MarketDataUpdate</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">MDLevelUpdate</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">MDLevel</span><span class="p">);</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">auto</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">md_queue_</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="n">sz</span><span class="p">);</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">update</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">MarketDataUpdate</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">md_queue_</span><span class="p">[</span><span class="n">index</span><span class="p">]);</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">update</span><span class="o">-&gt;</span><span class="n">type</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">MDUpdateType</span><span class="o">::</span><span class="n">LEVEL</span><span class="p">;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">update</span><span class="o">-&gt;</span><span class="n">venue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">venue_</span><span class="p">;</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">std</span><span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="n">update</span><span class="o">-&gt;</span><span class="n">symbol</span><span class="p">,</span><span class="w"> </span><span class="n">symbol</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">update</span><span class="o">-&gt;</span><span class="n">symbol</span><span class="p">));</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">payload</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="n">MDLevelUpdate</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">update</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1">// … fill payload …</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">md_queue_</span><span class="p">.</span><span class="n">publish</span><span class="p">(</span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="n">sz</span><span class="p">);</span>
+</code></pre></div>
+<p>Consumers do the mirror: <code>read(cursor)</code>, cast to <code>MarketDataUpdate*</code>, switch on <code>type</code>, cast
+<code>update-&gt;data</code> to the matching payload type.</p>
+<h3 id="frame-header">Frame header<a class="headerlink" href="#frame-header" title="Permanent link">&para;</a></h3>
+<p><code>MarketDataUpdate</code> — 34 bytes:</p>
+<table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Size</th>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>32</td>
+<td><code>char symbol[32]</code></td>
+<td>Not guaranteed NUL-terminated for 32-char symbols</td>
+</tr>
+<tr>
+<td>32</td>
+<td>1</td>
+<td><code>Venue venue</code></td>
+<td></td>
+</tr>
+<tr>
+<td>33</td>
+<td>1</td>
+<td><code>MDUpdateType type</code></td>
+<td>Selects the payload type</td>
+</tr>
+<tr>
+<td>34</td>
+<td>—</td>
+<td><code>uint8_t data[0]</code></td>
+<td>Payload begins here</td>
+</tr>
+</tbody>
+</table>
+<h3 id="payload-by-mdupdatetype">Payload by <code>MDUpdateType</code><a class="headerlink" href="#payload-by-mdupdatetype" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th><code>type</code></th>
+<th>Payload</th>
+<th>Produced by</th>
+<th>Consumed by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BOOK</code> (0)</td>
+<td><code>MDBookUpdate</code></td>
+<td><code>publishMDBookUpdate</code> — never called</td>
+<td>Coinbase publisher ignores it</td>
+</tr>
+<tr>
+<td><code>LEVEL</code> (1)</td>
+<td><code>MDLevelUpdate</code></td>
+<td><code>publishLevelUpdate</code></td>
+<td>Coinbase → <code>l2_data</code> <code>"update"</code></td>
+</tr>
+<tr>
+<td><code>ORDER</code> (2)</td>
+<td><code>MDOrderUpdate</code></td>
+<td><code>publishMDOrderUpdate</code> — <a href="../known-gaps/#mdupdatetypeorder-is-never-published">never called</a></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>TRADE_SUMMARY</code> (3)</td>
+<td><code>TradeSummary</code></td>
+<td><code>publishTradeSummary</code></td>
+<td>Neither publisher handles it</td>
+</tr>
+<tr>
+<td><code>TRADE</code> (4)</td>
+<td><code>MDTradeUpdate</code></td>
+<td><code>publishMDTrades</code></td>
+<td>Hyperliquid → <code>trades</code>; <a href="../known-gaps/#the-coinbase-publisher-never-republishes-trades">Coinbase drops it</a></td>
+</tr>
+<tr>
+<td><code>BOOK_SNAPSHOT</code> (5)</td>
+<td><code>BookSnapshot</code></td>
+<td><code>populateL2Snapshot</code></td>
+<td>Coinbase → <code>l2_data</code> <code>"snapshot"</code>; Hyperliquid → <code>l2Book</code> / <code>l2</code> diff</td>
+</tr>
+<tr>
+<td><code>ORDER_SNAPSHOT</code> (6)</td>
+<td>—</td>
+<td>Never produced</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>SUB_RESPONSE</code> (7)</td>
+<td><code>MDSubscriptionResponse</code> + nested payload</td>
+<td><code>populateL2SubscriptionResponse</code>, <code>populateMDTradesResponse</code>, <code>rejectMdSubscription</code></td>
+<td>Both publishers, to deliver the first snapshot</td>
+</tr>
+</tbody>
+</table>
+<h3 id="payload-structs">Payload structs<a class="headerlink" href="#payload-structs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDLevel</span><span class="w"> </span><span class="p">{</span><span class="w">              </span><span class="c1">// 41 bytes</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w">      </span><span class="c1">//  0  ns</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">seq_num</span><span class="p">;</span><span class="w">         </span><span class="c1">//  8</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="n">price_t</span><span class="w">  </span><span class="n">price</span><span class="p">;</span><span class="w">           </span><span class="c1">// 16  fixed-point ×1e8</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="n">qty_t</span><span class="w">    </span><span class="n">qty</span><span class="p">;</span><span class="w">             </span><span class="c1">// 24  fixed-point ×1e8</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_orders</span><span class="p">;</span><span class="w">      </span><span class="c1">// 32</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">level_index</span><span class="p">;</span><span class="w">     </span><span class="c1">// 36</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="n">MDUpdateAction</span><span class="w"> </span><span class="n">update_action</span><span class="p">;</span><span class="w">  </span><span class="c1">// 38  NEW / CHANGE / DELETE</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="kt">uint8_t</span><span class="w">  </span><span class="n">flags</span><span class="p">;</span><span class="w">           </span><span class="c1">// 39  UpdateFlags bitmask</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="n">Side</span><span class="w">     </span><span class="n">side</span><span class="p">;</span><span class="w">            </span><span class="c1">// 40</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="p">};</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDLevelUpdate</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_level_update</span><span class="p">;</span><span class="w"> </span><span class="n">MDLevel</span><span class="w"> </span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="k">struct</span><span class="w"> </span><span class="nc">BookSnapshot</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_bid</span><span class="p">;</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_ask</span><span class="p">;</span><span class="w"> </span><span class="n">MDLevel</span><span class="w"> </span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span><span class="w">  </span><span class="c1">// bids then asks</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDTrade</span><span class="w"> </span><span class="p">{</span><span class="w">              </span><span class="c1">// 34 bytes</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">seq_num</span><span class="p">;</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">    </span><span class="n">UpdateFlags</span><span class="w"> </span><span class="n">flags</span><span class="p">;</span><span class="w"> </span><span class="n">Side</span><span class="w"> </span><span class="n">side</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDTradeUpdate</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_trades</span><span class="p">;</span><span class="w"> </span><span class="n">MDTrade</span><span class="w"> </span><span class="n">trades</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDOrder</span><span class="w"> </span><span class="p">{</span><span class="w">              </span><span class="c1">// 41 bytes</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">order_id</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">priority</span><span class="p">;</span>
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">    </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span><span class="w"> </span><span class="n">Side</span><span class="w"> </span><span class="n">side</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDOrderUpdate</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_orders</span><span class="p">;</span><span class="w"> </span><span class="n">MDOrder</span><span class="w"> </span><span class="n">orders</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a>
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDSubscriptionResponse</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">channel</span><span class="p">;</span><span class="w"> </span><span class="n">MDSubscriptionRejectReason</span><span class="w"> </span><span class="n">reject_reason</span><span class="p">;</span>
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="w">                                </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a>
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="k">struct</span><span class="w"> </span><span class="nc">TradeSummary</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">time_t</span><span class="w"> </span><span class="n">timestamp</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">trade_id</span><span class="p">;</span><span class="w"> </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">security_id</span><span class="p">;</span>
+<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="w">                      </span><span class="n">Side</span><span class="w"> </span><span class="n">aggressor_side</span><span class="p">;</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span>
+<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a><span class="w">                      </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">num_orders</span><span class="p">;</span><span class="w"> </span><span class="n">Trade</span><span class="w"> </span><span class="n">trades</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Trade</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">order_id</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+</code></pre></div>
+<p><code>MDBookUpdate</code> is the one fixed-size payload: <code>MDLevel sell[10]</code>, <code>MDLevel buy[10]</code>, and
+<code>uint8_t update_index[2]</code> marking which level changed per side.</p>
+<div class="admonition note">
+<p class="admonition-title"><code>price_t</code> width</p>
+<p><code>price_t</code> and <code>qty_t</code> are <code>int_fast64_t</code>, whose size is implementation-defined — 8 bytes on
+x86-64 Linux and Windows, which is what these layouts assume. Because the queue may be backed by
+shared memory, a reader built with a different <code>int_fast64_t</code> width would misparse every frame.</p>
+</div>
+<h3 id="updateflags"><code>UpdateFlags</code><a class="headerlink" href="#updateflags" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">enum</span><span class="w"> </span><span class="nc">UpdateFlags</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="n">F_NONE</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="n">F_IS_SNAPSHOT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">        </span><span class="c1">// part of a snapshot rather than an incremental update</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="n">F_END_EVENT</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">   </span><span class="c1">// last message of a batch</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="p">};</span>
+</code></pre></div>
+<p><code>F_END_EVENT</code> maps to slick-orderbook's <code>ChangeFlag::LastInBatch</code>, set in <code>Symbol::onPriceLevelUpdate</code>.</p>
+<h3 id="mdsubscriptionrejectreason"><code>MDSubscriptionRejectReason</code><a class="headerlink" href="#mdsubscriptionrejectreason" title="Permanent link">&para;</a></h3>
+<p><code>NONE</code> (0), <code>UNKNOWN_CONTRACT</code> (1), <code>MARKET_CLOSED</code> (2). <code>Exchange::rejectMdSubscription</code> exists and
+builds a well-formed frame — but marks the <code>reason</code> parameter <code>[[maybe_unused]]</code> and never writes it
+into <code>rsp-&gt;reject_reason</code>, so the field is whatever the recycled queue slot held. Nothing calls the
+function anyway.</p>
+<h2 id="publishing">Publishing<a class="headerlink" href="#publishing" title="Permanent link">&para;</a></h2>
+<p>Each publisher runs a uWS event loop and drains <code>md_queue_</code> from a private cursor
+(<code>WebsocketMarketDataPublisher::publish_processing</code>), dispatching each frame to the venue-specific
+<code>publish_market_data_update</code>. Client subscriptions are tracked per channel and per symbol, so a frame
+for an unsubscribed symbol is dropped cheaply.</p>
+<p>The wire formats produced are documented per venue:</p>
+<ul>
+<li><a href="../integration-coinbase/#market-data-websocket">Coinbase market-data channels</a></li>
+<li><a href="../integration-hyperliquid/#market-data-websocket">Hyperliquid market-data channels</a></li>
+</ul>
+<p>Subscriptions travel in the opposite direction: a client's <code>subscribe</code> message causes the publisher to
+write a <code>MD_SUBSCRIPTION</code> <code>Request</code> onto <code>request_queue_</code>, which the exchange thread handles by
+creating the symbol (if new), attaching a feed, and marking the symbol pending until the first
+snapshot arrives. Unsubscribes are written the same way but
+<a href="../known-gaps/#market-data-unsubscribe-requests-are-dropped">never processed</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      MIT licensed
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/SlickQuant/slick-sim" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "toc.follow", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

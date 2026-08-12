@@ -1,0 +1,1716 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Exchange simulator that shadows real venues for risk-free strategy testing">
+      
+      
+      
+        <link rel="canonical" href="https://slickquant.github.io/slick-sim/order-lifecycle/">
+      
+      
+        <link rel="prev" href="../architecture/">
+      
+      
+        <link rel="next" href="../matching-engine/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Order lifecycle - Slick Sim</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#order-lifecycle" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Slick Sim" class="md-header__button md-logo" aria-label="Slick Sim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Slick Sim
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Order lifecycle
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SlickQuant/slick-sim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SlickQuant/slick-sim
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Slick Sim" class="md-nav__button md-logo" aria-label="Slick Sim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Slick Sim
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SlickQuant/slick-sim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SlickQuant/slick-sim
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internals
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Internals
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Order lifecycle
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Order lifecycle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-happy-path-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The happy path, end to end
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-path-in-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request path in detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Request path in detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-gateway-to-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Gateway to Request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-exchange-dispatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Exchange dispatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-new-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. New order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-modify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Modify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-cancel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cancel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#response-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response path
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-the-order-struct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference: the Order struct
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference: enums
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference: enums">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ordertype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OrderType
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timeinforce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TimeInForce
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exectype-and-orderstatus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ExecType and OrderStatus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ordrejectreason" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OrdRejectReason
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cxlrejectreason-businessrejectreason-sessionrejectreason" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CxlRejectReason, BusinessRejectReason, SessionRejectReason
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selfmatchpreventionmode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SelfMatchPreventionMode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matching-engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matching engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../order-book/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Order book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Market data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding an exchange
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-coinbase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coinbase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-hyperliquid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hyperliquid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../known-gaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Known gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://slickquant.github.io/slick-sim/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-happy-path-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The happy path, end to end
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#request-path-in-detail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request path in detail
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Request path in detail">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-gateway-to-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Gateway to Request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-exchange-dispatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Exchange dispatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-new-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. New order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-modify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Modify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-cancel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cancel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#response-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response path
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-the-order-struct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference: the Order struct
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference: enums
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference: enums">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ordertype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OrderType
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timeinforce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TimeInForce
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exectype-and-orderstatus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ExecType and OrderStatus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ordrejectreason" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OrdRejectReason
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cxlrejectreason-businessrejectreason-sessionrejectreason" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CxlRejectReason, BusinessRejectReason, SessionRejectReason
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#selfmatchpreventionmode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SelfMatchPreventionMode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/SlickQuant/slick-sim/edit/main/docs/order-lifecycle.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="order-lifecycle">Order lifecycle<a class="headerlink" href="#order-lifecycle" title="Permanent link">&para;</a></h1>
+<p>This page follows a single order from the moment it arrives at a gateway to the moment the client
+sees a fill, then documents every enum and struct involved.</p>
+<h2 id="the-happy-path-end-to-end">The happy path, end to end<a class="headerlink" href="#the-happy-path-end-to-end" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>sequenceDiagram
+    autonumber
+    participant C as Client
+    participant G as Order gateway&lt;br/&gt;(uWS thread)
+    participant RQ as request_queue
+    participant E as Exchange&lt;br/&gt;(exchange thread)
+    participant S as Symbol
+    participant M as FifoMatchingEngine
+    participant B as OrderBook
+    participant SQ as response_queue
+
+    C-&gt;&gt;G: POST /api/v3/brokerage/orders
+    G-&gt;&gt;G: authenticate, parse, validate vs product specs
+    G-&gt;&gt;RQ: reserve() → fill Request → publish()
+    G-&gt;&gt;SQ: start polling (100 µs, 5 s budget)
+
+    E-&gt;&gt;RQ: read(cursor) → Request
+    E-&gt;&gt;E: handleNewOrderRequest
+    E-&gt;&gt;S: allocateOrder(), status = PENDING_NEW
+    E-&gt;&gt;SQ: sendOrderNewPending → PENDING_NEW report
+    SQ--&gt;&gt;G: matches user_id + client_order_id
+    G--&gt;&gt;C: 200 OK {success, order_id, …}
+
+    E-&gt;&gt;S: addOrder(order, request_time)
+    S-&gt;&gt;M: match(order, price, qty, book, …)
+    M-&gt;&gt;SQ: publishOrderAck → NEW report
+    loop while marketable
+        M-&gt;&gt;B: executeOrder(resting_id, trade_qty, …)
+        M-&gt;&gt;SQ: publishOrderExecution → TRADE report
+    end
+    M--&gt;&gt;S: (reject_reason, trade_summaries)
+    S-&gt;&gt;B: addOrder() if TIF rests and leaves_qty &gt; 0
+    E-&gt;&gt;E: publishTradeSummary / publishLevelUpdate → md_queue
+    SQ--&gt;&gt;G: async execution reports (WS gateway only)
+    G--&gt;&gt;C: fills over the user channel</code></pre>
+<p>Two things about this flow are unusual and worth stating plainly.</p>
+<p><strong>The REST response is the <code>PENDING_NEW</code> report, not the fill.</strong> The gateway's polling loop breaks on
+the <em>first</em> response matching its <code>user_id</code> + <code>client_order_id</code>, which is always the <code>PENDING_NEW</code>
+report emitted by <code>sendOrderNewPending</code> before matching even starts. The HTTP call returns
+<code>success: true</code> with an <code>order_id</code>; subsequent acks, fills and cancels arrive only over the WebSocket
+order-entry channel. A REST-only client learns nothing about fills.</p>
+<p><strong>The gateway thread blocks while polling.</strong> For the 5 s budget (or until a response matches), that
+gateway's uWS event loop is not serving anyone else.</p>
+<h2 id="request-path-in-detail">Request path in detail<a class="headerlink" href="#request-path-in-detail" title="Permanent link">&para;</a></h2>
+<h3 id="1-gateway-to-request">1. Gateway to <code>Request</code><a class="headerlink" href="#1-gateway-to-request" title="Permanent link">&para;</a></h3>
+<p>Each gateway translates its venue's wire format into the internal
+<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/messages.hpp#L264-L279"><code>Request</code></a>,
+a packed struct with a union payload:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Request</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="kt">time_t</span><span class="w">       </span><span class="n">time_stamp</span><span class="p">;</span><span class="w">   </span><span class="c1">// ns, set by the gateway</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="kt">char</span><span class="w">         </span><span class="n">symbol</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">MessageType</span><span class="w">  </span><span class="n">msg_type</span><span class="p">;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="k">union</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="n">AddOrderMessage</span><span class="w">       </span><span class="n">add_order</span><span class="p">;</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">        </span><span class="n">ModifyOrderMessage</span><span class="w">    </span><span class="n">modify_order</span><span class="p">;</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">        </span><span class="n">CancelOrderMessage</span><span class="w">    </span><span class="n">cancel_order</span><span class="p">;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">        </span><span class="n">MDSubscriptionMessage</span><span class="w"> </span><span class="n">md_subscription</span><span class="p">;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="p">};</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="p">};</span>
+</code></pre></div>
+<p><code>time_stamp</code> matters beyond logging: the cancel and edit handlers correlate responses by matching
+<code>OrderResponse::request_time</code> against the <code>Request::time_stamp</code> they published.</p>
+<p>The fixed-size char arrays are hard limits. <code>client_order_id</code> and <code>order_id</code> are 37 bytes (a UUID
+plus NUL); <code>symbol</code> is 32. The Coinbase gateway truncates and logs a warning when a <code>client_order_id</code>
+overflows.</p>
+<h3 id="2-exchange-dispatch">2. Exchange dispatch<a class="headerlink" href="#2-exchange-dispatch" title="Permanent link">&para;</a></h3>
+<p><code>Exchange::processRequest</code> reads one request per call and switches on <code>msg_type</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>MessageType</code></th>
+<th>Handler</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NEW_ORDER_SINGLE</code></td>
+<td><code>handleNewOrderRequest</code></td>
+</tr>
+<tr>
+<td><code>ORDER_REPLACE_REQUEST</code></td>
+<td><code>handleModifyOrderRequest</code></td>
+</tr>
+<tr>
+<td><code>ORDER_CANCEL_REQUEST</code></td>
+<td><code>handleCancelOrderRequest</code></td>
+</tr>
+<tr>
+<td><code>MD_SUBSCRIPTION</code></td>
+<td><code>handleMdSubscription</code> (virtual, per-adapter)</td>
+</tr>
+<tr>
+<td><code>MD_UNSUBSCRIPTION</code></td>
+<td><strong>not handled</strong> — see <a href="../known-gaps/#market-data-unsubscribe-requests-are-dropped">Known gaps</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-new-order">3. New order<a class="headerlink" href="#3-new-order" title="Permanent link">&para;</a></h3>
+<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L95-L149"><code>handleNewOrderRequest</code></a>:</p>
+<ol>
+<li>Look up the <code>Symbol</code> by name; reject with <code>UNKNOWN_CONTRACT</code> if absent. A symbol only exists once
+   something has subscribed to its market data, so <strong>orders for an instrument nobody has subscribed
+   to are always rejected</strong>.</li>
+<li>If <code>client_order_id</code> is non-empty and already maps to a live order, reject with
+   <code>CLIENT_ORDER_ID_ALREADY_EXISTS</code>.</li>
+<li><code>allocateOrder()</code> from the book's object pool — this assigns a fresh <code>uint64_t id</code>, a random UUID
+   <code>order_id</code>, and <code>created_time</code>.</li>
+<li>Copy the request fields in, set <code>status = PENDING_NEW</code>, and send the pending-new report.</li>
+<li><code>Symbol::addOrder(order, request_time)</code>, which runs the matching engine and, if anything is left
+   and the TIF permits, rests the remainder on the book.</li>
+<li>Publish any trade summaries and cached level updates to <code>md_queue_</code>.</li>
+<li>Reject if the engine returned a reason <strong>other than</strong> <code>FOK_CANNOT_FILL</code> — an unfillable FOK has
+   already been cancelled, so turning it into a reject too would double-report.</li>
+</ol>
+<h3 id="4-modify">4. Modify<a class="headerlink" href="#4-modify" title="Permanent link">&para;</a></h3>
+<p><code>handleModifyOrderRequest</code> looks up the order by <code>client_order_id</code> if present, otherwise by
+<code>order_id</code>; rejects with <code>UNKNOWN_ORDER</code> if neither finds it. It sets <code>PENDING_REPLACE</code>, sends the
+pending-replace report, then calls <code>Symbol::modifyOrder</code>, which re-enters the matching engine with
+the new price and quantity. See
+<a href="../matching-engine/#modifies-re-enter-the-matching-loop">Matching engine</a> for what happens to queue
+priority.</p>
+<h3 id="5-cancel">5. Cancel<a class="headerlink" href="#5-cancel" title="Permanent link">&para;</a></h3>
+<p><code>handleCancelOrderRequest</code> resolves the order the same way, sets <code>PENDING_CANCEL</code>, sends the
+pending-cancel report, then <code>Symbol::cancelOrder</code> deletes it from the book, publishes the cancel
+report, and returns the <code>Order</code> to the pool.</p>
+<div class="admonition note">
+<p class="admonition-title">Successful cancels are indistinguishable from silence</p>
+<p><code>Symbol::cancelOrder</code> publishes a cancel report via <code>publishOrderCancel</code>, but the Coinbase REST
+gateway's <code>batch_cancel</code> correlates only on <code>request_time</code> and treats <em>no matching response
+within 200 ms</em> as success. Its comment claims "successful cancels don't generate responses",
+which is not quite what the code does — the report simply may not arrive inside the window.</p>
+</div>
+<h2 id="response-path">Response path<a class="headerlink" href="#response-path" title="Permanent link">&para;</a></h2>
+<p>Everything the client hears comes back as an
+<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/messages.hpp#L281-L305"><code>OrderResponse</code></a>
+on <code>response_queue_</code>. There are two families of producer:</p>
+<p><strong>Pending reports</strong>, sent by <code>Exchange</code> before the engine runs:</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th><code>exec_type</code></th>
+<th><code>order_status</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sendOrderNewPending</code></td>
+<td><code>NEW</code></td>
+<td><code>PENDING_NEW</code></td>
+</tr>
+<tr>
+<td><code>sendOrderReplacePending</code></td>
+<td><code>PENDING_REPLACE</code></td>
+<td><code>PENDING_REPLACE</code></td>
+</tr>
+<tr>
+<td><code>sendOrderCancelPending</code></td>
+<td><code>PENDING_CANCEL</code></td>
+<td><code>PENDING_CANCEL</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lifecycle reports</strong>, sent by the matching engine:</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Emitted when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>publishOrderAck</code></td>
+<td>Order accepted, at the top of <code>match()</code> when status is <code>PENDING_NEW</code></td>
+</tr>
+<tr>
+<td><code>publishOrderExecution</code></td>
+<td>Each individual fill</td>
+</tr>
+<tr>
+<td><code>publishOrderModify</code></td>
+<td>A <code>PENDING_REPLACE</code> order's price/quantity has been applied</td>
+</tr>
+<tr>
+<td><code>publishOrderCancel</code></td>
+<td>Explicit cancel, IOC remainder, unfillable FOK, SMP <code>CANCEL_NEWEST</code>, or a modify that zeroed the quantity</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rejects</strong>, sent by <code>Exchange::rejectNewOrderRequest</code> / <code>rejectModifyOrderRequest</code> /
+<code>rejectCancelOrderRequest</code>, all with <code>response_type = REJECT</code>, <code>exec_type = REJECTED</code>,
+<code>order_status = REJECTED</code>, and a populated <code>reject_reason</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">The reject helpers always read <code>request.add_order</code></p>
+<p><code>rejectModifyOrderRequest</code> and <code>rejectCancelOrderRequest</code> copy <code>user_id</code>, <code>client_order_id</code>,
+<code>price</code> and <code>qty</code> from <code>request.add_order</code>, even though the active union member is
+<code>modify_order</code> or <code>cancel_order</code>. Because <code>Request</code> is a packed union the read is not a crash,
+but the fields are reinterpreted from a different layout, so the identifiers and prices on a
+modify/cancel reject are garbage. Correlate those by <code>request_time</code> instead.</p>
+</div>
+<h2 id="reference-the-order-struct">Reference: the <code>Order</code> struct<a class="headerlink" href="#reference-the-order-struct" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/order.hpp#L253-L321"><code>src/common/order.hpp</code></a>.
+The fields that carry meaning beyond their names:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>uint64_t</code>, from the process-global <code>utils::nextOrderId()</code>. The book's primary key, and what the L3 book stores</td>
+</tr>
+<tr>
+<td><code>order_id</code></td>
+<td>Random UUID string, generated in <code>allocateOrder()</code>. What the client sees as the exchange order id</td>
+</tr>
+<tr>
+<td><code>client_order_id</code></td>
+<td>Client-supplied. Indexed separately; lookups prefer it over <code>order_id</code></td>
+</tr>
+<tr>
+<td><code>priority</code></td>
+<td>Queue position from the global <code>nextOrderPriority()</code> counter. <strong>Reset on a price change</strong></td>
+</tr>
+<tr>
+<td><code>quantity</code></td>
+<td>Original order quantity</td>
+</tr>
+<tr>
+<td><code>leaves_quantity</code></td>
+<td>Unfilled remainder. Reaching 0 removes the order from the book's indices</td>
+</tr>
+<tr>
+<td><code>cum_quantity</code></td>
+<td>Filled to date</td>
+</tr>
+<tr>
+<td><code>client_id</code></td>
+<td><code>int</code>, default <strong>-1</strong>. Self-match prevention is skipped entirely when either side is -1, and nothing in the current code ever assigns it, so <strong>SMP is effectively inert in production</strong></td>
+</tr>
+<tr>
+<td><code>size_in_quote</code></td>
+<td>Declared for quote-denominated sizing; never read</td>
+</tr>
+<tr>
+<td><code>post_only</code></td>
+<td>Parsed from Coinbase <code>limit_limit_gtc.post_only</code> and echoed back in reports, but <strong>never enforced</strong> by the matching engine</td>
+</tr>
+<tr>
+<td><code>edit_history</code></td>
+<td>A <code>json::array()</code> on every order; never appended to</td>
+</tr>
+</tbody>
+</table>
+<p>Quantities and prices are fixed-point <code>int_fast64_t</code> scaled by 1e8 — see
+<a href="../matching-engine/#fixed-point-arithmetic">Matching engine</a>. The <code>*_double()</code> accessors convert back.</p>
+<h2 id="reference-enums">Reference: enums<a class="headerlink" href="#reference-enums" title="Permanent link">&para;</a></h2>
+<p>All from <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/order.hpp"><code>src/common/order.hpp</code></a>
+and <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/messages.hpp"><code>src/common/messages.hpp</code></a>.
+Character values follow FIX conventions.</p>
+<h3 id="side"><code>Side</code><a class="headerlink" href="#side" title="Permanent link">&para;</a></h3>
+<p><code>BUY</code> (0), <code>SELL</code> (1), <code>UNKNOWN_SIDE</code> (2). The numeric values matter: <code>to_book_side()</code> is a straight
+<code>static_cast</code> onto <code>slick::orderbook::Side</code>, and the publishers test <code>side ? "offer" : "bid"</code>.</p>
+<h3 id="ordertype"><code>OrderType</code><a class="headerlink" href="#ordertype" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Char</th>
+<th>Reachable?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UNKNOWN</code></td>
+<td><code>0</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>MARKET</code></td>
+<td><code>1</code></td>
+<td>Yes — Coinbase <code>market_market_ioc</code>, <code>market_market_fok</code></td>
+</tr>
+<tr>
+<td><code>LIMIT</code></td>
+<td><code>2</code></td>
+<td>Yes — Coinbase <code>limit_limit_gtc</code>, <code>sor_limit_ioc</code>; all Hyperliquid orders</td>
+</tr>
+<tr>
+<td><code>STOP</code>, <code>STOP_LIMIT</code>, <code>BRACKET</code>, <code>TWAP</code>, <code>ROLL_OPEN</code>, <code>ROLL_CLOSE</code>, <code>LIQUIDATION</code>, <code>SCALED</code></td>
+<td><code>3</code>–<code>9</code>, <code>A</code></td>
+<td>Declared only; no gateway produces them and the engine has no handling</td>
+</tr>
+</tbody>
+</table>
+<p>A market order is represented by <code>price == NULL_PRICE</code>, which the matching loop treats as "match at
+any price".</p>
+<h3 id="timeinforce"><code>TimeInForce</code><a class="headerlink" href="#timeinforce" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Char</th>
+<th>Engine behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DAY</code></td>
+<td><code>0</code></td>
+<td>Rests on the book</td>
+</tr>
+<tr>
+<td><code>GOOD_TILL_CANCEL</code></td>
+<td><code>1</code></td>
+<td>Rests on the book</td>
+</tr>
+<tr>
+<td><code>AT_THE_OPENING</code></td>
+<td><code>2</code></td>
+<td>Not marketable-rested; falls through the <code>should_rest</code> check and is dropped</td>
+</tr>
+<tr>
+<td><code>IMMEDIATE_OR_CANCEL</code></td>
+<td><code>3</code></td>
+<td>Matches, then cancels any remainder</td>
+</tr>
+<tr>
+<td><code>FILL_OR_KILL</code></td>
+<td><code>4</code></td>
+<td>Pre-checked; cancelled outright if it cannot fill completely</td>
+</tr>
+<tr>
+<td><code>GOOD_TILL_CROSSING</code></td>
+<td><code>5</code></td>
+<td>Same as <code>AT_THE_OPENING</code> — not rested</td>
+</tr>
+<tr>
+<td><code>GOOD_TILL_DATE</code></td>
+<td><code>6</code></td>
+<td>Rests on the book. <code>AddOrderMessage::expire_time</code> exists but no expiry is ever enforced</td>
+</tr>
+</tbody>
+</table>
+<h3 id="exectype-and-orderstatus"><code>ExecType</code> and <code>OrderStatus</code><a class="headerlink" href="#exectype-and-orderstatus" title="Permanent link">&para;</a></h3>
+<p><code>ExecType</code>: <code>NEW</code> <code>0</code>, <code>CANCELED</code> <code>4</code>, <code>REPLACED</code> <code>5</code>, <code>PENDING_CANCEL</code> <code>6</code>, <code>REJECTED</code> <code>8</code>,
+<code>EXPIRED</code> <code>C</code>, <code>PENDING_REPLACE</code> <code>E</code>, <code>TRADE</code> <code>F</code>, <code>TRADE_CORRECT</code> <code>G</code>, <code>TRADE_CANCEL</code> <code>H</code>,
+<code>ORDER_STATUS</code> <code>I</code>, <code>RESTATED</code> <code>D</code>.</p>
+<p><code>OrderStatus</code>: <code>NEW</code> <code>0</code>, <code>PARTIALLY_FILLED</code> <code>1</code>, <code>FILLED</code> <code>2</code>, <code>DONE_FOR_DAY</code> <code>3</code>, <code>CANCELED</code> <code>4</code>,
+<code>REPLACED</code> <code>5</code>, <code>PENDING_CANCEL</code> <code>6</code>, <code>STOPPED</code> <code>7</code>, <code>REJECTED</code> <code>8</code>, <code>SUSPENDED</code> <code>9</code>, <code>PENDING_NEW</code>
+<code>A</code>, <code>CALCULATED</code> <code>B</code>, <code>EXPIRED</code> <code>C</code>, <code>ACCEPTED_FOR_BIDDING</code> <code>D</code>, <code>PENDING_REPLACE</code> <code>E</code>.</p>
+<p>Only a subset is ever produced: <code>PENDING_NEW</code>, <code>NEW</code>, <code>PARTIALLY_FILLED</code>, <code>FILLED</code>, <code>PENDING_REPLACE</code>,
+<code>REPLACED</code>, <code>PENDING_CANCEL</code>, <code>CANCELED</code>, <code>REJECTED</code>.</p>
+<h3 id="ordrejectreason"><code>OrdRejectReason</code><a class="headerlink" href="#ordrejectreason" title="Permanent link">&para;</a></h3>
+<p>Twenty-two values are declared. These are the ones actually raised:</p>
+<table>
+<thead>
+<tr>
+<th>Reason</th>
+<th>Raised by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UNKNOWN_CONTRACT</code></td>
+<td><code>handleNewOrderRequest</code> / <code>handleModifyOrderRequest</code> / <code>handleCancelOrderRequest</code> when <code>SymbolManager</code> has no such symbol</td>
+</tr>
+<tr>
+<td><code>UNKNOWN_ORDER</code></td>
+<td>Modify or cancel where neither <code>client_order_id</code> nor <code>order_id</code> resolves</td>
+</tr>
+<tr>
+<td><code>CLIENT_ORDER_ID_ALREADY_EXISTS</code></td>
+<td>New order whose <code>client_order_id</code> is already live</td>
+</tr>
+<tr>
+<td><code>SMP</code></td>
+<td><code>FifoMatchingEngine</code> under <code>CANCEL_NEWEST</code> when a self-match is detected</td>
+</tr>
+<tr>
+<td><code>FOK_CANNOT_FILL</code></td>
+<td>FOK pre-check failure. Returned to <code>Symbol</code> but deliberately <em>not</em> turned into a client reject</td>
+</tr>
+</tbody>
+</table>
+<p>The remaining values — <code>MARKET_CLOSED</code>, <code>MARKET_HALTED</code>, <code>INVALID_TICK_SIZE</code>, <code>INVALID_QTY</code>,
+<code>FAK_MUST_BE_LIMIT</code>, the iceberg and stop-price reasons, and so on — are declared and stringified but
+never raised. Tick-size and minimum-quantity checks do exist, but they live in the Coinbase REST
+gateway (<code>validate_order</code>) and return HTTP 400 with Coinbase's own error strings rather than an
+<code>OrdRejectReason</code>.</p>
+<h3 id="cxlrejectreason-businessrejectreason-sessionrejectreason"><code>CxlRejectReason</code>, <code>BusinessRejectReason</code>, <code>SessionRejectReason</code><a class="headerlink" href="#cxlrejectreason-businessrejectreason-sessionrejectreason" title="Permanent link">&para;</a></h3>
+<p>Declared in <code>messages.hpp</code> with <code>to_string</code> helpers. Nothing in the current code produces any of
+them — <code>OrderResponse</code> has no field of these types. They belong to the unused FIX/TCP gateway.</p>
+<h3 id="selfmatchpreventionmode"><code>SelfMatchPreventionMode</code><a class="headerlink" href="#selfmatchpreventionmode" title="Permanent link">&para;</a></h3>
+<p><code>NONE</code> (0), <code>CANCEL_RESTING</code> (1), <code>CANCEL_NEWEST</code> (2). Stored per-<code>Symbol</code> in <code>smp_mode_</code>, which is
+initialised to <code>NONE</code> and never assigned outside tests. See
+<a href="../matching-engine/#self-match-prevention">Matching engine</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      MIT licensed
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/SlickQuant/slick-sim" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "toc.follow", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

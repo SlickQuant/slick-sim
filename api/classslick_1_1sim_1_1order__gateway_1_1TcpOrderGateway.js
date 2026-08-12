@@ -1,0 +1,26 @@
+var classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway =
+[
+    [ "OrderCallback", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a866e468708edc506e89b8eebd95c6b21", null ],
+    [ "TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a7e9a789442a9c45f16691ed278fe4fe0", null ],
+    [ "~TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a87eb7529a12c6314cd5a8054872e9e92", null ],
+    [ "create_parser_for_client", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a3c0cd7d4c64cb5804873806304c82eeb", null ],
+    [ "enable_auto_protocol_detection", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a8750d77b14b155b879280cd9c06906a9", null ],
+    [ "get_active_client_count", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a8977d67db827345e98a2eca811fa1780", null ],
+    [ "get_client_protocols", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a4a4ab643208520fe06bb3b7cf5ea3eb7", null ],
+    [ "get_request_queue", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#ad75e848733f1e483c26bf73a4240bd60", null ],
+    [ "get_response_queue", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a68a5dcc69ecef4fb47d5a5e278751ff2", null ],
+    [ "onClientConnected", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a609257c3111045296f2ebc9a3e6028db", null ],
+    [ "onClientData", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#ac9476b37e513f051ebb41b6d04f43d46", null ],
+    [ "onClientDisconnected", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#afbc9140921f3456e9c8c74d95916cb12", null ],
+    [ "process_message_result", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#ae09bfa51631233c744ac35da4b0e059c", null ],
+    [ "send_execution_report", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a933ea7d696d401cb24fb7335b245d5cf", null ],
+    [ "set_client_protocol", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#ac68a576e101e72e583fda00f8cd97839", null ],
+    [ "set_order_callback", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a6f54c651a336136755195abd5443af89", null ],
+    [ "start", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a1c9a9e1a018ce59a089b4b6ccbb5c3fb", null ],
+    [ "stop", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a61df67003246adf7311d24ae74ef65aa", null ],
+    [ "auto_detect_protocol_", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a7dbb94581dbc804fb730906743990f5b", null ],
+    [ "client_protocol_overrides_", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a6943eebbacf51fd97e8b1ea12c35b5c8", null ],
+    [ "clients_", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a9908ef75f539810bdad4e022bbfd0385", null ],
+    [ "default_protocol_", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a5b0c0ce01c7aaf17f69d35feb3830d32", null ],
+    [ "order_callback_", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#ad3ffd26ac3521d3d5168ad6a4b684ca9", null ]
+];
