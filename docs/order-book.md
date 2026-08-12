@@ -1,7 +1,7 @@
 # Order book
 
 `slick::sim::OrderBook`
-([`src/order_book/order_book.hpp`](https://github.com/SlickTech/exchange_simulator/blob/main/src/order_book/order_book.hpp))
+([`src/order_book/order_book.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_book/order_book.hpp))
 wraps the external
 [slick-orderbook](https://github.com/SlickQuant/slick-orderbook) L3 book and adds the one thing the
 simulator needs that a plain book does not: the ability to hold **real-market liquidity and simulated

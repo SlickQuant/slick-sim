@@ -36,7 +36,7 @@ keep such a block `"enabled": false`, as the committed sample's `cme` entry is.
 
 ## Per-exchange keys
 
-Read by the [`Exchange` base constructor](https://github.com/SlickTech/exchange_simulator/blob/main/src/exchange/exchange.cpp#L17-L32)
+Read by the [`Exchange` base constructor](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L17-L32)
 and `main.cpp`, so they apply to every venue.
 
 | Key | Type | Default | Notes |

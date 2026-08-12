@@ -125,7 +125,7 @@ producer for that queue just as the gateways are.
 ## Library targets
 
 The build produces one executable, `slick-sim`, from
-[`src/sim/main.cpp`](https://github.com/SlickTech/exchange_simulator/blob/main/src/sim/main.cpp),
+[`src/sim/main.cpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/sim/main.cpp),
 linked against a handful of static libraries.
 
 | Target | Directory | Responsibility |
@@ -197,7 +197,7 @@ the same pattern with a 200 ms timeout.
 ## Queue topology
 
 Three `slick::queue` instances per exchange, constructed in the
-[`Exchange` constructor](https://github.com/SlickTech/exchange_simulator/blob/main/src/exchange/exchange.cpp#L17-L32):
+[`Exchange` constructor](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L17-L32):
 
 ```cpp
 request_queue_ (config.value("request_queue_size",  1048576), …)
@@ -236,7 +236,7 @@ memory, which would let an external process attach to the same queue. These keys
 
 ## Symbol management
 
-[`SymbolManager`](https://github.com/SlickTech/exchange_simulator/blob/main/src/common/symbol_manager.hpp)
+[`SymbolManager`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/symbol_manager.hpp)
 is a **process-wide singleton**, not per-exchange:
 
 ```cpp

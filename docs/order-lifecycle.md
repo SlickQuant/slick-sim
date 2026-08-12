@@ -59,7 +59,7 @@ gateway's uWS event loop is not serving anyone else.
 ### 1. Gateway to `Request`
 
 Each gateway translates its venue's wire format into the internal
-[`Request`](https://github.com/SlickTech/exchange_simulator/blob/main/src/common/messages.hpp#L264-L279),
+[`Request`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/messages.hpp#L264-L279),
 a packed struct with a union payload:
 
 ```cpp
@@ -97,7 +97,7 @@ overflows.
 
 ### 3. New order
 
-[`handleNewOrderRequest`](https://github.com/SlickTech/exchange_simulator/blob/main/src/exchange/exchange.cpp#L95-L149):
+[`handleNewOrderRequest`](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L95-L149):
 
 1. Look up the `Symbol` by name; reject with `UNKNOWN_CONTRACT` if absent. A symbol only exists once
    something has subscribed to its market data, so **orders for an instrument nobody has subscribed
@@ -137,7 +137,7 @@ report, and returns the `Order` to the pool.
 ## Response path
 
 Everything the client hears comes back as an
-[`OrderResponse`](https://github.com/SlickTech/exchange_simulator/blob/main/src/common/messages.hpp#L281-L305)
+[`OrderResponse`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/messages.hpp#L281-L305)
 on `response_queue_`. There are two families of producer:
 
 **Pending reports**, sent by `Exchange` before the engine runs:
@@ -170,7 +170,7 @@ on `response_queue_`. There are two families of producer:
 
 ## Reference: the `Order` struct
 
-[`src/common/order.hpp`](https://github.com/SlickTech/exchange_simulator/blob/main/src/common/order.hpp#L253-L321).
+[`src/common/order.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/order.hpp#L253-L321).
 The fields that carry meaning beyond their names:
 
 | Field | Meaning |
@@ -192,8 +192,8 @@ Quantities and prices are fixed-point `int_fast64_t` scaled by 1e8 — see
 
 ## Reference: enums
 
-All from [`src/common/order.hpp`](https://github.com/SlickTech/exchange_simulator/blob/main/src/common/order.hpp)
-and [`src/common/messages.hpp`](https://github.com/SlickTech/exchange_simulator/blob/main/src/common/messages.hpp).
+All from [`src/common/order.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/order.hpp)
+and [`src/common/messages.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/messages.hpp).
 Character values follow FIX conventions.
 
 ### `Side`

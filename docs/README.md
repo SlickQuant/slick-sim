@@ -55,5 +55,5 @@ something other than what their surroundings suggest. Everything known is collec
 
 ## Elsewhere
 
-- [API reference](https://slicktech.github.io/exchange_simulator/api/) — Doxygen-generated C++ reference for `src/`.
-- [Repository README](https://github.com/SlickTech/exchange_simulator/blob/main/README.md) — prerequisites, build instructions, CI and release process.
+- [API reference](https://slickquant.github.io/slick-sim/api/) — Doxygen-generated C++ reference for `src/`.
+- [Repository README](https://github.com/SlickQuant/slick-sim/blob/main/README.md) — prerequisites, build instructions, CI and release process.

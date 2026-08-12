@@ -16,7 +16,7 @@ returned synchronously in the `/exchange` HTTP reply, or not at all.
 
 Both ports serve `POST /info`, and neither answers it locally. Requests are relayed **verbatim** to
 the real Hyperliquid API and the response is passed straight back
-([`hyperliquid_info_proxy.hpp`](https://github.com/SlickTech/exchange_simulator/blob/main/src/common/hyperliquid_info_proxy.hpp)).
+([`hyperliquid_info_proxy.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/hyperliquid_info_proxy.hpp)).
 
 This exists so a `hyperliquid-cpp` client can point its `base_url` at either simulator port and still
 have `load_meta()` and `canonical_coin()` return real production metadata — asset universe, tick
