@@ -125,20 +125,35 @@ symbol that already has an active subscription on the first.
 Also implement `handleMdUnsubscription` for symmetry, but know that
 [the request loop never calls it](known-gaps.md#market-data-unsubscribe-requests-are-dropped).
 
-### Feed callbacks and thread safety
+### Feed callbacks
 
-The rule: **feed callbacks must not touch the order book.** They run on the SDK's network thread; the
-book is owned by the exchange thread. Queue the payload and let the exchange thread apply it.
+**Configure the venue SDK for user-thread dispatch, and pump it from the exchange loop.** Both
+existing adapters do this, and it is what keeps the whole market-data path single-threaded and
+lock-free:
+
+| Venue | Mechanism | Pumped by |
+| --- | --- | --- |
+| Coinbase | Implement `coinbase::UserThreadWebsocketCallbacks`; the WS client fills a `slick::stream_buffer_multiplexer` | `processData()` in the exchange loop |
+| Hyperliquid | Construct `hyperliquid::Info` with `user_thread_dispatch = true` | `getInfo()->dispatch(100)` in `drainEventQueue()` |
+
+With that in place the SDK's network thread only buffers bytes, and your callbacks fire **on the
+exchange thread** — so they may touch the book directly. If your SDK offers no such mode and insists
+on calling back from its own thread, then you must enqueue and drain, because the book has no locking
+whatsoever.
+
+The existing adapters still queue events, but for **sequencing**, not thread safety:
 
 ```cpp
 void KrakenExchange::onBookUpdate(const nlohmann::json& msg) {
-    event_queue_.push_back({FeedEvent::Type::BOOK, msg});   // WS thread: enqueue only
+    event_queue_.push_back({FeedEvent::Type::BOOK, msg});   // deferred, not cross-thread
 }
 ```
 
-Hyperliquid uses a plain `std::vector<FeedEvent>` drained each loop iteration; Coinbase uses a
-per-symbol `std::priority_queue` to re-order by exchange timestamp. Pick based on whether your venue
-can deliver out-of-order events — see [Market data](market-data.md#coinbase-time-ordered-event-sequencing).
+Hyperliquid uses a plain `std::vector<FeedEvent>` drained immediately after the `dispatch()` call
+that filled it, which keeps book mutation out of the SDK's callback re-entrancy. Coinbase uses a
+per-symbol `std::priority_queue` to re-order by exchange timestamp, because its channels can deliver
+out of order — see [Market data](market-data.md#coinbase-time-ordered-event-sequencing). Pick based on
+what your venue actually needs; a venue that delivers in order needs neither.
 
 ### Applying book updates
 

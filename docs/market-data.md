@@ -86,9 +86,10 @@ struct SymbolEventState {
 `EventCompare` orders by `event_time` ascending, tie-broken by the internal `sequence_id` so events
 with identical exchange timestamps keep arrival order.
 
-The WS callbacks (`onLevel2Updates`, `onMarketTrades`) only push into this queue — they never touch
-the book. Release happens on the exchange thread in `processSequencedEvents()`, which pops an event
-only when one of two conditions holds:
+The callbacks (`onLevel2Updates`, `onMarketTrades`) only push into this queue — they never touch the
+book. They already run on the exchange thread, delivered by `processData()`, so this is buffering for
+**ordering**, not for thread safety. Release happens later in the same loop iteration, in
+`processSequencedEvents()`, which pops an event only when one of two conditions holds:
 
 ```cpp
 // 1. a full second of newer data has arrived, so nothing older can still be in flight
@@ -111,8 +112,9 @@ or adjusts an existing one via the `getMDLevelQty` delta logic described in
 Level and trade updates are batched into `level_update_buffer_` / `trade_update_buffer_` and flushed
 to `md_queue_` when the sequence number changes, so one upstream batch becomes one downstream message.
 
-Snapshots take a different route entirely: `onLevel2Snapshot` runs **on the WS thread** and mutates
-the book directly rather than going through the priority queue.
+Snapshots take a different route: `onLevel2Snapshot` mutates the book directly rather than going
+through the priority queue — safe to do, since it is on the exchange thread like everything else, and
+correct because a snapshot is authoritative and supersedes anything still queued.
 
 ## Hyperliquid: L2 diffs and index resolution
 
