@@ -45,7 +45,7 @@ build/
 out/
 
 # Documentation build output
-# (Doxygen writes to build/doxygen/, already covered by build/)
+doxygen-out/
 site/
 .cache/
 Doxyfile

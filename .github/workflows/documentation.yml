@@ -78,7 +78,7 @@ jobs:
     - name: Assemble combined site
       run: |
         mkdir -p site/api
-        cp -r build/doxygen/html/. site/api/
+        cp -r doxygen-out/html/. site/api/
         test -f site/index.html
         test -f site/api/index.html
 

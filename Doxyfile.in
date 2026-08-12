@@ -18,7 +18,13 @@ PROJECT_LOGO           =
 
 # NOTE: not docs/api — docs/ is MkDocs' docs_dir, and generated HTML landing
 # there would be swept into the MkDocs site build.
-OUTPUT_DIRECTORY       = build/doxygen
+#
+# Keep this a SINGLE path component. Doxygen creates only the last component of
+# OUTPUT_DIRECTORY, so a nested path like build/doxygen fails outright in a
+# fresh checkout where build/ does not exist yet:
+#   error: tag OUTPUT_DIRECTORY: Output directory 'build/doxygen' does not
+#          exist and cannot be created
+OUTPUT_DIRECTORY       = doxygen-out
 
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
@@ -170,7 +176,8 @@ HTML_COLORSTYLE_GAMMA  = 80
 HTML_DYNAMIC_MENUS     = YES
 HTML_DYNAMIC_SECTIONS  = NO
 HTML_CODE_FOLDING      = YES
-HTML_COPY_CLIPBOARD    = YES
+# HTML_COPY_CLIPBOARD requires Doxygen 1.10+; Ubuntu's apt ships 1.9.8, which
+# warns and ignores it. Left out so the CI log stays clean.
 HTML_INDEX_NUM_ENTRIES = 100
 GENERATE_DOCSET        = NO
 GENERATE_HTMLHELP      = NO

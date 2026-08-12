@@ -268,10 +268,11 @@ Differences from the real Coinbase feed worth planning around:
 - `PENDING_NEW` reports are filtered out, so the first thing you see for an order is its `NEW` ack.
 - Numeric fields use `std::to_string`, which gives fixed six-decimal formatting (`"60000.000000"`),
   not Coinbase's variable precision.
-- `total_fees` is display-only — no fee is ever applied to the order. The rate is fetched once at
-  gateway construction via `CoinbaseRestClient::get_taker_fee_rate()`, falling back to the 0.0012
-  (0.12%) default initialiser if that call fails. Note the source comment next to it says "1.2%",
-  which is off by a factor of ten.
+- `total_fees` is display-only — no fee is ever applied to the order. The rate comes from a single
+  unguarded `CoinbaseRestClient::get_taker_fee_rate()` call in the gateway constructor, which
+  **unconditionally overwrites** the `fee_rate_ = 0.0012` member initialiser — so that value is a
+  declaration default, not a fallback, and whatever the call returns on failure is what you get.
+  (The source comment beside it reads "1.2%"; 0.0012 is 0.12%.)
 - `completion_percentage` divides by the raw fixed-point `qty`, not the scaled value, so the number is
   wrong by a factor of 1e8.
 - `number_of_fills` is derived as `cum_qty / last_qty` rather than the tracked `num_fills`.
