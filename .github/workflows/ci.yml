@@ -80,6 +80,37 @@ jobs:
       working-directory: build
       run: ctest -C ${{ matrix.build_type }} --output-on-failure
 
+    # The Linux Release job intermittently dies with SIGILL inside the tests that
+    # construct an Exchange or a gateway; ctest only reports "Exception: Illegal"
+    # with no location. Re-run the failures under gdb to capture where and on
+    # which thread, since the crash cannot be reproduced on Windows or in Debug.
+    - name: Capture backtrace on test failure (Linux)
+      if: failure() && runner.os == 'Linux'
+      working-directory: build
+      run: |
+        sudo apt-get update && sudo apt-get install -y gdb
+        ulimit -c unlimited
+        # Ask ctest which tests failed, then run each under gdb.
+        failed=$(ctest -C ${{ matrix.build_type }} -N --rerun-failed 2>/dev/null \
+                 | sed -n 's/^ *Test *#[0-9]*: //p' | head -5)
+        if [ -z "$failed" ]; then
+          echo "ctest reported no rerun-failed list; falling back to the first exchange test"
+          failed="HyperliquidRestTest.PlaceOrder_BuyLimit_Gtc_ReturnsResting"
+        fi
+        for t in $failed; do
+          echo "::group::gdb backtrace for $t"
+          gdb -batch -return-child-result \
+              -ex "run" \
+              -ex "echo \n===== signal / faulting frame =====\n" \
+              -ex "bt" \
+              -ex "echo \n===== all threads =====\n" \
+              -ex "thread apply all bt" \
+              -ex "info registers rip" \
+              -ex "x/8i \$rip" \
+              --args ./tests/slick_sim_tests --gtest_filter="$t" || true
+          echo "::endgroup::"
+        done
+
     # Release-config artifacts are uploaded here so release.yml can reuse this
     # exact, already-tested build instead of recompiling from scratch on tag push.
     - name: Stage release artifact (Windows)

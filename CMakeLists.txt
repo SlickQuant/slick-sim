@@ -155,6 +155,19 @@ else()
         -Wall -Wextra -Wpedantic
         $<$<CONFIG:Release>:-O3>
         $<$<CONFIG:Release>:-flto>
+
+        # The market-data path reads and writes packed structs through a
+        # byte queue (reinterpret_cast<MarketDataUpdate*>(md_queue_[i]), then
+        # the data[0] flexible-array payload) in ~30 places. That is a strict
+        # aliasing violation, and -O3 with -flto is exactly where GCC starts
+        # acting on the assumption that those accesses cannot alias.
+        # Debug (-O0) and MSVC (conservative by default) do not, which matches
+        # where the failures show up. Keep aliasing analysis off here.
+        $<$<CONFIG:Release>:-fno-strict-aliasing>
+
+        # Negligible cost, and without it a release backtrace from the CI
+        # gdb step is often unusable.
+        $<$<CONFIG:Release>:-fno-omit-frame-pointer>
     )
     if(ENABLE_NATIVE_ARCH)
         message(STATUS "Building for the local CPU (-march=native) - binary is NOT portable")
