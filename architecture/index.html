@@ -1314,13 +1314,21 @@ unchanged and the book holds only client orders.</p>
     EX --&gt;|"response_queue"| OG
     OG --&gt;|"acks / fills / cancels"| CO
 
+    CM --&gt;|"subscribe (WS)"| MDP
+    MDP --&gt;|"request_queue"| EX
     EX --&gt;|"md_queue"| MDP
-    MDP --&gt;|"venue-native WS"| CM
-    CM --&gt;|"subscribe (request_queue)"| OG</code></pre>
-<p>Note that <code>order_gateway</code> is bidirectional and independent of the market-data path: it accepts orders
-on one side and returns execution reports on the other, both over the same client connection.
-Market-data subscriptions from the publisher also travel on <code>request_queue</code> — the publisher is a
-producer for that queue just as the gateways are.</p>
+    MDP --&gt;|"venue-native WS"| CM</code></pre>
+<p>The two client-facing paths are fully independent, and each is bidirectional:</p>
+<ul>
+<li><strong>Order entry</strong> — <code>order_gateway</code> accepts orders from the client and returns acks, fills, cancels
+  and rejects to that same client, over the same connection.</li>
+<li><strong>Market data</strong> — <code>market_data_publisher</code> accepts <code>subscribe</code>/<code>unsubscribe</code> messages from the client
+  and streams book and trade updates back.</li>
+</ul>
+<p>A client's <strong>subscription request never touches <code>order_gateway</code></strong>. The publisher receives it on its
+own WebSocket and writes an <code>MD_SUBSCRIPTION</code> <code>Request</code> onto <code>request_queue_</code> itself — so the
+publisher is a producer for that queue exactly as the gateways are, and <code>Exchange::processRequest</code>
+sees order requests and subscription requests interleaved on one queue.</p>
 <h2 id="library-targets">Library targets<a class="headerlink" href="#library-targets" title="Permanent link">&para;</a></h2>
 <p>The build produces one executable, <code>slick-sim</code>, from
 <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/sim/main.cpp"><code>src/sim/main.cpp</code></a>,
@@ -1441,6 +1449,11 @@ threads and invoke callbacks from them.</p>
 <td><code>CoinbasePublisher::publish_*</code>, <code>HyperliquidPublisher::publish_*</code></td>
 <td>Publisher's uWS loop thread</td>
 <td>Read <code>md_queue</code>, write to client sockets</td>
+</tr>
+<tr>
+<td><code>CoinbasePublisher::handle_message</code>, <code>HyperliquidPublisher::handle_message</code></td>
+<td>Publisher's uWS loop thread</td>
+<td>Client <code>subscribe</code>/<code>unsubscribe</code> — writes <code>MD_SUBSCRIPTION</code> to <code>request_queue</code></td>
 </tr>
 </tbody>
 </table>
