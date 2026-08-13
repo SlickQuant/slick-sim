@@ -148,6 +148,11 @@ void CoinbaseExchange::handleMdSubscription(const Request &request)
                 populateMDTradesResponse(symbol);
                 break;
             }
+            case coinbase::WebSocketChannel::HEARTBEATS:
+                break;
+            default:
+                LOG_WARN("Unsupported channel {} for symbol {}", static_cast<int>(msg.channel), sym);
+                return;
             }
         }
         symbol->num_subscriptions_.fetch_add(1, std::memory_order_relaxed);

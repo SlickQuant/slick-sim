@@ -39,7 +39,7 @@ public:
     void onMarketDataGap(WebSocketClient* client) override;
     void onUserDataGap(WebSocketClient* client) override;
     void onUserDataSnapshot(WebSocketClient* /* client */, uint64_t /* seq_num */, const std::vector<coinbase::Order>& /* orders */, const std::vector<coinbase::PerpetualFuturePosition>& /* perpetual_future_positions */, const std::vector<coinbase::ExpiringFuturePosition>& /* expiring_future_positions */) override {}
-    void onOrderUpdates(WebSocketClient* /* /* client */, uint64_t /* seq_num */, const std::vector<coinbase::Order>& /* orders */) override {}
+    void onOrderUpdates(WebSocketClient* /* client */, uint64_t /* seq_num */, const std::vector<coinbase::Order>& /* orders */) override {}
     void onMarketDataError(WebSocketClient* client, std::string &&err) override;
     void onUserDataError(WebSocketClient* client, std::string &&err) override;
 

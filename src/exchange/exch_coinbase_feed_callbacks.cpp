@@ -141,7 +141,9 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
                 .qty = qty,
                 .num_orders = 1,
                 .flags = static_cast<UpdateFlags>(UpdateFlags::F_IS_SNAPSHOT | (it_update == it_last ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE)),
-                .side = side});
+                .side = side
+                .update_action = MDUpdateAction::ACTION_NEW 
+            });
         }
 
         if (update.event_time > symbol->order_book_->lastUpdateTime())
