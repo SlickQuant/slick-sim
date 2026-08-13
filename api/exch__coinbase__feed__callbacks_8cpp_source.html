@@ -250,225 +250,227 @@ $(document).ready(function(){initNavTree('exch__coinbase__feed__callbacks_8cpp_s
 <div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                .qty = qty,</div>
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                .num_orders = 1,</div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                .flags = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167">UpdateFlags</a><span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7">UpdateFlags::F_IS_SNAPSHOT</a> | (it_update == it_last ? <a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618">UpdateFlags::F_END_EVENT</a> : <a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a5312d89052881b198755a298d6f09f10">UpdateFlags::F_NONE</a>)),</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                .side = side});</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        }</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordflow">if</span> (update.event_time &gt; symbol-&gt;order_book_-&gt;lastUpdateTime())</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        {</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            symbol-&gt;order_book_-&gt;setLastUpdate(update.event_time, seq_num);</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        }</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    }</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">if</span> (it != pending_l2_subscriptions.end())</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    {</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        symbol-&gt;order_book_-&gt;populateL2SubscriptionResponse(<a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>, coinbase::WebSocketChannel::LEVEL2);</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        pending_l2_subscriptions.erase(it);</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        symbol-&gt;md_level_update_cache_.clear();</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="comment">// TODO: publish MD order update</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        symbol-&gt;md_order_update_cache_.clear();</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    }</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    {</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        symbol-&gt;order_book_-&gt;populateL2Snapshot(<a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>);</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        symbol-&gt;md_level_update_cache_.clear();</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="comment">// TODO: publish MD order update</span></div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        symbol-&gt;md_order_update_cache_.clear();</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    }</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="comment">// publishMDBookUpdate(symbol-&gt;id_, *symbol-&gt;order_book_.get(), indices);</span></div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    LOG_DEBUG(symbol-&gt;order_book_-&gt;to_string());</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>}</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                .side = side</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                .update_action = <a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#ab1e934b8e03a21e64365d200420af2b7aaefbb6e53def2794848582ea6aeee4f5">MDUpdateAction::ACTION_NEW</a> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            });</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keywordflow">if</span> (update.event_time &gt; symbol-&gt;order_book_-&gt;lastUpdateTime())</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        {</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            symbol-&gt;order_book_-&gt;setLastUpdate(update.event_time, seq_num);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">if</span> (it != pending_l2_subscriptions.end())</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        symbol-&gt;order_book_-&gt;populateL2SubscriptionResponse(<a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>, coinbase::WebSocketChannel::LEVEL2);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        pending_l2_subscriptions.erase(it);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        symbol-&gt;md_level_update_cache_.clear();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="comment">// TODO: publish MD order update</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        symbol-&gt;md_order_update_cache_.clear();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    {</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        symbol-&gt;order_book_-&gt;populateL2Snapshot(<a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        symbol-&gt;md_level_update_cache_.clear();</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="comment">// TODO: publish MD order update</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        symbol-&gt;md_order_update_cache_.clear();</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="comment">// publishMDBookUpdate(symbol-&gt;id_, *symbol-&gt;order_book_.get(), indices);</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    LOG_DEBUG(symbol-&gt;order_book_-&gt;to_string());</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>}</div>
 </div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
-<div class="foldopen" id="foldopen00173" data-start="{" data-end="}">
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1b5638601d15f8cbc3c4da9f49953dc4">  173</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1b5638601d15f8cbc3c4da9f49953dc4">CoinbaseExchange::onLevel2Updates</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>, uint64_t seq_num, <span class="keyword">const</span> coinbase::Level2UpdateBatch &amp;update_batch)</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>{</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">auto</span> *symbol = sym_mgr.getSymbol(update_batch.product_id);</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">if</span> (!symbol) [[unlikely]]</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    {</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    }</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="comment">// Get or create event state for this symbol</span></div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keyword">auto</span> &amp;state = symbol_event_state_[symbol];</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="comment">// Add each update to per-symbol pending_events queue</span></div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = update_batch.updates.rbegin(), it_last = std::prev(update_batch.updates.rend()); it != update_batch.updates.rend(); ++it)</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    {</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keyword">auto</span> &amp;update = *it;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        Event evt;</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        evt.type = <a class="code hl_enumvalue" href="namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a7d3d2ab47ce9fd37525aa4edfdf9ccec">EventType::LEVEL_UPDATE</a>;</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        evt.event_time = update.event_time;         <span class="comment">// Use Coinbase timestamp</span></div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        evt.sequence_id = state.next_sequence_id++; <span class="comment">// Internal counter</span></div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        evt.seq_num = seq_num;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        evt.received_time = <a class="code hl_function" href="namespaceslick_1_1sim_1_1utils.html#ab973c672ea8ff8355bc6eee320d3a3cf">utils::get_current_time_ns</a>();</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        evt.price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(update.price_level);</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        evt.qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(update.new_quantity);</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        evt.side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(update.side);</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        evt.flags = it == it_last ? <a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618">UpdateFlags::F_END_EVENT</a> : <a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a5312d89052881b198755a298d6f09f10">UpdateFlags::F_NONE</a>;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="comment">// Update last_event_time to track latest event_time seen</span></div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">if</span> (state.last_event_time &lt; evt.event_time)</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        {</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            state.last_event_time = evt.event_time;</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        }</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="comment">// LOG_DEBUG(&quot;Received L2 update for symbol {}: price={}, qty={}, side={}, event_time={}, seq_num={}, flags={}&quot;,</span></div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="comment">//     symbol-&gt;symbol_, evt.price, evt.qty, evt.side, evt.event_time, evt.seq_num, evt.flags);</span></div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="comment">// Add to per-symbol priority queue</span></div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        state.pending_events.push(std::move(evt));</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    }</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>}</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="foldopen" id="foldopen00175" data-start="{" data-end="}">
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1b5638601d15f8cbc3c4da9f49953dc4">  175</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1b5638601d15f8cbc3c4da9f49953dc4">CoinbaseExchange::onLevel2Updates</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>, uint64_t seq_num, <span class="keyword">const</span> coinbase::Level2UpdateBatch &amp;update_batch)</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>{</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keyword">auto</span> *symbol = sym_mgr.getSymbol(update_batch.product_id);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordflow">if</span> (!symbol) [[unlikely]]</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    }</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="comment">// Get or create event state for this symbol</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keyword">auto</span> &amp;state = symbol_event_state_[symbol];</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="comment">// Add each update to per-symbol pending_events queue</span></div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = update_batch.updates.rbegin(), it_last = std::prev(update_batch.updates.rend()); it != update_batch.updates.rend(); ++it)</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keyword">auto</span> &amp;update = *it;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        Event evt;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        evt.type = <a class="code hl_enumvalue" href="namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a7d3d2ab47ce9fd37525aa4edfdf9ccec">EventType::LEVEL_UPDATE</a>;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        evt.event_time = update.event_time;         <span class="comment">// Use Coinbase timestamp</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        evt.sequence_id = state.next_sequence_id++; <span class="comment">// Internal counter</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        evt.seq_num = seq_num;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        evt.received_time = <a class="code hl_function" href="namespaceslick_1_1sim_1_1utils.html#ab973c672ea8ff8355bc6eee320d3a3cf">utils::get_current_time_ns</a>();</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        evt.price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(update.price_level);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        evt.qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(update.new_quantity);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        evt.side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(update.side);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        evt.flags = it == it_last ? <a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618">UpdateFlags::F_END_EVENT</a> : <a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a5312d89052881b198755a298d6f09f10">UpdateFlags::F_NONE</a>;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="comment">// Update last_event_time to track latest event_time seen</span></div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordflow">if</span> (state.last_event_time &lt; evt.event_time)</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        {</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            state.last_event_time = evt.event_time;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="comment">// LOG_DEBUG(&quot;Received L2 update for symbol {}: price={}, qty={}, side={}, event_time={}, seq_num={}, flags={}&quot;,</span></div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="comment">//     symbol-&gt;symbol_, evt.price, evt.qty, evt.side, evt.event_time, evt.seq_num, evt.flags);</span></div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="comment">// Add to per-symbol priority queue</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        state.pending_events.push(std::move(evt));</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    }</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>}</div>
 </div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
-<div class="foldopen" id="foldopen00213" data-start="{" data-end="}">
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae4d16934c8f9c3eeaef977b690e71c5a">  213</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae4d16934c8f9c3eeaef977b690e71c5a">CoinbaseExchange::onMarketTradesSnapshot</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>, uint64_t seq_num, <span class="keyword">const</span> std::vector&lt;coinbase::MarketTrade&gt; &amp;snapshots)</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>{</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keyword">auto</span> &amp;pending_subscriptions = pending_md_subscription_[coinbase::WebSocketChannel::MARKET_TRADES];</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">if</span> (pending_subscriptions.empty() || snapshots.empty())</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    {</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    }</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <a class="code hl_struct" href="structslick_1_1sim_1_1exch_1_1Symbol.html">Symbol</a> *symbol = sym_mgr.getSymbol(snapshots[0].product_id);</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordflow">if</span> (!symbol || !pending_subscriptions.contains(symbol))</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    {</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    }</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keyword">auto</span> it = trade_snapshots_.find(symbol);</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keywordflow">if</span> (it == trade_snapshots_.end())</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    {</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        it = trade_snapshots_.emplace(symbol, <a class="code hl_class" href="classslick_1_1sim_1_1utils_1_1RingBuffer.html">utils::RingBuffer&lt;Event&gt;</a>(16)).first;</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    }</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keyword">auto</span> &amp;trade_snapshot = it-&gt;second;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="foldopen" id="foldopen00215" data-start="{" data-end="}">
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae4d16934c8f9c3eeaef977b690e71c5a">  215</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae4d16934c8f9c3eeaef977b690e71c5a">CoinbaseExchange::onMarketTradesSnapshot</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>, uint64_t seq_num, <span class="keyword">const</span> std::vector&lt;coinbase::MarketTrade&gt; &amp;snapshots)</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>{</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keyword">auto</span> &amp;pending_subscriptions = pending_md_subscription_[coinbase::WebSocketChannel::MARKET_TRADES];</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">if</span> (pending_subscriptions.empty() || snapshots.empty())</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    }</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <a class="code hl_struct" href="structslick_1_1sim_1_1exch_1_1Symbol.html">Symbol</a> *symbol = sym_mgr.getSymbol(snapshots[0].product_id);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keywordflow">if</span> (!symbol || !pending_subscriptions.contains(symbol))</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    {</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    }</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keyword">auto</span> it = trade_snapshots_.find(symbol);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keywordflow">if</span> (it == trade_snapshots_.end())</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        it = trade_snapshots_.emplace(symbol, <a class="code hl_class" href="classslick_1_1sim_1_1utils_1_1RingBuffer.html">utils::RingBuffer&lt;Event&gt;</a>(16)).first;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    }</div>
 <div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keyword">auto</span> sz = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(<a class="code hl_struct" href="structslick_1_1sim_1_1MarketDataUpdate.html">MarketDataUpdate</a>) + <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structslick_1_1sim_1_1MDSubscriptionResponse.html">MDSubscriptionResponse</a>) + <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structslick_1_1sim_1_1MDTradeUpdate.html">MDTradeUpdate</a>) + snapshots.size() * <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structslick_1_1sim_1_1MDTrade.html">MDTrade</a>));</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keyword">auto</span> index = <a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>.reserve(sz);</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keyword">auto</span> *update = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_struct" href="structslick_1_1sim_1_1MarketDataUpdate.html">MarketDataUpdate</a> *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>[index]);</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    memcpy(update-&gt;symbol, symbol-&gt;<a class="code hl_variable" href="structslick_1_1sim_1_1exch_1_1Symbol.html#af87fe19c60cb383951bd17aec64cd15d">symbol_</a>.c_str(), <span class="keyword">sizeof</span>(update-&gt;symbol));</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    update-&gt;venue = <a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a5a3fc6bccaf1054851431376c36436ad">venue_</a>;</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    update-&gt;type = <a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11ad4156d48a454a77a4455687c9fb77cae">MDUpdateType::SUB_RESPONSE</a>;</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keyword">auto</span> *response = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_struct" href="structslick_1_1sim_1_1MDSubscriptionResponse.html">MDSubscriptionResponse</a> *<span class="keyword">&gt;</span>(update-&gt;data);</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    response-&gt;<a class="code hl_variable" href="structslick_1_1sim_1_1MDSubscriptionResponse.html#a1747da5ad79072189dab284c2b37a3c3">channel</a> = coinbase::WebSocketChannel::MARKET_TRADES;</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keyword">auto</span> *snapshot = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_struct" href="structslick_1_1sim_1_1MDTradeUpdate.html">MDTradeUpdate</a> *<span class="keyword">&gt;</span>(response-&gt;data);</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    snapshot-&gt;<a class="code hl_variable" href="structslick_1_1sim_1_1MDTradeUpdate.html#a548e8598a1a69b576cf221c65a140017">num_trades</a> = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(snapshots.size());</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keyword">auto</span> *trades = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_struct" href="structslick_1_1sim_1_1MDTrade.html">MDTrade</a> *<span class="keyword">&gt;</span>(snapshot-&gt;trades);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keyword">auto</span> &amp;trade_snapshot = it-&gt;second;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keyword">auto</span> sz = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(<span class="keyword">sizeof</span>(<a class="code hl_struct" href="structslick_1_1sim_1_1MarketDataUpdate.html">MarketDataUpdate</a>) + <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structslick_1_1sim_1_1MDSubscriptionResponse.html">MDSubscriptionResponse</a>) + <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structslick_1_1sim_1_1MDTradeUpdate.html">MDTradeUpdate</a>) + snapshots.size() * <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structslick_1_1sim_1_1MDTrade.html">MDTrade</a>));</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keyword">auto</span> index = <a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>.reserve(sz);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keyword">auto</span> *update = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_struct" href="structslick_1_1sim_1_1MarketDataUpdate.html">MarketDataUpdate</a> *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>[index]);</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    memcpy(update-&gt;symbol, symbol-&gt;<a class="code hl_variable" href="structslick_1_1sim_1_1exch_1_1Symbol.html#af87fe19c60cb383951bd17aec64cd15d">symbol_</a>.c_str(), <span class="keyword">sizeof</span>(update-&gt;symbol));</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    update-&gt;venue = <a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a5a3fc6bccaf1054851431376c36436ad">venue_</a>;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    update-&gt;type = <a class="code hl_enumvalue" href="namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11ad4156d48a454a77a4455687c9fb77cae">MDUpdateType::SUB_RESPONSE</a>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keyword">auto</span> *response = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_struct" href="structslick_1_1sim_1_1MDSubscriptionResponse.html">MDSubscriptionResponse</a> *<span class="keyword">&gt;</span>(update-&gt;data);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    response-&gt;<a class="code hl_variable" href="structslick_1_1sim_1_1MDSubscriptionResponse.html#a1747da5ad79072189dab284c2b37a3c3">channel</a> = coinbase::WebSocketChannel::MARKET_TRADES;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keyword">auto</span> *snapshot = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_struct" href="structslick_1_1sim_1_1MDTradeUpdate.html">MDTradeUpdate</a> *<span class="keyword">&gt;</span>(response-&gt;data);</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    snapshot-&gt;<a class="code hl_variable" href="structslick_1_1sim_1_1MDTradeUpdate.html#a548e8598a1a69b576cf221c65a140017">num_trades</a> = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(snapshots.size());</div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keyword">auto</span> &amp;state = symbol_event_state_[symbol];</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keyword">auto</span> *trades = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_struct" href="structslick_1_1sim_1_1MDTrade.html">MDTrade</a> *<span class="keyword">&gt;</span>(snapshot-&gt;trades);</div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="comment">// Coinbase trades are in reverse chronological order</span></div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span>int32_t<span class="keyword">&gt;</span>(snapshots.size()) - 1; i &gt;= 0; i--)</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    {</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;trade = snapshots[i];</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        trades-&gt;price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(trade.price);</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        trades-&gt;qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(trade.size);</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        trades-&gt;side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(trade.side);</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="comment">// Store in trade history ring buffer</span></div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        Event evt;</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        evt.type = <a class="code hl_enumvalue" href="namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a3a5373f7c1598b9e251273833f5bca21">EventType::TRADE</a>;</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        evt.event_time = trade.time;</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        evt.seq_num = seq_num;</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        evt.sequence_id = state.next_sequence_id++;</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        evt.received_time = <a class="code hl_function" href="namespaceslick_1_1sim_1_1utils.html#ab973c672ea8ff8355bc6eee320d3a3cf">utils::get_current_time_ns</a>();</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        evt.price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(trade.price);</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        evt.qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(trade.size);</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        evt.side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(trade.side);</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        trade_snapshot.emplace(std::move(evt));</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        trades++;</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    }</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;trade : snapshots)</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    {</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        trades-&gt;price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(trade.price);</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        trades-&gt;qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(trade.size);</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        trades-&gt;side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(trade.side);</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        trades++;</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    }</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>.publish(index, sz);</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    pending_subscriptions.erase(symbol);</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>}</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keyword">auto</span> &amp;state = symbol_event_state_[symbol];</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="comment">// Coinbase trades are in reverse chronological order</span></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> i = <span class="keyword">static_cast&lt;</span>int32_t<span class="keyword">&gt;</span>(snapshots.size()) - 1; i &gt;= 0; i--)</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    {</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;trade = snapshots[i];</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        trades-&gt;price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(trade.price);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        trades-&gt;qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(trade.size);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        trades-&gt;side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(trade.side);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="comment">// Store in trade history ring buffer</span></div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        Event evt;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        evt.type = <a class="code hl_enumvalue" href="namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a3a5373f7c1598b9e251273833f5bca21">EventType::TRADE</a>;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        evt.event_time = trade.time;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        evt.seq_num = seq_num;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        evt.sequence_id = state.next_sequence_id++;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        evt.received_time = <a class="code hl_function" href="namespaceslick_1_1sim_1_1utils.html#ab973c672ea8ff8355bc6eee320d3a3cf">utils::get_current_time_ns</a>();</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        evt.price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(trade.price);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        evt.qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(trade.size);</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        evt.side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(trade.side);</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        trade_snapshot.emplace(std::move(evt));</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        trades++;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    }</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;trade : snapshots)</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    {</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        trades-&gt;price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(trade.price);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        trades-&gt;qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(trade.size);</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        trades-&gt;side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(trade.side);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        trades++;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    }</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <a class="code hl_variable" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">md_queue_</a>.publish(index, sz);</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    pending_subscriptions.erase(symbol);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>}</div>
 </div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
-<div class="foldopen" id="foldopen00284" data-start="{" data-end="}">
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#af1a17de031e85308e127948b9261ff6b">  284</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#af1a17de031e85308e127948b9261ff6b">CoinbaseExchange::onMarketTrades</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>, uint64_t seq_num, <span class="keyword">const</span> std::vector&lt;coinbase::MarketTrade&gt; &amp;trades)</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>{</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;trade : trades)</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    {</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        <span class="keyword">auto</span> *symbol = sym_mgr.getSymbol(trade.product_id);</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        <span class="keywordflow">if</span> (!symbol) [[unlikely]]</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        {</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        }</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="comment">// Get or create event state for this symbol</span></div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        <span class="keyword">auto</span> &amp;state = symbol_event_state_[symbol];</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        Event evt;</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        evt.type = <a class="code hl_enumvalue" href="namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a3a5373f7c1598b9e251273833f5bca21">EventType::TRADE</a>;</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        evt.event_time = trade.time;</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        evt.seq_num = seq_num;</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        evt.sequence_id = state.next_sequence_id++; <span class="comment">// Internal counter</span></div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        evt.received_time = <a class="code hl_function" href="namespaceslick_1_1sim_1_1utils.html#ab973c672ea8ff8355bc6eee320d3a3cf">utils::get_current_time_ns</a>();</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>        evt.price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(trade.price);</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        evt.qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(trade.size);</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        evt.side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(trade.side);</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span> </div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        <span class="comment">// Update last_event_time to track latest event_time seen</span></div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keywordflow">if</span> (state.last_event_time &lt; evt.event_time)</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        {</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>            state.last_event_time = evt.event_time;</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        }</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span> </div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        <span class="comment">// Add to per-symbol priority queue</span></div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        state.pending_events.push(std::move(evt));</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    }</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>}</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
+<div class="foldopen" id="foldopen00286" data-start="{" data-end="}">
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#af1a17de031e85308e127948b9261ff6b">  286</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#af1a17de031e85308e127948b9261ff6b">CoinbaseExchange::onMarketTrades</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>, uint64_t seq_num, <span class="keyword">const</span> std::vector&lt;coinbase::MarketTrade&gt; &amp;trades)</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>{</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;trade : trades)</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    {</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        <span class="keyword">auto</span> *symbol = sym_mgr.getSymbol(trade.product_id);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        <span class="keywordflow">if</span> (!symbol) [[unlikely]]</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        {</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        }</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>        <span class="comment">// Get or create event state for this symbol</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="keyword">auto</span> &amp;state = symbol_event_state_[symbol];</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        Event evt;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        evt.type = <a class="code hl_enumvalue" href="namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a3a5373f7c1598b9e251273833f5bca21">EventType::TRADE</a>;</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        evt.event_time = trade.time;</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        evt.seq_num = seq_num;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>        evt.sequence_id = state.next_sequence_id++; <span class="comment">// Internal counter</span></div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        evt.received_time = <a class="code hl_function" href="namespaceslick_1_1sim_1_1utils.html#ab973c672ea8ff8355bc6eee320d3a3cf">utils::get_current_time_ns</a>();</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        evt.price = <a class="code hl_function" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a>(trade.price);</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        evt.qty = <a class="code hl_function" href="namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e">to_qty_t</a>(trade.size);</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        evt.side = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a><span class="keyword">&gt;</span>(trade.side);</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span> </div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="comment">// Update last_event_time to track latest event_time seen</span></div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keywordflow">if</span> (state.last_event_time &lt; evt.event_time)</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        {</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>            state.last_event_time = evt.event_time;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        }</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span> </div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="comment">// Add to per-symbol priority queue</span></div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        state.pending_events.push(std::move(evt));</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    }</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>}</div>
 </div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span> </div>
-<div class="foldopen" id="foldopen00318" data-start="{" data-end="}">
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae30da7a670258b110b1ae38a283eee8f">  318</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae30da7a670258b110b1ae38a283eee8f">CoinbaseExchange::onMarketDataGap</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>)</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>{</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    LOG_WARN(<span class="stringliteral">&quot;CoinbaseExchange Market Data Gap detected&quot;</span>);</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>}</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
+<div class="foldopen" id="foldopen00320" data-start="{" data-end="}">
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae30da7a670258b110b1ae38a283eee8f">  320</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae30da7a670258b110b1ae38a283eee8f">CoinbaseExchange::onMarketDataGap</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>)</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>{</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    LOG_WARN(<span class="stringliteral">&quot;CoinbaseExchange Market Data Gap detected&quot;</span>);</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>}</div>
 </div>
-<div class="foldopen" id="foldopen00322" data-start="{" data-end="}">
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#aaef3c078d72591790e773598bf618209">  322</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#aaef3c078d72591790e773598bf618209">CoinbaseExchange::onUserDataGap</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>)</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>{</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    LOG_WARN(<span class="stringliteral">&quot;CoinbaseExchange User Data Gap detected&quot;</span>);</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>}</div>
+<div class="foldopen" id="foldopen00324" data-start="{" data-end="}">
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#aaef3c078d72591790e773598bf618209">  324</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#aaef3c078d72591790e773598bf618209">CoinbaseExchange::onUserDataGap</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> * <span class="comment">/* client */</span>)</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>{</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    LOG_WARN(<span class="stringliteral">&quot;CoinbaseExchange User Data Gap detected&quot;</span>);</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>}</div>
 </div>
-<div class="foldopen" id="foldopen00326" data-start="{" data-end="}">
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a2b1d9b38c6bc7a206f4e704a6c8c3332">  326</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a2b1d9b38c6bc7a206f4e704a6c8c3332">CoinbaseExchange::onMarketDataError</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> *client, std::string &amp;&amp;err)</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>{</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    LOG_ERROR(<span class="stringliteral">&quot;Websocket {:p} onMarketDataError {}&quot;</span>, (<span class="keywordtype">void</span> *)client, std::move(err));</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>}</div>
+<div class="foldopen" id="foldopen00328" data-start="{" data-end="}">
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a2b1d9b38c6bc7a206f4e704a6c8c3332">  328</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a2b1d9b38c6bc7a206f4e704a6c8c3332">CoinbaseExchange::onMarketDataError</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> *client, std::string &amp;&amp;err)</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>{</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    LOG_ERROR(<span class="stringliteral">&quot;Websocket {:p} onMarketDataError {}&quot;</span>, (<span class="keywordtype">void</span> *)client, std::move(err));</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>}</div>
 </div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
-<div class="foldopen" id="foldopen00331" data-start="{" data-end="}">
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1350978447b2067d1925a0df2b20fc3d">  331</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1350978447b2067d1925a0df2b20fc3d">CoinbaseExchange::onUserDataError</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> *client, std::string &amp;&amp;err)</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>{</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    LOG_ERROR(<span class="stringliteral">&quot;Websocket {:p} onUserDataError {}&quot;</span>, (<span class="keywordtype">void</span> *)client, std::move(err));</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>}</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
+<div class="foldopen" id="foldopen00333" data-start="{" data-end="}">
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1350978447b2067d1925a0df2b20fc3d">  333</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1350978447b2067d1925a0df2b20fc3d">CoinbaseExchange::onUserDataError</a>(<a class="code hl_typedef" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> *client, std::string &amp;&amp;err)</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>{</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    LOG_ERROR(<span class="stringliteral">&quot;Websocket {:p} onUserDataError {}&quot;</span>, (<span class="keywordtype">void</span> *)client, std::move(err));</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>}</div>
 </div>
 <div class="ttc" id="aclassslick_1_1sim_1_1SymbolManager_html_a56058ec8635b6f492dfb9b2f66589baf"><div class="ttname"><a href="classslick_1_1sim_1_1SymbolManager.html#a56058ec8635b6f492dfb9b2f66589baf">slick::sim::SymbolManager::instance</a></div><div class="ttdeci">static SymbolManager &amp; instance()</div><div class="ttdef"><b>Definition</b> <a href="symbol__manager_8hpp_source.html#l00012">symbol_manager.hpp:12</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a120740c1f7303cc938acf388e878c875"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a120740c1f7303cc938acf388e878c875">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot</a></div><div class="ttdeci">void onLevel2Snapshot(WebSocketClient *client, uint64_t seq_num, const coinbase::Level2UpdateBatch &amp;snapshot) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00098">exch_coinbase_feed_callbacks.cpp:98</a></div></div>
-<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a1350978447b2067d1925a0df2b20fc3d"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1350978447b2067d1925a0df2b20fc3d">slick::sim::exch::CoinbaseExchange::onUserDataError</a></div><div class="ttdeci">void onUserDataError(WebSocketClient *client, std::string &amp;&amp;err) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00331">exch_coinbase_feed_callbacks.cpp:331</a></div></div>
-<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a1b5638601d15f8cbc3c4da9f49953dc4"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1b5638601d15f8cbc3c4da9f49953dc4">slick::sim::exch::CoinbaseExchange::onLevel2Updates</a></div><div class="ttdeci">void onLevel2Updates(WebSocketClient *client, uint64_t seq_num, const coinbase::Level2UpdateBatch &amp;updates) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00173">exch_coinbase_feed_callbacks.cpp:173</a></div></div>
-<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a2b1d9b38c6bc7a206f4e704a6c8c3332"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a2b1d9b38c6bc7a206f4e704a6c8c3332">slick::sim::exch::CoinbaseExchange::onMarketDataError</a></div><div class="ttdeci">void onMarketDataError(WebSocketClient *client, std::string &amp;&amp;err) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00326">exch_coinbase_feed_callbacks.cpp:326</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a1350978447b2067d1925a0df2b20fc3d"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1350978447b2067d1925a0df2b20fc3d">slick::sim::exch::CoinbaseExchange::onUserDataError</a></div><div class="ttdeci">void onUserDataError(WebSocketClient *client, std::string &amp;&amp;err) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00333">exch_coinbase_feed_callbacks.cpp:333</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a1b5638601d15f8cbc3c4da9f49953dc4"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1b5638601d15f8cbc3c4da9f49953dc4">slick::sim::exch::CoinbaseExchange::onLevel2Updates</a></div><div class="ttdeci">void onLevel2Updates(WebSocketClient *client, uint64_t seq_num, const coinbase::Level2UpdateBatch &amp;updates) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00175">exch_coinbase_feed_callbacks.cpp:175</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a2b1d9b38c6bc7a206f4e704a6c8c3332"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a2b1d9b38c6bc7a206f4e704a6c8c3332">slick::sim::exch::CoinbaseExchange::onMarketDataError</a></div><div class="ttdeci">void onMarketDataError(WebSocketClient *client, std::string &amp;&amp;err) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00328">exch_coinbase_feed_callbacks.cpp:328</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a2e89023538204d32f32e4729ae12d0aa"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a2e89023538204d32f32e4729ae12d0aa">slick::sim::exch::CoinbaseExchange::onUserDataConnected</a></div><div class="ttdeci">void onUserDataConnected(WebSocketClient *client) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00088">exch_coinbase_feed_callbacks.cpp:88</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a7739fe0e23d167a8e5ad54261de9eabd"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a7739fe0e23d167a8e5ad54261de9eabd">slick::sim::exch::CoinbaseExchange::onMarketDataDisconnected</a></div><div class="ttdeci">void onMarketDataDisconnected(WebSocketClient *client) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00020">exch_coinbase_feed_callbacks.cpp:20</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_a9b2b9828ff3a3cb2cbf3f840706bc698"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a9b2b9828ff3a3cb2cbf3f840706bc698">slick::sim::exch::CoinbaseExchange::onMarketDataConnected</a></div><div class="ttdeci">void onMarketDataConnected(WebSocketClient *client) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00015">exch_coinbase_feed_callbacks.cpp:15</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_aa6ae0d114dfa88e118e9fa357745dce4"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#aa6ae0d114dfa88e118e9fa357745dce4">slick::sim::exch::CoinbaseExchange::onUserDataDisconnected</a></div><div class="ttdeci">void onUserDataDisconnected(WebSocketClient *client) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00093">exch_coinbase_feed_callbacks.cpp:93</a></div></div>
-<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_aaef3c078d72591790e773598bf618209"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#aaef3c078d72591790e773598bf618209">slick::sim::exch::CoinbaseExchange::onUserDataGap</a></div><div class="ttdeci">void onUserDataGap(WebSocketClient *client) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00322">exch_coinbase_feed_callbacks.cpp:322</a></div></div>
-<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_ae30da7a670258b110b1ae38a283eee8f"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae30da7a670258b110b1ae38a283eee8f">slick::sim::exch::CoinbaseExchange::onMarketDataGap</a></div><div class="ttdeci">void onMarketDataGap(WebSocketClient *client) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00318">exch_coinbase_feed_callbacks.cpp:318</a></div></div>
-<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_ae4d16934c8f9c3eeaef977b690e71c5a"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae4d16934c8f9c3eeaef977b690e71c5a">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot</a></div><div class="ttdeci">void onMarketTradesSnapshot(WebSocketClient *client, uint64_t seq_num, const std::vector&lt; coinbase::MarketTrade &gt; &amp;snapshots) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00213">exch_coinbase_feed_callbacks.cpp:213</a></div></div>
-<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_af1a17de031e85308e127948b9261ff6b"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#af1a17de031e85308e127948b9261ff6b">slick::sim::exch::CoinbaseExchange::onMarketTrades</a></div><div class="ttdeci">void onMarketTrades(WebSocketClient *client, uint64_t seq_num, const std::vector&lt; coinbase::MarketTrade &gt; &amp;trades) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00284">exch_coinbase_feed_callbacks.cpp:284</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_aaef3c078d72591790e773598bf618209"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#aaef3c078d72591790e773598bf618209">slick::sim::exch::CoinbaseExchange::onUserDataGap</a></div><div class="ttdeci">void onUserDataGap(WebSocketClient *client) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00324">exch_coinbase_feed_callbacks.cpp:324</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_ae30da7a670258b110b1ae38a283eee8f"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae30da7a670258b110b1ae38a283eee8f">slick::sim::exch::CoinbaseExchange::onMarketDataGap</a></div><div class="ttdeci">void onMarketDataGap(WebSocketClient *client) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00320">exch_coinbase_feed_callbacks.cpp:320</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_ae4d16934c8f9c3eeaef977b690e71c5a"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ae4d16934c8f9c3eeaef977b690e71c5a">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot</a></div><div class="ttdeci">void onMarketTradesSnapshot(WebSocketClient *client, uint64_t seq_num, const std::vector&lt; coinbase::MarketTrade &gt; &amp;snapshots) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00215">exch_coinbase_feed_callbacks.cpp:215</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1CoinbaseExchange_html_af1a17de031e85308e127948b9261ff6b"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#af1a17de031e85308e127948b9261ff6b">slick::sim::exch::CoinbaseExchange::onMarketTrades</a></div><div class="ttdeci">void onMarketTrades(WebSocketClient *client, uint64_t seq_num, const std::vector&lt; coinbase::MarketTrade &gt; &amp;trades) override</div><div class="ttdef"><b>Definition</b> <a href="exch__coinbase__feed__callbacks_8cpp_source.html#l00286">exch_coinbase_feed_callbacks.cpp:286</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1Exchange_html_a3f3e3fef36e42596c24767e6bfe2f903"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1Exchange.html#a3f3e3fef36e42596c24767e6bfe2f903">slick::sim::exch::Exchange::publishTradeSummary</a></div><div class="ttdeci">void publishTradeSummary(const char *symbol, const TradeSummaryInfo &amp;trade_summary)</div><div class="ttdef"><b>Definition</b> <a href="exchange_8cpp_source.html#l00401">exchange.cpp:401</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1Exchange_html_a509ae7a7a2800758a35020681dd49f02"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1Exchange.html#a509ae7a7a2800758a35020681dd49f02">slick::sim::exch::Exchange::md_queue_</a></div><div class="ttdeci">queue&lt; uint8_t &gt; md_queue_</div><div class="ttdef"><b>Definition</b> <a href="exchange_8hpp_source.html#l00072">exchange.hpp:72</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1exch_1_1Exchange_html_a5a3fc6bccaf1054851431376c36436ad"><div class="ttname"><a href="classslick_1_1sim_1_1exch_1_1Exchange.html#a5a3fc6bccaf1054851431376c36436ad">slick::sim::exch::Exchange::venue_</a></div><div class="ttdeci">Venue venue_</div><div class="ttdef"><b>Definition</b> <a href="exchange_8hpp_source.html#l00069">exchange.hpp:69</a></div></div>
@@ -485,6 +487,7 @@ $(document).ready(function(){initNavTree('exch__coinbase__feed__callbacks_8cpp_s
 <div class="ttc" id="anamespaceslick_1_1sim_html"><div class="ttname"><a href="namespaceslick_1_1sim.html">slick::sim</a></div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__info__proxy_8hpp_source.html#l00011">hyperliquid_info_proxy.hpp:11</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_a2ff671868618aeab6ba2eeef566a32bd"><div class="ttname"><a href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">slick::sim::Side</a></div><div class="ttdeci">Side</div><div class="ttdef"><b>Definition</b> <a href="common_2order_8hpp_source.html#l00016">order.hpp:16</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_aa876c66c9ff46e555cfef22c9870553c"><div class="ttname"><a href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">slick::sim::to_price_t</a></div><div class="ttdeci">constexpr price_t to_price_t(double price)</div><div class="ttdef"><b>Definition</b> <a href="types_8hpp_source.html#l00019">types.hpp:19</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_html_ab1e934b8e03a21e64365d200420af2b7aaefbb6e53def2794848582ea6aeee4f5"><div class="ttname"><a href="namespaceslick_1_1sim.html#ab1e934b8e03a21e64365d200420af2b7aaefbb6e53def2794848582ea6aeee4f5">slick::sim::ACTION_NEW</a></div><div class="ttdeci">@ ACTION_NEW</div><div class="ttdef"><b>Definition</b> <a href="market__data_8hpp_source.html#l00030">market_data.hpp:30</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_abd546ae4b297b0e3dc896f1b130d6167"><div class="ttname"><a href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167">slick::sim::UpdateFlags</a></div><div class="ttdeci">UpdateFlags</div><div class="ttdef"><b>Definition</b> <a href="market__data_8hpp_source.html#l00023">market_data.hpp:23</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7"><div class="ttname"><a href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7">slick::sim::F_IS_SNAPSHOT</a></div><div class="ttdeci">@ F_IS_SNAPSHOT</div><div class="ttdef"><b>Definition</b> <a href="market__data_8hpp_source.html#l00025">market_data.hpp:25</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618"><div class="ttname"><a href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618">slick::sim::F_END_EVENT</a></div><div class="ttdeci">@ F_END_EVENT</div><div class="ttdef"><b>Definition</b> <a href="market__data_8hpp_source.html#l00026">market_data.hpp:26</a></div></div>
