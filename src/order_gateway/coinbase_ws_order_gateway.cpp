@@ -33,9 +33,9 @@ uint_fast64_t PerSocketData::heartbeat_count = 0;
 
 CoinbaseWebsocketOrderGateway::CoinbaseWebsocketOrderGateway(const json& config, slick::queue<Request> &request_queue, slick::queue<OrderResponse> &response_queue)
     : RestWsOrderGateway(Venue::COINBASE, request_queue, response_queue, config.value("port", 3001))
+    , response_read_index_(response_queue_.initial_reading_index())
     , ping_interval_ms_(config.value("ping_interval", 30) * 1000)
     , pong_timeout_(config.value("pong_timeout", 60))
-    , response_read_index_(response_queue_.initial_reading_index())
 {
     auto rest_api = CoinbaseRestClient();
     fee_rate_ = rest_api.get_taker_fee_rate();
