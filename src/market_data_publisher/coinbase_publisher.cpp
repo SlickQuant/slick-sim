@@ -200,11 +200,7 @@ void CoinbasePublisher::publish_market_data_update(MarketDataUpdate *update) {
         case MDUpdateType::TRADE:
             // TODO: Implement trade update publishing
             break;
-        case MDUpdateType::TICKER:
-            // TODO: Implement ticker update publishing
-            break;
-        case MDUpdateType::UNKNOWN:
-        case MDUpdateType::INVALID:
+        default:
             LOG_WARN("Received unknown or invalid market data update type: {}", static_cast<int>(update->type));
             break;
     }

@@ -134,15 +134,17 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
 
         if (it == pending_l2_subscriptions.end())
         {
+            auto [level, index] = symbol->order_book_->getLevel(book_side, price);
             level_update_buffer_.emplace_back(MDLevel{
                 .event_time = update.event_time,
                 .seq_num = seq_num,
                 .price = price,
                 .qty = qty,
                 .num_orders = 1,
+                .level_index = index,
+                .update_action = MDUpdateAction::ACTION_NEW,
                 .flags = static_cast<UpdateFlags>(UpdateFlags::F_IS_SNAPSHOT | (it_update == it_last ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE)),
                 .side = side
-                .update_action = MDUpdateAction::ACTION_NEW 
             });
         }
 
