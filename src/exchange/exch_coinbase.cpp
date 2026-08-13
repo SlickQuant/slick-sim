@@ -306,6 +306,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
 
         auto book_side = to_book_side(event.side);
         auto [level, index] = symbol->order_book_->getLevel(book_side, event.price);
+        auto action = MDUpdateAction::ACTION_CHANGE;
         if (!level)
         {
             // this is a new level
@@ -315,6 +316,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
             if (qty)
             {
                 symbol->order_book_->addOrder(order_id, book_side, event.price, qty, event.event_time, event.seq_num, event.flags & UpdateFlags::F_END_EVENT);
+                action = MDUpdateAction::ACTION_NEW;
             }
 
             if (!trade_summaries.empty())
@@ -389,12 +391,24 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
             level_update_buffer_.clear();
         }
 
+        auto [new_level, new_index] = symbol->order_book_->getLevel(book_side, event.price);
+        if (!level && new_level)
+        {
+            index = new_index;
+        }
+        else if (!new_level)
+        {
+            action = MDUpdateAction::ACTION_DELETE;
+        }
+
         level_update_buffer_.emplace_back(MDLevel{
             .event_time = event.event_time,
             .seq_num = event.seq_num,
             .price = event.price,
             .qty = event.qty,
             .num_orders = 0,
+            .level_index = index,
+            .update_action = action,
             .flags = event.flags,
             .side = event.side});
     }
