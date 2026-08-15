@@ -101,7 +101,7 @@ $(document).ready(function(){initNavTree('structslick_1_1sim_1_1TradeSummaryInfo
 <div class="dynheader">
 Collaboration diagram for slick::sim::TradeSummaryInfo:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structslick_1_1sim_1_1TradeSummaryInfo__coll__graph.svg" width="316" height="595"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="structslick_1_1sim_1_1TradeSummaryInfo__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -116,6 +116,9 @@ Public Attributes</h2></td></tr>
 <tr class="separator:af36d3e60be6230390a93e4c62730adaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a282d47a9315d656d4ebda3bea5a6e89a" id="r_a282d47a9315d656d4ebda3bea5a6e89a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1TradeSummaryInfo.html#a282d47a9315d656d4ebda3bea5a6e89a">qty</a></td></tr>
 <tr class="separator:a282d47a9315d656d4ebda3bea5a6e89a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1e57d6a2daae54098c920bc343ea73d" id="r_ae1e57d6a2daae54098c920bc343ea73d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1TradeSummaryInfo.html#ae1e57d6a2daae54098c920bc343ea73d">phantom_qty</a> = 0</td></tr>
+<tr class="memdesc:ae1e57d6a2daae54098c920bc343ea73d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Portion of <code>qty</code> that was matched against phantom (market-mirroring) liquidity rather than the simulator's own resting orders.  <br /></td></tr>
+<tr class="separator:ae1e57d6a2daae54098c920bc343ea73d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32dca98252bd88be91d48a4aee54503f" id="r_a32dca98252bd88be91d48a4aee54503f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1TradeSummaryInfo.html#a32dca98252bd88be91d48a4aee54503f">num_orders</a></td></tr>
 <tr class="separator:a32dca98252bd88be91d48a4aee54503f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace3c72327843855fcfeed939a4807996" id="r_ace3c72327843855fcfeed939a4807996"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structslick_1_1sim_1_1Trade.html">Trade</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1TradeSummaryInfo.html#ace3c72327843855fcfeed939a4807996">Trades</a></td></tr>
@@ -139,7 +142,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00328">328</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00401">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00430">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
 
 </div>
 </div>
@@ -155,9 +158,30 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00331">331</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00336">336</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00401">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00430">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+
+</div>
+</div>
+<a id="ae1e57d6a2daae54098c920bc343ea73d" name="ae1e57d6a2daae54098c920bc343ea73d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1e57d6a2daae54098c920bc343ea73d">&#9670;&#160;</a></span>phantom_qty</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> slick::sim::TradeSummaryInfo::phantom_qty = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Portion of <code>qty</code> that was matched against phantom (market-mirroring) liquidity rather than the simulator's own resting orders. </p>
+<p>Internal only - the exchange uses it to avoid reducing a level twice when the venue's level update for the same trade arrives. Not part of the wire format. </p>
+
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00335">335</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>.</p>
 
 </div>
 </div>
@@ -175,7 +199,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00329">329</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00401">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00430">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
 
 </div>
 </div>
@@ -193,7 +217,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00330">330</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00401">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00430">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
 
 </div>
 </div>
@@ -211,7 +235,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00326">326</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00401">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00430">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
 
 </div>
 </div>
@@ -229,7 +253,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00327">327</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00401">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>.</p>
 
 </div>
 </div>
@@ -245,9 +269,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00332">332</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00337">337</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00401">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00430">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
 
 </div>
 </div>

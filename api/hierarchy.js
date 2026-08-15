@@ -45,6 +45,7 @@ var hierarchy =
     [ "slick::sim::MDSubscriptionMessage", "structslick_1_1sim_1_1MDSubscriptionMessage.html", null ],
     [ "slick::sim::MDSubscriptionResponse", "structslick_1_1sim_1_1MDSubscriptionResponse.html", null ],
     [ "slick::sim::MDTrade", "structslick_1_1sim_1_1MDTrade.html", null ],
+    [ "slick::sim::MDTradeSnapshotResponse", "structslick_1_1sim_1_1MDTradeSnapshotResponse.html", null ],
     [ "slick::sim::MDTradeUpdate", "structslick_1_1sim_1_1MDTradeUpdate.html", null ],
     [ "FIX::MessageCracker", null, [
       [ "slick::sim::order_gateway::FixParser", "classslick_1_1sim_1_1order__gateway_1_1FixParser.html", null ]
@@ -76,7 +77,7 @@ var hierarchy =
     [ "slick::sim::ProxiedHttpResponse", "structslick_1_1sim_1_1ProxiedHttpResponse.html", null ],
     [ "slick::sim::Request", "structslick_1_1sim_1_1Request.html", null ],
     [ "slick::sim::utils::RingBuffer< T >", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", null ],
-    [ "slick::sim::utils::RingBuffer< Event >", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", null ],
+    [ "slick::sim::utils::RingBuffer< slick::sim::MDTrade >", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", null ],
     [ "slick::sim::md_publisher::HyperliquidPerSocketData::SubInfo", "structslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData_1_1SubInfo.html", null ],
     [ "slick::sim::md_publisher::PerSocketData::SubscriptionInfo", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData_1_1SubscriptionInfo.html", null ],
     [ "slick::sim::exch::Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", null ],
@@ -86,6 +87,7 @@ var hierarchy =
       [ "slick::sim::order_gateway::TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html", null ]
     ] ],
     [ "slick::sim::Trade", "structslick_1_1sim_1_1Trade.html", null ],
+    [ "slick::sim::exch::TradedCredit", "structslick_1_1sim_1_1exch_1_1TradedCredit.html", null ],
     [ "slick::sim::TradeSummary", "structslick_1_1sim_1_1TradeSummary.html", null ],
     [ "slick::sim::TradeSummaryInfo", "structslick_1_1sim_1_1TradeSummaryInfo.html", null ],
     [ "coinbase::UserThreadWebsocketCallbacks", null, [

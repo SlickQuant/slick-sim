@@ -1379,8 +1379,9 @@ and implement three methods:</p>
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">publish_market_data_update</span><span class="p">(</span><span class="n">MarketDataUpdate</span><span class="o">*</span><span class="w"> </span><span class="n">update</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span><span class="w">  </span><span class="c1">// switch on update-&gt;type</span>
 </code></pre></div>
 <p>Handle at least <code>SUB_RESPONSE</code> (first snapshot after subscribe) and <code>BOOK_SNAPSHOT</code> (routine updates).
-Handle <code>TRADE</code> too if your venue has a trades channel — the Coinbase publisher's omission of it is a
-<a href="../known-gaps/#the-coinbase-publisher-never-republishes-trades">known gap</a>, not a pattern to copy.</p>
+Handle <code>TRADE_SUMMARY</code> too if your venue has a trades channel: it carries one executed trade, and it
+is the only source of the public tape. Do not expect a raw relay of the venue's own prints — those
+are replayed through the matching engine and reach you as fills.</p>
 <p>On a client <code>subscribe</code> message, write an <code>MD_SUBSCRIPTION</code> request:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">auto</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request_queue_</span><span class="p">.</span><span class="n">reserve</span><span class="p">();</span>
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request_queue_</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>

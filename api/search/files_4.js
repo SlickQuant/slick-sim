@@ -8,5 +8,7 @@ var searchData=
   ['hyperliquid_5fpublisher_2ecpp_5',['hyperliquid_publisher.cpp',['../hyperliquid__publisher_8cpp.html',1,'']]],
   ['hyperliquid_5fpublisher_2ehpp_6',['hyperliquid_publisher.hpp',['../hyperliquid__publisher_8hpp.html',1,'']]],
   ['hyperliquid_5frest_5forder_5fgateway_2ecpp_7',['hyperliquid_rest_order_gateway.cpp',['../hyperliquid__rest__order__gateway_8cpp.html',1,'']]],
-  ['hyperliquid_5frest_5forder_5fgateway_2ehpp_8',['hyperliquid_rest_order_gateway.hpp',['../hyperliquid__rest__order__gateway_8hpp.html',1,'']]]
+  ['hyperliquid_5frest_5forder_5fgateway_2ehpp_8',['hyperliquid_rest_order_gateway.hpp',['../hyperliquid__rest__order__gateway_8hpp.html',1,'']]],
+  ['hyperliquid_5ftrade_5fencoder_2ecpp_9',['hyperliquid_trade_encoder.cpp',['../hyperliquid__trade__encoder_8cpp.html',1,'']]],
+  ['hyperliquid_5ftrade_5fencoder_2ehpp_10',['hyperliquid_trade_encoder.hpp',['../hyperliquid__trade__encoder_8hpp.html',1,'']]]
 ];

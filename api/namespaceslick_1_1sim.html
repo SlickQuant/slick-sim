@@ -146,6 +146,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1MDTrade.html">MDTrade</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1MDTradeSnapshotResponse.html">MDTradeSnapshotResponse</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Payload of a SUB_RESPONSE for a venue's trade channel.  <a href="structslick_1_1sim_1_1MDTradeSnapshotResponse.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1MDTradeUpdate.html">MDTradeUpdate</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1ModifyOrderMessage.html">ModifyOrderMessage</a></td></tr>
@@ -214,6 +217,7 @@ Enumerations</h2></td></tr>
 <tr class="memitem:abd546ae4b297b0e3dc896f1b130d6167" id="r_abd546ae4b297b0e3dc896f1b130d6167"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167">UpdateFlags</a> : uint8_t { <a class="el" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a5312d89052881b198755a298d6f09f10">F_NONE</a> = 0
 , <a class="el" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7">F_IS_SNAPSHOT</a> = 1
 , <a class="el" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618">F_END_EVENT</a> = 1 &lt;&lt; 1
+, <a class="el" href="namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a19b7cfba7906dc0dd07f6bd7224b3dc0">F_NOT_IN_BOOK</a> = 1 &lt;&lt; 2
  }</td></tr>
 <tr class="separator:abd546ae4b297b0e3dc896f1b130d6167"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1e934b8e03a21e64365d200420af2b7" id="r_ab1e934b8e03a21e64365d200420af2b7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#ab1e934b8e03a21e64365d200420af2b7">MDUpdateAction</a> : uint8_t { <a class="el" href="namespaceslick_1_1sim.html#ab1e934b8e03a21e64365d200420af2b7aaefbb6e53def2794848582ea6aeee4f5">ACTION_NEW</a>
@@ -474,6 +478,11 @@ Functions</h2></td></tr>
 <tr class="separator:abbc30d72eec9acbd616097b76f8e064e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3dcbeaa1883809e705976c4b5c44b7af" id="r_a3dcbeaa1883809e705976c4b5c44b7af"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a3dcbeaa1883809e705976c4b5c44b7af">to_string</a> (<a class="el" href="namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55">TimeInForce</a> tif)</td></tr>
 <tr class="separator:a3dcbeaa1883809e705976c4b5c44b7af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c7e78004b8d8a44897e0dbea3dc61b5" id="r_a4c7e78004b8d8a44897e0dbea3dc61b5"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a4c7e78004b8d8a44897e0dbea3dc61b5">to_string</a> (<a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527">SelfMatchPreventionMode</a> mode)</td></tr>
+<tr class="separator:a4c7e78004b8d8a44897e0dbea3dc61b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89d1c59c60ad040c8d6d9e10eeadd960" id="r_a89d1c59c60ad040c8d6d9e10eeadd960"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527">SelfMatchPreventionMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a89d1c59c60ad040c8d6d9e10eeadd960">to_smp_mode</a> (std::string_view name)</td></tr>
+<tr class="memdesc:a89d1c59c60ad040c8d6d9e10eeadd960"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the <code>self_match_prevention</code> configuration value.  <br /></td></tr>
+<tr class="separator:a89d1c59c60ad040c8d6d9e10eeadd960"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e93ba7e1a0f18cd02f6650f86f87f5d" id="r_a8e93ba7e1a0f18cd02f6650f86f87f5d"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a8e93ba7e1a0f18cd02f6650f86f87f5d">to_string</a> (<a class="el" href="namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026b">ProductType</a> type)</td></tr>
 <tr class="separator:a8e93ba7e1a0f18cd02f6650f86f87f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa876c66c9ff46e555cfef22c9870553c" id="r_aa876c66c9ff46e555cfef22c9870553c"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a> (double price)</td></tr>
@@ -854,7 +863,7 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="a0a9f0bd1a7d704fe4599a7420d34e1d3ade0badcb96ee438931a41e35e6bfbd0b" name="a0a9f0bd1a7d704fe4599a7420d34e1d3ade0badcb96ee438931a41e35e6bfbd0b"></a>MARKET_CLOSED&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00080">80</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00090">90</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -875,7 +884,7 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="ab1e934b8e03a21e64365d200420af2b7a2316531a3eeebfd896e6d881c5fd195a" name="ab1e934b8e03a21e64365d200420af2b7a2316531a3eeebfd896e6d881c5fd195a"></a>ACTION_DELETE&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00029">29</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00039">39</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -894,8 +903,12 @@ Variables</h2></td></tr>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11a67779133ea54f02a37253673ff56a0ea" name="ad1b99a9a1b8e271f9197953c4b44ae11a67779133ea54f02a37253673ff56a0ea"></a>BOOK&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11ac56a104b2dad38f31cf71b5c61463e73" name="ad1b99a9a1b8e271f9197953c4b44ae11ac56a104b2dad38f31cf71b5c61463e73"></a>LEVEL&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11ab49400a2fca0c7c2728b60b0d44ade65" name="ad1b99a9a1b8e271f9197953c4b44ae11ab49400a2fca0c7c2728b60b0d44ade65"></a>ORDER&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11a74677c05654a0c677eebe3dcd8f45bdd" name="ad1b99a9a1b8e271f9197953c4b44ae11a74677c05654a0c677eebe3dcd8f45bdd"></a>TRADE_SUMMARY&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11ad5ecbdb0deb25cd946ad37ef6dea1ce8" name="ad1b99a9a1b8e271f9197953c4b44ae11ad5ecbdb0deb25cd946ad37ef6dea1ce8"></a>TRADE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11a74677c05654a0c677eebe3dcd8f45bdd" name="ad1b99a9a1b8e271f9197953c4b44ae11a74677c05654a0c677eebe3dcd8f45bdd"></a>TRADE_SUMMARY&#160;</td><td class="fielddoc"><p>One executed trade. </p>
+<p>The only source of the public trade tape: a venue's own trade print is replayed through the matching engine as an aggressor order, and the resulting fills are published as these. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11ad5ecbdb0deb25cd946ad37ef6dea1ce8" name="ad1b99a9a1b8e271f9197953c4b44ae11ad5ecbdb0deb25cd946ad37ef6dea1ce8"></a>TRADE&#160;</td><td class="fielddoc"><p>Reserved. </p>
+<p>Held so the following values keep their numbering - nothing produces or consumes it since venue prints stopped being relayed raw. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11a7d038e33652dca08a3b6a301f1a1a83a" name="ad1b99a9a1b8e271f9197953c4b44ae11a7d038e33652dca08a3b6a301f1a1a83a"></a>BOOK_SNAPSHOT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11ab4b124f3bc23df20709ad67df5b30df0" name="ad1b99a9a1b8e271f9197953c4b44ae11ab4b124f3bc23df20709ad67df5b30df0"></a>ORDER_SNAPSHOT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11ad4156d48a454a77a4455687c9fb77cae" name="ad1b99a9a1b8e271f9197953c4b44ae11ad4156d48a454a77a4455687c9fb77cae"></a>SUB_RESPONSE&#160;</td><td class="fielddoc"></td></tr>
@@ -1122,7 +1135,7 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="a2824308414d59748ad7da1d51511026bafa4cec41dc4b368db740c5cb2300b7a3" name="a2824308414d59748ad7da1d51511026bafa4cec41dc4b368db740c5cb2300b7a3"></a>FUTURE&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00235">235</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00259">259</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
 
 </div>
 </div>
@@ -1255,9 +1268,12 @@ Variables</h2></td></tr>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abd546ae4b297b0e3dc896f1b130d6167a5312d89052881b198755a298d6f09f10" name="abd546ae4b297b0e3dc896f1b130d6167a5312d89052881b198755a298d6f09f10"></a>F_NONE&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7" name="abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7"></a>F_IS_SNAPSHOT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618" name="abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618"></a>F_END_EVENT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abd546ae4b297b0e3dc896f1b130d6167a19b7cfba7906dc0dd07f6bd7224b3dc0" name="abd546ae4b297b0e3dc896f1b130d6167a19b7cfba7906dc0dd07f6bd7224b3dc0"></a>F_NOT_IN_BOOK&#160;</td><td class="fielddoc"><p>On an <a class="el" href="structslick_1_1sim_1_1MDTrade.html">MDTrade</a>: this print was never applied to the order book. </p>
+<p>Set only for prints seeded from a venue's own trade snapshot, which happened before the simulator was listening. Every trade the matching engine produced is in the book by construction, whatever its timestamp. </p>
+</td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00023">23</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00028">28</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -1444,7 +1460,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00037">37</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00084">slick::sim::OrderBook::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00164">slick::sim::OrderBook::clearMDOrders()</a>, and <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00098">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00084">slick::sim::OrderBook::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00164">slick::sim::OrderBook::clearMDOrders()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00099">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, and <a class="el" href="exchange_8cpp_source.html#l00538">slick::sim::exch::Exchange::reconcilePhantomQty()</a>.</p>
 
 </div>
 </div>
@@ -1476,7 +1492,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="reference">References <a class="el" href="types_8hpp_source.html#l00016">DOUBLE_MULTIPLIER</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00318">slick::sim::Order::avg_fill_price_double()</a>, <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00314">slick::sim::Order::last_fill_price_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00294">slick::sim::Order::price_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00361">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00342">slick::sim::Order::avg_fill_price_double()</a>, <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00338">slick::sim::Order::last_fill_price_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00318">slick::sim::Order::price_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00361">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
 
 </div>
 </div>
@@ -1508,7 +1524,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="reference">References <a class="el" href="types_8hpp_source.html#l00016">DOUBLE_MULTIPLIER</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00098">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00177">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00288">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, and <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00217">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00099">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00178">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00268">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, and <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00218">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot()</a>.</p>
 
 </div>
 </div>
@@ -1540,7 +1556,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="reference">References <a class="el" href="types_8hpp_source.html#l00016">DOUBLE_MULTIPLIER</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00302">slick::sim::Order::cum_qty_double()</a>, <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00310">slick::sim::Order::last_fill_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00306">slick::sim::Order::leaves_qty_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00298">slick::sim::Order::qty_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00361">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00326">slick::sim::Order::cum_qty_double()</a>, <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00334">slick::sim::Order::last_fill_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00330">slick::sim::Order::leaves_qty_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00322">slick::sim::Order::qty_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00361">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
 
 </div>
 </div>
@@ -1572,12 +1588,47 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="reference">References <a class="el" href="types_8hpp_source.html#l00016">DOUBLE_MULTIPLIER</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00098">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00177">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00288">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, and <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00217">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00099">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00178">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00268">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, and <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00218">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a89d1c59c60ad040c8d6d9e10eeadd960" name="a89d1c59c60ad040c8d6d9e10eeadd960"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89d1c59c60ad040c8d6d9e10eeadd960">&#9670;&#160;</a></span>to_smp_mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527">SelfMatchPreventionMode</a> slick::sim::to_smp_mode </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parses the <code>self_match_prevention</code> configuration value. </p>
+<p>Returns NONE for an unrecognised name, so a typo disables SMP rather than aborting startup. </p>
+
+<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00249">249</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527a472a87ec8b79b84919f30601350aee38">CANCEL_NEWEST</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527aea0eb6f26da5299ad66391f753f271a6">CANCEL_RESTING</a>, and <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527ab50339a10e1de285ac99d4c3990b8693">NONE</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00018">slick::sim::exch::Exchange::Exchange()</a>.</p>
 
 </div>
 </div>
 <a id="a4a9beb593429df5794a68b6547f1e637" name="a4a9beb593429df5794a68b6547f1e637"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a9beb593429df5794a68b6547f1e637">&#9670;&#160;</a></span>to_string() <span class="overload">[1/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a9beb593429df5794a68b6547f1e637">&#9670;&#160;</a></span>to_string() <span class="overload">[1/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1604,12 +1655,12 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="reference">References <a class="el" href="namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a971578f294a88d61c51a82a800e5047a">DUPLICATE_REQUEST_ID</a>, <a class="el" href="namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a696b031073e74bf2cb98e5ef201d4aa3">UNKNOWN</a>, and <a class="el" href="namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a553b8a8c32a25052bf495721cd233a3f">UNKNOWN_SECURITY_ID</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00018">slick::sim::exch::Exchange::Exchange()</a>, <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="exchange_8cpp_source.html#l00033">slick::sim::exch::Exchange::start()</a>, <a class="el" href="exch__coinbase_8cpp_source.html#l00054">slick::sim::exch::CoinbaseExchange::start()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00055">slick::sim::exch::HyperliquidExchange::start()</a>, <a class="el" href="ws__md__publisher_8cpp_source.html#l00018">slick::sim::md_publisher::WebsocketMarketDataPublisher::start()</a>, <a class="el" href="rest__ws__order__gateway_8cpp_source.html#l00006">slick::sim::order_gateway::RestWsOrderGateway::start()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00018">slick::sim::exch::Exchange::Exchange()</a>, <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="exchange_8cpp_source.html#l00049">slick::sim::exch::Exchange::start()</a>, <a class="el" href="exch__coinbase_8cpp_source.html#l00054">slick::sim::exch::CoinbaseExchange::start()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00055">slick::sim::exch::HyperliquidExchange::start()</a>, <a class="el" href="ws__md__publisher_8cpp_source.html#l00018">slick::sim::md_publisher::WebsocketMarketDataPublisher::start()</a>, <a class="el" href="rest__ws__order__gateway_8cpp_source.html#l00006">slick::sim::order_gateway::RestWsOrderGateway::start()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
 
 </div>
 </div>
 <a id="a70370cf402e906a5d9300f02e7c3928d" name="a70370cf402e906a5d9300f02e7c3928d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a70370cf402e906a5d9300f02e7c3928d">&#9670;&#160;</a></span>to_string() <span class="overload">[2/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a70370cf402e906a5d9300f02e7c3928d">&#9670;&#160;</a></span>to_string() <span class="overload">[2/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1639,7 +1690,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </div>
 </div>
 <a id="afef5dc56c5b716637c157f16984f7807" name="afef5dc56c5b716637c157f16984f7807"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afef5dc56c5b716637c157f16984f7807">&#9670;&#160;</a></span>to_string() <span class="overload">[3/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#afef5dc56c5b716637c157f16984f7807">&#9670;&#160;</a></span>to_string() <span class="overload">[3/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1669,7 +1720,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </div>
 </div>
 <a id="abbc30d72eec9acbd616097b76f8e064e" name="abbc30d72eec9acbd616097b76f8e064e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abbc30d72eec9acbd616097b76f8e064e">&#9670;&#160;</a></span>to_string() <span class="overload">[4/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abbc30d72eec9acbd616097b76f8e064e">&#9670;&#160;</a></span>to_string() <span class="overload">[4/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1699,7 +1750,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </div>
 </div>
 <a id="a0858966aa246f58e935160b926e91dee" name="a0858966aa246f58e935160b926e91dee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0858966aa246f58e935160b926e91dee">&#9670;&#160;</a></span>to_string() <span class="overload">[5/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0858966aa246f58e935160b926e91dee">&#9670;&#160;</a></span>to_string() <span class="overload">[5/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1729,7 +1780,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </div>
 </div>
 <a id="aaa116681b9888db4e2ee7a5aa50c891c" name="aaa116681b9888db4e2ee7a5aa50c891c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa116681b9888db4e2ee7a5aa50c891c">&#9670;&#160;</a></span>to_string() <span class="overload">[6/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa116681b9888db4e2ee7a5aa50c891c">&#9670;&#160;</a></span>to_string() <span class="overload">[6/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1759,7 +1810,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </div>
 </div>
 <a id="a8e93ba7e1a0f18cd02f6650f86f87f5d" name="a8e93ba7e1a0f18cd02f6650f86f87f5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e93ba7e1a0f18cd02f6650f86f87f5d">&#9670;&#160;</a></span>to_string() <span class="overload">[7/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e93ba7e1a0f18cd02f6650f86f87f5d">&#9670;&#160;</a></span>to_string() <span class="overload">[7/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1782,14 +1833,44 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00241">241</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00265">265</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026bafa4cec41dc4b368db740c5cb2300b7a3">FUTURE</a>, <a class="el" href="namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026ba5bac85a0c611ddef64ab0dfb383056f4">SPOT</a>, and <a class="el" href="namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026ba696b031073e74bf2cb98e5ef201d4aa3">UNKNOWN</a>.</p>
 
 </div>
 </div>
+<a id="a4c7e78004b8d8a44897e0dbea3dc61b5" name="a4c7e78004b8d8a44897e0dbea3dc61b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c7e78004b8d8a44897e0dbea3dc61b5">&#9670;&#160;</a></span>to_string() <span class="overload">[8/12]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view slick::sim::to_string </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527">SelfMatchPreventionMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00235">235</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527a472a87ec8b79b84919f30601350aee38">CANCEL_NEWEST</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527aea0eb6f26da5299ad66391f753f271a6">CANCEL_RESTING</a>, and <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527ab50339a10e1de285ac99d4c3990b8693">NONE</a>.</p>
+
+</div>
+</div>
 <a id="a717184089344e751ad4083c9d6e50226" name="a717184089344e751ad4083c9d6e50226"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a717184089344e751ad4083c9d6e50226">&#9670;&#160;</a></span>to_string() <span class="overload">[8/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a717184089344e751ad4083c9d6e50226">&#9670;&#160;</a></span>to_string() <span class="overload">[9/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1819,7 +1900,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </div>
 </div>
 <a id="a6527da7fbe09d382881a3bf2aa3f33e2" name="a6527da7fbe09d382881a3bf2aa3f33e2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6527da7fbe09d382881a3bf2aa3f33e2">&#9670;&#160;</a></span>to_string() <span class="overload">[9/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6527da7fbe09d382881a3bf2aa3f33e2">&#9670;&#160;</a></span>to_string() <span class="overload">[10/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1849,7 +1930,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </div>
 </div>
 <a id="a3dcbeaa1883809e705976c4b5c44b7af" name="a3dcbeaa1883809e705976c4b5c44b7af"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3dcbeaa1883809e705976c4b5c44b7af">&#9670;&#160;</a></span>to_string() <span class="overload">[10/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dcbeaa1883809e705976c4b5c44b7af">&#9670;&#160;</a></span>to_string() <span class="overload">[11/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1879,7 +1960,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </div>
 </div>
 <a id="a51b9e1564e639b0d549f3009d003645b" name="a51b9e1564e639b0d549f3009d003645b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a51b9e1564e639b0d549f3009d003645b">&#9670;&#160;</a></span>to_string() <span class="overload">[11/11]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a51b9e1564e639b0d549f3009d003645b">&#9670;&#160;</a></span>to_string() <span class="overload">[12/12]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2037,7 +2118,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00015">15</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00061">canFillCompletely()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">match()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">canFillCompletely()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">match()</a>, <a class="el" href="exchange_8cpp_source.html#l00363">slick::sim::exch::Exchange::rejectCancelOrderRequest()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00074">wouldSelfMatch()</a>.</p>
 
 </div>
 </div>

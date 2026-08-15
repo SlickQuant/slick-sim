@@ -20,6 +20,7 @@ var namespaceslick_1_1sim =
     [ "MDSubscriptionMessage", "structslick_1_1sim_1_1MDSubscriptionMessage.html", "structslick_1_1sim_1_1MDSubscriptionMessage" ],
     [ "MDSubscriptionResponse", "structslick_1_1sim_1_1MDSubscriptionResponse.html", "structslick_1_1sim_1_1MDSubscriptionResponse" ],
     [ "MDTrade", "structslick_1_1sim_1_1MDTrade.html", "structslick_1_1sim_1_1MDTrade" ],
+    [ "MDTradeSnapshotResponse", "structslick_1_1sim_1_1MDTradeSnapshotResponse.html", "structslick_1_1sim_1_1MDTradeSnapshotResponse" ],
     [ "MDTradeUpdate", "structslick_1_1sim_1_1MDTradeUpdate.html", "structslick_1_1sim_1_1MDTradeUpdate" ],
     [ "ModifyOrderMessage", "structslick_1_1sim_1_1ModifyOrderMessage.html", "structslick_1_1sim_1_1ModifyOrderMessage" ],
     [ "Order", "structslick_1_1sim_1_1Order.html", "structslick_1_1sim_1_1Order" ],
@@ -230,7 +231,8 @@ var namespaceslick_1_1sim =
     [ "UpdateFlags", "namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167", [
       [ "F_NONE", "namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a5312d89052881b198755a298d6f09f10", null ],
       [ "F_IS_SNAPSHOT", "namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7", null ],
-      [ "F_END_EVENT", "namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618", null ]
+      [ "F_END_EVENT", "namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618", null ],
+      [ "F_NOT_IN_BOOK", "namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a19b7cfba7906dc0dd07f6bd7224b3dc0", null ]
     ] ],
     [ "Venue", "namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04", [
       [ "UNKNOWN_VENUE", "namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04ac8c9f170fecf6d923b5854f4176f94ad", null ],
@@ -250,6 +252,7 @@ var namespaceslick_1_1sim =
     [ "to_price_t", "namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c", null ],
     [ "to_qty_double", "namespaceslick_1_1sim.html#af7eb343b14332f99fb29ac1deadaf468", null ],
     [ "to_qty_t", "namespaceslick_1_1sim.html#ae7c6270f5b2c86ea08ee204453208c2e", null ],
+    [ "to_smp_mode", "namespaceslick_1_1sim.html#a89d1c59c60ad040c8d6d9e10eeadd960", null ],
     [ "to_string", "namespaceslick_1_1sim.html#a4a9beb593429df5794a68b6547f1e637", null ],
     [ "to_string", "namespaceslick_1_1sim.html#a70370cf402e906a5d9300f02e7c3928d", null ],
     [ "to_string", "namespaceslick_1_1sim.html#afef5dc56c5b716637c157f16984f7807", null ],
@@ -257,6 +260,7 @@ var namespaceslick_1_1sim =
     [ "to_string", "namespaceslick_1_1sim.html#a0858966aa246f58e935160b926e91dee", null ],
     [ "to_string", "namespaceslick_1_1sim.html#aaa116681b9888db4e2ee7a5aa50c891c", null ],
     [ "to_string", "namespaceslick_1_1sim.html#a8e93ba7e1a0f18cd02f6650f86f87f5d", null ],
+    [ "to_string", "namespaceslick_1_1sim.html#a4c7e78004b8d8a44897e0dbea3dc61b5", null ],
     [ "to_string", "namespaceslick_1_1sim.html#a717184089344e751ad4083c9d6e50226", null ],
     [ "to_string", "namespaceslick_1_1sim.html#a6527da7fbe09d382881a3bf2aa3f33e2", null ],
     [ "to_string", "namespaceslick_1_1sim.html#a3dcbeaa1883809e705976c4b5c44b7af", null ],

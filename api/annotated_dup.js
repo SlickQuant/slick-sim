@@ -11,7 +11,8 @@ var annotated_dup =
           [ "Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html", "classslick_1_1sim_1_1exch_1_1Exchange" ],
           [ "HyperliquidExchange", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange" ],
           [ "OrderBookObserver", "structslick_1_1sim_1_1exch_1_1OrderBookObserver.html", "structslick_1_1sim_1_1exch_1_1OrderBookObserver" ],
-          [ "Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", "structslick_1_1sim_1_1exch_1_1Symbol" ]
+          [ "Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", "structslick_1_1sim_1_1exch_1_1Symbol" ],
+          [ "TradedCredit", "structslick_1_1sim_1_1exch_1_1TradedCredit.html", "structslick_1_1sim_1_1exch_1_1TradedCredit" ]
         ] ],
         [ "md_feed", "namespaceslick_1_1sim_1_1md__feed.html", [
           [ "CoinbaseLiveWSFeed", "classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html", "classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed" ],
@@ -62,6 +63,7 @@ var annotated_dup =
         [ "MDSubscriptionMessage", "structslick_1_1sim_1_1MDSubscriptionMessage.html", "structslick_1_1sim_1_1MDSubscriptionMessage" ],
         [ "MDSubscriptionResponse", "structslick_1_1sim_1_1MDSubscriptionResponse.html", "structslick_1_1sim_1_1MDSubscriptionResponse" ],
         [ "MDTrade", "structslick_1_1sim_1_1MDTrade.html", "structslick_1_1sim_1_1MDTrade" ],
+        [ "MDTradeSnapshotResponse", "structslick_1_1sim_1_1MDTradeSnapshotResponse.html", "structslick_1_1sim_1_1MDTradeSnapshotResponse" ],
         [ "MDTradeUpdate", "structslick_1_1sim_1_1MDTradeUpdate.html", "structslick_1_1sim_1_1MDTradeUpdate" ],
         [ "ModifyOrderMessage", "structslick_1_1sim_1_1ModifyOrderMessage.html", "structslick_1_1sim_1_1ModifyOrderMessage" ],
         [ "Order", "structslick_1_1sim_1_1Order.html", "structslick_1_1sim_1_1Order" ],

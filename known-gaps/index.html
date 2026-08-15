@@ -812,10 +812,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#the-coinbase-publisher-never-republishes-trades" class="md-nav__link">
+  <a href="#a-trade-print-only-reaches-the-tape-if-it-finds-liquidity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The Coinbase publisher never republishes trades
+        A trade print only reaches the tape if it finds liquidity
       
     </span>
   </a>
@@ -893,17 +893,6 @@
   
     <nav class="md-nav" aria-label="Bugs found while documenting">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#onmarkettradessnapshot-loops-past-the-end-of-its-buffer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        onMarketTradesSnapshot loops past the end of its buffer
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#avg_fill_price-is-recomputed-in-floating-point-on-every-fill" class="md-nav__link">
@@ -1106,10 +1095,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#the-coinbase-publisher-never-republishes-trades" class="md-nav__link">
+  <a href="#a-trade-print-only-reaches-the-tape-if-it-finds-liquidity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The Coinbase publisher never republishes trades
+        A trade print only reaches the tape if it finds liquidity
       
     </span>
   </a>
@@ -1187,17 +1176,6 @@
   
     <nav class="md-nav" aria-label="Bugs found while documenting">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#onmarkettradessnapshot-loops-past-the-end-of-its-buffer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        onMarketTradesSnapshot loops past the end of its buffer
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#avg_fill_price-is-recomputed-in-floating-point-on-every-fill" class="md-nav__link">
@@ -1350,15 +1328,14 @@ on both adapters — is never called from the request loop.</p>
 <p><strong>What it means:</strong> <code>Symbol::num_subscriptions_</code> only ever increases, and upstream feeds are never
 torn down when the last client goes away. Harmless for a long-running sim with a stable symbol set;
 a slow leak otherwise.</p>
-<h3 id="the-coinbase-publisher-never-republishes-trades">The Coinbase publisher never republishes trades<a class="headerlink" href="#the-coinbase-publisher-never-republishes-trades" title="Permanent link">&para;</a></h3>
-<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/market_data_publisher/coinbase_publisher.cpp#L184-L201"><code>CoinbasePublisher::publish_market_data_update</code></a>
-handles <code>BOOK</code>, <code>LEVEL</code>, <code>ORDER</code>, <code>SUB_RESPONSE</code> and <code>BOOK_SNAPSHOT</code>. It has <strong>no case for
-<code>MDUpdateType::TRADE</code></strong> (nor <code>TRADE_SUMMARY</code>), even though
-<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L338-L349"><code>Exchange::publishMDTrades</code></a>
-puts them on the queue.</p>
-<p><strong>What it means:</strong> a client subscribed to Coinbase <code>market_trades</code> receives the initial (empty)
-snapshot and the subscription confirmation, then nothing. Hyperliquid's publisher does handle
-<code>TRADE</code>, so its <code>trades</code> channel works.</p>
+<h3 id="a-trade-print-only-reaches-the-tape-if-it-finds-liquidity">A trade print only reaches the tape if it finds liquidity<a class="headerlink" href="#a-trade-print-only-reaches-the-tape-if-it-finds-liquidity" title="Permanent link">&para;</a></h3>
+<p>The public trade tape is fill-driven: a venue print is replayed through the matching engine as an
+aggressor order, and only the resulting fills are published. A print that finds nothing crossable in
+the mirrored book therefore produces no output at all, and its unfilled remainder simply rests.</p>
+<p><strong>What it means:</strong> tape fidelity tracks book fidelity. While the mirrored book is thin or stale —
+right after startup, or after a feed gap — prints can be dropped from the tape rather than relayed
+verbatim. This is the intended design, not a defect, but it is worth knowing when reconciling the
+simulator's tape against the venue's.</p>
 <h3 id="mdupdatetypeorder-is-never-published"><code>MDUpdateType::ORDER</code> is never published<a class="headerlink" href="#mdupdatetypeorder-is-never-published" title="Permanent link">&para;</a></h3>
 <p><code>Symbol::onOrderUpdate</code> fills <code>md_order_update_cache_</code>, but every call site clears the cache behind a
 <code>// TODO: publish MD order update</code> comment rather than calling <code>publishMDOrderUpdate</code>. The function
@@ -1399,17 +1376,6 @@ model in <a href="../architecture/">Architecture</a>.</p>
 <h2 id="bugs-found-while-documenting">Bugs found while documenting<a class="headerlink" href="#bugs-found-while-documenting" title="Permanent link">&para;</a></h2>
 <p>These are latent defects, not design decisions. They are recorded here because the documentation
 would otherwise describe behaviour the code does not deliver.</p>
-<h3 id="onmarkettradessnapshot-loops-past-the-end-of-its-buffer"><code>onMarketTradesSnapshot</code> loops past the end of its buffer<a class="headerlink" href="#onmarkettradessnapshot-loops-past-the-end-of-its-buffer" title="Permanent link">&para;</a></h3>
-<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exch_coinbase_feed_callbacks.cpp#L220-L245"><code>exch_coinbase_feed_callbacks.cpp:220</code></a>
-contains:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">snapshots</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
-</code></pre></div>
-<p><code>snapshots.size()</code> is <code>size_t</code>, so <code>i</code> is unsigned and <code>i &gt;= 0</code> is always true — the loop runs past
-zero and wraps. A second <code>for (const auto&amp; trade : snapshots)</code> loop then writes another
-<code>snapshots.size()</code> trades through the same advancing pointer, into a queue slot that was reserved for
-only <code>snapshots.size()</code> entries.</p>
-<p><strong>What it means:</strong> the path is reached whenever a <code>market_trades</code> subscription is pending and a
-trades snapshot arrives from Coinbase. Expect memory corruption or a crash.</p>
 <h3 id="avg_fill_price-is-recomputed-in-floating-point-on-every-fill"><code>avg_fill_price</code> is recomputed in floating point on every fill<a class="headerlink" href="#avg_fill_price-is-recomputed-in-floating-point-on-every-fill" title="Permanent link">&para;</a></h3>
 <p>Both
 <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/order_book/order_book.hpp#L187"><code>OrderBook::executeOrder</code></a>

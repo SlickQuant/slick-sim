@@ -98,8 +98,12 @@ $(document).ready(function(){initNavTree('symbol_8hpp.html',''); initResizable()
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="order__book_8hpp_source.html">order_book/order_book.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="matching__engine_8hpp_source.html">matching_engine/matching_engine.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="ring__buffer_8hpp_source.html">utils/ring_buffer.hpp</a>&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;array&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;unordered_set&gt;</code><br />
 <code>#include &lt;slick/orderbook/observer.hpp&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -118,6 +122,9 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1exch_1_1OrderBookObserver.html">slick::sim::exch::OrderBookObserver</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1exch_1_1TradedCredit.html">slick::sim::exch::TradedCredit</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quantity one trade print removed from phantom liquidity at one price, kept until a level update stamped at or after it accounts for it.  <a href="structslick_1_1sim_1_1exch_1_1TradedCredit.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1exch_1_1Symbol.html">slick::sim::exch::Symbol</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>

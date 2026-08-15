@@ -10,6 +10,7 @@ var market__data_8hpp =
     [ "slick::sim::BookSnapshot", "structslick_1_1sim_1_1BookSnapshot.html", "structslick_1_1sim_1_1BookSnapshot" ],
     [ "slick::sim::MDTrade", "structslick_1_1sim_1_1MDTrade.html", "structslick_1_1sim_1_1MDTrade" ],
     [ "slick::sim::MDTradeUpdate", "structslick_1_1sim_1_1MDTradeUpdate.html", "structslick_1_1sim_1_1MDTradeUpdate" ],
+    [ "slick::sim::MDTradeSnapshotResponse", "structslick_1_1sim_1_1MDTradeSnapshotResponse.html", "structslick_1_1sim_1_1MDTradeSnapshotResponse" ],
     [ "MDSubscriptionRejectReason", "market__data_8hpp.html#a0a9f0bd1a7d704fe4599a7420d34e1d3", [
       [ "NONE", "market__data_8hpp.html#a0a9f0bd1a7d704fe4599a7420d34e1d3a85f539001467e885c9539c6d39233b4f", null ],
       [ "UNKNOWN_CONTRACT", "market__data_8hpp.html#a0a9f0bd1a7d704fe4599a7420d34e1d3a0ebb72bfe67423b3fa130870bfc77835", null ],
@@ -33,6 +34,7 @@ var market__data_8hpp =
     [ "UpdateFlags", "market__data_8hpp.html#abd546ae4b297b0e3dc896f1b130d6167", [
       [ "F_NONE", "market__data_8hpp.html#abd546ae4b297b0e3dc896f1b130d6167a5312d89052881b198755a298d6f09f10", null ],
       [ "F_IS_SNAPSHOT", "market__data_8hpp.html#abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7", null ],
-      [ "F_END_EVENT", "market__data_8hpp.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618", null ]
+      [ "F_END_EVENT", "market__data_8hpp.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618", null ],
+      [ "F_NOT_IN_BOOK", "market__data_8hpp.html#abd546ae4b297b0e3dc896f1b130d6167a19b7cfba7906dc0dd07f6bd7224b3dc0", null ]
     ] ]
 ];

@@ -576,6 +576,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Coinbase: time-ordered event sequencing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-sequence_id-tie-break-looks-inverted-and-must-stay-that-way" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The sequence_id tie-break looks inverted, and must stay that way
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -586,6 +603,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#venue-trade-prints-are-matched-not-relayed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Venue trade prints are matched, not relayed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Venue trade prints are matched, not relayed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#not-reducing-the-same-quantity-twice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not reducing the same quantity twice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -680,6 +725,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Publishing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-recent-trade-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The recent-trade snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1006,6 +1068,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Coinbase: time-ordered event sequencing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-sequence_id-tie-break-looks-inverted-and-must-stay-that-way" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The sequence_id tie-break looks inverted, and must stay that way
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1016,6 +1095,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#venue-trade-prints-are-matched-not-relayed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Venue trade prints are matched, not relayed
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Venue trade prints are matched, not relayed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#not-reducing-the-same-quantity-twice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not reducing the same quantity twice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1111,6 +1218,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Publishing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-recent-trade-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The recent-trade snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1195,11 +1319,50 @@ order would corrupt the book. <code>CoinbaseExchange</code> therefore buffers an
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_seq_num</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">next_sequence_id</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">   </span><span class="c1">// monotonic tiebreaker</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_published_level_seq_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_published_trade_seq_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">};</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">};</span>
 </code></pre></div>
-<p><code>EventCompare</code> orders by <code>event_time</code> ascending, tie-broken by the internal <code>sequence_id</code> so events
-with identical exchange timestamps keep arrival order.</p>
+<p><code>EventCompare</code> orders by <code>event_time</code> ascending, then puts a <code>TRADE</code> ahead of a <code>LEVEL_UPDATE</code> at the
+same instant — the two arrive on independent channels, and applying the trade first is what lets the
+level update be measured against a book that has already absorbed it.</p>
+<h3 id="the-sequence_id-tie-break-looks-inverted-and-must-stay-that-way">The <code>sequence_id</code> tie-break looks inverted, and must stay that way<a class="headerlink" href="#the-sequence_id-tie-break-looks-inverted-and-must-stay-that-way" title="Permanent link">&para;</a></h3>
+<p><code>std::priority_queue</code> pops the <em>greatest</em> element, so <code>EventCompare</code> inverts its <code>event_time</code>
+comparison to get earliest-first. The final <code>sequence_id</code> tie-break is <strong>not</strong> inverted, which reads
+like an oversight. It is load-bearing: <code>sequence_id</code> is assigned as each event is enqueued, and the
+two enqueue loops walk their batch in opposite directions to suit each channel's own ordering.</p>
+<table>
+<thead>
+<tr>
+<th>Callback</th>
+<th>Iterates the batch</th>
+<th>Because the venue sends</th>
+<th>Popping highest <code>sequence_id</code> first gives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>onLevel2Updates</code></td>
+<td><strong>reverse</strong> (<code>rbegin</code>→<code>rend</code>)</td>
+<td>level updates oldest-first</td>
+<td>array order</td>
+</tr>
+<tr>
+<td><code>onMarketTrades</code></td>
+<td><strong>forward</strong></td>
+<td><code>market_trades</code> newest-first</td>
+<td>reverse array order</td>
+</tr>
+</tbody>
+</table>
+<p>Both land on chronological. "Fixing" the tie-break to match the <code>event_time</code> inversion replays both
+batches backwards — levels settle on a stale quantity, and trades match against the book and take
+their public trade ids in reverse.</p>
+<div class="admonition note">
+<p class="admonition-title">Same-price, same-timestamp updates in one batch</p>
+<p>The underlying <code>slick-orderbook</code> rejects a level mutation whose timestamp is not newer than that
+level's last update, so a second update to the <em>same</em> price at the <em>same</em> instant is silently
+dropped. Coinbase sends at most one entry per price per batch, so this does not arise in
+practice — but it does mean same-instant ordering at one price is unobservable in the book.</p>
+</div>
 <p>The callbacks (<code>onLevel2Updates</code>, <code>onMarketTrades</code>) only push into this queue — they never touch the
 book. They already run on the exchange thread, delivered by <code>processData()</code>, so this is buffering for
 <strong>ordering</strong>, not for thread safety. Release happens later in the same loop iteration, in
@@ -1218,8 +1381,27 @@ forces an immediate flush but is never called with <code>force = true</code> in 
 or adjusts an existing one via the <code>getMDLevelQty</code> delta logic described in
 <a href="../order-book/#why-feed_md_level_quantity_-exists">Order book</a>. Stale events — <code>event_time</code> older than
 <code>book.lastUpdateTime()</code> — are logged and dropped.</p>
-<p>Level and trade updates are batched into <code>level_update_buffer_</code> / <code>trade_update_buffer_</code> and flushed
-to <code>md_queue_</code> when the sequence number changes, so one upstream batch becomes one downstream message.</p>
+<p>Level updates are batched into <code>level_update_buffer_</code> and flushed to <code>md_queue_</code> when the sequence
+number changes, so one upstream batch becomes one downstream message. Trade events are not batched:
+each is <a href="#venue-trade-prints-are-matched-not-relayed">matched immediately</a> and its fills published as
+they occur.</p>
+<p>The quantity buffered is <strong>what the level ended up holding</strong> — <code>total_quantity</code>, read back from the
+book after the update has been applied — not the venue's raw <code>event.qty</code>. The two diverge for two
+independent reasons:</p>
+<ul>
+<li>The book may decline to take the update at face value. <code>reconcilePhantomQty</code> lowers a stale
+  update's target by the quantity a trade already removed, and a brand-new level rests only what
+  survived matching.</li>
+<li><code>total_quantity</code> includes the simulator's own resting orders. A real venue's L2 shows your orders
+  too, so a client trading against the simulator should see them in the book it publishes.</li>
+</ul>
+<p>Publishing <code>event.qty</code> instead would leave a client's incrementally-maintained book disagreeing with
+the simulator's own — rebuilding liquidity the simulator will not honour, and omitting the client's
+own resting size.</p>
+<p>All three producers of level data therefore agree on one basis: this path,
+<code>Symbol::onPriceLevelUpdate</code> (which forwards the book's own level quantity for order-driven changes),
+and <code>populateL2Snapshot</code>. A client can re-read a snapshot at any time and find it consistent with the
+deltas it has been applying.</p>
 <p>Snapshots take a different route: <code>onLevel2Snapshot</code> mutates the book directly rather than going
 through the priority queue — safe to do, since it is on the exchange thread like everything else, and
 correct because a snapshot is authoritative and supersedes anything still queued.</p>
@@ -1260,6 +1442,41 @@ which sets phantom liquidity at one price to exactly <code>target_qty</code>:</p
 <p>A removal is simply <code>target_qty = 0</code>.</p>
 <p>Snapshots (<code>processL2Snapshot</code>) call <code>clearMDOrders()</code> — preserving resting simulator orders — then
 rebuild every level and reset the mirror.</p>
+<h2 id="venue-trade-prints-are-matched-not-relayed">Venue trade prints are matched, not relayed<a class="headerlink" href="#venue-trade-prints-are-matched-not-relayed" title="Permanent link">&para;</a></h2>
+<p>A trade message from the venue is never forwarded to clients as-is. It is replayed into the book as
+an incoming aggressor order — same side as the real taker, the print price as its limit — so it takes
+liquidity exactly as the real trade did, filling any simulator order that was ahead of the phantom
+liquidity it swept. Only the fills that result are published, as <code>TRADE_SUMMARY</code>.</p>
+<p>Anything the print could not fill rests, with the same order id, on the aggressor's own side. It
+cannot cross at that moment: a remainder only exists because nothing was still crossable at that
+limit. When the venue later reports opposing liquidity at or through that price, the new-level path
+matches it against the book before resting it, so the leftover is consumed there.</p>
+<h3 id="not-reducing-the-same-quantity-twice">Not reducing the same quantity twice<a class="headerlink" href="#not-reducing-the-same-quantity-twice" title="Permanent link">&para;</a></h3>
+<p>The venue also sends a level update for the trade it just printed. Applying both the trade and that
+update would remove the same quantity from the level twice.</p>
+<p>In the ordinary case no correction is needed: the level update carries the post-trade quantity, the
+book has already absorbed the trade, and the two agree. Two things keep it that way:</p>
+<ul>
+<li><strong>Ordering.</strong> A print and its level update share a timestamp but arrive on independent channels, so
+  arrival order between them is arbitrary. <code>CoinbaseExchange::EventCompare</code> breaks timestamp ties by
+  putting <code>TRADE</code> before <code>LEVEL_UPDATE</code>, so the book absorbs the trade first.</li>
+<li><strong>A credit, for updates that predate the trade.</strong> When a trade consumes phantom liquidity,
+  <code>Symbol::creditTradedQty</code> records the amount at that (side, price) with the trade's timestamp — the
+  <em>resting</em> side, which is the opposite of the aggressor's, and one entry per price level swept.
+  <code>Exchange::reconcilePhantomQty</code> then offsets a level update stamped <strong>strictly before</strong> the trade,
+  since that update still reports the pre-trade quantity. Timestamps that tie count as reflecting the
+  trade.</li>
+</ul>
+<p>Only phantom quantity is credited (<code>TradeSummaryInfo::phantom_qty</code>), never the print size: when a
+trade fills the simulator's own resting order, the venue's level still legitimately drops, because
+that liquidity really did trade at the venue.</p>
+<p>Credits are held <strong>per trade timestamp and resolved individually</strong>, never summed into one figure.
+A level update reflects only the trades that preceded it, so an update landing between two trades at
+the same price must offset by the later one alone — collapsing them would subtract the earlier trade
+a second time and under-report the level until the next update resynced it. <code>takeTradedQty(side,
+price, as_of)</code> therefore returns only the credits <code>as_of</code> predates, and drops the ones it reflects.
+Dropping them is what stops stale credit from surviving to swallow a later, genuine cancel; keeping
+the rest is what lets a subsequent update resolve them correctly.</p>
 <h2 id="the-internal-market-data-wire-format">The internal market-data wire format<a class="headerlink" href="#the-internal-market-data-wire-format" title="Permanent link">&para;</a></h2>
 <p><code>md_queue_</code> is a <code>slick::queue&lt;uint8_t&gt;</code> carrying variable-length frames. All structs are
 <code>#pragma pack(1)</code> and use the <code>data[0]</code> flexible-array-member idiom, so a frame is a header
@@ -1348,13 +1565,13 @@ immediately followed by its payload in the same contiguous reservation.</p>
 <td><code>TRADE_SUMMARY</code> (3)</td>
 <td><code>TradeSummary</code></td>
 <td><code>publishTradeSummary</code></td>
-<td>Neither publisher handles it</td>
+<td>Coinbase → <code>market_trades</code> <code>"update"</code>; Hyperliquid → <code>trades</code></td>
 </tr>
 <tr>
 <td><code>TRADE</code> (4)</td>
 <td><code>MDTradeUpdate</code></td>
-<td><code>publishMDTrades</code></td>
-<td>Hyperliquid → <code>trades</code>; <a href="../known-gaps/#the-coinbase-publisher-never-republishes-trades">Coinbase drops it</a></td>
+<td>Reserved — nothing produces it</td>
+<td>—</td>
 </tr>
 <tr>
 <td><code>BOOK_SNAPSHOT</code> (5)</td>
@@ -1371,11 +1588,15 @@ immediately followed by its payload in the same contiguous reservation.</p>
 <tr>
 <td><code>SUB_RESPONSE</code> (7)</td>
 <td><code>MDSubscriptionResponse</code> + nested payload</td>
-<td><code>populateL2SubscriptionResponse</code>, <code>populateMDTradesResponse</code>, <code>rejectMdSubscription</code></td>
+<td><code>populateL2SubscriptionResponse</code>, <code>publishTradeSubscriptionResponse</code>, <code>rejectMdSubscription</code></td>
 <td>Both publishers, to deliver the first snapshot</td>
 </tr>
 </tbody>
 </table>
+<p><code>TRADE_SUMMARY</code> is the sole source of the public trade tape. A venue's own trade print is not
+relayed: it is replayed through the matching engine as an aggressor order, and the fills it produces
+are published as <code>TRADE_SUMMARY</code>. <code>MDUpdateType::TRADE</code> is kept only so the enumerator values after
+it do not shift.</p>
 <h3 id="payload-structs">Payload structs<a class="headerlink" href="#payload-structs" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDLevel</span><span class="w"> </span><span class="p">{</span><span class="w">              </span><span class="c1">// 41 bytes</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w">      </span><span class="c1">//  0  ns</span>
@@ -1392,23 +1613,29 @@ immediately followed by its payload in the same contiguous reservation.</p>
 <a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDLevelUpdate</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_level_update</span><span class="p">;</span><span class="w"> </span><span class="n">MDLevel</span><span class="w"> </span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
 <a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="k">struct</span><span class="w"> </span><span class="nc">BookSnapshot</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_bid</span><span class="p">;</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_ask</span><span class="p">;</span><span class="w"> </span><span class="n">MDLevel</span><span class="w"> </span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span><span class="w">  </span><span class="c1">// bids then asks</span>
 <a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>
-<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDTrade</span><span class="w"> </span><span class="p">{</span><span class="w">              </span><span class="c1">// 34 bytes</span>
-<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">seq_num</span><span class="p">;</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span>
-<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">    </span><span class="n">UpdateFlags</span><span class="w"> </span><span class="n">flags</span><span class="p">;</span><span class="w"> </span><span class="n">Side</span><span class="w"> </span><span class="n">side</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
-<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDTradeUpdate</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_trades</span><span class="p">;</span><span class="w"> </span><span class="n">MDTrade</span><span class="w"> </span><span class="n">trades</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
-<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>
-<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDOrder</span><span class="w"> </span><span class="p">{</span><span class="w">              </span><span class="c1">// 41 bytes</span>
-<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">order_id</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">priority</span><span class="p">;</span>
-<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">    </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span><span class="w"> </span><span class="n">Side</span><span class="w"> </span><span class="n">side</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
-<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDOrderUpdate</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_orders</span><span class="p">;</span><span class="w"> </span><span class="n">MDOrder</span><span class="w"> </span><span class="n">orders</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
-<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a>
-<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDSubscriptionResponse</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">channel</span><span class="p">;</span><span class="w"> </span><span class="n">MDSubscriptionRejectReason</span><span class="w"> </span><span class="n">reject_reason</span><span class="p">;</span>
-<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="w">                                </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
-<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a>
-<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="k">struct</span><span class="w"> </span><span class="nc">TradeSummary</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">time_t</span><span class="w"> </span><span class="n">timestamp</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">trade_id</span><span class="p">;</span><span class="w"> </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">security_id</span><span class="p">;</span>
-<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="w">                      </span><span class="n">Side</span><span class="w"> </span><span class="n">aggressor_side</span><span class="p">;</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span>
-<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a><span class="w">                      </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">num_orders</span><span class="p">;</span><span class="w"> </span><span class="n">Trade</span><span class="w"> </span><span class="n">trades</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
-<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Trade</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">order_id</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDTrade</span><span class="w"> </span><span class="p">{</span><span class="w">              </span><span class="c1">// 42 bytes</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">trade_id</span><span class="p">;</span><span class="w">        </span><span class="c1">//  0  per-venue public sequence</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">seq_num</span><span class="p">;</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">    </span><span class="n">UpdateFlags</span><span class="w"> </span><span class="n">flags</span><span class="p">;</span><span class="w"> </span><span class="n">Side</span><span class="w"> </span><span class="n">side</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDTradeUpdate</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_trades</span><span class="p">;</span><span class="w"> </span><span class="n">MDTrade</span><span class="w"> </span><span class="n">trades</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a><span class="c1">// Payload of a SUB_RESPONSE on a trade channel. Trades the subscriber&#39;s book</span>
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="c1">// snapshot reflects are history; the rest are delivered as a normal update.</span>
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDTradeSnapshotResponse</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_snapshot</span><span class="p">;</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_update</span><span class="p">;</span>
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="w">                                 </span><span class="n">MDTrade</span><span class="w"> </span><span class="n">trades</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span><span class="w">  </span><span class="c1">// two contiguous blocks</span>
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a>
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDOrder</span><span class="w"> </span><span class="p">{</span><span class="w">              </span><span class="c1">// 41 bytes</span>
+<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">order_id</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">event_time</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">priority</span><span class="p">;</span>
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="w">    </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span><span class="w"> </span><span class="n">Side</span><span class="w"> </span><span class="n">side</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDOrderUpdate</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_orders</span><span class="p">;</span><span class="w"> </span><span class="n">MDOrder</span><span class="w"> </span><span class="n">orders</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a>
+<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MDSubscriptionResponse</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">channel</span><span class="p">;</span><span class="w"> </span><span class="n">MDSubscriptionRejectReason</span><span class="w"> </span><span class="n">reject_reason</span><span class="p">;</span>
+<a id="__codelineno-6-33" name="__codelineno-6-33" href="#__codelineno-6-33"></a><span class="w">                                </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-34" name="__codelineno-6-34" href="#__codelineno-6-34"></a>
+<a id="__codelineno-6-35" name="__codelineno-6-35" href="#__codelineno-6-35"></a><span class="k">struct</span><span class="w"> </span><span class="nc">TradeSummary</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">time_t</span><span class="w"> </span><span class="n">timestamp</span><span class="p">;</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">trade_id</span><span class="p">;</span><span class="w"> </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">security_id</span><span class="p">;</span>
+<a id="__codelineno-6-36" name="__codelineno-6-36" href="#__codelineno-6-36"></a><span class="w">                      </span><span class="n">Side</span><span class="w"> </span><span class="n">aggressor_side</span><span class="p">;</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">price</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span>
+<a id="__codelineno-6-37" name="__codelineno-6-37" href="#__codelineno-6-37"></a><span class="w">                      </span><span class="kt">int32_t</span><span class="w"> </span><span class="n">num_orders</span><span class="p">;</span><span class="w"> </span><span class="n">Trade</span><span class="w"> </span><span class="n">trades</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">};</span>
+<a id="__codelineno-6-38" name="__codelineno-6-38" href="#__codelineno-6-38"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Trade</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">order_id</span><span class="p">;</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">qty</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
 </code></pre></div>
 <p><code>MDBookUpdate</code> is the one fixed-size payload: <code>MDLevel sell[10]</code>, <code>MDLevel buy[10]</code>, and
 <code>uint8_t update_index[2]</code> marking which level changed per side.</p>
@@ -1423,9 +1650,12 @@ shared memory, a reader built with a different <code>int_fast64_t</code> width w
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="n">F_NONE</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="n">F_IS_SNAPSHOT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">        </span><span class="c1">// part of a snapshot rather than an incremental update</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="n">F_END_EVENT</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">   </span><span class="c1">// last message of a batch</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="p">};</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="n">F_NOT_IN_BOOK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">   </span><span class="c1">// MDTrade only: this print was never applied to the book</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p">};</span>
 </code></pre></div>
 <p><code>F_END_EVENT</code> maps to slick-orderbook's <code>ChangeFlag::LastInBatch</code>, set in <code>Symbol::onPriceLevelUpdate</code>.</p>
+<p><code>F_NOT_IN_BOOK</code> is set only on trades seeded from a venue's own trade snapshot, and is what
+<a href="#the-recent-trade-snapshot">splits the subscribe-time trade snapshot</a>.</p>
 <h3 id="mdsubscriptionrejectreason"><code>MDSubscriptionRejectReason</code><a class="headerlink" href="#mdsubscriptionrejectreason" title="Permanent link">&para;</a></h3>
 <p><code>NONE</code> (0), <code>UNKNOWN_CONTRACT</code> (1), <code>MARKET_CLOSED</code> (2). <code>Exchange::rejectMdSubscription</code> exists and
 builds a well-formed frame — but marks the <code>reason</code> parameter <code>[[maybe_unused]]</code> and never writes it
@@ -1446,6 +1676,45 @@ write a <code>MD_SUBSCRIPTION</code> <code>Request</code> onto <code>request_que
 creating the symbol (if new), attaching a feed, and marking the symbol pending until the first
 snapshot arrives. Unsubscribes are written the same way but
 <a href="../known-gaps/#market-data-unsubscribe-requests-are-dropped">never processed</a>.</p>
+<h3 id="the-recent-trade-snapshot">The recent-trade snapshot<a class="headerlink" href="#the-recent-trade-snapshot" title="Permanent link">&para;</a></h3>
+<p>Every trade published on a tape is also recorded in <code>Symbol::trade_history_</code>, a bounded per-symbol
+ring buffer. <code>Exchange::publishTradeSummary</code> is the single choke point, so the history and the live
+tape can never diverge — and both carry the same trade id.</p>
+<p>When a client subscribes to a trade channel, <code>Exchange::publishTradeSubscriptionResponse</code> frames that
+history as an <code>MDTradeSnapshotResponse</code>, split by whether the book the subscriber is about to receive
+already contains each trade:</p>
+<ul>
+<li><strong><code>num_snapshot</code></strong> — trades the book absorbed. Genuine history, consistent with that book snapshot.</li>
+<li><strong><code>num_update</code></strong> — trades it did not. Presenting these as settled history would misrepresent them,
+  so the publisher sends them as a normal trade update immediately after the snapshot instead.</li>
+</ul>
+<p>The test is <code>F_NOT_IN_BOOK</code>, not a timestamp. A trade the matching engine produced is in the book by
+construction — it was applied when it arrived, and the L2 snapshot is generated from that same book —
+so it is history whatever its timestamp. Only prints seeded from a venue's own trade snapshot were
+never applied, and for those the question is whether the book's data reaches their timestamp, which
+is where <code>order_book_-&gt;lastUpdateTime()</code> comes in.</p>
+<div class="admonition warning">
+<p class="admonition-title"><code>lastUpdateTime()</code> alone is not the boundary</p>
+<p>It tracks <strong>level updates only</strong> — the trade handlers mutate the book without advancing it. Using
+it on its own would classify an already-applied trade as <code>num_update</code>, telling the subscriber a
+trade was still to come while handing them a book snapshot that already reflected it.</p>
+</div>
+<p>Because the test is not a timestamp, it is <strong>not monotonic over the history</strong>: an applied trade can
+sit after an unapplied print that is newer than the book. The builder therefore partitions — one pass
+copying the snapshot block, a second copying the update block — instead of copying in history order
+and counting as it goes. Copying in history order would leave the two blocks interleaved while the
+counts said otherwise, so the consumer, which reads each block as a contiguous range, would read one
+block's trades as the other's. Each pass walks the history in order, so both blocks stay
+chronological within themselves.</p>
+<p>Both blocks travel in one SUB_RESPONSE frame deliberately. <code>publish_subscription_response</code> is the only
+publisher path that targets just the newly-subscribed sockets — it filters on each socket's pending
+set — so emitting the newer trades as a separate frame would broadcast them to every existing
+subscriber that already saw them live.</p>
+<p>So the update block is always empty for simulator-generated trades. It earns its keep when shadowing
+a live feed, where Coinbase's upstream <code>market_trades</code> snapshot arrives on its own schedule and can
+carry prints newer than the level2 snapshot the simulator currently holds. Those upstream prints seed
+the history only — they are never fed to the matching engine, having happened before the simulator
+was listening, and they are the only trades that carry <code>F_NOT_IN_BOOK</code>.</p>
 
 
 

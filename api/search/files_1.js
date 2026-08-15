@@ -6,6 +6,8 @@ var searchData=
   ['coinbase_5fpublisher_2ehpp_3',['coinbase_publisher.hpp',['../coinbase__publisher_8hpp.html',1,'']]],
   ['coinbase_5frest_5forder_5fgateway_2ecpp_4',['coinbase_rest_order_gateway.cpp',['../coinbase__rest__order__gateway_8cpp.html',1,'']]],
   ['coinbase_5frest_5forder_5fgateway_2ehpp_5',['coinbase_rest_order_gateway.hpp',['../coinbase__rest__order__gateway_8hpp.html',1,'']]],
-  ['coinbase_5fws_5forder_5fgateway_2ecpp_6',['coinbase_ws_order_gateway.cpp',['../coinbase__ws__order__gateway_8cpp.html',1,'']]],
-  ['coinbase_5fws_5forder_5fgateway_2ehpp_7',['coinbase_ws_order_gateway.hpp',['../coinbase__ws__order__gateway_8hpp.html',1,'']]]
+  ['coinbase_5ftrade_5fencoder_2ecpp_6',['coinbase_trade_encoder.cpp',['../coinbase__trade__encoder_8cpp.html',1,'']]],
+  ['coinbase_5ftrade_5fencoder_2ehpp_7',['coinbase_trade_encoder.hpp',['../coinbase__trade__encoder_8hpp.html',1,'']]],
+  ['coinbase_5fws_5forder_5fgateway_2ecpp_8',['coinbase_ws_order_gateway.cpp',['../coinbase__ws__order__gateway_8cpp.html',1,'']]],
+  ['coinbase_5fws_5forder_5fgateway_2ehpp_9',['coinbase_ws_order_gateway.hpp',['../coinbase__ws__order__gateway_8hpp.html',1,'']]]
 ];

@@ -64,13 +64,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "alpaca__historical__data__feed_8hpp.html",
-"classslick_1_1sim_1_1exch_1_1Exchange.html#a4a11fa016f8ec3a28230f78601775097",
-"classslick_1_1sim_1_1order__gateway_1_1MessageParser.html#a764cb1c56f2ab24970ef2f8ced08c563",
-"common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d",
-"messages_8hpp.html#a643229c6d27fa2c4cc2651be0a9a5337ab50339a10e1de285ac99d4c3990b8693",
-"namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167",
-"structslick_1_1sim_1_1MDTrade.html#af6e5f158cf9b944bd3cf7663d3200814",
-"structslick_1_1sim_1_1exch_1_1Symbol.html#a42451abd773ab72139019e0f23594dbd"
+"classslick_1_1sim_1_1exch_1_1Exchange.html#a3d278d42b22385d736d56abac1207e19",
+"classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#ac7399a56e9afdd251e92d6ae6298399e",
+"common_2order_8hpp.html#a7acd497cb034f1f328fb2f541eb6e4b8a38afd7ae34bd5e3e6fc170d8b09178a3",
+"message__parser_8hpp.html",
+"namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527",
+"structslick_1_1sim_1_1MDOrder.html#a0473161d267bc40daeb70eca7c7ab665",
+"structslick_1_1sim_1_1TradeSummary.html#a4a0c798e67f9df5c374348778aa2f30a",
+"types_8hpp.html#a7ffabc39614e251a835823f9db68d22e"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

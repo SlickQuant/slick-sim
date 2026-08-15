@@ -109,8 +109,11 @@ Include dependency graph for fifo_matching_engine.cpp:</div>
 Functions</h2></td></tr>
 <tr class="memitem:ae815fe0372c16e70f59d3aaac80b4b83" id="r_ae815fe0372c16e70f59d3aaac80b4b83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fifo__matching__engine_8cpp.html#ae815fe0372c16e70f59d3aaac80b4b83">isSelfMatch</a> (const <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *incoming_order, const <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *book_order)</td></tr>
 <tr class="separator:ae815fe0372c16e70f59d3aaac80b4b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab70f286a761269fea29500910442b11" id="r_aab70f286a761269fea29500910442b11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fifo__matching__engine_8cpp.html#aab70f286a761269fea29500910442b11">handleSelfMatch</a> (const <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *incoming_order, <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *book_order, <a class="el" href="classslick_1_1sim_1_1OrderBook.html">OrderBook</a> &amp;book, uint64_t event_time, uint64_t seq_num, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527">SelfMatchPreventionMode</a> smp_mode)</td></tr>
-<tr class="separator:aab70f286a761269fea29500910442b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad30da9fa5d49f0c0ff26d5a4f52c9dc3" id="r_ad30da9fa5d49f0c0ff26d5a4f52c9dc3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="fifo__matching__engine_8cpp.html#ad30da9fa5d49f0c0ff26d5a4f52c9dc3">handleSelfMatch</a> (<a class="el" href="classslick_1_1sim_1_1engine_1_1MatchingEngine.html">MatchingEngine</a> &amp;engine, const <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *incoming_order, <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *book_order, <a class="el" href="classslick_1_1sim_1_1OrderBook.html">OrderBook</a> &amp;book, <a class="el" href="namespaceslick_1_1sim.html#a4e2c44f2b0c7bd4a4933ac1a5ef128ad">slick::sim::time_t</a> request_time, uint64_t event_time, uint64_t seq_num, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527">SelfMatchPreventionMode</a> smp_mode)</td></tr>
+<tr class="separator:ad30da9fa5d49f0c0ff26d5a4f52c9dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bbed30af98ffbd9a5e6b07a1c945ee9" id="r_a9bbed30af98ffbd9a5e6b07a1c945ee9"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a> SIDE&gt; </td></tr>
+<tr class="memitem:a9bbed30af98ffbd9a5e6b07a1c945ee9"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="fifo__matching__engine_8cpp.html#a9bbed30af98ffbd9a5e6b07a1c945ee9">wouldSelfMatch</a> (const <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *order, <a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> order_price, <a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> order_qty, <a class="el" href="classslick_1_1sim_1_1OrderBook.html">OrderBook</a> &amp;book)</td></tr>
+<tr class="separator:a9bbed30af98ffbd9a5e6b07a1c945ee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7356aa1f35ac816f10466f9723949019" id="r_a7356aa1f35ac816f10466f9723949019"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a> SIDE&gt; </td></tr>
 <tr class="memitem:a7356aa1f35ac816f10466f9723949019"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="fifo__matching__engine_8cpp.html#a7356aa1f35ac816f10466f9723949019">canFillCompletely</a> (const <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *order, <a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> order_price, <a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> order_qty, <a class="el" href="classslick_1_1sim_1_1OrderBook.html">OrderBook</a> &amp;book, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527">SelfMatchPreventionMode</a> smp_mode)</td></tr>
 <tr class="separator:a7356aa1f35ac816f10466f9723949019"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,14 +171,14 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8cpp_source.html#l00061">61</a> of file <a class="el" href="fifo__matching__engine_8cpp_source.html">fifo_matching_engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">99</a> of file <a class="el" href="fifo__matching__engine_8cpp_source.html">fifo_matching_engine.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527a472a87ec8b79b84919f30601350aee38">slick::sim::CANCEL_NEWEST</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527aea0eb6f26da5299ad66391f753f271a6">slick::sim::CANCEL_RESTING</a>, <a class="el" href="order__book_8hpp_source.html#l00343">slick::sim::OrderBook::findOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00017">isSelfMatch()</a>, <a class="el" href="types_8hpp_source.html#l00015">slick::sim::NULL_PRICE</a>, and <a class="el" href="common_2order_8hpp_source.html#l00257">slick::sim::Order::symbol</a>.</p>
+<p class="reference">References <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527a472a87ec8b79b84919f30601350aee38">slick::sim::CANCEL_NEWEST</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527aea0eb6f26da5299ad66391f753f271a6">slick::sim::CANCEL_RESTING</a>, <a class="el" href="order__book_8hpp_source.html#l00343">slick::sim::OrderBook::findOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00017">isSelfMatch()</a>, <a class="el" href="types_8hpp_source.html#l00015">slick::sim::NULL_PRICE</a>, and <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>.</p>
 
 </div>
 </div>
-<a id="aab70f286a761269fea29500910442b11" name="aab70f286a761269fea29500910442b11"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab70f286a761269fea29500910442b11">&#9670;&#160;</a></span>handleSelfMatch()</h2>
+<a id="ad30da9fa5d49f0c0ff26d5a4f52c9dc3" name="ad30da9fa5d49f0c0ff26d5a4f52c9dc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad30da9fa5d49f0c0ff26d5a4f52c9dc3">&#9670;&#160;</a></span>handleSelfMatch()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -186,6 +189,12 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
         <tr>
           <td class="memname">bool handleSelfMatch </td>
           <td>(</td>
+          <td class="paramtype"><a class="el" href="classslick_1_1sim_1_1engine_1_1MatchingEngine.html">MatchingEngine</a> &amp;&#160;</td>
+          <td class="paramname"><em>engine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *&#160;</td>
           <td class="paramname"><em>incoming_order</em>, </td>
         </tr>
@@ -200,6 +209,12 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
           <td></td>
           <td class="paramtype"><a class="el" href="classslick_1_1sim_1_1OrderBook.html">OrderBook</a> &amp;&#160;</td>
           <td class="paramname"><em>book</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim.html#a4e2c44f2b0c7bd4a4933ac1a5ef128ad">slick::sim::time_t</a>&#160;</td>
+          <td class="paramname"><em>request_time</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -234,9 +249,9 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">32</a> of file <a class="el" href="fifo__matching__engine_8cpp_source.html">fifo_matching_engine.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527a472a87ec8b79b84919f30601350aee38">slick::sim::CANCEL_NEWEST</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527aea0eb6f26da5299ad66391f753f271a6">slick::sim::CANCEL_RESTING</a>, <a class="el" href="common_2order_8hpp_source.html#l00282">slick::sim::Order::client_id</a>, <a class="el" href="order__book_8hpp_source.html#l00099">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00260">slick::sim::Order::id</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527ab50339a10e1de285ac99d4c3990b8693">slick::sim::NONE</a>, <a class="el" href="common_2order_8hpp_source.html#l00256">slick::sim::Order::order_id</a>, and <a class="el" href="common_2order_8hpp_source.html#l00257">slick::sim::Order::symbol</a>.</p>
+<p class="reference">References <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527a472a87ec8b79b84919f30601350aee38">slick::sim::CANCEL_NEWEST</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527aea0eb6f26da5299ad66391f753f271a6">slick::sim::CANCEL_RESTING</a>, <a class="el" href="common_2order_8hpp_source.html#l00306">slick::sim::Order::client_id</a>, <a class="el" href="order__book_8hpp_source.html#l00099">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00055">slick::sim::OrderBook::freeOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00284">slick::sim::Order::id</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527ab50339a10e1de285ac99d4c3990b8693">slick::sim::NONE</a>, <a class="el" href="common_2order_8hpp_source.html#l00280">slick::sim::Order::order_id</a>, <a class="el" href="matching__engine_8cpp_source.html#l00086">slick::sim::engine::MatchingEngine::publishOrderCancel()</a>, and <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>.</p>
 
 </div>
 </div>
@@ -276,9 +291,9 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8cpp_source.html#l00017">17</a> of file <a class="el" href="fifo__matching__engine_8cpp_source.html">fifo_matching_engine.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00282">slick::sim::Order::client_id</a>.</p>
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00306">slick::sim::Order::client_id</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00061">canFillCompletely()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">match()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">canFillCompletely()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">match()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00074">wouldSelfMatch()</a>.</p>
 
 </div>
 </div>
@@ -352,9 +367,9 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8cpp_source.html#l00115">115</a> of file <a class="el" href="fifo__matching__engine_8cpp_source.html">fifo_matching_engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8cpp_source.html#l00153">153</a> of file <a class="el" href="fifo__matching__engine_8cpp_source.html">fifo_matching_engine.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00328">slick::sim::TradeSummaryInfo::aggressor_side</a>, <a class="el" href="common_2order_8hpp_source.html#l00274">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00275">slick::sim::Order::cum_quantity</a>, <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a5391ae427dc0ea14dda406b7ef10b3b4">slick::sim::FILL_OR_KILL</a>, <a class="el" href="order__book_8hpp_source.html#l00343">slick::sim::OrderBook::findOrder()</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a4564c4e6278be5298db164b983c81709">slick::sim::FOK_CANNOT_FILL</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>, <a class="el" href="common_2order_8hpp_source.html#l00260">slick::sim::Order::id</a>, <a class="el" href="namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a623f31e0edb052f302774f306f5ddb1b">slick::sim::IMMEDIATE_OR_CANCEL</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00017">isSelfMatch()</a>, <a class="el" href="common_2order_8hpp_source.html#l00276">slick::sim::Order::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00277">slick::sim::Order::last_fill_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00273">slick::sim::Order::leaves_quantity</a>, <a class="el" href="matching__engine_8hpp_source.html#l00031">slick::sim::engine::MatchingEngine::nextTradeId()</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337ab50339a10e1de285ac99d4c3990b8693">slick::sim::NONE</a>, <a class="el" href="types_8hpp_source.html#l00015">slick::sim::NULL_PRICE</a>, <a class="el" href="messages_8hpp_source.html#l00331">slick::sim::TradeSummaryInfo::num_orders</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a49640e7c24f04ed55fb37e6de608018f">slick::sim::PENDING_NEW</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a0b9710bd14da215c94a5cac5c2cb3bc4">slick::sim::PENDING_REPLACE</a>, <a class="el" href="messages_8hpp_source.html#l00329">slick::sim::TradeSummaryInfo::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00271">slick::sim::Order::price</a>, <a class="el" href="matching__engine_8cpp_source.html#l00009">slick::sim::engine::MatchingEngine::publishOrderAck()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00086">slick::sim::engine::MatchingEngine::publishOrderCancel()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00035">slick::sim::engine::MatchingEngine::publishOrderExecution()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00061">slick::sim::engine::MatchingEngine::publishOrderModify()</a>, <a class="el" href="messages_8hpp_source.html#l00330">slick::sim::TradeSummaryInfo::qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00272">slick::sim::Order::quantity</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337aedb3c4d18c4d80ab94156b7df8669c17">slick::sim::SMP</a>, <a class="el" href="common_2order_8hpp_source.html#l00264">slick::sim::Order::status</a>, <a class="el" href="common_2order_8hpp_source.html#l00257">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00265">slick::sim::Order::time_in_force</a>, <a class="el" href="messages_8hpp_source.html#l00326">slick::sim::TradeSummaryInfo::timestamp</a>, <a class="el" href="types_8hpp_source.html#l00023">slick::sim::to_price_double()</a>, <a class="el" href="types_8hpp_source.html#l00019">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00031">slick::sim::to_qty_double()</a>, <a class="el" href="messages_8hpp_source.html#l00327">slick::sim::TradeSummaryInfo::trade_id</a>, and <a class="el" href="messages_8hpp_source.html#l00332">slick::sim::TradeSummaryInfo::Trades</a>.</p>
+<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00328">slick::sim::TradeSummaryInfo::aggressor_side</a>, <a class="el" href="common_2order_8hpp_source.html#l00298">slick::sim::Order::avg_fill_price</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527a472a87ec8b79b84919f30601350aee38">slick::sim::CANCEL_NEWEST</a>, <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::Order::cum_quantity</a>, <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a5391ae427dc0ea14dda406b7ef10b3b4">slick::sim::FILL_OR_KILL</a>, <a class="el" href="order__book_8hpp_source.html#l00343">slick::sim::OrderBook::findOrder()</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a4564c4e6278be5298db164b983c81709">slick::sim::FOK_CANNOT_FILL</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>, <a class="el" href="common_2order_8hpp_source.html#l00284">slick::sim::Order::id</a>, <a class="el" href="namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a623f31e0edb052f302774f306f5ddb1b">slick::sim::IMMEDIATE_OR_CANCEL</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00017">isSelfMatch()</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::Order::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00301">slick::sim::Order::last_fill_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00297">slick::sim::Order::leaves_quantity</a>, <a class="el" href="matching__engine_8hpp_source.html#l00031">slick::sim::engine::MatchingEngine::nextTradeId()</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337ab50339a10e1de285ac99d4c3990b8693">slick::sim::NONE</a>, <a class="el" href="types_8hpp_source.html#l00015">slick::sim::NULL_PRICE</a>, <a class="el" href="messages_8hpp_source.html#l00336">slick::sim::TradeSummaryInfo::num_orders</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a49640e7c24f04ed55fb37e6de608018f">slick::sim::PENDING_NEW</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a0b9710bd14da215c94a5cac5c2cb3bc4">slick::sim::PENDING_REPLACE</a>, <a class="el" href="messages_8hpp_source.html#l00335">slick::sim::TradeSummaryInfo::phantom_qty</a>, <a class="el" href="messages_8hpp_source.html#l00329">slick::sim::TradeSummaryInfo::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00295">slick::sim::Order::price</a>, <a class="el" href="matching__engine_8cpp_source.html#l00009">slick::sim::engine::MatchingEngine::publishOrderAck()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00086">slick::sim::engine::MatchingEngine::publishOrderCancel()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00035">slick::sim::engine::MatchingEngine::publishOrderExecution()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00061">slick::sim::engine::MatchingEngine::publishOrderModify()</a>, <a class="el" href="messages_8hpp_source.html#l00330">slick::sim::TradeSummaryInfo::qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00296">slick::sim::Order::quantity</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337aedb3c4d18c4d80ab94156b7df8669c17">slick::sim::SMP</a>, <a class="el" href="common_2order_8hpp_source.html#l00288">slick::sim::Order::status</a>, <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00289">slick::sim::Order::time_in_force</a>, <a class="el" href="messages_8hpp_source.html#l00326">slick::sim::TradeSummaryInfo::timestamp</a>, <a class="el" href="types_8hpp_source.html#l00023">slick::sim::to_price_double()</a>, <a class="el" href="types_8hpp_source.html#l00019">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00031">slick::sim::to_qty_double()</a>, <a class="el" href="messages_8hpp_source.html#l00327">slick::sim::TradeSummaryInfo::trade_id</a>, and <a class="el" href="messages_8hpp_source.html#l00337">slick::sim::TradeSummaryInfo::Trades</a>.</p>
 
 </div>
 </div>
@@ -416,9 +431,55 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8cpp_source.html#l00242">242</a> of file <a class="el" href="fifo__matching__engine_8cpp_source.html">fifo_matching_engine.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8cpp_source.html#l00312">312</a> of file <a class="el" href="fifo__matching__engine_8cpp_source.html">fifo_matching_engine.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00328">slick::sim::TradeSummaryInfo::aggressor_side</a>, <a class="el" href="order__book_8hpp_source.html#l00099">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00343">slick::sim::OrderBook::findOrder()</a>, <a class="el" href="matching__engine_8hpp_source.html#l00031">slick::sim::engine::MatchingEngine::nextTradeId()</a>, <a class="el" href="types_8hpp_source.html#l00015">slick::sim::NULL_PRICE</a>, <a class="el" href="messages_8hpp_source.html#l00331">slick::sim::TradeSummaryInfo::num_orders</a>, <a class="el" href="messages_8hpp_source.html#l00329">slick::sim::TradeSummaryInfo::price</a>, <a class="el" href="matching__engine_8cpp_source.html#l00035">slick::sim::engine::MatchingEngine::publishOrderExecution()</a>, <a class="el" href="messages_8hpp_source.html#l00330">slick::sim::TradeSummaryInfo::qty</a>, <a class="el" href="messages_8hpp_source.html#l00326">slick::sim::TradeSummaryInfo::timestamp</a>, <a class="el" href="types_8hpp_source.html#l00023">slick::sim::to_price_double()</a>, <a class="el" href="types_8hpp_source.html#l00031">slick::sim::to_qty_double()</a>, <a class="el" href="messages_8hpp_source.html#l00327">slick::sim::TradeSummaryInfo::trade_id</a>, and <a class="el" href="messages_8hpp_source.html#l00332">slick::sim::TradeSummaryInfo::Trades</a>.</p>
+<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00328">slick::sim::TradeSummaryInfo::aggressor_side</a>, <a class="el" href="order__book_8hpp_source.html#l00099">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00180">slick::sim::OrderBook::executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00343">slick::sim::OrderBook::findOrder()</a>, <a class="el" href="matching__engine_8hpp_source.html#l00031">slick::sim::engine::MatchingEngine::nextTradeId()</a>, <a class="el" href="types_8hpp_source.html#l00015">slick::sim::NULL_PRICE</a>, <a class="el" href="messages_8hpp_source.html#l00336">slick::sim::TradeSummaryInfo::num_orders</a>, <a class="el" href="messages_8hpp_source.html#l00335">slick::sim::TradeSummaryInfo::phantom_qty</a>, <a class="el" href="messages_8hpp_source.html#l00329">slick::sim::TradeSummaryInfo::price</a>, <a class="el" href="matching__engine_8cpp_source.html#l00035">slick::sim::engine::MatchingEngine::publishOrderExecution()</a>, <a class="el" href="messages_8hpp_source.html#l00330">slick::sim::TradeSummaryInfo::qty</a>, <a class="el" href="messages_8hpp_source.html#l00326">slick::sim::TradeSummaryInfo::timestamp</a>, <a class="el" href="types_8hpp_source.html#l00023">slick::sim::to_price_double()</a>, <a class="el" href="types_8hpp_source.html#l00031">slick::sim::to_qty_double()</a>, <a class="el" href="messages_8hpp_source.html#l00327">slick::sim::TradeSummaryInfo::trade_id</a>, and <a class="el" href="messages_8hpp_source.html#l00337">slick::sim::TradeSummaryInfo::Trades</a>.</p>
+
+</div>
+</div>
+<a id="a9bbed30af98ffbd9a5e6b07a1c945ee9" name="a9bbed30af98ffbd9a5e6b07a1c945ee9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bbed30af98ffbd9a5e6b07a1c945ee9">&#9670;&#160;</a></span>wouldSelfMatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bd">Side</a> SIDE&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">bool wouldSelfMatch </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *&#160;</td>
+          <td class="paramname"><em>order</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a>&#160;</td>
+          <td class="paramname"><em>order_price</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a>&#160;</td>
+          <td class="paramname"><em>order_qty</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classslick_1_1sim_1_1OrderBook.html">OrderBook</a> &amp;&#160;</td>
+          <td class="paramname"><em>book</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8cpp_source.html#l00074">74</a> of file <a class="el" href="fifo__matching__engine_8cpp_source.html">fifo_matching_engine.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00343">slick::sim::OrderBook::findOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00017">isSelfMatch()</a>, and <a class="el" href="types_8hpp_source.html#l00015">slick::sim::NULL_PRICE</a>.</p>
 
 </div>
 </div>

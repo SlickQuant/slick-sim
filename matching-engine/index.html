@@ -564,6 +564,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Self-match prevention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cancel_newest-decides-before-it-touches-anything" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CANCEL_NEWEST decides before it touches anything
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-counts-as-self" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What counts as "self"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1044,6 +1083,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Self-match prevention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cancel_newest-decides-before-it-touches-anything" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CANCEL_NEWEST decides before it touches anything
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-counts-as-self" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What counts as "self"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1229,25 +1307,49 @@ allow-list — so are <code>AT_THE_OPENING</code> and <code>GOOD_TILL_CROSSING</
 </tr>
 <tr>
 <td><code>CANCEL_RESTING</code></td>
-<td>Delete the resting order and continue matching against the next one</td>
+<td>Cancel the resting order — removed from the book, <code>CANCELED</code> sent to its owner, <code>Order</code> returned to the pool — then carry on matching against the next one</td>
 </tr>
 <tr>
 <td><code>CANCEL_NEWEST</code></td>
-<td>Cancel the incoming order, return <code>OrdRejectReason::SMP</code>, no trades</td>
+<td>Reject the incoming order with <code>OrdRejectReason::SMP</code>, no trades</td>
 </tr>
 </tbody>
 </table>
-<p>The mode is per-<code>Symbol</code> (<code>smp_mode_</code>), passed into <code>match()</code> by <code>Symbol::addOrder</code>.</p>
-<div class="admonition warning">
-<p class="admonition-title">SMP is inert in production</p>
-<p><code>Order::client_id</code> defaults to <strong>-1</strong> and nothing outside the unit tests ever assigns it, so
-<code>isSelfMatch</code> always returns false on a live run. <code>Symbol::smp_mode_</code> is likewise initialised to
-<code>NONE</code> and has no configuration key. The feature is fully implemented and tested
-(<code>tests/unit/matching_engine/test_matching_engine_smp.cpp</code>) but unreachable from a running
-simulator.</p>
-</div>
-<p>Note also that <code>Symbol::modifyOrder</code> calls <code>match()</code> <strong>without</strong> an SMP argument, so amendments always
-use the <code>NONE</code> default even on a symbol configured otherwise.</p>
+<h3 id="cancel_newest-decides-before-it-touches-anything"><code>CANCEL_NEWEST</code> decides before it touches anything<a class="headerlink" href="#cancel_newest-decides-before-it-touches-anything" title="Permanent link">&para;</a></h3>
+<p>The check runs at the top of <code>match()</code>, ahead of the order ack, ahead of the
+<code>PENDING_REPLACE</code> mutation, and ahead of the FOK pre-validation. <code>wouldSelfMatch</code> walks the opposing
+side as far as the incoming quantity could actually reach and asks whether any of it is the order's
+own.</p>
+<p>That ordering is the whole point. The matching loop mutates before it matches — an amendment writes
+the new price and quantity onto the stored <code>Order</code> and reports <code>REPLACED</code>, and a new order is acked —
+so deciding mid-loop would mean telling the client its order was replaced or working and then
+rejecting it, with the amendment half-applied to an order that never moved on the book. Deciding
+first means a rejected order leaves no trace: the client sees its pending, then one <code>REJECTED</code>, and
+the stored order keeps its original price and quantity.</p>
+<p>Running before the mutation does mean the pre-check has to derive the quantity the loop is <em>about</em>
+to use rather than reading it afterwards. The <code>order_qty</code> argument is the order's total quantity; for
+a partially filled amendment the loop will match only <code>leaves_quantity + (order_qty - quantity)</code>.
+Scanning by the total would reach past what the order can actually trade and reject against a
+resting order it would never have touched, so STEP 0 mirrors that arithmetic without applying it.</p>
+<p>It also means the reject reason is <code>SMP</code> rather than <code>FOK_CANNOT_FILL</code> for a fill-or-kill order that
+could have filled but for the self-match — the liquidity was there, and SMP is why it could not
+trade.</p>
+<p>The mode is per-<code>Symbol</code> (<code>smp_mode_</code>), passed into <code>match()</code> by both <code>Symbol::addOrder</code> and
+<code>Symbol::modifyOrder</code> — an amendment re-enters the matching loop, so it is prevented on the same
+terms as a new order.</p>
+<h3 id="enabling-it">Enabling it<a class="headerlink" href="#enabling-it" title="Permanent link">&para;</a></h3>
+<p>SMP is <strong>off by default</strong>. Set <code>self_match_prevention</code> on an exchange to <code>"cancel_resting"</code> or
+<code>"cancel_newest"</code> and every symbol that venue creates inherits it — see
+<a href="../configuration/#self_match_prevention">Configuration</a>. An unrecognised value logs a warning and
+leaves SMP disabled rather than aborting startup.</p>
+<h3 id="what-counts-as-self">What counts as "self"<a class="headerlink" href="#what-counts-as-self" title="Permanent link">&para;</a></h3>
+<p><code>Order::client_id</code> is the identity SMP compares, and <code>Exchange::clientIdFor</code> assigns it from the
+order's <strong><code>user_id</code></strong> — the authenticated account, which is how real venues scope SMP. Ids are
+handed out on first sight of a <code>user_id</code> and stay stable for the life of the process, so the hot
+matching loop compares an <code>int</code> rather than a string.</p>
+<p>An order with an empty <code>user_id</code> gets <code>-1</code>, which <code>isSelfMatch</code> treats as "no identity" and never
+matches — including against another <code>-1</code>. An unauthenticated client is therefore left out of SMP
+rather than lumped together with every other unauthenticated one.</p>
 <h2 id="modifies-re-enter-the-matching-loop">Modifies re-enter the matching loop<a class="headerlink" href="#modifies-re-enter-the-matching-loop" title="Permanent link">&para;</a></h2>
 <p><code>Symbol::modifyOrder</code> does not adjust the book in place and stop. It calls the full <code>match()</code> path
 with the new price and quantity, which means an amendment that makes the order marketable trades
@@ -1281,8 +1383,14 @@ engine merges them into the current summary:</p>
 <p>So <code>Trades[0]</code> is always the aggressor with its running total, and <code>Trades[1..]</code> are the resting
 orders it hit. <code>num_orders</code> counts participants, not trades — it starts at 2 and increments by one per
 additional resting order.</p>
-<p><code>trade_id</code> comes from <code>MatchingEngine::nextTradeId()</code>, a process-global atomic shared across all
-venues.</p>
+<p><code>TradeSummaryInfo::trade_id</code> comes from <code>MatchingEngine::nextTradeId()</code>, a process-global atomic
+shared across all venues — so it is an internal id only. The <strong>public</strong> trade id is stamped by
+<code>Exchange::publishTradeSummary</code> from a counter the venue owns, which is what makes each venue's ids
+an independent sequence.</p>
+<p><code>phantom_qty</code> records how much of a summary's <code>qty</code> was matched against phantom liquidity rather than
+the simulator's own resting orders (<code>our_order == nullptr</code> in the match loop). The exchange uses it
+to avoid reducing a price level twice — see
+<a href="../market-data/#venue-trade-prints-are-matched-not-relayed">venue trade prints</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code>num_orders</code> is used by <code>Exchange::publishTradeSummary</code> to size the queue reservation

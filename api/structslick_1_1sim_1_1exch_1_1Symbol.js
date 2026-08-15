@@ -6,7 +6,9 @@ var structslick_1_1sim_1_1exch_1_1Symbol =
     [ "Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html#a7629e1cb07ed2e1d52af3a9350ab4f91", null ],
     [ "addOrder", "structslick_1_1sim_1_1exch_1_1Symbol.html#a29447c4edabb1a8a9eb70e8dc4ef11e7", null ],
     [ "cancelOrder", "structslick_1_1sim_1_1exch_1_1Symbol.html#a18c683bc33d1d60c8b19568c9299bdbc", null ],
+    [ "clearTradeHistory", "structslick_1_1sim_1_1exch_1_1Symbol.html#aa8fe4eb57fcc8b6109a38a43b27fb03a", null ],
     [ "createOrderBook", "structslick_1_1sim_1_1exch_1_1Symbol.html#a2269cb792fef5cd97fb4d2f704981146", null ],
+    [ "creditTradedQty", "structslick_1_1sim_1_1exch_1_1Symbol.html#a0179ae5b92cdb05e5db6e1431e5b628e", null ],
     [ "findOrder", "structslick_1_1sim_1_1exch_1_1Symbol.html#af11c86eb1aecc6a223c9f10b03494842", null ],
     [ "findOrderByClientOrderId", "structslick_1_1sim_1_1exch_1_1Symbol.html#a6683a88846db6011970c0ff910d5d95e", null ],
     [ "findOrderByOrderId", "structslick_1_1sim_1_1exch_1_1Symbol.html#a42451abd773ab72139019e0f23594dbd", null ],
@@ -15,6 +17,8 @@ var structslick_1_1sim_1_1exch_1_1Symbol =
     [ "onPriceLevelUpdate", "structslick_1_1sim_1_1exch_1_1Symbol.html#a8d96b38ea182b7502e393648a406506d", null ],
     [ "operator=", "structslick_1_1sim_1_1exch_1_1Symbol.html#ad93650762a65ec0295590dc84a29c05b", null ],
     [ "operator=", "structslick_1_1sim_1_1exch_1_1Symbol.html#a2e70442730e0cb5ce02168116c2a5272", null ],
+    [ "recordTrade", "structslick_1_1sim_1_1exch_1_1Symbol.html#a7972ff81787721edcd0cf27f34914f5c", null ],
+    [ "takeTradedQty", "structslick_1_1sim_1_1exch_1_1Symbol.html#a8cbde529365f961d355c99b772a05250", null ],
     [ "book_observer_", "structslick_1_1sim_1_1exch_1_1Symbol.html#acde2a8dd58f2350053f669d9552645ed", null ],
     [ "id_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a1eb73056e70c34ee4e4020a9d64c05af", null ],
     [ "matching_engine_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a43fd50bbdf3d8239e2ef0d006a164a6b", null ],
@@ -24,5 +28,7 @@ var structslick_1_1sim_1_1exch_1_1Symbol =
     [ "order_book_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a8ae3a2bd3ba8cf94b862bb3e946cfc7f", null ],
     [ "smp_mode_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a0848515fd68be6a88dfe0b7ace48db1c", null ],
     [ "symbol_", "structslick_1_1sim_1_1exch_1_1Symbol.html#af87fe19c60cb383951bd17aec64cd15d", null ],
+    [ "trade_history_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a048b6f60edc692aa007cc6188bc59afb", null ],
+    [ "TRADE_HISTORY_CAPACITY", "structslick_1_1sim_1_1exch_1_1Symbol.html#a468ec804364582524f1f6a15494864ed", null ],
     [ "venue_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a8c252b5555b3ce4141999aea03f890cf", null ]
 ];

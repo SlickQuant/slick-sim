@@ -1551,64 +1551,76 @@ count at that level, which includes any of your own resting orders.</p>
 and seeded from the snapshot, so a client must process the <code>s</code> message before any <code>c</code> message to stay
 in sync.</p>
 <h3 id="trades"><code>trades</code><a class="headerlink" href="#trades" title="Permanent link">&para;</a></h3>
-<p>The subscription snapshot is always empty:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;trades&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="p">}</span>
+<p>The subscription snapshot replays the instrument's recent trades, oldest first (empty if there are
+none yet):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;trades&quot;</span><span class="p">,</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;coin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ETH&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;side&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;px&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3000.500000&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;sz&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.250000&quot;</span><span class="p">,</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">              </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1723300000123</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x0&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;tid&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<p>Live prints:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;trades&quot;</span><span class="p">,</span>
-<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;coin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ETH&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;side&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;B&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;px&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3000.500000&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;sz&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.250000&quot;</span><span class="p">,</span>
-<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">              </span><span class="nt">&quot;time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1723300000123</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0x0&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
-</code></pre></div>
-<p><code>side</code> is <code>"B"</code> for buy, <code>"A"</code> for sell. <code>hash</code> is always the literal <code>"0x0"</code> — there is no chain.</p>
+<p>Live prints use the same shape, one message per executed trade.</p>
+<p><code>side</code> is the <strong>aggressor's</strong>: <code>"B"</code> for buy, <code>"A"</code> for sell. <code>hash</code> is always the literal <code>"0x0"</code> —
+there is no chain. <code>tid</code> is a per-venue sequence generated by the simulator and stable across
+clients: two clients see the same id for the same trade, live or replayed in a snapshot.</p>
+<div class="admonition note">
+<p class="admonition-title">Trades are matched, not relayed</p>
+<p>Every message on this channel is a fill produced by the matching engine. An upstream Hyperliquid
+print is replayed into the book as an aggressor order rather than forwarded, so what a client
+sees here reflects the simulated book — including fills against its own resting orders. A print
+that finds no crossable liquidity produces
+<a href="../known-gaps/#a-trade-print-only-reaches-the-tape-if-it-finds-liquidity">no message at all</a>.</p>
+</div>
+<p>If the recent-trade history contains a trade stamped <strong>after</strong> the book snapshot the subscriber
+receives, that trade is not settled history for this client — it arrives in a second <code>trades</code>
+message immediately after the snapshot, before the subscription confirmation.</p>
 <h3 id="subscription-confirmation">Subscription confirmation<a class="headerlink" href="#subscription-confirmation" title="Permanent link">&para;</a></h3>
 <p>Once every pending subscription for a socket has delivered its snapshot:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;subscriptions&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;subscriptions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ETH&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;BTC&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;subscriptions&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;subscriptions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ETH&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;BTC&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
 <h3 id="heartbeats">Heartbeats<a class="headerlink" href="#heartbeats" title="Permanent link">&para;</a></h3>
 <p>Every 15 seconds the publisher pings all sockets and, for those subscribed to <code>heartbeat</code>, sends a
 heartbeat message. A socket that has not ponged for 60 seconds is closed. Neither interval is
 configurable.</p>
 <h2 id="end-to-end-example">End-to-end example<a class="headerlink" href="#end-to-end-example" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># 1. start the simulator (the logs/ directory must exist)</span>
-<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>logs
-<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>slick-sim<span class="w"> </span>config/slick_sim.json
-<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>
-<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="c1"># 2. metadata comes from the real exchange through the proxy</span>
-<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:4002/info<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;type&quot;:&quot;meta&quot;}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-c<span class="w"> </span><span class="m">200</span>
-<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>
-<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="c1"># 3. watch the book</span>
-<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>websocat<span class="w"> </span>ws://localhost:5001/<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
-<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="s">{&quot;method&quot;:&quot;subscribe&quot;,&quot;subscription&quot;:{&quot;type&quot;:&quot;l2Book&quot;,&quot;coin&quot;:&quot;ETH&quot;}}</span>
-<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="s">EOF</span>
-<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>
-<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="c1"># 4. place a resting limit order, keyed by your own cloid</span>
-<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:4002/exchange<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-Wallet-Address: 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
-<a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="s1">        &quot;action&quot;: {</span>
-<a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="s1">          &quot;type&quot;: &quot;order&quot;,</span>
-<a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a><span class="s1">          &quot;orders&quot;: [{</span>
-<a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a><span class="s1">            &quot;a&quot;: &quot;ETH&quot;, &quot;b&quot;: true, &quot;p&quot;: &quot;1000.0&quot;, &quot;s&quot;: &quot;0.1&quot;,</span>
-<a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a><span class="s1">            &quot;t&quot;: { &quot;limit&quot;: { &quot;tif&quot;: &quot;Gtc&quot; } },</span>
-<a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a><span class="s1">            &quot;c&quot;: &quot;demo-1&quot;</span>
-<a id="__codelineno-19-26" name="__codelineno-19-26" href="#__codelineno-19-26"></a><span class="s1">          }],</span>
-<a id="__codelineno-19-27" name="__codelineno-19-27" href="#__codelineno-19-27"></a><span class="s1">          &quot;grouping&quot;: &quot;na&quot;</span>
-<a id="__codelineno-19-28" name="__codelineno-19-28" href="#__codelineno-19-28"></a><span class="s1">        },</span>
-<a id="__codelineno-19-29" name="__codelineno-19-29" href="#__codelineno-19-29"></a><span class="s1">        &quot;nonce&quot;: 1723300000000</span>
-<a id="__codelineno-19-30" name="__codelineno-19-30" href="#__codelineno-19-30"></a><span class="s1">      }&#39;</span>
-<a id="__codelineno-19-31" name="__codelineno-19-31" href="#__codelineno-19-31"></a>
-<a id="__codelineno-19-32" name="__codelineno-19-32" href="#__codelineno-19-32"></a><span class="c1"># 5. cancel it by cloid — the only identifier path that reliably works</span>
-<a id="__codelineno-19-33" name="__codelineno-19-33" href="#__codelineno-19-33"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:4002/exchange<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-19-34" name="__codelineno-19-34" href="#__codelineno-19-34"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-19-35" name="__codelineno-19-35" href="#__codelineno-19-35"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-Wallet-Address: 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-19-36" name="__codelineno-19-36" href="#__codelineno-19-36"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
-<a id="__codelineno-19-37" name="__codelineno-19-37" href="#__codelineno-19-37"></a><span class="s1">        &quot;action&quot;: { &quot;type&quot;: &quot;cancelByCloid&quot;,</span>
-<a id="__codelineno-19-38" name="__codelineno-19-38" href="#__codelineno-19-38"></a><span class="s1">                    &quot;cancels&quot;: [ { &quot;a&quot;: &quot;ETH&quot;, &quot;c&quot;: &quot;demo-1&quot; } ] },</span>
-<a id="__codelineno-19-39" name="__codelineno-19-39" href="#__codelineno-19-39"></a><span class="s1">        &quot;nonce&quot;: 1723300000001</span>
-<a id="__codelineno-19-40" name="__codelineno-19-40" href="#__codelineno-19-40"></a><span class="s1">      }&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># 1. start the simulator (the logs/ directory must exist)</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>logs
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>slick-sim<span class="w"> </span>config/slick_sim.json
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="c1"># 2. metadata comes from the real exchange through the proxy</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:4002/info<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;type&quot;:&quot;meta&quot;}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-c<span class="w"> </span><span class="m">200</span>
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="c1"># 3. watch the book</span>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>websocat<span class="w"> </span>ws://localhost:5001/<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="s">{&quot;method&quot;:&quot;subscribe&quot;,&quot;subscription&quot;:{&quot;type&quot;:&quot;l2Book&quot;,&quot;coin&quot;:&quot;ETH&quot;}}</span>
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="s">EOF</span>
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>
+<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="c1"># 4. place a resting limit order, keyed by your own cloid</span>
+<a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:4002/exchange<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-Wallet-Address: 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a><span class="s1">        &quot;action&quot;: {</span>
+<a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a><span class="s1">          &quot;type&quot;: &quot;order&quot;,</span>
+<a id="__codelineno-18-22" name="__codelineno-18-22" href="#__codelineno-18-22"></a><span class="s1">          &quot;orders&quot;: [{</span>
+<a id="__codelineno-18-23" name="__codelineno-18-23" href="#__codelineno-18-23"></a><span class="s1">            &quot;a&quot;: &quot;ETH&quot;, &quot;b&quot;: true, &quot;p&quot;: &quot;1000.0&quot;, &quot;s&quot;: &quot;0.1&quot;,</span>
+<a id="__codelineno-18-24" name="__codelineno-18-24" href="#__codelineno-18-24"></a><span class="s1">            &quot;t&quot;: { &quot;limit&quot;: { &quot;tif&quot;: &quot;Gtc&quot; } },</span>
+<a id="__codelineno-18-25" name="__codelineno-18-25" href="#__codelineno-18-25"></a><span class="s1">            &quot;c&quot;: &quot;demo-1&quot;</span>
+<a id="__codelineno-18-26" name="__codelineno-18-26" href="#__codelineno-18-26"></a><span class="s1">          }],</span>
+<a id="__codelineno-18-27" name="__codelineno-18-27" href="#__codelineno-18-27"></a><span class="s1">          &quot;grouping&quot;: &quot;na&quot;</span>
+<a id="__codelineno-18-28" name="__codelineno-18-28" href="#__codelineno-18-28"></a><span class="s1">        },</span>
+<a id="__codelineno-18-29" name="__codelineno-18-29" href="#__codelineno-18-29"></a><span class="s1">        &quot;nonce&quot;: 1723300000000</span>
+<a id="__codelineno-18-30" name="__codelineno-18-30" href="#__codelineno-18-30"></a><span class="s1">      }&#39;</span>
+<a id="__codelineno-18-31" name="__codelineno-18-31" href="#__codelineno-18-31"></a>
+<a id="__codelineno-18-32" name="__codelineno-18-32" href="#__codelineno-18-32"></a><span class="c1"># 5. cancel it by cloid — the only identifier path that reliably works</span>
+<a id="__codelineno-18-33" name="__codelineno-18-33" href="#__codelineno-18-33"></a>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:4002/exchange<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-34" name="__codelineno-18-34" href="#__codelineno-18-34"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-35" name="__codelineno-18-35" href="#__codelineno-18-35"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-Wallet-Address: 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-36" name="__codelineno-18-36" href="#__codelineno-18-36"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<a id="__codelineno-18-37" name="__codelineno-18-37" href="#__codelineno-18-37"></a><span class="s1">        &quot;action&quot;: { &quot;type&quot;: &quot;cancelByCloid&quot;,</span>
+<a id="__codelineno-18-38" name="__codelineno-18-38" href="#__codelineno-18-38"></a><span class="s1">                    &quot;cancels&quot;: [ { &quot;a&quot;: &quot;ETH&quot;, &quot;c&quot;: &quot;demo-1&quot; } ] },</span>
+<a id="__codelineno-18-39" name="__codelineno-18-39" href="#__codelineno-18-39"></a><span class="s1">        &quot;nonce&quot;: 1723300000001</span>
+<a id="__codelineno-18-40" name="__codelineno-18-40" href="#__codelineno-18-40"></a><span class="s1">      }&#39;</span>
 </code></pre></div>
 <p>Unlike Coinbase, Hyperliquid can subscribe coins upstream at startup: any coin listed in
 <code>md_feeds[].coins</code> has its <code>Symbol</code> created as soon as the first snapshot arrives, and can be traded

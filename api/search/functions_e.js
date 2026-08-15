@@ -19,11 +19,11 @@ var searchData=
   ['publishlevelupdate_16',['publishLevelUpdate',['../classslick_1_1sim_1_1exch_1_1Exchange.html#ad33879744b88615a277e9776dca46828',1,'slick::sim::exch::Exchange']]],
   ['publishmdbookupdate_17',['publishMDBookUpdate',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a441b828e07136f92897d64a02ab3d506',1,'slick::sim::exch::Exchange']]],
   ['publishmdorderupdate_18',['publishMDOrderUpdate',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a05fa1bf8e06a901b5687cb8ecc4ee75e',1,'slick::sim::exch::Exchange']]],
-  ['publishmdtrades_19',['publishMDTrades',['../classslick_1_1sim_1_1exch_1_1Exchange.html#acb7e4431b31c53d0299d03da377c2504',1,'slick::sim::exch::Exchange']]],
-  ['publishorderack_20',['publishOrderAck',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a9f6fb9fd7966e85cf43b4811550aad2a',1,'slick::sim::engine::MatchingEngine']]],
-  ['publishordercancel_21',['publishOrderCancel',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a1e1050574f90f1dfc02916b7db306a35',1,'slick::sim::engine::MatchingEngine']]],
-  ['publishorderexecution_22',['publishOrderExecution',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#adf1573ea121d2e71e3589917313899c5',1,'slick::sim::engine::MatchingEngine']]],
-  ['publishordermodify_23',['publishOrderModify',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a9fed8986878a6c8e18b1f5e46efc10fe',1,'slick::sim::engine::MatchingEngine']]],
-  ['publishtradesummary_24',['publishTradeSummary',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a3f3e3fef36e42596c24767e6bfe2f903',1,'slick::sim::exch::Exchange']]],
+  ['publishorderack_19',['publishOrderAck',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a9f6fb9fd7966e85cf43b4811550aad2a',1,'slick::sim::engine::MatchingEngine']]],
+  ['publishordercancel_20',['publishOrderCancel',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a1e1050574f90f1dfc02916b7db306a35',1,'slick::sim::engine::MatchingEngine']]],
+  ['publishorderexecution_21',['publishOrderExecution',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#adf1573ea121d2e71e3589917313899c5',1,'slick::sim::engine::MatchingEngine']]],
+  ['publishordermodify_22',['publishOrderModify',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a9fed8986878a6c8e18b1f5e46efc10fe',1,'slick::sim::engine::MatchingEngine']]],
+  ['publishtradesubscriptionresponse_23',['publishTradeSubscriptionResponse',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a1504ddfbf4ab78fb07ed44f68b898113',1,'slick::sim::exch::Exchange']]],
+  ['publishtradesummary_24',['publishTradeSummary',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a7ad7b7ed124de8d2ef3fac1bcb65f0b0',1,'slick::sim::exch::Exchange']]],
   ['push_25',['push',['../classslick_1_1sim_1_1utils_1_1RingBuffer.html#a029850b8d259d85e5a557a11d8356195',1,'slick::sim::utils::RingBuffer']]]
 ];
