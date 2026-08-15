@@ -32,6 +32,8 @@ add_executable(slick_sim_tests
     unit/exchange/test_symbol_manager.cpp
     unit/exchange/test_coinbase_exchange.cpp
     unit/exchange/test_hyperliquid_exchange.cpp
+    unit/exchange/test_self_match_prevention.cpp
+    unit/exchange/test_order_pool_recycling.cpp
 
     # Priority 5: Type & Message Tests
     unit/common/test_types.cpp
@@ -43,6 +45,8 @@ add_executable(slick_sim_tests
 
     # Priority 7: Market Data Publisher Tests
     unit/market_data_publisher/test_hyperliquid_l2_diff.cpp
+    unit/market_data_publisher/test_coinbase_trade_encoder.cpp
+    unit/market_data_publisher/test_hyperliquid_trade_encoder.cpp
 )
 
 target_link_libraries(slick_sim_tests

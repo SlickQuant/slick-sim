@@ -1,4 +1,5 @@
 #include "hyperliquid_publisher.hpp"
+#include "hyperliquid_trade_encoder.hpp"
 #include <slick/logger.hpp>
 #include <common/hyperliquid_info_proxy.hpp>
 #include <utils/timestamp.hpp>
@@ -153,8 +154,8 @@ void HyperliquidPublisher::publish_market_data_update(MarketDataUpdate* update) 
         case MDUpdateType::BOOK_SNAPSHOT:
             publish_book_snapshot(update);
             break;
-        case MDUpdateType::TRADE:
-            publish_trade_update(update);
+        case MDUpdateType::TRADE_SUMMARY:
+            publish_trade_summary(update);
             break;
         default:
             break;
@@ -255,6 +256,7 @@ void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* updat
 
     auto channel = static_cast<HyperliquidChannel>(ch);
     json snapshot_msg;
+    json update_msg;   // trades newer than the book snapshot, if any
 
     if (channel == HyperliquidChannel::L2_BOOK || channel == HyperliquidChannel::L2) {
         auto* snapshot = reinterpret_cast<BookSnapshot*>(response->data);
@@ -306,10 +308,17 @@ void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* updat
             };
         }
     } else if (channel == HyperliquidChannel::TRADES) {
-        snapshot_msg = {
-            {"channel", "trades"},
-            {"data", json::array()}
-        };
+        auto* trade_response = reinterpret_cast<MDTradeSnapshotResponse*>(response->data);
+        snapshot_msg = encode_trade_message(update->symbol, trade_response->trades,
+                                            trade_response->num_snapshot);
+        if (trade_response->num_update) {
+            // These are newer than the book snapshot this subscriber gets, so they
+            // are not settled history — deliver them as a normal update right
+            // after the snapshot.
+            update_msg = encode_trade_message(update->symbol,
+                                              trade_response->trades + trade_response->num_snapshot,
+                                              trade_response->num_update);
+        }
     } else {
         return;
     }
@@ -323,6 +332,10 @@ void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* updat
             sub.received.emplace_back(update->symbol);
             ws->send(snapshot_msg.dump(), uWS::OpCode::TEXT);
             LOG_DEBUG("HyperliquidPublisher sent subscription snapshot for {}", update->symbol);
+
+            if (!update_msg.is_null()) {
+                ws->send(update_msg.dump(), uWS::OpCode::TEXT);
+            }
 
             if (sub.pending.empty()) {
                 json confirm = {
@@ -407,27 +420,15 @@ void HyperliquidPublisher::publish_book_snapshot(MarketDataUpdate* update) {
     }
 }
 
-void HyperliquidPublisher::publish_trade_update(MarketDataUpdate* update) {
+void HyperliquidPublisher::publish_trade_summary(MarketDataUpdate* update) {
     auto ch = static_cast<uint8_t>(HyperliquidChannel::TRADES);
     auto& channel_sub = subscription_info_[ch];
     auto it = channel_sub.find(update->symbol);
     if (it == channel_sub.end() || it->second.empty()) return;
 
-    auto* trade_update = reinterpret_cast<MDTradeUpdate*>(update->data);
-    json::array_t trades;
-    for (uint32_t i = 0; i < trade_update->num_trades; ++i) {
-        const auto& t = trade_update->trades[i];
-        trades.push_back({
-            {"coin",  update->symbol},
-            {"side",  t.side == Side::BUY ? "B" : "A"},
-            {"px",    std::to_string(to_price_double(t.price))},
-            {"sz",    std::to_string(to_qty_double(t.qty))},
-            {"time",  t.event_time / ONE_MILLISECOND_NS},
-            {"hash",  "0x0"}
-        });
-    }
-    json msg = {{"channel", "trades"}, {"data", trades}};
-    std::string payload = msg.dump();
+    auto* summary = reinterpret_cast<TradeSummary*>(update->data);
+    // No per-socket sequence number on this venue, so one payload serves everyone.
+    std::string payload = encode_trade_message(update->symbol, *summary).dump();
     for (auto* ws : it->second) {
         ws->send(payload, uWS::OpCode::TEXT);
     }

@@ -63,11 +63,39 @@ private:
         UpdateFlags flags;
     };
 
+    // std::priority_queue pops the *greatest* element, so every comparison here is
+    // inverted: `a < b` must mean "a is processed after b".
     struct EventCompare {
         bool operator()(const Event& a, const Event& b) const {
             if (a.event_time != b.event_time) {
+                // Earliest event time first.
                 return a.event_time > b.event_time;
             }
+            if (a.type != b.type) {
+                // A trade and the level update reflecting it share a timestamp but
+                // arrive on independent channels, so sequence_id (arrival order)
+                // is arbitrary between them. Always apply the trade first: the
+                // level update is then measured against a book that has already
+                // absorbed it, instead of reducing the same quantity twice.
+                return a.type != EventType::TRADE;
+            }
+            // Same instant, same kind: pop the *highest* sequence_id first. That
+            // reads backwards next to the inverted event_time comparison above, but
+            // it is load-bearing — do not "fix" it to match. sequence_id is assigned
+            // as each event is enqueued, and the two enqueue loops deliberately walk
+            // their batch in opposite directions so that this ordering replays both
+            // chronologically:
+            //
+            //   onLevel2Updates  iterates the batch in REVERSE, so array index 0
+            //                    gets the highest id and replays first — Coinbase
+            //                    sends level updates oldest-first.
+            //   onMarketTrades   iterates FORWARD, so the last array element gets
+            //                    the highest id and replays first — Coinbase sends
+            //                    market_trades newest-first.
+            //
+            // Invert it and both batches replay backwards: levels settle on a stale
+            // quantity, and trades match against the book and take their public
+            // trade ids in reverse.
             return a.sequence_id < b.sequence_id;
         }
     };
@@ -80,7 +108,6 @@ private:
         uint64_t last_seq_num = 0;
         uint64_t next_sequence_id = 0;
         uint64_t last_published_level_seq_num = 0;
-        uint64_t last_published_trade_seq_num = 0;
     };
 
     void dispatchEvent(Symbol* symbol, const Event& event, SymbolEventState& state);
@@ -96,9 +123,7 @@ private:
     bool use_live_feed_ = false;
 
     std::unordered_map<Symbol*, SymbolEventState> symbol_event_state_;
-    std::unordered_map<Symbol*, utils::RingBuffer<Event>> trade_snapshots_;
     std::vector<MDLevel> level_update_buffer_;
-    std::vector<MDTrade> trade_update_buffer_;
 };
 
 }   // end namespace slick::sim::exch

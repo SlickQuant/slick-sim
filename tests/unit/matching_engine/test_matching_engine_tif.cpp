@@ -72,8 +72,10 @@ TEST_F(MatchingEngineTIFTest, FOK_WithSMP_CancelNewest_Validation) {
     auto [reject_reason, trades] = matching_engine_->match(
         buy_order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::CANCEL_NEWEST);
 
-    // FOK pre-validation should detect self-match and reject
-    EXPECT_EQ(reject_reason, OrdRejectReason::FOK_CANNOT_FILL);
+    // Rejected for SMP, not FOK: the liquidity to fill this order exists, and
+    // self-match prevention is the reason it cannot trade. SMP is now decided
+    // ahead of the FOK pre-validation so the order is never acked or mutated.
+    EXPECT_EQ(reject_reason, OrdRejectReason::SMP);
     EXPECT_EQ(buy_order->cum_quantity, 0);
 }
 
@@ -182,7 +184,8 @@ TEST_F(MatchingEngineTIFTest, GTC_WithSMP_CancelResting_RestingCanceledNoFill) {
     EXPECT_TRUE(trades.empty());
     // Resting order is removed from the book
     EXPECT_EQ(order_book_->findOrder(sell_id), nullptr);
-    EXPECT_EQ(sell_order->leaves_quantity, 0);
+    // sell_order is not dereferenced past this point: an SMP cancel returns the
+    // Order to the pool, so the lookup above is what proves it is gone.
 }
 
 TEST_F(MatchingEngineTIFTest, FOK_WithSMP_CancelResting_FillsFromOtherLiquidity) {
@@ -205,7 +208,8 @@ TEST_F(MatchingEngineTIFTest, FOK_WithSMP_CancelResting_FillsFromOtherLiquidity)
     EXPECT_EQ(buy_order->leaves_quantity, 0);
     // Self resting order was canceled during the matching loop
     EXPECT_EQ(order_book_->findOrder(self_sell_id), nullptr);
-    EXPECT_EQ(self_sell->leaves_quantity, 0);
+    // self_sell is not dereferenced past this point: an SMP cancel returns the
+    // Order to the pool, so the lookup above is what proves it is gone.
 }
 
 TEST_F(MatchingEngineTIFTest, FOK_WithSMP_CancelResting_InsufficientLiquidity) {
@@ -251,7 +255,8 @@ TEST_F(MatchingEngineTIFTest, IOC_WithSMP_CancelResting_PartialFill) {
     EXPECT_EQ(buy_order->leaves_quantity, kQty5);
     // Self resting order was canceled, not traded against
     EXPECT_EQ(order_book_->findOrder(self_sell_id), nullptr);
-    EXPECT_EQ(self_sell->leaves_quantity, 0);
+    // self_sell is not dereferenced past this point: an SMP cancel returns the
+    // Order to the pool, so the lookup above is what proves it is gone.
     ASSERT_EQ(trades.size(), 1u);
     EXPECT_EQ(trades[0].qty, kQty5);
 }
@@ -279,7 +284,8 @@ TEST_F(MatchingEngineTIFTest, FOK_WithSMP_CancelResting_AcrossMultipleLevels) {
     EXPECT_EQ(buy_order->leaves_quantity, 0);
     // Self resting order was canceled during matching
     EXPECT_EQ(order_book_->findOrder(self_sell_id), nullptr);
-    EXPECT_EQ(self_sell->leaves_quantity, 0);
+    // self_sell is not dereferenced past this point: an SMP cancel returns the
+    // Order to the pool, so the lookup above is what proves it is gone.
     // One trade summary per price level
     ASSERT_EQ(trades.size(), 2u);
     EXPECT_EQ(trades[0].price, kPrice100);

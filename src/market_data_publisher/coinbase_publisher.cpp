@@ -1,5 +1,6 @@
 #include <slick/logger.hpp>
 #include "coinbase_publisher.hpp"
+#include "coinbase_trade_encoder.hpp"
 #include <common/symbol_manager.hpp>
 #include <utils/timestamp.hpp>
 
@@ -197,8 +198,8 @@ void CoinbasePublisher::publish_market_data_update(MarketDataUpdate *update) {
         case MDUpdateType::BOOK_SNAPSHOT:
             publish_level_snapshot(update);
             break;
-        case MDUpdateType::TRADE:
-            // TODO: Implement trade update publishing
+        case MDUpdateType::TRADE_SUMMARY:
+            publish_trade_summary(update);
             break;
         default:
             LOG_WARN("Received unknown or invalid market data update type: {}", static_cast<int>(update->type));
@@ -428,6 +429,7 @@ void CoinbasePublisher::publish_subscription_response(MarketDataUpdate *update) 
             return;
         }
         json snapshot_msg;
+        json update_msg;   // trades newer than the book snapshot, if any
         auto channel = static_cast<coinbase::WebSocketChannel>(response->channel);
         // Send coinbase snapshot based on channel type
         if (channel == coinbase::WebSocketChannel::LEVEL2) {
@@ -470,16 +472,18 @@ void CoinbasePublisher::publish_subscription_response(MarketDataUpdate *update) 
             };
         }
         else if (channel == coinbase::WebSocketChannel::MARKET_TRADES) {
-            // Send empty trades snapshot
-            snapshot_msg = {
-                {"channel", "market_trades"},
-                {"client_id", ""},
-                {"timestamp", format_timestamp_iso8601(9)},
-                {"events", {{
-                    {"type", "snapshot"},
-                    {"trades", json::array()}
-                }}}
-            };
+            auto *trade_response = reinterpret_cast<MDTradeSnapshotResponse*>(response->data);
+            // Coinbase orders snapshot trades newest first.
+            snapshot_msg = encode_market_trades(update->symbol, "snapshot", trade_response->trades,
+                                                trade_response->num_snapshot, true);
+            if (trade_response->num_update) {
+                // These are newer than the book snapshot this subscriber gets, so
+                // they are not settled history — deliver them as a normal update,
+                // chronologically, right after the snapshot.
+                update_msg = encode_market_trades(update->symbol, "update",
+                                                  trade_response->trades + trade_response->num_snapshot,
+                                                  trade_response->num_update, false);
+            }
         }
         else if (channel == coinbase::WebSocketChannel::TICKER) {
             // Send ticker snapshot (would need actual ticker data)
@@ -510,6 +514,11 @@ void CoinbasePublisher::publish_subscription_response(MarketDataUpdate *update) 
                 ws->send(snapshot_msg.dump(), uWS::OpCode::TEXT);
 
                 LOG_DEBUG("CoinbasePublisher send {} snapshot", update->symbol);
+
+                if (!update_msg.is_null()) {
+                    update_msg["sequence_num"] = user_data->seq_num++;
+                    ws->send(update_msg.dump(), uWS::OpCode::TEXT);
+                }
 
                 if (subscription_info.pending_subscriptions.empty()) {
                     // Send subscription confirmation
@@ -636,6 +645,27 @@ void CoinbasePublisher::publish_level_update(MarketDataUpdate *update) {
             update_msg["sequence_num"] = user_data->seq_num++;
             ws->send(update_msg.dump(), uWS::OpCode::TEXT);
         }
+    }
+}
+
+void CoinbasePublisher::publish_trade_summary(MarketDataUpdate *update) {
+    auto it_range = symbol_channel_client_.find(update->symbol);
+    if (it_range == symbol_channel_client_.end()) {
+        return;
+    }
+    auto range = it_range->second.equal_range(static_cast<uint8_t>(coinbase::WebSocketChannel::MARKET_TRADES));
+    if (range.first == range.second) {
+        return;
+    }
+
+    auto *summary = reinterpret_cast<TradeSummary*>(update->data);
+    auto trade_msg = encode_market_trade(update->symbol, *summary);
+
+    for (auto it = range.first; it != range.second; ++it) {
+        auto *ws = it->second;
+        auto *user_data = ws->getUserData();
+        trade_msg["sequence_num"] = user_data->seq_num++;
+        ws->send(trade_msg.dump(), uWS::OpCode::TEXT);
     }
 }
 

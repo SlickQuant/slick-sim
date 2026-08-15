@@ -249,8 +249,9 @@ void publish_market_data_update(MarketDataUpdate* update) override;  // switch o
 ```
 
 Handle at least `SUB_RESPONSE` (first snapshot after subscribe) and `BOOK_SNAPSHOT` (routine updates).
-Handle `TRADE` too if your venue has a trades channel — the Coinbase publisher's omission of it is a
-[known gap](known-gaps.md#the-coinbase-publisher-never-republishes-trades), not a pattern to copy.
+Handle `TRADE_SUMMARY` too if your venue has a trades channel: it carries one executed trade, and it
+is the only source of the public tape. Do not expect a raw relay of the venue's own prints — those
+are replayed through the matching engine and reach you as fills.
 
 On a client `subscribe` message, write an `MD_SUBSCRIPTION` request:
 

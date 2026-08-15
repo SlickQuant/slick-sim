@@ -36,7 +36,7 @@ Read in this order if you are new to the codebase.
 | [Order lifecycle](order-lifecycle.md) | One order traced end to end, from HTTP request to execution report, plus every status and reject-reason enum |
 | [Matching engine](matching-engine.md) | FIFO price/time priority, time-in-force handling, self-match prevention, trade summaries, fixed-point arithmetic |
 | [Order book](order-book.md) | The single L3 book holding both real-market phantom liquidity and simulated user orders, and how the two are kept apart |
-| [Market data](market-data.md) | Feed ingestion, per-venue event sequencing, and the internal binary market-data wire format |
+| [Market data](market-data.md) | Feed ingestion, per-venue event sequencing, how venue trade prints are matched rather than relayed, and the internal binary market-data wire format |
 | [Adding an exchange](extending.md) | A checklist for implementing a new venue adapter, grounded in the two that work |
 
 ## Integrating a client

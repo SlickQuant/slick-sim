@@ -82,17 +82,16 @@ on both adapters — is never called from the request loop.
 torn down when the last client goes away. Harmless for a long-running sim with a stable symbol set;
 a slow leak otherwise.
 
-### The Coinbase publisher never republishes trades
+### A trade print only reaches the tape if it finds liquidity
 
-[`CoinbasePublisher::publish_market_data_update`](https://github.com/SlickQuant/slick-sim/blob/main/src/market_data_publisher/coinbase_publisher.cpp#L184-L201)
-handles `BOOK`, `LEVEL`, `ORDER`, `SUB_RESPONSE` and `BOOK_SNAPSHOT`. It has **no case for
-`MDUpdateType::TRADE`** (nor `TRADE_SUMMARY`), even though
-[`Exchange::publishMDTrades`](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L338-L349)
-puts them on the queue.
+The public trade tape is fill-driven: a venue print is replayed through the matching engine as an
+aggressor order, and only the resulting fills are published. A print that finds nothing crossable in
+the mirrored book therefore produces no output at all, and its unfilled remainder simply rests.
 
-**What it means:** a client subscribed to Coinbase `market_trades` receives the initial (empty)
-snapshot and the subscription confirmation, then nothing. Hyperliquid's publisher does handle
-`TRADE`, so its `trades` channel works.
+**What it means:** tape fidelity tracks book fidelity. While the mirrored book is thin or stale —
+right after startup, or after a feed gap — prints can be dropped from the tape rather than relayed
+verbatim. This is the intended design, not a defect, but it is worth knowing when reconciling the
+simulator's tape against the venue's.
 
 ### `MDUpdateType::ORDER` is never published
 
@@ -151,23 +150,6 @@ model in [Architecture](architecture.md).
 
 These are latent defects, not design decisions. They are recorded here because the documentation
 would otherwise describe behaviour the code does not deliver.
-
-### `onMarketTradesSnapshot` loops past the end of its buffer
-
-[`exch_coinbase_feed_callbacks.cpp:220`](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exch_coinbase_feed_callbacks.cpp#L220-L245)
-contains:
-
-```cpp
-for (auto i = snapshots.size() - 1; i >= 0; i--) { ... }
-```
-
-`snapshots.size()` is `size_t`, so `i` is unsigned and `i >= 0` is always true — the loop runs past
-zero and wraps. A second `for (const auto& trade : snapshots)` loop then writes another
-`snapshots.size()` trades through the same advancing pointer, into a queue slot that was reserved for
-only `snapshots.size()` entries.
-
-**What it means:** the path is reached whenever a `market_trades` subscription is pending and a
-trades snapshot arrives from Coinbase. Expect memory corruption or a crash.
 
 ### `avg_fill_price` is recomputed in floating point on every fill
 

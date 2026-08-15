@@ -71,6 +71,12 @@ In self-contained mode the book simply contains no phantom orders. Nothing else 
 code paths run, `feed_md_level_quantity_` stays empty, and every fill comes from one client order
 crossing another.
 
+Trades take the same route. A venue's trade print is not forwarded to clients: it is replayed into
+the book as an incoming aggressor order, so it consumes phantom liquidity — and fills any simulator
+order ahead of it in the queue — exactly as the real trade did. The public tape is therefore made
+entirely of fills, whichever mode is running. See
+[Market data](market-data.md#venue-trade-prints-are-matched-not-relayed).
+
 ## The per-exchange pipeline
 
 Every enabled venue gets its own complete, independent instance of this pipeline. Two venues share
@@ -123,7 +129,7 @@ The two client-facing paths are fully independent, and each is bidirectional:
 - **Order entry** — `order_gateway` accepts orders from the client and returns acks, fills, cancels
   and rejects to that same client, over the same connection.
 - **Market data** — `market_data_publisher` accepts `subscribe`/`unsubscribe` messages from the client
-  and streams book and trade updates back.
+  and streams book updates and executed trades back.
 
 A client's **subscription request never touches `order_gateway`**. The publisher receives it on its
 own WebSocket and writes an `MD_SUBSCRIPTION` `Request` onto `request_queue_` itself — so the

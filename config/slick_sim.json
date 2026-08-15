@@ -5,6 +5,7 @@
             "request_queue_size": 16777216,
             "response_queue_size": 16777216,
             "md_queue_size": 16777216,
+            "self_match_prevention": "none",
             "md_feeds": [
                 {
                     "type": "coinbase_live_ws"

@@ -58,8 +58,37 @@ protected:
     void publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std::array<uint8_t, 2> &indices);
     void publishLevelUpdate(const char* symbol, const std::vector<MDLevel> &level_updates);
     void publishMDOrderUpdate(const char* symbol, const std::vector<MDOrder> &order_updates);
-    void publishMDTrades(const char* symbol, const std::vector<MDTrade> &trade_updates);
-    void publishTradeSummary(const char* symbol, const TradeSummaryInfo &trade_summary);
+    // NOTE: there is deliberately no raw trade relay. A venue trade print is
+    // replayed through the matching engine instead, and only the resulting fills
+    // are published - see publishTradeSummary and the venues' trade event handlers.
+
+    /// Publishes one trade onto the instrument's public tape and records it in
+    /// the symbol's recent-trade history, which serves the subscribe snapshot.
+    /// Every trade the simulator prints goes through here.
+    void publishTradeSummary(Symbol *symbol, const TradeSummaryInfo &trade_summary);
+
+    /// Frames the SUB_RESPONSE for a venue's trade channel from the symbol's
+    /// recent-trade history, split against the book snapshot the subscriber
+    /// receives with it. See MDTradeSnapshotResponse.
+    void publishTradeSubscriptionResponse(Symbol *symbol, uint8_t channel);
+
+    /// Adjusts the phantom (market-mirroring) quantity at an existing (side,
+    /// price) level toward target_qty, leaving the simulator's own orders alone.
+    /// Offsets any reduction a trade print already applied at that price so the
+    /// same quantity is not removed twice.
+    void reconcilePhantomQty(Symbol *symbol, Side side, price_t price, qty_t target_qty,
+                             time_t event_time, uint64_t seq_num, bool end_event);
+
+    /// Public trade ids, one independent sequence per venue. Exchange-thread
+    /// only, so a plain increment is enough.
+    uint64_t nextVenueTradeId() noexcept { return next_trade_id_++; }
+
+    /// Resolves an order's `user_id` to the integer identity self-match
+    /// prevention compares. Ids are assigned on first sight and stable for the
+    /// life of the process; an empty `user_id` yields -1, which `isSelfMatch`
+    /// treats as "no identity" and never matches, so an unauthenticated client
+    /// is left out of SMP rather than being lumped in with every other one.
+    int clientIdFor(const char *user_id);
 
     virtual void handleMdSubscription(const Request &/* request */) {}
     virtual void handleMdUnsubscription(const Request &/* request */) {}
@@ -79,6 +108,13 @@ protected:
     std::vector<std::unique_ptr<order_gateway::OrderGateway>> order_gateways_;
     std::unique_ptr<md_publisher::MarketDataPublisher> md_publisher_;
     bool enabled_ = true;
+    uint64_t next_trade_id_{1};
+
+    /// Self-match prevention mode applied to every symbol on this venue, from the
+    /// `self_match_prevention` config key. Stamped onto each Symbol as it is created.
+    SelfMatchPreventionMode smp_mode_ = SelfMatchPreventionMode::NONE;
+    std::unordered_map<std::string, int> client_ids_;
+    int next_client_id_ = 0;
 };
 
 }   // end namespace slick::sim::exch

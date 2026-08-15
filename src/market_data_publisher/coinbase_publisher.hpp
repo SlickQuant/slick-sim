@@ -51,7 +51,7 @@ private:
     void publish_level_snapshot(MarketDataUpdate *update);
     void publish_level_update(MarketDataUpdate *update);
     void publish_order_update(MarketDataUpdate *update);
-    // void publishTradeUpdate(MarketDataUpdate *update);
+    void publish_trade_summary(MarketDataUpdate *update);
     void check_heartbeats() override;
     void handle_close(wsT *ws, int code, std::string_view message);
     void send_error(wsT *ws, const std::string& error_msg);

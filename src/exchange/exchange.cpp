@@ -28,6 +28,22 @@ Exchange::Exchange(
     {
         throw std::runtime_error(std::format("Exchange {} Missing md_publisher config", to_string(venue)));
     }
+
+    if (config.contains("self_match_prevention"))
+    {
+        const auto &mode = config["self_match_prevention"].get_ref<const std::string &>();
+        smp_mode_ = to_smp_mode(mode);
+        if (smp_mode_ == SelfMatchPreventionMode::NONE && mode != "none")
+        {
+            LOG_WARN("Exchange {} unknown self_match_prevention '{}', self-match prevention disabled. "
+                     "Expected one of: none, cancel_resting, cancel_newest",
+                     to_string(venue), mode);
+        }
+        else
+        {
+            LOG_INFO("Exchange {} self-match prevention: {}", to_string(venue), to_string(smp_mode_));
+        }
+    }
 }
 
 void Exchange::start()
@@ -56,8 +72,7 @@ void Exchange::start()
     //     md_thread_ = std::thread([this]() { processMdData(); });
     // }
 
-    thread_ = std::thread([this]()
-                          { processRequest(); });
+    thread_ = std::thread([this]() { processRequest(); });
 }
 
 void Exchange::stop()
@@ -113,6 +128,24 @@ void Exchange::processRequest()
     }
 }
 
+int Exchange::clientIdFor(const char *user_id)
+{
+    auto len = strnlen(user_id, sizeof(AddOrderMessage::user_id));
+    if (len == 0)
+    {
+        // No identity to compare, so this order can never self-match.
+        return -1;
+    }
+
+    std::string key(user_id, len);
+    auto [it, inserted] = client_ids_.try_emplace(std::move(key), next_client_id_);
+    if (inserted)
+    {
+        ++next_client_id_;
+    }
+    return it->second;
+}
+
 void Exchange::handleNewOrderRequest(const Request &request)
 {
     auto *symbol = symbol_mgr.getSymbol(request.symbol);
@@ -137,6 +170,9 @@ void Exchange::handleNewOrderRequest(const Request &request)
         order->symbol = symbol->symbol_;
         order->client_order_id = msg.client_order_id;
         order->user_id = msg.user_id;
+        // Identity for self-match prevention. Scoped to the authenticated user,
+        // matching how real venues scope SMP - to the account, not the connection.
+        order->client_id = clientIdFor(msg.user_id);
         order->side = msg.side;
         order->type = msg.type;
         order->time_in_force = msg.time_in_force;
@@ -154,7 +190,7 @@ void Exchange::handleNewOrderRequest(const Request &request)
         {
             for (const auto &summary : trade_summaries)
             {
-                publishTradeSummary(symbol->symbol_.c_str(), summary);
+                publishTradeSummary(symbol, summary);
             }
         }
 
@@ -211,7 +247,7 @@ void Exchange::handleModifyOrderRequest(const Request &request)
         {
             for (const auto &summary : trade_summaries)
             {
-                publishTradeSummary(symbol->symbol_.c_str(), summary);
+                publishTradeSummary(symbol, summary);
             }
         }
 
@@ -301,17 +337,21 @@ void Exchange::rejectNewOrderRequest(const Request &request, OrdRejectReason rea
 
 void Exchange::rejectModifyOrderRequest(const Request &request, OrdRejectReason reason)
 {
+    // Request is a union: reading add_order here would alias ModifyOrderMessage,
+    // putting the order id in the client_order_id field and taking price/qty from
+    // the wrong offsets entirely.
+    const auto &msg = request.modify_order;
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
     std::memcpy(response.symbol, request.symbol, sizeof(response.symbol));
-    std::memcpy(response.user_id, request.add_order.user_id, sizeof(response.user_id));
-    std::memcpy(response.client_order_id, request.add_order.client_order_id, sizeof(response.client_order_id));
-    std::memset(response.order_id, 0, sizeof(response.order_id));
+    std::memcpy(response.user_id, msg.user_id, sizeof(response.user_id));
+    std::memcpy(response.client_order_id, msg.client_order_id, sizeof(response.client_order_id));
+    std::memcpy(response.order_id, msg.order_id, sizeof(response.order_id));
     response.response_type = MessageType::REJECT;
     response.order_status = OrderStatus::REJECTED;
     response.exec_type = ExecType::REJECTED;
-    response.price = request.add_order.price;
-    response.qty = request.add_order.qty;
+    response.price = msg.new_price;
+    response.qty = msg.new_qty;
     response.cum_qty = 0;
     response.leaves_qty = 0;
     response.reject_reason = reason;
@@ -325,14 +365,17 @@ void Exchange::rejectCancelOrderRequest(const Request &request, OrdRejectReason 
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
     std::memcpy(response.symbol, request.symbol, sizeof(response.symbol));
-    std::memcpy(response.user_id, request.add_order.user_id, sizeof(response.user_id));
-    std::memcpy(response.client_order_id, request.add_order.client_order_id, sizeof(response.client_order_id));
-    std::memset(response.order_id, 0, sizeof(response.order_id));
+    // Request is a union: add_order.client_order_id aliases CancelOrderMessage's
+    // order_id, and there is no price/qty on a cancel at all.
+    const auto &msg = request.cancel_order;
+    std::memcpy(response.user_id, msg.user_id, sizeof(response.user_id));
+    std::memcpy(response.client_order_id, msg.client_order_id, sizeof(response.client_order_id));
+    std::memcpy(response.order_id, msg.order_id, sizeof(response.order_id));
     response.response_type = MessageType::REJECT;
     response.order_status = OrderStatus::REJECTED;
     response.exec_type = ExecType::REJECTED;
-    response.price = request.add_order.price;
-    response.qty = request.add_order.qty;
+    response.price = NULL_PRICE;
+    response.qty = 0;
     response.cum_qty = 0;
     response.leaves_qty = 0;
     response.reject_reason = reason;
@@ -384,31 +427,24 @@ void Exchange::publishMDOrderUpdate(const char *symbol, const std::vector<MDOrde
     md_queue_.publish(index, sz);
 }
 
-void Exchange::publishMDTrades(const char *symbol, const std::vector<MDTrade> &trade_updates)
+void Exchange::publishTradeSummary(Symbol *symbol, const TradeSummaryInfo &trade_summary)
 {
-    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDTradeUpdate) + trade_updates.size() * sizeof(MDTrade));
-    auto index = md_queue_.reserve(sz);
-    MarketDataUpdate *update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
-    update->type = MDUpdateType::TRADE;
-    update->venue = venue_;
-    std::memcpy(update->symbol, symbol, sizeof(update->symbol));
-    MDTradeUpdate *trade_update = reinterpret_cast<MDTradeUpdate *>(update->data);
-    trade_update->num_trades = static_cast<uint32_t>(trade_updates.size());
-    std::memcpy(trade_update->trades, trade_updates.data(), trade_updates.size() * sizeof(MDTrade));
-    md_queue_.publish(index, sz);
-}
+    // The engine's own trade id comes from a single static counter shared by
+    // every engine and every venue, so it cannot serve as the public id. Each
+    // venue stamps its own sequence here, once, so a live print and the same
+    // trade replayed in a snapshot carry identical ids for every client.
+    auto trade_id = nextVenueTradeId();
 
-void Exchange::publishTradeSummary(const char *symbol, const TradeSummaryInfo &trade_summary)
-{
     auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(TradeSummary) + trade_summary.num_orders * sizeof(Trade));
     auto index = md_queue_.reserve(sz);
     auto update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
     update->type = MDUpdateType::TRADE_SUMMARY;
     update->venue = venue_;
-    std::memcpy(update->symbol, symbol, sizeof(update->symbol));
+    std::memcpy(update->symbol, symbol->symbol_.c_str(), sizeof(update->symbol));
     auto summary = reinterpret_cast<TradeSummary *>(update->data);
     summary->timestamp = trade_summary.timestamp;
-    summary->trade_id = trade_summary.trade_id;
+    summary->trade_id = trade_id;
+    summary->security_id = symbol->id_;
     summary->aggressor_side = trade_summary.aggressor_side;
     summary->price = trade_summary.price;
     summary->qty = trade_summary.qty;
@@ -419,6 +455,140 @@ void Exchange::publishTradeSummary(const char *symbol, const TradeSummaryInfo &t
         summary->trades[i].qty = trade_summary.Trades[i].qty;
     }
     md_queue_.publish(index, sz);
+
+    symbol->recordTrade(MDTrade{
+        .trade_id = trade_id,
+        .event_time = static_cast<uint64_t>(trade_summary.timestamp),
+        .seq_num = 0,
+        .price = trade_summary.price,
+        .qty = trade_summary.qty,
+        .flags = UpdateFlags::F_NONE,
+        .side = trade_summary.aggressor_side});
+}
+
+void Exchange::publishTradeSubscriptionResponse(Symbol *symbol, uint8_t channel)
+{
+    auto &history = symbol->trade_history_;
+    auto num_trades = static_cast<uint32_t>(history.size());
+
+    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(MDTradeSnapshotResponse) + num_trades * sizeof(MDTrade));
+    auto index = md_queue_.reserve(sz);
+    auto *update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
+    std::memcpy(update->symbol, symbol->symbol_.c_str(), sizeof(update->symbol));
+    update->venue = venue_;
+    update->type = MDUpdateType::SUB_RESPONSE;
+
+    auto *response = reinterpret_cast<MDSubscriptionResponse *>(update->data);
+    response->channel = channel;
+    response->reject_reason = MDSubscriptionRejectReason::NONE;
+
+    // A trade the book absorbed is settled history for this subscriber whatever
+    // its timestamp, because the L2 snapshot they receive is generated from that
+    // same book. Only a print the simulator never applied depends on timing, and
+    // then on whether the book's own data reaches it: `lastUpdateTime()` tracks
+    // level updates only, so it cannot stand in for trade application here.
+    auto book_time = symbol->order_book_ ? symbol->order_book_->lastUpdateTime() : 0;
+
+    auto reflected_in_book = [book_time](const MDTrade &trade) {
+        return !(trade.flags & UpdateFlags::F_NOT_IN_BOOK) || trade.event_time <= book_time;
+    };
+
+    auto *snapshot = reinterpret_cast<MDTradeSnapshotResponse *>(response->data);
+    auto *trades = snapshot->trades;
+    uint32_t num_snapshot = 0;
+    uint32_t num_update = 0;
+
+    // The consumer reads the two blocks as contiguous ranges, so they must be
+    // written that way — hence two passes rather than one. Classification is not
+    // monotonic over the history: an applied trade can follow an unapplied print
+    // that is newer than book_time, so a single pass in history order would
+    // interleave the blocks and silently swap their contents. Each pass walks the
+    // history in order, so both blocks stay chronological within themselves.
+    for (uint32_t i = 0; i < num_trades; ++i)
+    {
+        const auto *trade = history[i];
+        if (trade == nullptr) [[unlikely]]
+        {
+            continue;
+        }
+        if (reflected_in_book(*trade))
+        {
+            *trades++ = *trade;
+            ++num_snapshot;
+        }
+    }
+    for (uint32_t i = 0; i < num_trades; ++i)
+    {
+        const auto *trade = history[i];
+        if (trade == nullptr) [[unlikely]]
+        {
+            continue;
+        }
+        if (!reflected_in_book(*trade))
+        {
+            *trades++ = *trade;
+            ++num_update;
+        }
+    }
+    snapshot->num_snapshot = num_snapshot;
+    snapshot->num_update = num_update;
+    md_queue_.publish(index, sz);
+}
+
+void Exchange::reconcilePhantomQty(Symbol *symbol, Side side, price_t price, qty_t target_qty,
+                                   time_t event_time, uint64_t seq_num, bool end_event)
+{
+    auto &book = *symbol->order_book_;
+    auto [level, index] = book.getLevel(to_book_side(side), price);
+    if (!level)
+    {
+        return;
+    }
+
+    // A trade print and the venue's level update for it describe the same event.
+    // The usual case needs no help: the update carries the post-trade quantity
+    // and the book has already absorbed the trade, so the two agree and nothing
+    // moves. The exception is a trade this update is too old to have seen - the
+    // update still reports the pre-trade quantity there, and taking it at face
+    // value would add that quantity back only for the next update to remove it
+    // again. Offset by exactly the trades it has not accounted for. Timestamps
+    // that tie count as reflecting the trade: a venue emits the print and its
+    // level update together, and the sequencer applies the trade first.
+    auto unreflected = symbol->takeTradedQty(side, price, event_time);
+    if (unreflected > 0)
+    {
+        target_qty = target_qty > unreflected ? target_qty - unreflected : 0;
+    }
+
+    auto md_level_qty = book.getMDLevelQty(price);
+    if (target_qty > md_level_qty)
+    {
+        // Level qty increased, assume new orders added at the back. Create new phantom order to represent then increment
+        auto size = target_qty - md_level_qty;
+        book.addBookOrder(utils::nextOrderId(), to_book_side(side), price, size, event_time, seq_num);
+    }
+    else if (target_qty < md_level_qty)
+    {
+        // Level qty decreased. Always assume the worst case, that the quantity decreased at the back
+        auto diff = md_level_qty - target_qty;
+        for (auto it = level->orders.rbegin(); it != level->orders.rend(); ++it)
+        {
+            auto &order = *it;
+            if (symbol->findOrder(order.order_id))
+            {
+                // Belongs to the simulator's own user - never touch it.
+                continue;
+            }
+
+            auto to_reduce = std::min<qty_t>(diff, order.quantity);
+            book.modifyOrder(order.order_id, price, order.quantity - to_reduce, event_time, order.priority, seq_num, end_event && (diff == to_reduce));
+            diff -= to_reduce;
+            if (diff == 0 || book.getMDLevelQty(price) == 0)
+            {
+                break;
+            }
+        }
+    }
 }
 
 void Exchange::sendOrderNewPending(const Order *order, time_t request_time)

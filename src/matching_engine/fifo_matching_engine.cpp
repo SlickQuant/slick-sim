@@ -29,8 +29,9 @@ inline bool isSelfMatch(const Order* incoming_order, const Order* book_order) {
 
 // Helper: Handle self-match according to Symbol's configured SMP mode
 // Returns true if matching should continue, false if order should be rejected
-inline bool handleSelfMatch(const Order* incoming_order, Order* book_order,
-                            OrderBook& book, uint64_t event_time, uint64_t seq_num,
+inline bool handleSelfMatch(MatchingEngine& engine, const Order* incoming_order, Order* book_order,
+                            OrderBook& book, slick::sim::time_t request_time,
+                            uint64_t event_time, uint64_t seq_num,
                             SelfMatchPreventionMode smp_mode) {
     switch (smp_mode) {
         case SelfMatchPreventionMode::NONE:
@@ -38,14 +39,21 @@ inline bool handleSelfMatch(const Order* incoming_order, Order* book_order,
             return true;
 
         case SelfMatchPreventionMode::CANCEL_RESTING:
-            // Cancel the resting book order and continue matching
+            // Cancel the resting book order and continue matching. This is a real
+            // cancel, so it takes the same three steps as Symbol::cancelOrder:
+            // remove it from the book, tell its owner, and return it to the pool.
+            // Deleting it from the book alone would leave the client believing the
+            // order was still live and leak the pooled Order.
             LOG_INFO("{} SMP: Canceling resting order {} (client_id={})",
                 incoming_order->symbol, book_order->order_id, incoming_order->client_id);
             book.deleteOrder(book_order, event_time, seq_num, false);
+            engine.publishOrderCancel(book_order, request_time);
+            book.freeOrder(book_order);
             return true;  // Continue to next order
 
         case SelfMatchPreventionMode::CANCEL_NEWEST:
-            // Reject the incoming order
+            // Reject the incoming order. Reached only as a backstop — the
+            // pre-check in match() decides this before anything is mutated.
             LOG_INFO("{} SMP: Rejecting new order {} due to self-match with resting order {} (client_id={})",
                 incoming_order->symbol, incoming_order->id, book_order->order_id, incoming_order->client_id);
             return false;  // Signal to reject order
@@ -53,6 +61,36 @@ inline bool handleSelfMatch(const Order* incoming_order, Order* book_order,
         default:
             return true;
     }
+}
+
+// Pre-check for CANCEL_NEWEST: would this order reach a resting order of its own?
+//
+// This has to be answered before the order is touched. An amendment mutates
+// price/quantity and reports REPLACED on its way into the matching loop, and a
+// new order is acked there, so discovering the self-match mid-loop would mean
+// telling the client the order was replaced or live and then rejecting it.
+// Only orders the incoming quantity could actually reach are considered.
+template<Side SIDE>
+bool wouldSelfMatch(const Order* order, price_t order_price, qty_t order_qty, OrderBook& book) {
+    qty_t remaining = order_qty;
+
+    const auto& levels = book.getLevelsL3(static_cast<slick::orderbook::Side>(SIDE));
+    for (const auto& [level_price, level_data] : levels) {
+        if (order_price != NULL_PRICE && !isPriceBetterOrEqual<SIDE>(level_price, order_price)) {
+            break;  // Reached price levels we can't match against
+        }
+
+        for (const auto& book_order : level_data.orders) {
+            if (remaining <= 0) {
+                return false;
+            }
+            if (isSelfMatch(order, book.findOrder(book_order.order_id))) {
+                return true;
+            }
+            remaining -= std::min<qty_t>(book_order.quantity, remaining);
+        }
+    }
+    return false;
 }
 
 // Pre-check for Fill-Or-Kill: Determine if entire order can be filled
@@ -115,6 +153,31 @@ template<Side SIDE>
 std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine& engine, Order* order, price_t order_price, qty_t order_qty, OrderBook &book, slick::sim::time_t request_time, slick::sim::time_t event_time, uint64_t seq_num, SelfMatchPreventionMode smp_mode) {
     std::vector<TradeSummaryInfo> trade_summaries;
 
+    // STEP 0: CANCEL_NEWEST is decided before the order is acked, mutated or
+    // reported on, so a rejected order leaves no trace: no NEW, no REPLACED, no
+    // partial fills, and the stored Order keeps its original price and quantity.
+    // The caller publishes the single terminal REJECTED.
+    if (smp_mode == SelfMatchPreventionMode::CANCEL_NEWEST) {
+        // Scan only as deep as this order will really trade. `order_qty` is the
+        // order's *total* quantity, which for a partially filled amendment is
+        // more than its remaining leaves — scanning that far could reach one of
+        // the owner's resting orders the amendment would never touch and reject
+        // a perfectly good fill. Mirror the leaves the matching loop is about to
+        // compute below, without mutating anything yet.
+        qty_t effective_qty = order->leaves_quantity;
+        if (order->status == OrderStatus::PENDING_REPLACE) {
+            effective_qty += order_qty - order->quantity;
+            if (effective_qty < 0) {
+                effective_qty = 0;
+            }
+        }
+
+        if (effective_qty > 0 && wouldSelfMatch<SIDE>(order, order_price, effective_qty, book)) {
+            LOG_INFO("{} Order {} rejected due to SMP (CANCEL_NEWEST mode)", order->symbol, order->id);
+            return std::make_tuple(OrdRejectReason::SMP, trade_summaries);
+        }
+    }
+
     if (order->status == OrderStatus::PENDING_NEW) {
         engine.publishOrderAck(order, request_time);
     }
@@ -167,12 +230,12 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
         auto* full_book_order = book.findOrder(book_order.order_id);
         if (smp_mode != SelfMatchPreventionMode::NONE && isSelfMatch(order, full_book_order)) {
             // Handle self-match according to Symbol's SMP mode
-            bool should_continue = handleSelfMatch(order, full_book_order, book, event_time, seq_num, smp_mode);
+            bool should_continue = handleSelfMatch(engine, order, full_book_order, book,
+                                                   request_time, event_time, seq_num, smp_mode);
 
             if (!should_continue) {
-                // CANCEL_NEWEST mode: reject incoming order
-                engine.publishOrderCancel(order, request_time);
-                LOG_INFO("{} Order {} rejected due to SMP (CANCEL_NEWEST mode)", order->symbol, order->id);
+                // CANCEL_NEWEST backstop: STEP 0 should already have rejected this.
+                // No cancel is published — the caller emits the one terminal REJECTED.
                 return std::make_tuple(OrdRejectReason::SMP, trade_summaries);
             }
 
@@ -199,6 +262,11 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
 
         book.executeOrder(book_order_id, trade_qty, event_time, seq_num, order_qty == 0);
 
+        // A resting order the simulator does not own is phantom liquidity mirroring
+        // the real market. Tracked separately so the exchange can tell how much of
+        // this trade the venue's own level update will also account for.
+        auto phantom_qty = full_book_order ? qty_t{0} : trade_qty;
+
         if (last_fill_price != price) {
             // Create trade summary
             TradeSummaryInfo summary;
@@ -207,6 +275,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
             summary.aggressor_side = opposite_side<SIDE>();  // SIDE is the resting side, so aggressor is the opposite
             summary.price = price;
             summary.qty = trade_qty;
+            summary.phantom_qty = phantom_qty;
             summary.num_orders = 2;
             summary.Trades.emplace_back(Trade{order->id, trade_qty});
             summary.Trades.emplace_back(Trade{book_order_id, trade_qty});
@@ -218,6 +287,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
             auto &last_summary = trade_summaries.back();
             last_summary.num_orders += 1;
             last_summary.qty += trade_qty;
+            last_summary.phantom_qty += phantom_qty;
             last_summary.Trades.front().qty += trade_qty; // Update aggressor trade qty
             last_summary.Trades.emplace_back(Trade{book_order_id, trade_qty});
         }
@@ -283,6 +353,11 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
 
         qty -= trad_qty;
 
+        // A resting order the simulator does not own is phantom liquidity mirroring
+        // the real market. Tracked separately so the exchange can tell how much of
+        // this trade the venue's own level update will also account for.
+        auto phantom_qty = our_order ? qty_t{0} : trad_qty;
+
         if (last_fill_price != trade_price) {
             // Create trade summary
             TradeSummaryInfo summary;
@@ -291,6 +366,7 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
             summary.aggressor_side = opposite_side<SIDE>();  // SIDE is the resting side, so aggressor is the opposite
             summary.price = trade_price;
             summary.qty = trad_qty;
+            summary.phantom_qty = phantom_qty;
             summary.num_orders = 2;
             summary.Trades.emplace_back(Trade{order_id, trad_qty});
             summary.Trades.emplace_back(Trade{book_order_id, trad_qty});
@@ -302,6 +378,7 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
             auto &last_summary = trade_summaries.back();
             last_summary.num_orders += 1;
             last_summary.qty += trad_qty;
+            last_summary.phantom_qty += phantom_qty;
             last_summary.Trades.front().qty += trad_qty; // Update aggressor trade qty
             last_summary.Trades.emplace_back(Trade{book_order_id, trad_qty});
         }
