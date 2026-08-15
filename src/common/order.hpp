@@ -232,6 +232,30 @@ enum class SelfMatchPreventionMode : uint8_t {
     CANCEL_NEWEST = 2,  // Cancel/reject the incoming order
 };
 
+inline constexpr std::string_view to_string(SelfMatchPreventionMode mode) {
+    switch(mode) {
+    case SelfMatchPreventionMode::NONE:
+        return "none";
+    case SelfMatchPreventionMode::CANCEL_RESTING:
+        return "cancel_resting";
+    case SelfMatchPreventionMode::CANCEL_NEWEST:
+        return "cancel_newest";
+    }
+    return "none";
+}
+
+/// Parses the `self_match_prevention` configuration value. Returns NONE for an
+/// unrecognised name, so a typo disables SMP rather than aborting startup.
+inline constexpr SelfMatchPreventionMode to_smp_mode(std::string_view name) {
+    if (name == "cancel_resting") {
+        return SelfMatchPreventionMode::CANCEL_RESTING;
+    }
+    if (name == "cancel_newest") {
+        return SelfMatchPreventionMode::CANCEL_NEWEST;
+    }
+    return SelfMatchPreventionMode::NONE;
+}
+
 enum class ProductType : uint8_t {
     UNKNOWN,
     SPOT,

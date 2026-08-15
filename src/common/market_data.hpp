@@ -13,7 +13,12 @@ enum MDUpdateType : uint8_t {
     BOOK,
     LEVEL,
     ORDER,
+    /// One executed trade. The only source of the public trade tape: a venue's
+    /// own trade print is replayed through the matching engine as an aggressor
+    /// order, and the resulting fills are published as these.
     TRADE_SUMMARY,
+    /// Reserved. Held so the following values keep their numbering - nothing
+    /// produces or consumes it since venue prints stopped being relayed raw.
     TRADE,
     BOOK_SNAPSHOT,
     ORDER_SNAPSHOT,
@@ -24,6 +29,11 @@ enum UpdateFlags : uint8_t {
     F_NONE = 0,
     F_IS_SNAPSHOT = 1,
     F_END_EVENT = 1 << 1,
+    /// On an MDTrade: this print was never applied to the order book. Set only
+    /// for prints seeded from a venue's own trade snapshot, which happened
+    /// before the simulator was listening. Every trade the matching engine
+    /// produced is in the book by construction, whatever its timestamp.
+    F_NOT_IN_BOOK = 1 << 2,
 };
 
 enum MDUpdateAction: uint8_t {
@@ -96,6 +106,7 @@ struct BookSnapshot {
 };
 
 struct MDTrade {
+    uint64_t trade_id;
     uint64_t event_time;
     uint64_t seq_num;
     price_t price;
@@ -106,6 +117,24 @@ struct MDTrade {
 
 struct MDTradeUpdate {
     uint32_t num_trades;
+    MDTrade trades[0];
+};
+
+/// Payload of a SUB_RESPONSE for a venue's trade channel.
+///
+/// The trades are split against the book snapshot the subscriber receives
+/// alongside this response: a trade stamped after the book's last update is not
+/// reflected in that book, so replaying it as history would misrepresent it as
+/// settled. Those trades go in the update block instead and are delivered as a
+/// normal trade update.
+struct MDTradeSnapshotResponse {
+    uint32_t num_snapshot;  ///< trades the subscriber's book snapshot reflects
+    uint32_t num_update;    ///< trades it does not - deliver as a normal update
+    /// The snapshot block, then the update block, each contiguous and each
+    /// chronological within itself. The producer partitions into these two blocks
+    /// rather than copying in history order: a trade the book absorbed is history
+    /// whatever its timestamp, so an applied trade can follow an unapplied print
+    /// that is newer than the book, and history order would interleave the blocks.
     MDTrade trades[0];
 };
 

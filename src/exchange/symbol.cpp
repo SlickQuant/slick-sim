@@ -25,6 +25,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
     );
 
     // Only add to book if no rejection and remaining quantity exists
+    bool resting = false;
     if (reject_reason == OrdRejectReason::NONE && order->leaves_quantity > 0) {
         // Check if TimeInForce allows resting on book
         bool should_rest = (
@@ -35,6 +36,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
 
         if (should_rest) {
             order_book_->addOrder(order, order->created_time);
+            resting = true;
         } else {
             // IOC: Remainder is implicitly cancelled (not added to book)
             // FOK: Will never reach here (would have been rejected in match)
@@ -43,7 +45,13 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
         }
     }
 
-    if (order->leaves_quantity == 0) {
+    if (!resting) {
+        // The book is the only thing that takes ownership of an order, so anything
+        // that did not rest has to go back to the pool here: fully filled orders,
+        // rejects (SMP, FOK), and IOC remainders alike. Freeing only on
+        // leaves_quantity == 0 leaked every order that was rejected or cancelled
+        // with quantity outstanding, and a client repeating a rejected order would
+        // drain the pool.
         order_book_->freeOrder(order);
     }
 
@@ -54,7 +62,11 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::modifyOrder(O
 {
     LOG_INFO("{} Modifying order {}: oid={}, client_oid={}, new_price={}, new_qty={}", symbol_, order->id, order->order_id, order->client_order_id, new_price, new_qty);
     
-    auto [reject_reason, trade_summaries] = matching_engine_->match(order, new_price, new_qty, *order_book_.get(), request_time, order->last_update_time);
+    // An amendment re-enters the matching loop, so it needs the same SMP mode a
+    // new order gets — otherwise a symbol configured for SMP would still let an
+    // amended order trade against its owner's resting orders.
+    auto [reject_reason, trade_summaries] = matching_engine_->match(
+        order, new_price, new_qty, *order_book_.get(), request_time, order->last_update_time, 0, smp_mode_);
     
     order->last_update_time = utils::get_current_time_ns();
     if (reject_reason == OrdRejectReason::NONE) {

@@ -98,6 +98,7 @@ protected:
 
         exchange_ = std::make_unique<TestableCoinbaseExchange>(config);
         collector_      = std::make_unique<OrderResponseCollector>(exchange_->response_queue());
+        md_collector_   = std::make_unique<MarketDataCollector>(exchange_->md_queue());
         matching_engine_ = std::make_unique<FifoMatchingEngine>(exchange_->response_queue());
     }
 
@@ -133,6 +134,7 @@ protected:
     }
 
     std::unique_ptr<OrderResponseCollector> collector_;
+    std::unique_ptr<MarketDataCollector> md_collector_;
 
     // Shared matching engine across all symbols in one test; initialized in
     // SetUp() so it uses the same response_queue_ the collector reads from.
@@ -484,15 +486,14 @@ TEST_F(CoinbaseExchangeTest, OnLevel2Updates_BatchMatchThenBuildLevel) {
 }
 
 // ===========================================================================
-// onMarketTrades — enqueued as TRADE events, dispatched by processSequencedEvents
-// (trade matching against simulator orders is a TODO in dispatchEvent; these
-//  tests verify that trade events are accepted and queued without panic, and
-//  that the resting simulator orders are NOT disturbed until the TODO is done)
+// onMarketTrades — enqueued as TRADE events, dispatched by processSequencedEvents.
+// A venue print is replayed as an incoming aggressor order: it takes liquidity
+// from the book exactly as the real taker did, and only the resulting fills are
+// published (as TRADE_SUMMARY). The print itself is never relayed.
 // ===========================================================================
 
-// A BUY market trade arrives. The simulator SELL order at the same price is
-// currently unaffected (dispatchEvent TODO). Trade is accepted gracefully.
-TEST_F(CoinbaseExchangeTest, OnMarketTrades_BuyTrade_SimSellUntouched_AcceptedGracefully) {
+// A BUY market trade fills the resting simulator SELL it crosses.
+TEST_F(CoinbaseExchangeTest, OnMarketTrades_BuyTrade_FillsRestingSimSell) {
     auto* sym = registerSymbol("TEST-MT-B");
 
     auto* sim_sell = addSimOrder(sym, Side::SELL, kPrice100, kQty10);
@@ -503,13 +504,54 @@ TEST_F(CoinbaseExchangeTest, OnMarketTrades_BuyTrade_SimSellUntouched_AcceptedGr
     exchange_->onMarketTrades(nullptr, 1, trades);
     drainEvents();
 
-    // dispatchEvent for TRADE is a TODO — sim order should be untouched
-    EXPECT_EQ(sim_sell->cum_quantity, 0);
-    EXPECT_EQ(sim_sell->quantity, kQty10);
+    EXPECT_EQ(sim_sell->cum_quantity, kQty10);
+    EXPECT_EQ(sim_sell->leaves_quantity, 0);
+
+    auto summaries = md_collector_->collect(MDUpdateType::TRADE_SUMMARY);
+    ASSERT_EQ(summaries.size(), 1u);
+    auto* summary = reinterpret_cast<TradeSummary*>(summaries[0]->data);
+    EXPECT_EQ(summary->aggressor_side, Side::BUY);
+    EXPECT_EQ(summary->price, kPrice100);
+    EXPECT_EQ(summary->qty, kQty10);
 }
 
-// A SELL market trade arrives. Simulator BUY order unaffected (TODO).
-TEST_F(CoinbaseExchangeTest, OnMarketTrades_SellTrade_SimBuyUntouched_AcceptedGracefully) {
+// Coinbase sends market_trades newest-first, so a batch sharing one timestamp
+// must replay from the back of the array forwards to come out chronological. The
+// sequencer gets this from the pairing of its sequence_id tie-break with the
+// forward enqueue loop in onMarketTrades; inverting either replays the batch
+// backwards, matching against the book and stamping trade ids in reverse.
+TEST_F(CoinbaseExchangeTest, OnMarketTrades_SameTimestamp_ReplayedOldestFirst) {
+    auto* sym = registerSymbol("TEST-MT-ORDER");
+
+    addSimOrder(sym, Side::SELL, kPrice100, kQty10);
+
+    // One instant, newest-first as the venue sends them: the 3.0 print is newer
+    // than the 2.0 print, so 2.0 must be applied first.
+    exchange_->onMarketTrades(nullptr, 1, {
+        makeMarketTrade("TEST-MT-ORDER", coinbase::Side::BUY, 100.0, 3.0, 7),
+        makeMarketTrade("TEST-MT-ORDER", coinbase::Side::BUY, 100.0, 2.0, 7)
+    });
+    drainEvents();
+
+    auto summaries = md_collector_->collect(MDUpdateType::TRADE_SUMMARY);
+    ASSERT_EQ(summaries.size(), 2u);
+    auto* first  = reinterpret_cast<TradeSummary*>(summaries[0]->data);
+    auto* second = reinterpret_cast<TradeSummary*>(summaries[1]->data);
+
+    EXPECT_EQ(first->qty, kQty3 - to_qty_t(1.0));   // 2.0, the older print
+    EXPECT_EQ(second->qty, kQty3);                  // 3.0, the newer one
+
+    // Public trade ids are stamped at publish time, so they follow the same order.
+    EXPECT_LT(first->trade_id, second->trade_id);
+
+    // The tape history the subscribe snapshot replays must agree.
+    ASSERT_EQ(sym->trade_history_.size(), 2u);
+    EXPECT_EQ(sym->trade_history_[0]->qty, to_qty_t(2.0));
+    EXPECT_EQ(sym->trade_history_[1]->qty, kQty3);
+}
+
+// A SELL market trade fills the resting simulator BUY it crosses.
+TEST_F(CoinbaseExchangeTest, OnMarketTrades_SellTrade_FillsRestingSimBuy) {
     auto* sym = registerSymbol("TEST-MT-S");
 
     auto* sim_buy = addSimOrder(sym, Side::BUY, kPrice100, kQty10);
@@ -520,36 +562,68 @@ TEST_F(CoinbaseExchangeTest, OnMarketTrades_SellTrade_SimBuyUntouched_AcceptedGr
     exchange_->onMarketTrades(nullptr, 1, trades);
     drainEvents();
 
-    EXPECT_EQ(sim_buy->cum_quantity, 0);
-    EXPECT_EQ(sim_buy->quantity, kQty10);
+    EXPECT_EQ(sim_buy->cum_quantity, kQty10);
+    EXPECT_EQ(sim_buy->leaves_quantity, 0);
+
+    auto summaries = md_collector_->collect(MDUpdateType::TRADE_SUMMARY);
+    ASSERT_EQ(summaries.size(), 1u);
+    auto* summary = reinterpret_cast<TradeSummary*>(summaries[0]->data);
+    EXPECT_EQ(summary->aggressor_side, Side::SELL);
+    EXPECT_EQ(summary->price, kPrice100);
 }
 
-// Multiple market trades arrive in one call; all are enqueued.
-TEST_F(CoinbaseExchangeTest, OnMarketTrades_MultipleTrades_AllAccepted) {
+// With nothing crossable in the book, the aggressor rests and nothing prints:
+// the tape is fill-driven, so a print with no liquidity to take produces no output.
+TEST_F(CoinbaseExchangeTest, OnMarketTrades_NoCrossableLiquidity_RestsAndPublishesNothing) {
     auto* sym = registerSymbol("TEST-MT-MULTI");
 
-    // No simulator orders — just verify no crash
     std::vector<coinbase::MarketTrade> trades = {
-        makeMarketTrade("TEST-MT-MULTI", coinbase::Side::BUY,  100.0, 5.0),
-        makeMarketTrade("TEST-MT-MULTI", coinbase::Side::SELL, 100.0, 3.0)
+        makeMarketTrade("TEST-MT-MULTI", coinbase::Side::BUY, 100.0, 5.0)
     };
     exchange_->onMarketTrades(nullptr, 1, trades);
-    drainEvents();   // should complete without assert/crash
+    drainEvents();
 
-    // Book is empty — no matches expected
+    EXPECT_TRUE(md_collector_->collect(MDUpdateType::TRADE_SUMMARY).empty());
+
+    // The unfilled remainder rests on the aggressor's own side, and cannot cross:
+    // it only exists because nothing was still crossable at this limit.
     auto [buy_level,  bi] = sym->order_book_->getLevel(to_book_side(Side::BUY),  kPrice100);
     auto [sell_level, si] = sym->order_book_->getLevel(to_book_side(Side::SELL), kPrice100);
-    EXPECT_EQ(buy_level,  nullptr);
+    ASSERT_NE(buy_level, nullptr);
+    EXPECT_EQ(buy_level->total_quantity, kQty5);
     EXPECT_EQ(sell_level, nullptr);
+}
+
+// A print bigger than the crossable liquidity fills what it can and rests the rest.
+TEST_F(CoinbaseExchangeTest, OnMarketTrades_PartialFill_RemainderRestsOnAggressorSide) {
+    auto* sym = registerSymbol("TEST-MT-RESIDUAL");
+
+    auto* sim_sell = addSimOrder(sym, Side::SELL, kPrice100, kQty3);
+
+    std::vector<coinbase::MarketTrade> trades = {
+        makeMarketTrade("TEST-MT-RESIDUAL", coinbase::Side::BUY, 100.0, 10.0)
+    };
+    exchange_->onMarketTrades(nullptr, 1, trades);
+    drainEvents();
+
+    EXPECT_EQ(sim_sell->cum_quantity, kQty3);
+
+    auto summaries = md_collector_->collect(MDUpdateType::TRADE_SUMMARY);
+    ASSERT_EQ(summaries.size(), 1u);
+    EXPECT_EQ(reinterpret_cast<TradeSummary*>(summaries[0]->data)->qty, kQty3);
+
+    // kQty10 - kQty3 left over, resting as a BUY at the print price
+    auto [buy_level, bi] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(buy_level, nullptr);
+    EXPECT_EQ(buy_level->total_quantity, kQty10 - kQty3);
 }
 
 // ===========================================================================
 // Interleaved level2 + market trade events
 // ===========================================================================
 
-// Level2 event builds a phantom SELL, then a market trade arrives.
-// Book state after both: phantom is in place, trade queued (TODO: no match yet).
-TEST_F(CoinbaseExchangeTest, InterleavedLevel2AndTrade_PhantomBuildsThenTradeArrives) {
+// Level2 event builds a phantom SELL, then a market trade consumes it.
+TEST_F(CoinbaseExchangeTest, InterleavedLevel2AndTrade_TradeConsumesPhantom) {
     auto* sym = registerSymbol("TEST-IL-1");
 
     // Level2 SELL at 101 (no sim orders on book → phantom added)
@@ -561,15 +635,273 @@ TEST_F(CoinbaseExchangeTest, InterleavedLevel2AndTrade_PhantomBuildsThenTradeArr
 
     EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty5);
 
-    // BUY trade at 101 arrives
+    // BUY trade at 101 arrives and takes that phantom liquidity
     std::vector<coinbase::MarketTrade> trades = {
-        makeMarketTrade("TEST-IL-1", coinbase::Side::BUY, 101.0, 5.0)
+        makeMarketTrade("TEST-IL-1", coinbase::Side::BUY, 101.0, 5.0, 2)
     };
     exchange_->onMarketTrades(nullptr, 2, trades);
     drainEvents();
 
-    // Phantom level intact (trade matching is TODO)
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice101), 0);
+}
+
+// A trade takes phantom liquidity, then the venue's own level update reports the
+// post-trade quantity. The level must settle at what the venue reports, not be
+// reduced a second time by the same quantity.
+TEST_F(CoinbaseExchangeTest, TradeThenLevelUpdate_DoesNotDoubleReduceLevel) {
+    auto* sym = registerSymbol("TEST-DBL-1");
+
+    // Phantom SELL of 10 at 101
+    exchange_->onLevel2Updates(nullptr, 1, makeBatch("TEST-DBL-1", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 1)
+    }));
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10);
+
+    // BUY trade of 3 at 101 consumes 3 of it, leaving 7.
+    exchange_->onMarketTrades(nullptr, 2, {
+        makeMarketTrade("TEST-DBL-1", coinbase::Side::BUY, 101.0, 3.0, 5)
+    });
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10 - kQty3);
+
+    // The venue's level update for that same trade carries the post-trade
+    // quantity. The book already absorbed the trade, so the two agree and the
+    // level must stay at 7 rather than being reduced by the same 3 again.
+    exchange_->onLevel2Updates(nullptr, 3, makeBatch("TEST-DBL-1", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 7.0, 5)
+    }));
+    drainEvents();
+
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10 - kQty3);
+}
+
+// A level update stamped strictly before the trade still reports the pre-trade
+// quantity. Taking it at face value would add the traded quantity back, only for
+// the next update to remove it again.
+TEST_F(CoinbaseExchangeTest, StaleLevelUpdateAfterTrade_DoesNotRestoreTradedQty) {
+    auto* sym = registerSymbol("TEST-DBL-4");
+
+    exchange_->onLevel2Updates(nullptr, 1, makeBatch("TEST-DBL-4", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 1)
+    }));
+    drainEvents();
+
+    // Trade at t=10 takes 3, leaving 7.
+    exchange_->onMarketTrades(nullptr, 2, {
+        makeMarketTrade("TEST-DBL-4", coinbase::Side::BUY, 101.0, 3.0, 10)
+    });
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10 - kQty3);
+
+    // An update stamped t=5 predates the trade and reports the pre-trade 10.
+    exchange_->onLevel2Updates(nullptr, 3, makeBatch("TEST-DBL-4", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 5)
+    }));
+    drainEvents();
+
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10 - kQty3);
+}
+
+// A level update landing between two trades at the same price reflects the
+// earlier one but not the later one. Offsetting by both would over-reduce the
+// level; only the trade the update is too old to have seen may be offset.
+TEST_F(CoinbaseExchangeTest, LevelUpdateBetweenTwoTrades_OffsetsOnlyTheLaterTrade) {
+    auto* sym = registerSymbol("TEST-DBL-5");
+
+    // Phantom SELL of 20 at 101.
+    exchange_->onLevel2Updates(nullptr, 1, makeBatch("TEST-DBL-5", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 20.0, 1)
+    }));
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty20);
+
+    // Two BUY prints at the same price: 3 at t=10, then 5 at t=20. Drained
+    // separately so both land before the level update below.
+    exchange_->onMarketTrades(nullptr, 2, {
+        makeMarketTrade("TEST-DBL-5", coinbase::Side::BUY, 101.0, 3.0, 10)
+    });
+    drainEvents();
+    exchange_->onMarketTrades(nullptr, 3, {
+        makeMarketTrade("TEST-DBL-5", coinbase::Side::BUY, 101.0, 5.0, 20)
+    });
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty20 - kQty3 - kQty5);
+
+    // An update stamped t=15 saw the first trade (20 - 3 = 17) but not the
+    // second. Offsetting by both credits would target 20 - 3 - 5 - 3 = 9.
+    exchange_->onLevel2Updates(nullptr, 4, makeBatch("TEST-DBL-5", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 17.0, 15)
+    }));
+    drainEvents();
+
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty20 - kQty3 - kQty5);
+
+    // The later trade's credit was kept, not consumed, so an update stamped
+    // after it still reconciles cleanly.
+    exchange_->onLevel2Updates(nullptr, 5, makeBatch("TEST-DBL-5", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 12.0, 25)
+    }));
+    drainEvents();
+
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty20 - kQty3 - kQty5);
+}
+
+// What gets published on l2_data must be what the book actually holds. When
+// reconcilePhantomQty lowers a stale update's target, emitting the venue's raw
+// event.qty would leave the internal book corrected while downstream clients
+// rebuilt the pre-adjustment quantity.
+TEST_F(CoinbaseExchangeTest, StaleLevelUpdate_PublishesReconciledQtyNotRawVenueQty) {
+    auto* sym = registerSymbol("TEST-PUB-1");
+
+    exchange_->onLevel2Updates(nullptr, 1, makeBatch("TEST-PUB-1", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 1)
+    }));
+    drainEvents();
+
+    // Trade at t=10 takes 3, leaving 7.
+    exchange_->onMarketTrades(nullptr, 2, {
+        makeMarketTrade("TEST-PUB-1", coinbase::Side::BUY, 101.0, 3.0, 10)
+    });
+    drainEvents();
+
+    // Update stamped t=5 predates the trade and still reports the pre-trade 10.
+    exchange_->onLevel2Updates(nullptr, 3, makeBatch("TEST-PUB-1", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 5)
+    }));
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10 - kQty3);
+
+    // The buffer flushes when the sequence number changes, so drive one more
+    // update at an unrelated price to push the stale one downstream.
+    exchange_->onLevel2Updates(nullptr, 4, makeBatch("TEST-PUB-1", {
+        makeL2Update(coinbase::Side::BUY, 99.0, 1.0, 20)
+    }));
+    drainEvents();
+
+    // Find the published delta for the stale update.
+    bool found = false;
+    for (auto* update : md_collector_->collect(MDUpdateType::LEVEL)) {
+        auto* level_update = reinterpret_cast<MDLevelUpdate*>(update->data);
+        for (uint32_t i = 0; i < level_update->num_level_update; ++i) {
+            const auto& level = level_update->levels[i];
+            if (level.price == kPrice101 && level.event_time == 5) {
+                EXPECT_EQ(level.qty, kQty10 - kQty3);   // not the raw 10.0
+                found = true;
+            }
+        }
+    }
+    EXPECT_TRUE(found) << "no l2 delta published for the stale update";
+}
+
+// A real venue's L2 shows your own resting orders, and the snapshot path
+// publishes total_quantity, so a feed-driven delta must include the simulator's
+// orders at that price too — not just the phantom liquidity mirroring the venue.
+TEST_F(CoinbaseExchangeTest, LevelUpdate_PublishedQtyIncludesSimulatorOrders) {
+    auto* sym = registerSymbol("TEST-PUB-2");
+
+    // Simulator SELL of 5 resting at 101, then the venue quotes 10 at that price.
+    addSimOrder(sym, Side::SELL, kPrice101, kQty5);
+    exchange_->onLevel2Updates(nullptr, 1, makeBatch("TEST-PUB-2", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 2000)
+    }));
+    drainEvents();
+
+    // Phantom mirrors the venue's 10; the level as a whole holds 15.
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10);
+    auto [level, idx] = sym->order_book_->getLevel(to_book_side(Side::SELL), kPrice101);
+    ASSERT_NE(level, nullptr);
+    ASSERT_EQ(level->total_quantity, kQty15);
+
+    // Flush the buffer with an update at an unrelated price.
+    exchange_->onLevel2Updates(nullptr, 2, makeBatch("TEST-PUB-2", {
+        makeL2Update(coinbase::Side::BUY, 99.0, 1.0, 2001)
+    }));
+    drainEvents();
+
+    // Two producers emit level deltas — the order book observer and the feed's
+    // own level_update_buffer_ — so gather every published quantity at this price
+    // rather than assuming which frame comes first.
+    std::vector<qty_t> published;
+    for (auto* update : md_collector_->collect(MDUpdateType::LEVEL)) {
+        auto* level_update = reinterpret_cast<MDLevelUpdate*>(update->data);
+        for (uint32_t i = 0; i < level_update->num_level_update; ++i) {
+            const auto& lvl = level_update->levels[i];
+            if (lvl.price == kPrice101) {
+                published.push_back(lvl.qty);
+            }
+        }
+    }
+    ASSERT_FALSE(published.empty()) << "no l2 delta published for the quoted level";
+
+    size_t full_level = 0;
+    size_t phantom_only = 0;
+    for (auto q : published) {
+        full_level   += (q == kQty15);
+        phantom_only += (q == kQty10);
+    }
+    EXPECT_GT(full_level, 0u) << "no delta carried the whole level (phantom + simulator)";
+    EXPECT_EQ(phantom_only, 0u) << "a delta published the venue quantity, omitting the simulator's order";
+}
+
+// The credit a trade leaves behind is consumed by the next level update at that
+// price and must not survive to swallow a later, genuine cancel.
+TEST_F(CoinbaseExchangeTest, TradeCredit_DoesNotSwallowLaterCancel) {
+    auto* sym = registerSymbol("TEST-DBL-2");
+
+    exchange_->onLevel2Updates(nullptr, 1, makeBatch("TEST-DBL-2", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 1)
+    }));
+    drainEvents();
+
+    exchange_->onMarketTrades(nullptr, 2, {
+        makeMarketTrade("TEST-DBL-2", coinbase::Side::BUY, 101.0, 3.0, 5)
+    });
+    drainEvents();
+
+    exchange_->onLevel2Updates(nullptr, 3, makeBatch("TEST-DBL-2", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 7.0, 5)
+    }));
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10 - kQty3);
+
+    // A later reduction is a real cancel: it must be applied in full.
+    exchange_->onLevel2Updates(nullptr, 4, makeBatch("TEST-DBL-2", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 5.0, 10)
+    }));
+    drainEvents();
+
     EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty5);
+}
+
+// A trade that fills only the simulator's own order credits nothing: the venue's
+// level still legitimately drops, because that liquidity really did trade there.
+TEST_F(CoinbaseExchangeTest, TradeFillingOnlySimOrder_LeavesLevelUpdateApplied) {
+    auto* sym = registerSymbol("TEST-DBL-3");
+
+    // Simulator SELL of 3 at 101, resting ahead of a phantom 10 at the same price.
+    auto* sim_sell = addSimOrder(sym, Side::SELL, kPrice101, kQty3);
+    exchange_->onLevel2Updates(nullptr, 1, makeBatch("TEST-DBL-3", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 1)
+    }));
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10);
+
+    // A BUY of 3 hits the simulator order first (FIFO), leaving phantom untouched.
+    exchange_->onMarketTrades(nullptr, 2, {
+        makeMarketTrade("TEST-DBL-3", coinbase::Side::BUY, 101.0, 3.0, 5)
+    });
+    drainEvents();
+    EXPECT_EQ(sim_sell->cum_quantity, kQty3);
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10);
+
+    // Nothing was credited, so the venue's reduction applies in full.
+    exchange_->onLevel2Updates(nullptr, 3, makeBatch("TEST-DBL-3", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 7.0, 5)
+    }));
+    drainEvents();
+
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10 - kQty3);
 }
 
 // Level2 BUY at 100 matches resting SELL sim order, then a subsequent level2

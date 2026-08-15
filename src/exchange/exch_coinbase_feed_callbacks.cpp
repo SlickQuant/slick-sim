@@ -3,6 +3,7 @@
 #include <md_feed/coinbase_live_ws_feed.hpp>
 #include <common/symbol_manager.hpp>
 #include <utils/timestamp.hpp>
+#include <charconv>
 
 using namespace slick::sim::exch;
 using namespace slick::sim;
@@ -69,7 +70,7 @@ void CoinbaseExchange::onMarketDataDisconnected(WebSocketClient *client)
         {
             pending_md_subscription_[coinbase::WebSocketChannel::LEVEL2].emplace(symbol);
             pending_md_subscription_[coinbase::WebSocketChannel::MARKET_TRADES].emplace(symbol);
-            trade_snapshots_.erase(symbol);
+            symbol->clearTradeHistory();
         }
     }
 
@@ -128,7 +129,7 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
         {
             for (const auto &summary : trade_summaries)
             {
-                publishTradeSummary(symbol->symbol_.c_str(), summary);
+                publishTradeSummary(symbol, summary);
             }
         }
 
@@ -227,61 +228,40 @@ void CoinbaseExchange::onMarketTradesSnapshot(WebSocketClient * /* client */, ui
         return;
     }
 
-    auto it = trade_snapshots_.find(symbol);
-    if (it == trade_snapshots_.end())
-    {
-        it = trade_snapshots_.emplace(symbol, utils::RingBuffer<Event>(16)).first;
-    }
-
-    auto &trade_snapshot = it->second;
-
-    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(MDTradeUpdate) + snapshots.size() * sizeof(MDTrade));
-    auto index = md_queue_.reserve(sz);
-    auto *update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
-    memcpy(update->symbol, symbol->symbol_.c_str(), sizeof(update->symbol));
-    update->venue = venue_;
-    update->type = MDUpdateType::SUB_RESPONSE;
-
-    auto *response = reinterpret_cast<MDSubscriptionResponse *>(update->data);
-    response->channel = coinbase::WebSocketChannel::MARKET_TRADES;
-
-    auto *snapshot = reinterpret_cast<MDTradeUpdate *>(response->data);
-    snapshot->num_trades = static_cast<uint32_t>(snapshots.size());
-
-    auto *trades = reinterpret_cast<MDTrade *>(snapshot->trades);
-
-    auto &state = symbol_event_state_[symbol];
-
-    // Coinbase trades are in reverse chronological order
+    // These prints happened before we were listening, so they only seed the
+    // history that serves the subscribe snapshot - they are never fed to the
+    // matching engine. Coinbase sends them newest first, so walk in reverse to
+    // store them chronologically.
     for (auto i = static_cast<int32_t>(snapshots.size()) - 1; i >= 0; i--)
     {
         const auto &trade = snapshots[i];
-        trades->price = to_price_t(trade.price);
-        trades->qty = to_qty_t(trade.size);
-        trades->side = static_cast<Side>(trade.side);
 
-        // Store in trade history ring buffer
-        Event evt;
-        evt.type = EventType::TRADE;
-        evt.event_time = trade.time;
-        evt.seq_num = seq_num;
-        evt.sequence_id = state.next_sequence_id++;
-        evt.received_time = utils::get_current_time_ns();
-        evt.price = to_price_t(trade.price);
-        evt.qty = to_qty_t(trade.size);
-        evt.side = static_cast<Side>(trade.side);
-        trade_snapshot.emplace(std::move(evt));
+        // Keep the venue's own trade id, and keep the ids this exchange mints
+        // afterwards continuing the venue's sequence rather than colliding with it.
+        uint64_t trade_id = 0;
+        auto [_, ec] = std::from_chars(trade.trade_id.data(), trade.trade_id.data() + trade.trade_id.size(), trade_id);
+        if (ec != std::errc{})
+        {
+            trade_id = nextVenueTradeId();
+        }
+        else if (trade_id >= next_trade_id_)
+        {
+            next_trade_id_ = trade_id + 1;
+        }
 
-        trades++;
+        symbol->recordTrade(MDTrade{
+            .trade_id = trade_id,
+            .event_time = trade.time,
+            .seq_num = seq_num,
+            .price = to_price_t(trade.price),
+            .qty = to_qty_t(trade.size),
+            // Never matched into the book, so whether a subscriber's book
+            // snapshot reflects this print depends on its timestamp.
+            .flags = UpdateFlags::F_NOT_IN_BOOK,
+            .side = static_cast<Side>(trade.side)});
     }
-    for (const auto &trade : snapshots)
-    {
-        trades->price = to_price_t(trade.price);
-        trades->qty = to_qty_t(trade.size);
-        trades->side = static_cast<Side>(trade.side);
-        trades++;
-    }
-    md_queue_.publish(index, sz);
+
+    publishTradeSubscriptionResponse(symbol, coinbase::WebSocketChannel::MARKET_TRADES);
     pending_subscriptions.erase(symbol);
 }
 

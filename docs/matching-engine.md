@@ -127,20 +127,54 @@ return incoming->client_id == book_order->client_id;
 | Mode | Behaviour on a self-match |
 | --- | --- |
 | `NONE` | Allow the match |
-| `CANCEL_RESTING` | Delete the resting order and continue matching against the next one |
-| `CANCEL_NEWEST` | Cancel the incoming order, return `OrdRejectReason::SMP`, no trades |
+| `CANCEL_RESTING` | Cancel the resting order — removed from the book, `CANCELED` sent to its owner, `Order` returned to the pool — then carry on matching against the next one |
+| `CANCEL_NEWEST` | Reject the incoming order with `OrdRejectReason::SMP`, no trades |
 
-The mode is per-`Symbol` (`smp_mode_`), passed into `match()` by `Symbol::addOrder`.
+### `CANCEL_NEWEST` decides before it touches anything
 
-!!! warning "SMP is inert in production"
-    `Order::client_id` defaults to **-1** and nothing outside the unit tests ever assigns it, so
-    `isSelfMatch` always returns false on a live run. `Symbol::smp_mode_` is likewise initialised to
-    `NONE` and has no configuration key. The feature is fully implemented and tested
-    (`tests/unit/matching_engine/test_matching_engine_smp.cpp`) but unreachable from a running
-    simulator.
+The check runs at the top of `match()`, ahead of the order ack, ahead of the
+`PENDING_REPLACE` mutation, and ahead of the FOK pre-validation. `wouldSelfMatch` walks the opposing
+side as far as the incoming quantity could actually reach and asks whether any of it is the order's
+own.
 
-Note also that `Symbol::modifyOrder` calls `match()` **without** an SMP argument, so amendments always
-use the `NONE` default even on a symbol configured otherwise.
+That ordering is the whole point. The matching loop mutates before it matches — an amendment writes
+the new price and quantity onto the stored `Order` and reports `REPLACED`, and a new order is acked —
+so deciding mid-loop would mean telling the client its order was replaced or working and then
+rejecting it, with the amendment half-applied to an order that never moved on the book. Deciding
+first means a rejected order leaves no trace: the client sees its pending, then one `REJECTED`, and
+the stored order keeps its original price and quantity.
+
+Running before the mutation does mean the pre-check has to derive the quantity the loop is *about*
+to use rather than reading it afterwards. The `order_qty` argument is the order's total quantity; for
+a partially filled amendment the loop will match only `leaves_quantity + (order_qty - quantity)`.
+Scanning by the total would reach past what the order can actually trade and reject against a
+resting order it would never have touched, so STEP 0 mirrors that arithmetic without applying it.
+
+It also means the reject reason is `SMP` rather than `FOK_CANNOT_FILL` for a fill-or-kill order that
+could have filled but for the self-match — the liquidity was there, and SMP is why it could not
+trade.
+
+The mode is per-`Symbol` (`smp_mode_`), passed into `match()` by both `Symbol::addOrder` and
+`Symbol::modifyOrder` — an amendment re-enters the matching loop, so it is prevented on the same
+terms as a new order.
+
+### Enabling it
+
+SMP is **off by default**. Set `self_match_prevention` on an exchange to `"cancel_resting"` or
+`"cancel_newest"` and every symbol that venue creates inherits it — see
+[Configuration](configuration.md#self_match_prevention). An unrecognised value logs a warning and
+leaves SMP disabled rather than aborting startup.
+
+### What counts as "self"
+
+`Order::client_id` is the identity SMP compares, and `Exchange::clientIdFor` assigns it from the
+order's **`user_id`** — the authenticated account, which is how real venues scope SMP. Ids are
+handed out on first sight of a `user_id` and stay stable for the life of the process, so the hot
+matching loop compares an `int` rather than a string.
+
+An order with an empty `user_id` gets `-1`, which `isSelfMatch` treats as "no identity" and never
+matches — including against another `-1`. An unauthenticated client is therefore left out of SMP
+rather than lumped together with every other unauthenticated one.
 
 ## Modifies re-enter the matching loop
 
@@ -187,8 +221,15 @@ So `Trades[0]` is always the aggressor with its running total, and `Trades[1..]`
 orders it hit. `num_orders` counts participants, not trades — it starts at 2 and increments by one per
 additional resting order.
 
-`trade_id` comes from `MatchingEngine::nextTradeId()`, a process-global atomic shared across all
-venues.
+`TradeSummaryInfo::trade_id` comes from `MatchingEngine::nextTradeId()`, a process-global atomic
+shared across all venues — so it is an internal id only. The **public** trade id is stamped by
+`Exchange::publishTradeSummary` from a counter the venue owns, which is what makes each venue's ids
+an independent sequence.
+
+`phantom_qty` records how much of a summary's `qty` was matched against phantom liquidity rather than
+the simulator's own resting orders (`our_order == nullptr` in the match loop). The exchange uses it
+to avoid reducing a price level twice — see
+[venue trade prints](market-data.md#venue-trade-prints-are-matched-not-relayed).
 
 !!! note
     `num_orders` is used by `Exchange::publishTradeSummary` to size the queue reservation

@@ -51,7 +51,7 @@ private:
     void handle_info(uWS::HttpResponse<false>* res, uWS::HttpRequest* req);
     void publish_subscription_response(MarketDataUpdate* update);
     void publish_book_snapshot(MarketDataUpdate* update);
-    void publish_trade_update(MarketDataUpdate* update);
+    void publish_trade_summary(MarketDataUpdate* update);
     void check_heartbeats() override;
     void handle_close(wsT* ws, int code, std::string_view message);
     void send_error(wsT* ws, const std::string& error_msg);

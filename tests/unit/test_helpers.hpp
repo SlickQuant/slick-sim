@@ -4,6 +4,7 @@
 #include <common/order.hpp>
 #include <common/types.hpp>
 #include <common/messages.hpp>
+#include <common/market_data.hpp>
 #include <slick/queue.h>
 #include <slick/object_pool.h>
 #include <utils/order.hpp>
@@ -125,6 +126,53 @@ public:
 private:
     slick::queue<OrderResponse>& queue_;
     uint64_t cursor_;
+};
+
+// Mock: MarketDataUpdate collector.
+//
+// md_queue_ carries variable-length frames, so the raw bytes are copied out and
+// kept alive by the collector - the returned pointers stay valid until the next
+// collect()/reset().
+class MarketDataCollector {
+public:
+    explicit MarketDataCollector(slick::queue<uint8_t>& queue)
+        : queue_(queue), cursor_(0) {}
+
+    std::vector<MarketDataUpdate*> collect() {
+        frames_.clear();
+        std::vector<MarketDataUpdate*> updates;
+        while (true) {
+            auto [data, size] = queue_.read(cursor_);
+            if (!data) break;
+            frames_.emplace_back(data, data + size);
+        }
+        updates.reserve(frames_.size());
+        for (auto& frame : frames_) {
+            updates.push_back(reinterpret_cast<MarketDataUpdate*>(frame.data()));
+        }
+        return updates;
+    }
+
+    /// Every frame of one type, in order.
+    std::vector<MarketDataUpdate*> collect(MDUpdateType type) {
+        std::vector<MarketDataUpdate*> matched;
+        for (auto* update : collect()) {
+            if (update->type == type) {
+                matched.push_back(update);
+            }
+        }
+        return matched;
+    }
+
+    void reset() {
+        cursor_ = 0;
+        frames_.clear();
+    }
+
+private:
+    slick::queue<uint8_t>& queue_;
+    uint64_t cursor_;
+    std::vector<std::vector<uint8_t>> frames_;
 };
 
 // Test constants

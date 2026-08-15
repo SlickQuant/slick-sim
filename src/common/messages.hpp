@@ -328,6 +328,11 @@ struct TradeSummaryInfo {
     Side aggressor_side;
     price_t price;
     qty_t qty;
+    /// Portion of `qty` that was matched against phantom (market-mirroring)
+    /// liquidity rather than the simulator's own resting orders. Internal only -
+    /// the exchange uses it to avoid reducing a level twice when the venue's
+    /// level update for the same trade arrives. Not part of the wire format.
+    qty_t phantom_qty = 0;
     int32_t num_orders;
     std::vector<Trade> Trades;
 };

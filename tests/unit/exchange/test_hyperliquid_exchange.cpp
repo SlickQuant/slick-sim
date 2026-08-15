@@ -129,6 +129,7 @@ protected:
         })"_json;
         exchange_ = std::make_unique<TestableHyperliquidExchange>(config);
         collector_       = std::make_unique<OrderResponseCollector>(exchange_->response_queue());
+        md_collector_    = std::make_unique<MarketDataCollector>(exchange_->md_queue());
         matching_engine_ = std::make_unique<FifoMatchingEngine>(exchange_->response_queue());
 
     }
@@ -158,6 +159,7 @@ protected:
     }
 
     std::unique_ptr<OrderResponseCollector>           collector_;
+    std::unique_ptr<MarketDataCollector>              md_collector_;
     std::unique_ptr<FifoMatchingEngine>               matching_engine_;
     std::unique_ptr<TestableHyperliquidExchange>      exchange_;
 };
@@ -621,7 +623,9 @@ TEST_F(HyperliquidExchangeTest, Trades_MissingDataKey_Ignored) {
     exchange_->drainEvents();
 }
 
-TEST_F(HyperliquidExchangeTest, Trades_DoNotAffectSimulatorOrders) {
+// A venue print is replayed as an incoming aggressor order, so it fills the
+// resting simulator order it crosses and the fill is published as TRADE_SUMMARY.
+TEST_F(HyperliquidExchangeTest, Trades_FillRestingSimulatorOrders) {
     auto* sym = registerCoin("HL-C5");
     auto* sim_sell = addSimOrder(sym, Side::SELL, kPrice100, kQty10);
 
@@ -629,10 +633,51 @@ TEST_F(HyperliquidExchangeTest, Trades_DoNotAffectSimulatorOrders) {
     exchange_->onTradesUpdate(msg);
     exchange_->drainEvents();
 
-    // Trades do NOT trigger matching — sim order untouched
-    EXPECT_EQ(sim_sell->cum_quantity, 0);
-    EXPECT_EQ(sim_sell->leaves_quantity, kQty10);
-    EXPECT_EQ(collector_->collect().size(), 0u);
+    EXPECT_EQ(sim_sell->cum_quantity, kQty10);
+    EXPECT_EQ(sim_sell->leaves_quantity, 0);
+    EXPECT_GT(collector_->collect().size(), 0u);
+
+    auto summaries = md_collector_->collect(MDUpdateType::TRADE_SUMMARY);
+    ASSERT_EQ(summaries.size(), 1u);
+    auto* summary = reinterpret_cast<TradeSummary*>(summaries[0]->data);
+    EXPECT_EQ(summary->aggressor_side, Side::BUY);
+    EXPECT_EQ(summary->price, kPrice100);
+    EXPECT_EQ(summary->qty, kQty10);
+}
+
+// Trade ids are a per-venue sequence, independent of the matching engine's own
+// static counter, and monotonic across prints.
+TEST_F(HyperliquidExchangeTest, Trades_TradeIdsAreMonotonicPerVenue) {
+    auto* sym = registerCoin("HL-C6");
+    addSimOrder(sym, Side::SELL, kPrice100, kQty10);
+    addSimOrder(sym, Side::SELL, kPrice101, kQty10);
+
+    exchange_->onTradesUpdate(makeTradesMsg("HL-C6", {{"B", 100.0, 5.0, 1000}}));
+    exchange_->drainEvents();
+    exchange_->onTradesUpdate(makeTradesMsg("HL-C6", {{"B", 101.0, 5.0, 1001}}));
+    exchange_->drainEvents();
+
+    auto summaries = md_collector_->collect(MDUpdateType::TRADE_SUMMARY);
+    ASSERT_EQ(summaries.size(), 2u);
+    auto first  = reinterpret_cast<TradeSummary*>(summaries[0]->data)->trade_id;
+    auto second = reinterpret_cast<TradeSummary*>(summaries[1]->data)->trade_id;
+    EXPECT_EQ(first, 1u);
+    EXPECT_EQ(second, 2u);
+}
+
+// The tape is fill-driven: a print with no crossable liquidity produces no output,
+// and its unfilled remainder rests on the aggressor's own side.
+TEST_F(HyperliquidExchangeTest, Trades_NoCrossableLiquidity_RestsAndPublishesNothing) {
+    auto* sym = registerCoin("HL-C7");
+
+    exchange_->onTradesUpdate(makeTradesMsg("HL-C7", {{"B", 100.0, 5.0, 1000}}));
+    exchange_->drainEvents();
+
+    EXPECT_TRUE(md_collector_->collect(MDUpdateType::TRADE_SUMMARY).empty());
+
+    auto [buy_level, bi] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(buy_level, nullptr);
+    EXPECT_EQ(buy_level->total_quantity, kQty5);
 }
 
 // ===========================================================================
@@ -655,6 +700,179 @@ TEST_F(HyperliquidExchangeTest, Subscription_NewCoin_WritesMdQueueEntry) {
     ASSERT_NE(data, nullptr);
     auto* update = reinterpret_cast<MarketDataUpdate*>(data);
     EXPECT_EQ(update->type, MDUpdateType::SUB_RESPONSE);
+}
+
+// ---------------------------------------------------------------------------
+// trades channel subscription — served from the tape history, split against the
+// book snapshot the subscriber holds.
+// ---------------------------------------------------------------------------
+
+// Unapplied prints at or before the book's last update are covered by the book
+// snapshot the subscriber receives, so the whole history is snapshot material.
+TEST_F(HyperliquidExchangeTest, TradesSubscription_HistoryOlderThanBook_AllInSnapshot) {
+    auto* sym = registerCoin("HL-TS1");
+    sym->recordTrade(MDTrade{.trade_id = 1, .event_time = 100, .seq_num = 0,
+                             .price = kPrice100, .qty = kQty5,
+                             .flags = UpdateFlags::F_NOT_IN_BOOK, .side = Side::BUY});
+    sym->recordTrade(MDTrade{.trade_id = 2, .event_time = 200, .seq_num = 0,
+                             .price = kPrice101, .qty = kQty3,
+                             .flags = UpdateFlags::F_NOT_IN_BOOK, .side = Side::SELL});
+    sym->order_book_->setLastUpdate(300, 0);
+    md_collector_->collect();   // drop frames from setup
+
+    exchange_->subscribeToMD(makeMDSubRequest("HL-TS1", HyperliquidChannel::TRADES));
+
+    auto responses = md_collector_->collect(MDUpdateType::SUB_RESPONSE);
+    ASSERT_EQ(responses.size(), 1u);
+    auto* response = reinterpret_cast<MDSubscriptionResponse*>(responses[0]->data);
+    EXPECT_EQ(response->channel, static_cast<uint8_t>(HyperliquidChannel::TRADES));
+
+    auto* snapshot = reinterpret_cast<MDTradeSnapshotResponse*>(response->data);
+    EXPECT_EQ(snapshot->num_snapshot, 2u);
+    EXPECT_EQ(snapshot->num_update, 0u);
+    // Chronological, oldest first.
+    EXPECT_EQ(snapshot->trades[0].trade_id, 1u);
+    EXPECT_EQ(snapshot->trades[1].trade_id, 2u);
+}
+
+// An unapplied print stamped after the book's last update is not reflected in
+// the book snapshot the subscriber receives, so it belongs in the update block.
+TEST_F(HyperliquidExchangeTest, TradesSubscription_UnappliedTradeNewerThanBook_GoesInUpdateBlock) {
+    auto* sym = registerCoin("HL-TS2");
+    sym->recordTrade(MDTrade{.trade_id = 1, .event_time = 100, .seq_num = 0,
+                             .price = kPrice100, .qty = kQty5,
+                             .flags = UpdateFlags::F_NOT_IN_BOOK, .side = Side::BUY});
+    sym->recordTrade(MDTrade{.trade_id = 2, .event_time = 500, .seq_num = 0,
+                             .price = kPrice101, .qty = kQty3,
+                             .flags = UpdateFlags::F_NOT_IN_BOOK, .side = Side::SELL});
+    sym->order_book_->setLastUpdate(300, 0);
+    md_collector_->collect();
+
+    exchange_->subscribeToMD(makeMDSubRequest("HL-TS2", HyperliquidChannel::TRADES));
+
+    auto responses = md_collector_->collect(MDUpdateType::SUB_RESPONSE);
+    ASSERT_EQ(responses.size(), 1u);
+    auto* snapshot = reinterpret_cast<MDTradeSnapshotResponse*>(
+        reinterpret_cast<MDSubscriptionResponse*>(responses[0]->data)->data);
+
+    EXPECT_EQ(snapshot->num_snapshot, 1u);
+    EXPECT_EQ(snapshot->num_update, 1u);
+    EXPECT_EQ(snapshot->trades[0].trade_id, 1u);
+    // The update block follows the snapshot block in the same array.
+    EXPECT_EQ(snapshot->trades[1].trade_id, 2u);
+}
+
+// A trade the matching engine produced is in the book by construction. The trade
+// handlers do not advance `lastUpdateTime()` — only level updates do — so
+// classifying by timestamp alone would call an already-applied trade "not yet
+// reflected" and hand the subscriber a book snapshot that already contains it.
+TEST_F(HyperliquidExchangeTest, TradesSubscription_AppliedTradeNewerThanBook_StaysInSnapshot) {
+    auto* sym = registerCoin("HL-TS5");
+    auto* sim_sell = addSimOrder(sym, Side::SELL, kPrice100, kQty10);
+
+    // Book's last update predates the trade that follows.
+    sym->order_book_->setLastUpdate(300, 0);
+
+    // A print at t=1000ms matches, so the book now reflects it while
+    // lastUpdateTime() still reads 300.
+    exchange_->onTradesUpdate(makeTradesMsg("HL-TS5", {{"B", 100.0, 10.0, 1000}}));
+    exchange_->drainEvents();
+    ASSERT_EQ(sim_sell->cum_quantity, kQty10);
+    ASSERT_GT(sym->trade_history_.size(), 0u);
+    md_collector_->collect();
+
+    exchange_->subscribeToMD(makeMDSubRequest("HL-TS5", HyperliquidChannel::TRADES));
+
+    auto responses = md_collector_->collect(MDUpdateType::SUB_RESPONSE);
+    ASSERT_EQ(responses.size(), 1u);
+    auto* snapshot = reinterpret_cast<MDTradeSnapshotResponse*>(
+        reinterpret_cast<MDSubscriptionResponse*>(responses[0]->data)->data);
+
+    EXPECT_EQ(snapshot->num_snapshot, 1u);
+    EXPECT_EQ(snapshot->num_update, 0u);
+}
+
+// Classification is not monotonic over the history: an applied trade can follow
+// an unapplied print that is newer than the book. The two blocks must still be
+// written contiguously, or the consumer reads one block's trades as the other's.
+TEST_F(HyperliquidExchangeTest, TradesSubscription_InterleavedHistory_BlocksStayContiguous) {
+    auto* sym = registerCoin("HL-TS6");
+    sym->order_book_->setLastUpdate(300, 0);
+
+    // Alternating in history order: unapplied (newer than the book) and applied.
+    sym->recordTrade(MDTrade{.trade_id = 1, .event_time = 400, .seq_num = 0,
+                             .price = kPrice100, .qty = kQty3,
+                             .flags = UpdateFlags::F_NOT_IN_BOOK, .side = Side::BUY});
+    sym->recordTrade(MDTrade{.trade_id = 2, .event_time = 500, .seq_num = 0,
+                             .price = kPrice100, .qty = kQty3,
+                             .flags = UpdateFlags::F_NONE, .side = Side::BUY});
+    sym->recordTrade(MDTrade{.trade_id = 3, .event_time = 600, .seq_num = 0,
+                             .price = kPrice100, .qty = kQty3,
+                             .flags = UpdateFlags::F_NOT_IN_BOOK, .side = Side::BUY});
+    sym->recordTrade(MDTrade{.trade_id = 4, .event_time = 700, .seq_num = 0,
+                             .price = kPrice100, .qty = kQty3,
+                             .flags = UpdateFlags::F_NONE, .side = Side::BUY});
+    md_collector_->collect();
+
+    exchange_->subscribeToMD(makeMDSubRequest("HL-TS6", HyperliquidChannel::TRADES));
+
+    auto responses = md_collector_->collect(MDUpdateType::SUB_RESPONSE);
+    ASSERT_EQ(responses.size(), 1u);
+    auto* snapshot = reinterpret_cast<MDTradeSnapshotResponse*>(
+        reinterpret_cast<MDSubscriptionResponse*>(responses[0]->data)->data);
+
+    ASSERT_EQ(snapshot->num_snapshot, 2u);
+    ASSERT_EQ(snapshot->num_update, 2u);
+
+    // Applied trades first, chronological within the block.
+    EXPECT_EQ(snapshot->trades[0].trade_id, 2u);
+    EXPECT_EQ(snapshot->trades[1].trade_id, 4u);
+    // Then the unapplied ones, also chronological.
+    EXPECT_EQ(snapshot->trades[2].trade_id, 1u);
+    EXPECT_EQ(snapshot->trades[3].trade_id, 3u);
+}
+
+TEST_F(HyperliquidExchangeTest, TradesSubscription_NoHistory_EmptyBlocks) {
+    registerCoin("HL-TS3");
+    md_collector_->collect();
+
+    exchange_->subscribeToMD(makeMDSubRequest("HL-TS3", HyperliquidChannel::TRADES));
+
+    auto responses = md_collector_->collect(MDUpdateType::SUB_RESPONSE);
+    ASSERT_EQ(responses.size(), 1u);
+    auto* snapshot = reinterpret_cast<MDTradeSnapshotResponse*>(
+        reinterpret_cast<MDSubscriptionResponse*>(responses[0]->data)->data);
+
+    EXPECT_EQ(snapshot->num_snapshot, 0u);
+    EXPECT_EQ(snapshot->num_update, 0u);
+}
+
+// The history is bounded, so a long-running instrument cannot grow the frame
+// without limit or overrun its own reservation.
+TEST_F(HyperliquidExchangeTest, TradesSubscription_HistoryCappedAtCapacity) {
+    auto* sym = registerCoin("HL-TS4");
+    constexpr size_t kOverflow = Symbol::TRADE_HISTORY_CAPACITY + 10;
+    for (size_t i = 0; i < kOverflow; ++i) {
+        sym->recordTrade(MDTrade{.trade_id = i + 1, .event_time = 100 + i, .seq_num = 0,
+                                 .price = kPrice100, .qty = kQty3,
+                                 .flags = UpdateFlags::F_NONE, .side = Side::BUY});
+    }
+    sym->order_book_->setLastUpdate(100 + kOverflow, 0);
+    md_collector_->collect();
+
+    exchange_->subscribeToMD(makeMDSubRequest("HL-TS4", HyperliquidChannel::TRADES));
+
+    auto responses = md_collector_->collect(MDUpdateType::SUB_RESPONSE);
+    ASSERT_EQ(responses.size(), 1u);
+    auto* snapshot = reinterpret_cast<MDTradeSnapshotResponse*>(
+        reinterpret_cast<MDSubscriptionResponse*>(responses[0]->data)->data);
+
+    EXPECT_GT(snapshot->num_snapshot, 0u);
+    EXPECT_LE(snapshot->num_snapshot, Symbol::TRADE_HISTORY_CAPACITY);
+    EXPECT_EQ(snapshot->num_update, 0u);
+    // Oldest entries were evicted; the newest survives as the last entry.
+    EXPECT_EQ(snapshot->trades[snapshot->num_snapshot - 1].trade_id, kOverflow);
+    EXPECT_GT(snapshot->trades[0].trade_id, 1u);
 }
 
 TEST_F(HyperliquidExchangeTest, Subscription_ExistingCoin_ResendsSnapshot) {

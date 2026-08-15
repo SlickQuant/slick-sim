@@ -2,8 +2,12 @@
 
 #include <order_book/order_book.hpp>
 #include <matching_engine/matching_engine.hpp>
+#include <utils/ring_buffer.hpp>
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <tuple>
+#include <unordered_map>
 #include <unordered_set>
 #include <slick/orderbook/observer.hpp>
 
@@ -20,7 +24,21 @@ struct OrderBookObserver : public orderbook::IOrderBookObserver {
     void onOrderUpdate(const OrderUpdate& update) override;
 };
 
+/// Quantity one trade print removed from phantom liquidity at one price, kept
+/// until a level update stamped at or after it accounts for it. Credits are held
+/// per trade timestamp, never summed across timestamps: a level update reflects
+/// only the trades that preceded it. See Symbol::creditTradedQty.
+struct TradedCredit {
+    qty_t qty = 0;
+    time_t event_time = 0;
+};
+
 struct Symbol {
+    /// Recent trades published on this instrument's tape, newest at the back.
+    /// Serves the subscribe-time snapshot on every venue. Capacity must stay a
+    /// power of two - utils::RingBuffer asserts on it.
+    static constexpr size_t TRADE_HISTORY_CAPACITY = 64;
+
     symid_t id_ = INVALID_SYMBOL_ID;
     Venue venue_;
     std::string symbol_;
@@ -31,6 +49,7 @@ struct Symbol {
     std::vector<MDLevel> md_level_update_cache_;
     std::vector<MDOrder> md_order_update_cache_;
     std::shared_ptr<OrderBookObserver> book_observer_;
+    utils::RingBuffer<MDTrade> trade_history_{TRADE_HISTORY_CAPACITY};
 
     Symbol() : book_observer_(std::make_shared<OrderBookObserver>(this)) {
         md_level_update_cache_.reserve(64);
@@ -49,6 +68,8 @@ struct Symbol {
         , order_book_(std::move(other.order_book_))
         , num_subscriptions_(other.num_subscriptions_.load(std::memory_order_relaxed))
         , book_observer_(std::make_shared<OrderBookObserver>(this))
+        , trade_history_(std::move(other.trade_history_))
+        , traded_qty_credit_(std::move(other.traded_qty_credit_))
     {
         if (order_book_) {
             order_book_->removeObserver(other.book_observer_);
@@ -63,8 +84,82 @@ struct Symbol {
             matching_engine_ = std::exchange(other.matching_engine_, nullptr);
             order_book_ = std::move(other.order_book_);
             num_subscriptions_.store(other.num_subscriptions_.load(std::memory_order_relaxed), std::memory_order_relaxed);
+            trade_history_ = std::move(other.trade_history_);
+            traded_qty_credit_ = std::move(other.traded_qty_credit_);
         }
         return *this;
+    }
+
+    /// Records that a trade print consumed `phantom_consumed` of the phantom
+    /// liquidity resting at (side, price).
+    ///
+    /// The venue will report the same reduction again in its own level update
+    /// for that trade. Applying both would reduce the level twice, so the level
+    /// path offsets against this credit when the update predates the trade.
+    /// Only phantom quantity is credited: when a trade fills the simulator's own
+    /// resting order the venue's level still legitimately drops by that amount,
+    /// because that liquidity really did trade at the venue.
+    void creditTradedQty(Side side, price_t price, qty_t phantom_consumed, time_t event_time) {
+        if (phantom_consumed <= 0 || side > Side::SELL) {
+            return;
+        }
+        auto &credits = traded_qty_credit_[static_cast<size_t>(side)][price];
+        // One credit per timestamp. A single print's sweep of one level arrives as
+        // one summary, but a batch can carry several prints stamped alike.
+        for (auto &credit : credits) {
+            if (credit.event_time == event_time) {
+                credit.qty += phantom_consumed;
+                return;
+            }
+        }
+        credits.emplace_back(phantom_consumed, event_time);
+    }
+
+    /// Returns the quantity traded at (side, price) that a level update stamped
+    /// `as_of` does not yet reflect, and drops every credit it does reflect.
+    ///
+    /// Credits are resolved individually rather than summed: an update landing
+    /// between two trades at the same price reflects the earlier one and not the
+    /// later one, so offsetting by both would over-reduce the level. Credits it
+    /// does not reflect are kept for the next update to resolve; the ones it does
+    /// are dropped, so stale credit can never survive to swallow a genuine cancel.
+    qty_t takeTradedQty(Side side, price_t price, time_t as_of) {
+        if (side > Side::SELL) {
+            return 0;
+        }
+        auto &by_price = traded_qty_credit_[static_cast<size_t>(side)];
+        auto it = by_price.find(price);
+        if (it == by_price.end()) {
+            return 0;
+        }
+
+        auto &credits = it->second;
+        qty_t unreflected = 0;
+        for (auto credit = credits.begin(); credit != credits.end();) {
+            if (as_of < credit->event_time) {
+                // The update predates this trade, so it still reports the
+                // pre-trade quantity at this price.
+                unreflected += credit->qty;
+                ++credit;
+            } else {
+                credit = credits.erase(credit);
+            }
+        }
+        if (credits.empty()) {
+            by_price.erase(it);
+        }
+        return unreflected;
+    }
+
+    /// Appends a trade to the tape history that serves the subscribe snapshot.
+    void recordTrade(const MDTrade &trade) {
+        trade_history_.push(trade);
+    }
+
+    /// Drops the tape history, so a venue that is about to resend its own trade
+    /// snapshot does not end up replaying the overlap twice.
+    void clearTradeHistory() {
+        trade_history_ = utils::RingBuffer<MDTrade>(TRADE_HISTORY_CAPACITY);
     }
 
     template<OrderBookType BookType>
@@ -94,6 +189,11 @@ struct Symbol {
 
     /// Called when an individual order is updated (L3 event)
     void onOrderUpdate(const OrderUpdate& update);
+
+private:
+    /// price -> quantities trades already removed, one entry per trade timestamp,
+    /// indexed by Side. Only BUY and SELL are ever indexed.
+    std::array<std::unordered_map<price_t, std::vector<TradedCredit>>, 2> traded_qty_credit_;
 };
 
 

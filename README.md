@@ -53,7 +53,7 @@ Each enabled exchange runs its own instance of the pipeline below. The market-da
                                                                      Symbol
                                                          OrderBook (L3) + FifoMatchingEngine
                                                                        │
-                                                                       │ book / trade updates
+                                                                       │ book updates / executed trades
                                                                        ▼
                                                            market_data_publisher
                                                                        │
@@ -72,7 +72,7 @@ Library targets:
 | `exchange` | Per-venue orchestration (`CoinbaseExchange`, `HyperliquidExchange`) and `Symbol`, which binds one instrument's order book to a matching engine |
 | `matching_engine` | FIFO price/time-priority matching (`FifoMatchingEngine`) and order lifecycle notifications (ack, fill, modify, cancel) |
 | `order_gateway` | Venue-native REST/WS order-entry endpoints — receives orders and returns order acks/fills/cancels/rejects to the client — plus an unused generic FIX/SBE/JSON TCP gateway |
-| `market_data_publisher` | Republishes book/trade updates in each venue's own WebSocket wire format |
+| `market_data_publisher` | Publishes book updates and executed trades in each venue's own WebSocket wire format |
 | `md_feed` | Ingests each venue's live public market data feed |
 | `common`, `order_book`, `utils` | Header-only: shared types (`Order`, `Request`, `Venue`, fixed-point price/qty helpers), `OrderBook` (wraps the external `slick-orderbook` L3 book), and misc helpers |
 
@@ -200,7 +200,7 @@ Logs:
 
 ## Testing
 
-Unit tests are built by default (`BUILD_EXCH_SIMULATOR_TESTING=ON`) using GoogleTest, covering the matching engine (FIFO matching, self-match prevention, time-in-force), order book operations, message/type conversions, and the Coinbase/Hyperliquid exchange adapters (`tests/unit/`).
+Unit tests are built by default (`BUILD_EXCH_SIMULATOR_TESTING=ON`) using GoogleTest, covering the matching engine (FIFO matching, self-match prevention, time-in-force), order book operations, message/type conversions, the Coinbase/Hyperliquid exchange adapters, and the market-data wire encoders (`tests/unit/`).
 
 ```bash
 cmake -S . -B build

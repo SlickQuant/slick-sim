@@ -48,9 +48,24 @@ and `main.cpp`, so they apply to every venue.
 | `request_queue_shm_name` | string | *(none)* | Back `request_queue_` with a named shared-memory segment |
 | `response_queue_shm_name` | string | *(none)* | Same for `response_queue_` |
 | `md_queue_shm_name` | string | *(none)* | Same for `md_queue_` |
+| `self_match_prevention` | string | `"none"` | Stops a client trading against its own resting orders. See below |
 | `md_feeds` | array | *(none)* | Market-data feeds to subscribe to upstream. **Optional** — omitting it runs the venue as a self-contained simulator; see [Operating modes](architecture.md#operating-modes) |
 | `order_gateway` | object | — | **Required** — the constructor throws if absent |
 | `md_publisher` | object | — | **Required** — the constructor throws if absent |
+
+### `self_match_prevention`
+
+| Value | Behaviour when an order would cross its owner's own resting order |
+| --- | --- |
+| `"none"` *(default)* | Allow the match |
+| `"cancel_resting"` | Cancel the resting order and carry on matching against the next one |
+| `"cancel_newest"` | Reject the incoming order with `OrdRejectReason::SMP`, no trades |
+
+The mode applies to every symbol the venue creates, and to amendments as well as new orders.
+"Self" means the same **authenticated `user_id`**, so an order carrying no `user_id` is exempt —
+including against another order with no `user_id`. An unrecognised value logs a warning and leaves
+SMP disabled rather than aborting startup. See
+[Matching engine](matching-engine.md#self-match-prevention).
 
 The three `*_shm_name` keys appear in no sample config and are not otherwise exercised. Note that a
 shared-memory reader must be built with the same `int_fast64_t` width — see

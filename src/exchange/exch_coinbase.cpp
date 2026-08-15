@@ -96,6 +96,7 @@ Symbol *CoinbaseExchange::addSymbol(std::string_view product_id)
         matching_engines_[engine::MatchingEngine::Type::FIFO] = std::make_unique<engine::FifoMatchingEngine>(response_queue_);
     }
     symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
+    symbol->smp_mode_ = smp_mode_;
     symbol->createOrderBook<OrderBookType::L2>();
     return symbol;
 }
@@ -260,10 +261,6 @@ void CoinbaseExchange::processSequencedEvents(bool force)
                 //     level_update_buffer_.clear();
                 // }
 
-                // if (!trade_update_buffer_.empty()) {
-                //     publishMDTrades(symbol->symbol_.c_str(), trade_update_buffer_);
-                //     trade_update_buffer_.clear();
-                // }
                 state.last_sequence_id = event.sequence_id;
                 state.last_seq_num = event.seq_num;
             }
@@ -323,7 +320,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
             {
                 for (const auto &summary : trade_summaries)
                 {
-                    publishTradeSummary(symbol->symbol_.c_str(), summary);
+                    publishTradeSummary(symbol, summary);
                 }
             }
 
@@ -342,36 +339,8 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
         else
         {
             // existing level
-            auto md_level_qty = symbol->order_book_->getMDLevelQty(event.price);
-            if (event.qty > md_level_qty)
-            {
-                // Level qty increased, assume new orders added at the back. Create new phantom order to represent then increment
-                auto size = event.qty - md_level_qty;
-                symbol->order_book_->addBookOrder(utils::nextOrderId(), book_side, event.price, size, event.event_time, event.seq_num);
-            }
-            else if (event.qty < md_level_qty)
-            {
-                // Level qty decreased. Alwayse assume the worst case, that the quantity decreased at the back
-                auto diff = md_level_qty - event.qty;
-                for (auto it = level->orders.rbegin(), it_last = std::prev(level->orders.rend()); it != level->orders.rend(); ++it)
-                {
-                    auto &order = *it;
-                    auto *exch_order = symbol->findOrder(order.order_id);
-                    if (exch_order)
-                    {
-                        // This is an exchange order, skip it
-                        continue;
-                    }
-
-                    auto to_reduce = std::min<qty_t>(diff, order.quantity);
-                    symbol->order_book_->modifyOrder(order.order_id, event.price, order.quantity - to_reduce, event.event_time, order.priority, event.seq_num, (event.flags & UpdateFlags::F_END_EVENT) && (diff == 0));
-                    diff -= to_reduce;
-                    if (diff == 0 || symbol->order_book_->getMDLevelQty(event.price) == 0)
-                    {
-                        break;
-                    }
-                }
-            }
+            reconcilePhantomQty(symbol, event.side, event.price, event.qty, event.event_time,
+                                event.seq_num, event.flags & UpdateFlags::F_END_EVENT);
         }
 
         symbol->order_book_->setLastUpdate(event.event_time, event.seq_num);
@@ -401,12 +370,29 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
             action = MDUpdateAction::ACTION_DELETE;
         }
 
+        // Publish the level as the book actually holds it, not the venue's raw
+        // figure. Two reasons they diverge:
+        //
+        //  - The book may decline to take the update at face value:
+        //    reconcilePhantomQty lowers a stale update's target by the quantity a
+        //    trade already removed, and the new-level branch above rests only what
+        //    survived matching.
+        //  - total_quantity includes the simulator's own resting orders. A real
+        //    venue's L2 shows your orders too, and both other producers of level
+        //    data agree - Symbol::onPriceLevelUpdate forwards the book's level
+        //    quantity, and populateL2Snapshot publishes total_quantity.
+        //
+        // Emitting event.qty would leave a client's incrementally-maintained book
+        // disagreeing with the simulator's own, and with any snapshot it re-reads.
+        auto published_qty = new_level ? new_level->total_quantity : qty_t{0};
+        auto published_orders = new_level ? static_cast<uint32_t>(new_level->orderCount()) : 0u;
+
         level_update_buffer_.emplace_back(MDLevel{
             .event_time = event.event_time,
             .seq_num = event.seq_num,
             .price = event.price,
-            .qty = event.qty,
-            .num_orders = 0,
+            .qty = published_qty,
+            .num_orders = published_orders,
             .level_index = index,
             .update_action = action,
             .flags = event.flags,
@@ -414,76 +400,52 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
     }
     else if (event.type == EventType::TRADE)
     {
-        // TODO: Match against orders in the order book via matching engine
-        // LOG_DEBUG("[CoinbaseExchange] Trade: {} {} @ {} size={} time={} seq_num={} last_published_level_seq_num={}",
-        //           symbol->symbol_,
-        //           event.side == Side::BUY ? "BUY" : "SELL",
-        //           event.price,
-        //           event.qty,
-        //           event.event_time,
-        //           event.seq_num,
-        //           state.last_published_level_seq_num);
+        // The venue's print is replayed as an incoming aggressor order: it takes
+        // liquidity from the book exactly as the real taker did, filling any
+        // simulator order that was ahead of the phantom liquidity it swept. Only
+        // the resulting fills are published - the print itself is never relayed.
+        auto &book = *symbol->order_book_;
+        auto book_side = to_book_side(event.side);
+        auto order_id = utils::nextOrderId();
 
-        if (!trade_update_buffer_.empty() &&
-            state.last_published_trade_seq_num &&
-            event.seq_num != state.last_published_trade_seq_num)
+        qty_t qty = event.qty;
+        auto trade_summaries = symbol->matching_engine_->match(
+            event.side, order_id, event.price, qty, book, event.event_time, event.seq_num);
+
+        if (qty)
         {
-            publishMDTrades(
-                symbol->symbol_.c_str(),
-                trade_update_buffer_);
-            state.last_published_trade_seq_num = trade_update_buffer_.back().seq_num;
-            trade_update_buffer_.clear();
+            // Treated as an aggressor order, so the unfilled remainder rests -
+            // same as the new-level branch above, and with the same order id. It
+            // cannot cross: a remainder exists precisely because nothing was
+            // still crossable at this limit.
+            book.addOrder(order_id, book_side, event.price, qty, event.event_time, event.seq_num,
+                          event.flags & UpdateFlags::F_END_EVENT);
         }
 
-        trade_update_buffer_.emplace_back(MDTrade{
-            .event_time = event.event_time,
-            .seq_num = event.seq_num,
-            .price = event.price,
-            .qty = event.qty,
-            .flags = event.flags,
-            .side = event.side});
+        for (const auto &summary : trade_summaries)
+        {
+            // The venue will report the same reduction again in its level update
+            // for this trade; credit it so that update does not remove it twice.
+            symbol->creditTradedQty(opposite_side(event.side), summary.price,
+                                    summary.phantom_qty, event.event_time);
+            publishTradeSummary(symbol, summary);
+        }
+
+        if (!symbol->md_level_update_cache_.empty())
+        {
+            publishLevelUpdate(symbol->symbol_.c_str(), symbol->md_level_update_cache_);
+            symbol->md_level_update_cache_.clear();
+        }
+
+        if (!symbol->md_order_update_cache_.empty())
+        {
+            // TODO: publish MD order update
+            symbol->md_order_update_cache_.clear();
+        }
     }
 }
 
 void CoinbaseExchange::populateMDTradesResponse(Symbol *symbol)
 {
-    uint32_t num_trades = 0;
-    auto it = trade_snapshots_.find(symbol);
-    if (it != trade_snapshots_.end())
-    {
-        num_trades = static_cast<uint32_t>(it->second.size());
-    }
-
-    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(MDTradeUpdate) + num_trades * sizeof(MDTrade)); // Empty snapshot
-    auto index = md_queue_.reserve(sz);
-    auto *update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
-    memcpy(update->symbol, symbol->symbol_.c_str(), sizeof(update->symbol));
-    update->venue = venue_;
-    update->type = MDUpdateType::SUB_RESPONSE;
-
-    auto *response = reinterpret_cast<MDSubscriptionResponse *>(update->data);
-    response->channel = coinbase::WebSocketChannel::MARKET_TRADES;
-
-    auto *snapshot = reinterpret_cast<MDTradeUpdate *>(response->data);
-    snapshot->num_trades = num_trades;
-    auto *trades = reinterpret_cast<MDTrade *>(snapshot->trades);
-
-    if (it != trade_snapshots_.end())
-    {
-        // Coinbase trades are in reverse chronological order
-        for (auto i = num_trades - 1; i < num_trades; i--)
-        {
-            const auto *evt = it->second[i];
-            if (evt == nullptr) [[unlikely]]
-            {
-                continue;
-            }
-            trades->event_time = evt->event_time;
-            trades->price = evt->price;
-            trades->qty = evt->qty;
-            trades->side = evt->side;
-            trades++;
-        }
-    }
-    md_queue_.publish(index, sz);
+    publishTradeSubscriptionResponse(symbol, coinbase::WebSocketChannel::MARKET_TRADES);
 }

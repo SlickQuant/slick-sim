@@ -4,6 +4,8 @@ add_library(market_data_publisher STATIC
     coinbase_publisher.cpp
     hyperliquid_publisher.cpp
     hyperliquid_l2_diff.cpp
+    coinbase_trade_encoder.cpp
+    hyperliquid_trade_encoder.cpp
 )
 
 target_include_directories(market_data_publisher PRIVATE

@@ -76,7 +76,6 @@ private:
     std::vector<FeedEvent> event_queue_;
 
     std::vector<MDLevel> level_update_buffer_;
-    std::vector<MDTrade> trade_update_buffer_;
 };
 
 }   // end namespace slick::sim::exch

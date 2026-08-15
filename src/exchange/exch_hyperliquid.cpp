@@ -89,6 +89,7 @@ Symbol* HyperliquidExchange::addSymbol(std::string_view coin) {
             std::make_unique<engine::FifoMatchingEngine>(response_queue_);
     }
     symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
+    symbol->smp_mode_ = smp_mode_;
     symbol->createOrderBook<OrderBookType::L2>();
     return symbol;
 }
@@ -184,7 +185,11 @@ void HyperliquidExchange::processL2Snapshot(const nlohmann::json& data) {
             if (qty <= 0) [[unlikely]] continue;
             auto order_id = utils::nextOrderId();
             if (symbol->matching_engine_) {
-                symbol->matching_engine_->match(side, order_id, price, qty, *symbol->order_book_, event_time_ns, 0);
+                auto trade_summaries = symbol->matching_engine_->match(
+                    side, order_id, price, qty, *symbol->order_book_, event_time_ns, 0);
+                for (const auto& summary : trade_summaries) {
+                    publishTradeSummary(symbol, summary);
+                }
             }
             if (qty > 0) {
                 symbol->order_book_->addOrder(order_id, book_side, price, qty, event_time_ns, 0, 0, true);
@@ -309,7 +314,11 @@ void HyperliquidExchange::applyPhantomLevelUpdate(
         qty_t qty = target_qty;
         auto order_id = utils::nextOrderId();
         if (symbol->matching_engine_) {
-            symbol->matching_engine_->match(side, order_id, price, qty, book, event_time_ns, 0);
+            auto trade_summaries = symbol->matching_engine_->match(
+                side, order_id, price, qty, book, event_time_ns, 0);
+            for (const auto& summary : trade_summaries) {
+                publishTradeSummary(symbol, summary);
+            }
         }
         if (qty > 0) {
             book.addOrder(order_id, book_side, price, qty, event_time_ns, 0, 0, true);
@@ -320,27 +329,7 @@ void HyperliquidExchange::applyPhantomLevelUpdate(
     // Existing level: already known non-crossing, so no need to re-match —
     // just adjust the phantom-only quantity (getMDLevelQty excludes the
     // user's own resting quantity at this price) toward the target.
-    auto md_level_qty = book.getMDLevelQty(price);
-    if (target_qty > md_level_qty) {
-        auto size = target_qty - md_level_qty;
-        book.addBookOrder(utils::nextOrderId(), book_side, price, size, event_time_ns, 0);
-    } else if (target_qty < md_level_qty) {
-        auto diff = md_level_qty - target_qty;
-        for (auto it = level->orders.rbegin(); it != level->orders.rend(); ++it) {
-            auto &order = *it;
-            if (symbol->findOrder(order.order_id)) {
-                // Belongs to the simulator's own user — never touch it.
-                continue;
-            }
-            auto to_reduce = std::min<qty_t>(diff, order.quantity);
-            book.modifyOrder(order.order_id, price, order.quantity - to_reduce,
-                              event_time_ns, order.priority, 0, diff == to_reduce);
-            diff -= to_reduce;
-            if (diff == 0 || book.getMDLevelQty(price) == 0) {
-                break;
-            }
-        }
-    }
+    reconcilePhantomQty(symbol, side, price, target_qty, event_time_ns, 0, true);
 }
 
 // Shared tail for both processL2Snapshot and processL2Diff: dispatches the
@@ -386,27 +375,52 @@ void HyperliquidExchange::processTradesEvent(const nlohmann::json& data) {
     auto *symbol = sym_mgr.getSymbol(coin);
     if (!symbol) return;
 
-    trade_update_buffer_.clear();
+    auto &book = *symbol->order_book_;
+
     for (const auto& trade : data) {
         std::string side_str = trade.value("side", "B");
         Side side = (side_str == "B") ? Side::BUY : Side::SELL;
         double px = std::stod(trade["px"].get<std::string>());
         double sz = std::stod(trade["sz"].get<std::string>());
         uint64_t time_ms = trade.value("time", uint64_t{0});
+        uint64_t event_time_ns = time_ms * utils::ONE_MILLISECOND_NS;
 
-        trade_update_buffer_.push_back(MDTrade{
-            .event_time = time_ms * utils::ONE_MILLISECOND_NS,
-            .seq_num    = 0,
-            .price      = to_price_t(px),
-            .qty        = to_qty_t(sz),
-            .flags      = UpdateFlags::F_NONE,
-            .side       = side,
-        });
+        auto price = to_price_t(px);
+        auto book_side = to_book_side(side);
+        auto order_id = utils::nextOrderId();
+
+        // The venue's print is replayed as an incoming aggressor order: it takes
+        // liquidity from the book exactly as the real taker did, filling any
+        // simulator order that was ahead of the phantom liquidity it swept. Only
+        // the resulting fills are published - the print itself is never relayed.
+        qty_t qty = to_qty_t(sz);
+        if (!symbol->matching_engine_) {
+            continue;
+        }
+        auto trade_summaries = symbol->matching_engine_->match(
+            side, order_id, price, qty, book, event_time_ns, 0);
+
+        if (qty > 0) {
+            // Treated as an aggressor order, so the unfilled remainder rests. It
+            // cannot cross: a remainder exists precisely because nothing was
+            // still crossable at this limit.
+            book.addOrder(order_id, book_side, price, qty, event_time_ns, 0, 0, true);
+        }
+
+        for (const auto& summary : trade_summaries) {
+            // The venue will report the same reduction again in its level update
+            // for this trade; credit it so that update does not remove it twice.
+            symbol->creditTradedQty(opposite_side(side), summary.price,
+                                    summary.phantom_qty, event_time_ns);
+            publishTradeSummary(symbol, summary);
+        }
     }
 
-    if (!trade_update_buffer_.empty()) {
-        publishMDTrades(coin.c_str(), trade_update_buffer_);
-    }
+    // The l2Book/l2 channels are snapshot-driven here, so republish the book to
+    // show the liquidity these trades consumed.
+    book.populateL2Snapshot(md_queue_);
+    symbol->md_level_update_cache_.clear();
+    symbol->md_order_update_cache_.clear();
 }
 
 void HyperliquidExchange::handleMdSubscription(const Request &request) {
@@ -448,8 +462,15 @@ void HyperliquidExchange::handleMdSubscription(const Request &request) {
                     live_feed->addCoin(coin);
                 }
             }
-            // Mark as pending — snapshot will arrive on the next l2Book WS message
-            pending_md_subscription_[static_cast<size_t>(channel)].emplace(symbol);
+            // Mark as pending — snapshot will arrive on the next l2Book WS message.
+            // The trades channel has no upstream snapshot to wait for; it is served
+            // from the tape history below, which also delivers the subscription
+            // confirmation the publisher only emits on a SUB_RESPONSE.
+            if (channel == HyperliquidChannel::TRADES) {
+                publishTradeSubscriptionResponse(symbol, static_cast<uint8_t>(channel));
+            } else {
+                pending_md_subscription_[static_cast<size_t>(channel)].emplace(symbol);
+            }
         } else {
             auto &pending = pending_md_subscription_[static_cast<size_t>(channel)];
             if (pending.find(symbol) == pending.end()) {
@@ -457,6 +478,8 @@ void HyperliquidExchange::handleMdSubscription(const Request &request) {
                 if (channel == HyperliquidChannel::L2_BOOK || channel == HyperliquidChannel::L2) {
                     symbol->order_book_->populateL2SubscriptionResponse(
                         md_queue_, static_cast<uint8_t>(channel));
+                } else if (channel == HyperliquidChannel::TRADES) {
+                    publishTradeSubscriptionResponse(symbol, static_cast<uint8_t>(channel));
                 }
             }
         }
@@ -465,6 +488,8 @@ void HyperliquidExchange::handleMdSubscription(const Request &request) {
         if (channel == HyperliquidChannel::L2_BOOK || channel == HyperliquidChannel::L2) {
             symbol->order_book_->populateL2SubscriptionResponse(
                 md_queue_, static_cast<uint8_t>(channel));
+        } else if (channel == HyperliquidChannel::TRADES) {
+            publishTradeSubscriptionResponse(symbol, static_cast<uint8_t>(channel));
         }
     }
 }
