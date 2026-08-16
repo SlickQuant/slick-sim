@@ -52,5 +52,7 @@ var searchData=
   ['cum_5fqty_49',['cum_qty',['../structslick_1_1sim_1_1OrderResponse.html#a090d8fcc567eef4a55deef7b43d1f247',1,'slick::sim::OrderResponse']]],
   ['cum_5fqty_5fdouble_50',['cum_qty_double',['../structslick_1_1sim_1_1Order.html#aec5df094af69fd9e546bfa3d9025d06c',1,'slick::sim::Order']]],
   ['cum_5fquantity_51',['cum_quantity',['../structslick_1_1sim_1_1Order.html#aceb8396c7ec3a3024923f755ea13aa6b',1,'slick::sim::Order']]],
-  ['cxlrejectreason_52',['CxlRejectReason',['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562',1,'slick::sim']]]
+  ['cum_5fvalue_52',['cum_value',['../structslick_1_1sim_1_1Order.html#a1b31ca4e5b7ca3c59509af04b6d4cfa8',1,'slick::sim::Order']]],
+  ['cum_5fvalue_5ft_53',['cum_value_t',['../namespaceslick_1_1sim.html#ac68d41e163c0546bf5d9c256de19b94a',1,'slick::sim']]],
+  ['cxlrejectreason_54',['CxlRejectReason',['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562',1,'slick::sim']]]
 ];

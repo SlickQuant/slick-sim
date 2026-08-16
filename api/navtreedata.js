@@ -70,8 +70,8 @@ var NAVTREEINDEX =
 "message__parser_8hpp.html",
 "namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527",
 "structslick_1_1sim_1_1MDOrder.html#a0473161d267bc40daeb70eca7c7ab665",
-"structslick_1_1sim_1_1TradeSummary.html#a4a0c798e67f9df5c374348778aa2f30a",
-"types_8hpp.html#a7ffabc39614e251a835823f9db68d22e"
+"structslick_1_1sim_1_1TradeSummary.html",
+"types_8hpp.html#a4e2c44f2b0c7bd4a4933ac1a5ef128ad"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -12,5 +12,6 @@ var searchData=
   ['created_5ftime_9',['created_time',['../structslick_1_1sim_1_1Order.html#a43fe52822f3e3c56a820612b0ad6f8d7',1,'slick::sim::Order']]],
   ['creation_5ftime_10',['creation_time',['../structslick_1_1sim_1_1OrderResponse.html#a2eb64c74f3872fcb693a6964071bc4db',1,'slick::sim::OrderResponse']]],
   ['cum_5fqty_11',['cum_qty',['../structslick_1_1sim_1_1OrderResponse.html#a090d8fcc567eef4a55deef7b43d1f247',1,'slick::sim::OrderResponse']]],
-  ['cum_5fquantity_12',['cum_quantity',['../structslick_1_1sim_1_1Order.html#aceb8396c7ec3a3024923f755ea13aa6b',1,'slick::sim::Order']]]
+  ['cum_5fquantity_12',['cum_quantity',['../structslick_1_1sim_1_1Order.html#aceb8396c7ec3a3024923f755ea13aa6b',1,'slick::sim::Order']]],
+  ['cum_5fvalue_13',['cum_value',['../structslick_1_1sim_1_1Order.html#a1b31ca4e5b7ca3c59509af04b6d4cfa8',1,'slick::sim::Order']]]
 ];

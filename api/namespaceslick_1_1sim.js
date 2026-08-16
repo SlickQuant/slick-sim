@@ -33,6 +33,7 @@ var namespaceslick_1_1sim =
     [ "Trade", "structslick_1_1sim_1_1Trade.html", "structslick_1_1sim_1_1Trade" ],
     [ "TradeSummary", "structslick_1_1sim_1_1TradeSummary.html", "structslick_1_1sim_1_1TradeSummary" ],
     [ "TradeSummaryInfo", "structslick_1_1sim_1_1TradeSummaryInfo.html", "structslick_1_1sim_1_1TradeSummaryInfo" ],
+    [ "cum_value_t", "namespaceslick_1_1sim.html#ac68d41e163c0546bf5d9c256de19b94a", null ],
     [ "IOrderBookObserver", "namespaceslick_1_1sim.html#a9c1f8072ea547439852c1b28bc7be062", null ],
     [ "OrderBookL3", "namespaceslick_1_1sim.html#af006c2339d3b3d364d9f154eaf479bac", null ],
     [ "OrderUpdate", "namespaceslick_1_1sim.html#a09bac05b4071391ef4bda98f0a1ca8ca", null ],

@@ -309,11 +309,11 @@ Protected Attributes</h2></td></tr>
 <p>Resolves an order's <code>user_id</code> to the integer identity self-match prevention compares. </p>
 <p>Ids are assigned on first sight and stable for the life of the process; an empty <code>user_id</code> yields -1, which <code>isSelfMatch</code> treats as "no identity" and never matches, so an unauthenticated client is left out of SMP rather than being lumped in with every other one. </p>
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00131">131</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00137">137</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00116">client_ids_</a>, <a class="el" href="exchange_8hpp_source.html#l00117">next_client_id_</a>, and <a class="el" href="messages_8hpp_source.html#l00233">slick::sim::AddOrderMessage::user_id</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00149">handleNewOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00155">handleNewOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -341,9 +341,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00273">273</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00278">278</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00271">slick::sim::Request::cancel_order</a>, <a class="el" href="messages_8hpp_source.html#l00256">slick::sim::CancelOrderMessage::client_order_id</a>, <a class="el" href="messages_8hpp_source.html#l00255">slick::sim::CancelOrderMessage::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a51c4098970752e0185a5540f3d3f1e8e">slick::sim::PENDING_CANCEL</a>, <a class="el" href="exchange_8cpp_source.html#l00363">rejectCancelOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00643">sendOrderCancelPending()</a>, <a class="el" href="common_2order_8hpp_source.html#l00288">slick::sim::Order::status</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a5793360afbd515bc6b9e95c0a8c8f061">slick::sim::UNKNOWN_CONTRACT</a>, and <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a738e75a13331edaf0a76e431740bf071">slick::sim::UNKNOWN_ORDER</a>.</p>
+<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00271">slick::sim::Request::cancel_order</a>, <a class="el" href="messages_8hpp_source.html#l00256">slick::sim::CancelOrderMessage::client_order_id</a>, <a class="el" href="messages_8hpp_source.html#l00255">slick::sim::CancelOrderMessage::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a51c4098970752e0185a5540f3d3f1e8e">slick::sim::PENDING_CANCEL</a>, <a class="el" href="exchange_8cpp_source.html#l00368">rejectCancelOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00648">sendOrderCancelPending()</a>, <a class="el" href="common_2order_8hpp_source.html#l00288">slick::sim::Order::status</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a5793360afbd515bc6b9e95c0a8c8f061">slick::sim::UNKNOWN_CONTRACT</a>, and <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a738e75a13331edaf0a76e431740bf071">slick::sim::UNKNOWN_ORDER</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00098">processRequest()</a>.</p>
 
@@ -409,6 +409,8 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="exchange_8hpp_source.html#l00094">94</a> of file <a class="el" href="exchange_8hpp_source.html">exchange.hpp</a>.</p>
 
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00098">processRequest()</a>.</p>
+
 </div>
 </div>
 <a id="ab4e7bfdcb41f0f06ff91a3f6faf3af57" name="ab4e7bfdcb41f0f06ff91a3f6faf3af57"></a>
@@ -435,9 +437,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00216">216</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00221">221</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00248">slick::sim::ModifyOrderMessage::client_order_id</a>, <a class="el" href="timestamp_8hpp_source.html#l00091">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::last_update_time</a>, <a class="el" href="messages_8hpp_source.html#l00270">slick::sim::Request::modify_order</a>, <a class="el" href="messages_8hpp_source.html#l00249">slick::sim::ModifyOrderMessage::new_price</a>, <a class="el" href="messages_8hpp_source.html#l00250">slick::sim::ModifyOrderMessage::new_qty</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337ab50339a10e1de285ac99d4c3990b8693">slick::sim::NONE</a>, <a class="el" href="messages_8hpp_source.html#l00247">slick::sim::ModifyOrderMessage::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a0b9710bd14da215c94a5cac5c2cb3bc4">slick::sim::PENDING_REPLACE</a>, <a class="el" href="exchange_8cpp_source.html#l00402">publishLevelUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00430">publishTradeSummary()</a>, <a class="el" href="exchange_8cpp_source.html#l00338">rejectModifyOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00619">sendOrderReplacePending()</a>, <a class="el" href="common_2order_8hpp_source.html#l00288">slick::sim::Order::status</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a5793360afbd515bc6b9e95c0a8c8f061">slick::sim::UNKNOWN_CONTRACT</a>, and <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a738e75a13331edaf0a76e431740bf071">slick::sim::UNKNOWN_ORDER</a>.</p>
+<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00248">slick::sim::ModifyOrderMessage::client_order_id</a>, <a class="el" href="timestamp_8hpp_source.html#l00091">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="common_2order_8hpp_source.html#l00309">slick::sim::Order::last_update_time</a>, <a class="el" href="messages_8hpp_source.html#l00270">slick::sim::Request::modify_order</a>, <a class="el" href="messages_8hpp_source.html#l00249">slick::sim::ModifyOrderMessage::new_price</a>, <a class="el" href="messages_8hpp_source.html#l00250">slick::sim::ModifyOrderMessage::new_qty</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337ab50339a10e1de285ac99d4c3990b8693">slick::sim::NONE</a>, <a class="el" href="messages_8hpp_source.html#l00247">slick::sim::ModifyOrderMessage::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a0b9710bd14da215c94a5cac5c2cb3bc4">slick::sim::PENDING_REPLACE</a>, <a class="el" href="exchange_8cpp_source.html#l00407">publishLevelUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00435">publishTradeSummary()</a>, <a class="el" href="exchange_8cpp_source.html#l00343">rejectModifyOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00624">sendOrderReplacePending()</a>, <a class="el" href="common_2order_8hpp_source.html#l00288">slick::sim::Order::status</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a5793360afbd515bc6b9e95c0a8c8f061">slick::sim::UNKNOWN_CONTRACT</a>, and <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a738e75a13331edaf0a76e431740bf071">slick::sim::UNKNOWN_ORDER</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00098">processRequest()</a>.</p>
 
@@ -467,9 +469,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00149">149</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00155">155</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00269">slick::sim::Request::add_order</a>, <a class="el" href="common_2order_8hpp_source.html#l00306">slick::sim::Order::client_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00279">slick::sim::Order::client_order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a405456cc2b00b23279630ad094057290">slick::sim::CLIENT_ORDER_ID_ALREADY_EXISTS</a>, <a class="el" href="exchange_8cpp_source.html#l00131">clientIdFor()</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a4564c4e6278be5298db164b983c81709">slick::sim::FOK_CANNOT_FILL</a>, <a class="el" href="common_2order_8hpp_source.html#l00297">slick::sim::Order::leaves_quantity</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337ab50339a10e1de285ac99d4c3990b8693">slick::sim::NONE</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a49640e7c24f04ed55fb37e6de608018f">slick::sim::PENDING_NEW</a>, <a class="el" href="common_2order_8hpp_source.html#l00295">slick::sim::Order::price</a>, <a class="el" href="exchange_8cpp_source.html#l00402">publishLevelUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00430">publishTradeSummary()</a>, <a class="el" href="common_2order_8hpp_source.html#l00296">slick::sim::Order::quantity</a>, <a class="el" href="exchange_8cpp_source.html#l00317">rejectNewOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00594">sendOrderNewPending()</a>, <a class="el" href="common_2order_8hpp_source.html#l00286">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00288">slick::sim::Order::status</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00289">slick::sim::Order::time_in_force</a>, <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>, <a class="el" href="common_2order_8hpp_source.html#l00287">slick::sim::Order::type</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a5793360afbd515bc6b9e95c0a8c8f061">slick::sim::UNKNOWN_CONTRACT</a>, and <a class="el" href="common_2order_8hpp_source.html#l00278">slick::sim::Order::user_id</a>.</p>
+<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00269">slick::sim::Request::add_order</a>, <a class="el" href="common_2order_8hpp_source.html#l00307">slick::sim::Order::client_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00279">slick::sim::Order::client_order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a405456cc2b00b23279630ad094057290">slick::sim::CLIENT_ORDER_ID_ALREADY_EXISTS</a>, <a class="el" href="exchange_8cpp_source.html#l00137">clientIdFor()</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a4564c4e6278be5298db164b983c81709">slick::sim::FOK_CANNOT_FILL</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337ab50339a10e1de285ac99d4c3990b8693">slick::sim::NONE</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a49640e7c24f04ed55fb37e6de608018f">slick::sim::PENDING_NEW</a>, <a class="el" href="common_2order_8hpp_source.html#l00295">slick::sim::Order::price</a>, <a class="el" href="exchange_8cpp_source.html#l00407">publishLevelUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00435">publishTradeSummary()</a>, <a class="el" href="exchange_8cpp_source.html#l00322">rejectNewOrderRequest()</a>, <a class="el" href="common_2order_8hpp_source.html#l00317">slick::sim::Order::resetFillAccounting()</a>, <a class="el" href="exchange_8cpp_source.html#l00599">sendOrderNewPending()</a>, <a class="el" href="common_2order_8hpp_source.html#l00286">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00288">slick::sim::Order::status</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00289">slick::sim::Order::time_in_force</a>, <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>, <a class="el" href="common_2order_8hpp_source.html#l00287">slick::sim::Order::type</a>, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a5793360afbd515bc6b9e95c0a8c8f061">slick::sim::UNKNOWN_CONTRACT</a>, and <a class="el" href="common_2order_8hpp_source.html#l00278">slick::sim::Order::user_id</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00098">processRequest()</a>.</p>
 
@@ -534,7 +536,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00111">next_trade_id_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00218">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot()</a>, and <a class="el" href="exchange_8cpp_source.html#l00430">publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00218">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot()</a>, and <a class="el" href="exchange_8cpp_source.html#l00435">publishTradeSummary()</a>.</p>
 
 </div>
 </div>
@@ -563,7 +565,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00098">98</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8cpp_source.html#l00273">handleCancelOrderRequest()</a>, <a class="el" href="exchange_8hpp_source.html#l00093">handleMdSubscription()</a>, <a class="el" href="exchange_8cpp_source.html#l00216">handleModifyOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00149">handleNewOrderRequest()</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685ae81626addcdb57640eb34d808e542dd8">slick::sim::MD_SUBSCRIPTION</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a4267df522115e504279015e5c53247e9">slick::sim::NEW_ORDER_SINGLE</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685ac8d258980037b8d17b2a51eca46554e2">slick::sim::ORDER_CANCEL_REQUEST</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a289cfb895383cca61d3d12b2c61cd8cb">slick::sim::ORDER_REPLACE_REQUEST</a>, <a class="el" href="exchange_8hpp_source.html#l00106">order_request_cursor_</a>, and <a class="el" href="exchange_8hpp_source.html#l00099">request_queue_</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8cpp_source.html#l00278">handleCancelOrderRequest()</a>, <a class="el" href="exchange_8hpp_source.html#l00093">handleMdSubscription()</a>, <a class="el" href="exchange_8hpp_source.html#l00094">handleMdUnsubscription()</a>, <a class="el" href="exchange_8cpp_source.html#l00221">handleModifyOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00155">handleNewOrderRequest()</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685ae81626addcdb57640eb34d808e542dd8">slick::sim::MD_SUBSCRIPTION</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685adda7d6383ed7ec7cb331af01ab6fd553">slick::sim::MD_UNSUBSCRIPTION</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a4267df522115e504279015e5c53247e9">slick::sim::NEW_ORDER_SINGLE</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685ac8d258980037b8d17b2a51eca46554e2">slick::sim::ORDER_CANCEL_REQUEST</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a289cfb895383cca61d3d12b2c61cd8cb">slick::sim::ORDER_REPLACE_REQUEST</a>, <a class="el" href="exchange_8hpp_source.html#l00106">order_request_cursor_</a>, and <a class="el" href="exchange_8hpp_source.html#l00099">request_queue_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00049">start()</a>, and <a class="el" href="exch__coinbase_8cpp_source.html#l00054">slick::sim::exch::CoinbaseExchange::start()</a>.</p>
 
@@ -603,11 +605,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00402">402</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00407">407</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00014">slick::sim::LEVEL</a>, <a class="el" href="exchange_8hpp_source.html#l00101">md_queue_</a>, <a class="el" href="market__data_8hpp_source.html#l00065">slick::sim::MDLevelUpdate::num_level_update</a>, <a class="el" href="market__data_8hpp_source.html#l00086">slick::sim::MarketDataUpdate::type</a>, and <a class="el" href="exchange_8hpp_source.html#l00098">venue_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00216">handleModifyOrderRequest()</a>, and <a class="el" href="exchange_8cpp_source.html#l00149">handleNewOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00221">handleModifyOrderRequest()</a>, and <a class="el" href="exchange_8cpp_source.html#l00155">handleNewOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -651,7 +653,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00387">387</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00392">392</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00013">slick::sim::BOOK</a>, <a class="el" href="market__data_8hpp_source.html#l00087">slick::sim::MarketDataUpdate::data</a>, <a class="el" href="exchange_8hpp_source.html#l00101">md_queue_</a>, <a class="el" href="classslick_1_1sim_1_1OrderBook.html#abf00ae9f7ae85d37f4dc222161d40f3b">slick::sim::OrderBook::populateMDBookUpdate()</a>, <a class="el" href="market__data_8hpp_source.html#l00084">slick::sim::MarketDataUpdate::symbol</a>, <a class="el" href="order__book_8hpp_source.html#l00062">slick::sim::OrderBook::symbolName()</a>, <a class="el" href="market__data_8hpp_source.html#l00086">slick::sim::MarketDataUpdate::type</a>, <a class="el" href="market__data_8hpp_source.html#l00060">slick::sim::MDBookUpdate::update_index</a>, <a class="el" href="market__data_8hpp_source.html#l00085">slick::sim::MarketDataUpdate::venue</a>, and <a class="el" href="exchange_8hpp_source.html#l00098">venue_</a>.</p>
 
@@ -691,7 +693,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00416">416</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00421">421</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00101">md_queue_</a>, <a class="el" href="market__data_8hpp_source.html#l00079">slick::sim::MDOrderUpdate::num_orders</a>, <a class="el" href="market__data_8hpp_source.html#l00015">slick::sim::ORDER</a>, <a class="el" href="market__data_8hpp_source.html#l00086">slick::sim::MarketDataUpdate::type</a>, and <a class="el" href="exchange_8hpp_source.html#l00098">venue_</a>.</p>
 
@@ -734,7 +736,7 @@ Protected Attributes</h2></td></tr>
 <p>Frames the SUB_RESPONSE for a venue's trade channel from the symbol's recent-trade history, split against the book snapshot the subscriber receives with it. </p>
 <p>See <a class="el" href="structslick_1_1sim_1_1MDTradeSnapshotResponse.html" title="Payload of a SUB_RESPONSE for a venue&#39;s trade channel.">MDTradeSnapshotResponse</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00469">469</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00474">474</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00097">slick::sim::MDSubscriptionResponse::channel</a>, <a class="el" href="market__data_8hpp_source.html#l00036">slick::sim::F_NOT_IN_BOOK</a>, <a class="el" href="exchange_8hpp_source.html#l00101">md_queue_</a>, <a class="el" href="market__data_8hpp_source.html#l00091">slick::sim::NONE</a>, <a class="el" href="symbol_8hpp_source.html#l00046">slick::sim::exch::Symbol::order_book_</a>, <a class="el" href="market__data_8hpp_source.html#l00025">slick::sim::SUB_RESPONSE</a>, <a class="el" href="symbol_8hpp_source.html#l00044">slick::sim::exch::Symbol::symbol_</a>, <a class="el" href="symbol_8hpp_source.html#l00052">slick::sim::exch::Symbol::trade_history_</a>, <a class="el" href="market__data_8hpp_source.html#l00138">slick::sim::MDTradeSnapshotResponse::trades</a>, and <a class="el" href="exchange_8hpp_source.html#l00098">venue_</a>.</p>
 
@@ -779,11 +781,11 @@ Protected Attributes</h2></td></tr>
 <p>Publishes one trade onto the instrument's public tape and records it in the symbol's recent-trade history, which serves the subscribe snapshot. </p>
 <p>Every trade the simulator prints goes through here. </p>
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00430">430</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00435">435</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="messages_8hpp_source.html#l00328">slick::sim::TradeSummaryInfo::aggressor_side</a>, <a class="el" href="market__data_8hpp_source.html#l00029">slick::sim::F_NONE</a>, <a class="el" href="symbol_8hpp_source.html#l00042">slick::sim::exch::Symbol::id_</a>, <a class="el" href="exchange_8hpp_source.html#l00101">md_queue_</a>, <a class="el" href="exchange_8hpp_source.html#l00084">nextVenueTradeId()</a>, <a class="el" href="messages_8hpp_source.html#l00336">slick::sim::TradeSummaryInfo::num_orders</a>, <a class="el" href="messages_8hpp_source.html#l00329">slick::sim::TradeSummaryInfo::price</a>, <a class="el" href="messages_8hpp_source.html#l00330">slick::sim::TradeSummaryInfo::qty</a>, <a class="el" href="symbol_8hpp_source.html#l00155">slick::sim::exch::Symbol::recordTrade()</a>, <a class="el" href="symbol_8hpp_source.html#l00044">slick::sim::exch::Symbol::symbol_</a>, <a class="el" href="messages_8hpp_source.html#l00313">slick::sim::TradeSummary::timestamp</a>, <a class="el" href="messages_8hpp_source.html#l00326">slick::sim::TradeSummaryInfo::timestamp</a>, <a class="el" href="market__data_8hpp_source.html#l00109">slick::sim::MDTrade::trade_id</a>, <a class="el" href="market__data_8hpp_source.html#l00019">slick::sim::TRADE_SUMMARY</a>, <a class="el" href="messages_8hpp_source.html#l00337">slick::sim::TradeSummaryInfo::Trades</a>, <a class="el" href="market__data_8hpp_source.html#l00086">slick::sim::MarketDataUpdate::type</a>, and <a class="el" href="exchange_8hpp_source.html#l00098">venue_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00216">handleModifyOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00149">handleNewOrderRequest()</a>, and <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00099">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00221">handleModifyOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00155">handleNewOrderRequest()</a>, and <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00099">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>.</p>
 
 </div>
 </div>
@@ -854,7 +856,7 @@ Protected Attributes</h2></td></tr>
 <p>Adjusts the phantom (market-mirroring) quantity at an existing (side, price) level toward target_qty, leaving the simulator's own orders alone. </p>
 <p>Offsets any reduction a trade print already applied at that price so the same quantity is not removed twice. </p>
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00538">538</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00543">543</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00184">slick::sim::exch::Symbol::findOrder()</a>, <a class="el" href="utils_2order_8hpp_source.html#l00008">slick::sim::utils::nextOrderId()</a>, <a class="el" href="symbol_8hpp_source.html#l00046">slick::sim::exch::Symbol::order_book_</a>, <a class="el" href="symbol_8hpp_source.html#l00126">slick::sim::exch::Symbol::takeTradedQty()</a>, and <a class="el" href="order__book_8hpp_source.html#l00037">slick::sim::to_book_side()</a>.</p>
 
@@ -894,11 +896,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00363">363</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00368">368</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00271">slick::sim::Request::cancel_order</a>, <a class="el" href="timestamp_8hpp_source.html#l00091">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="types_8hpp_source.html#l00015">slick::sim::NULL_PRICE</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a59b228d9fec9b88833bfe5d812ed8ad4">slick::sim::REJECT</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a9cc8ad3d99798c6726d4af0bd14e49d2">slick::sim::REJECTED</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, and <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>.</p>
+<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00271">slick::sim::Request::cancel_order</a>, <a class="el" href="timestamp_8hpp_source.html#l00091">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="types_8hpp_source.html#l00017">slick::sim::NULL_PRICE</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a59b228d9fec9b88833bfe5d812ed8ad4">slick::sim::REJECT</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a9cc8ad3d99798c6726d4af0bd14e49d2">slick::sim::REJECTED</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, and <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00273">handleCancelOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00278">handleCancelOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -936,7 +938,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00304">304</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00309">309</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00097">slick::sim::MDSubscriptionResponse::channel</a>, <a class="el" href="messages_8hpp_source.html#l00260">slick::sim::MDSubscriptionMessage::channel</a>, <a class="el" href="exchange_8hpp_source.html#l00101">md_queue_</a>, <a class="el" href="messages_8hpp_source.html#l00272">slick::sim::Request::md_subscription</a>, <a class="el" href="market__data_8hpp_source.html#l00025">slick::sim::SUB_RESPONSE</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, <a class="el" href="market__data_8hpp_source.html#l00086">slick::sim::MarketDataUpdate::type</a>, and <a class="el" href="exchange_8hpp_source.html#l00098">venue_</a>.</p>
 
@@ -976,11 +978,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00338">338</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00343">343</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="timestamp_8hpp_source.html#l00091">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="messages_8hpp_source.html#l00270">slick::sim::Request::modify_order</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a59b228d9fec9b88833bfe5d812ed8ad4">slick::sim::REJECT</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a9cc8ad3d99798c6726d4af0bd14e49d2">slick::sim::REJECTED</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, and <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00216">handleModifyOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00221">handleModifyOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -1018,11 +1020,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00317">317</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00322">322</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="messages_8hpp_source.html#l00269">slick::sim::Request::add_order</a>, <a class="el" href="messages_8hpp_source.html#l00234">slick::sim::AddOrderMessage::client_order_id</a>, <a class="el" href="timestamp_8hpp_source.html#l00091">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="messages_8hpp_source.html#l00238">slick::sim::AddOrderMessage::price</a>, <a class="el" href="messages_8hpp_source.html#l00239">slick::sim::AddOrderMessage::qty</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a59b228d9fec9b88833bfe5d812ed8ad4">slick::sim::REJECT</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a9cc8ad3d99798c6726d4af0bd14e49d2">slick::sim::REJECTED</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="messages_8hpp_source.html#l00266">slick::sim::Request::symbol</a>, <a class="el" href="messages_8hpp_source.html#l00265">slick::sim::Request::time_stamp</a>, and <a class="el" href="messages_8hpp_source.html#l00233">slick::sim::AddOrderMessage::user_id</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00149">handleNewOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00155">handleNewOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -1118,11 +1120,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00643">643</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00648">648</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00298">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00279">slick::sim::Order::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00307">slick::sim::Order::created_time</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a1264dfbe55b728eaa5189492948c630c">slick::sim::EXECUTION_REPORT</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::Order::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00301">slick::sim::Order::last_fill_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00297">slick::sim::Order::leaves_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00280">slick::sim::Order::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a51c4098970752e0185a5540f3d3f1e8e">slick::sim::PENDING_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00291">slick::sim::Order::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00295">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00296">slick::sim::Order::quantity</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="common_2order_8hpp_source.html#l00286">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00287">slick::sim::Order::type</a>, and <a class="el" href="common_2order_8hpp_source.html#l00278">slick::sim::Order::user_id</a>.</p>
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00298">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00279">slick::sim::Order::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::created_time</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a1264dfbe55b728eaa5189492948c630c">slick::sim::EXECUTION_REPORT</a>, <a class="el" href="common_2order_8hpp_source.html#l00301">slick::sim::Order::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00302">slick::sim::Order::last_fill_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00297">slick::sim::Order::leaves_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00280">slick::sim::Order::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a51c4098970752e0185a5540f3d3f1e8e">slick::sim::PENDING_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00291">slick::sim::Order::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00295">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00296">slick::sim::Order::quantity</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="common_2order_8hpp_source.html#l00286">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00287">slick::sim::Order::type</a>, and <a class="el" href="common_2order_8hpp_source.html#l00278">slick::sim::Order::user_id</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00273">handleCancelOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00278">handleCancelOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -1160,11 +1162,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00594">594</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00599">599</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00298">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00279">slick::sim::Order::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00307">slick::sim::Order::created_time</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a1264dfbe55b728eaa5189492948c630c">slick::sim::EXECUTION_REPORT</a>, <a class="el" href="common_2order_8hpp_source.html#l00297">slick::sim::Order::leaves_quantity</a>, <a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a24d459a81449d7210c8f9a86c2913034">slick::sim::NEW</a>, <a class="el" href="common_2order_8hpp_source.html#l00280">slick::sim::Order::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a49640e7c24f04ed55fb37e6de608018f">slick::sim::PENDING_NEW</a>, <a class="el" href="common_2order_8hpp_source.html#l00291">slick::sim::Order::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00295">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00296">slick::sim::Order::quantity</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="common_2order_8hpp_source.html#l00286">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00287">slick::sim::Order::type</a>, and <a class="el" href="common_2order_8hpp_source.html#l00278">slick::sim::Order::user_id</a>.</p>
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00298">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00279">slick::sim::Order::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::created_time</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a1264dfbe55b728eaa5189492948c630c">slick::sim::EXECUTION_REPORT</a>, <a class="el" href="common_2order_8hpp_source.html#l00297">slick::sim::Order::leaves_quantity</a>, <a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a24d459a81449d7210c8f9a86c2913034">slick::sim::NEW</a>, <a class="el" href="common_2order_8hpp_source.html#l00280">slick::sim::Order::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a49640e7c24f04ed55fb37e6de608018f">slick::sim::PENDING_NEW</a>, <a class="el" href="common_2order_8hpp_source.html#l00291">slick::sim::Order::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00295">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00296">slick::sim::Order::quantity</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="common_2order_8hpp_source.html#l00286">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00287">slick::sim::Order::type</a>, and <a class="el" href="common_2order_8hpp_source.html#l00278">slick::sim::Order::user_id</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00149">handleNewOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00155">handleNewOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -1202,11 +1204,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00619">619</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange_8cpp_source.html#l00624">624</a> of file <a class="el" href="exchange_8cpp_source.html">exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00298">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00279">slick::sim::Order::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00307">slick::sim::Order::created_time</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a1264dfbe55b728eaa5189492948c630c">slick::sim::EXECUTION_REPORT</a>, <a class="el" href="common_2order_8hpp_source.html#l00297">slick::sim::Order::leaves_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00280">slick::sim::Order::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a0b9710bd14da215c94a5cac5c2cb3bc4">slick::sim::PENDING_REPLACE</a>, <a class="el" href="common_2order_8hpp_source.html#l00291">slick::sim::Order::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00295">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00296">slick::sim::Order::quantity</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="common_2order_8hpp_source.html#l00286">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00287">slick::sim::Order::type</a>, and <a class="el" href="common_2order_8hpp_source.html#l00278">slick::sim::Order::user_id</a>.</p>
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00298">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00279">slick::sim::Order::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::created_time</a>, <a class="el" href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a1264dfbe55b728eaa5189492948c630c">slick::sim::EXECUTION_REPORT</a>, <a class="el" href="common_2order_8hpp_source.html#l00297">slick::sim::Order::leaves_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00280">slick::sim::Order::order_id</a>, <a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a0b9710bd14da215c94a5cac5c2cb3bc4">slick::sim::PENDING_REPLACE</a>, <a class="el" href="common_2order_8hpp_source.html#l00291">slick::sim::Order::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00295">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00296">slick::sim::Order::quantity</a>, <a class="el" href="exchange_8hpp_source.html#l00100">response_queue_</a>, <a class="el" href="common_2order_8hpp_source.html#l00286">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00281">slick::sim::Order::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00287">slick::sim::Order::type</a>, and <a class="el" href="common_2order_8hpp_source.html#l00278">slick::sim::Order::user_id</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00216">handleModifyOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00221">handleModifyOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -1295,7 +1297,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="exchange_8hpp_source.html#l00116">116</a> of file <a class="el" href="exchange_8hpp_source.html">exchange.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00131">clientIdFor()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00137">clientIdFor()</a>.</p>
 
 </div>
 </div>
@@ -1423,7 +1425,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="exchange_8hpp_source.html#l00101">101</a> of file <a class="el" href="exchange_8hpp_source.html">exchange.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exch__coinbase_8cpp_source.html#l00023">slick::sim::exch::CoinbaseExchange::CoinbaseExchange()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00024">slick::sim::exch::HyperliquidExchange::HyperliquidExchange()</a>, <a class="el" href="exch__coinbase_8cpp_source.html#l00104">slick::sim::exch::CoinbaseExchange::handleMdSubscription()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00426">slick::sim::exch::HyperliquidExchange::handleMdSubscription()</a>, <a class="el" href="exchange_8hpp_source.html#l00042">md_queue()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00099">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exchange_8cpp_source.html#l00402">publishLevelUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00387">publishMDBookUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00416">publishMDOrderUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00469">publishTradeSubscriptionResponse()</a>, <a class="el" href="exchange_8cpp_source.html#l00430">publishTradeSummary()</a>, and <a class="el" href="exchange_8cpp_source.html#l00304">rejectMdSubscription()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exch__coinbase_8cpp_source.html#l00023">slick::sim::exch::CoinbaseExchange::CoinbaseExchange()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00024">slick::sim::exch::HyperliquidExchange::HyperliquidExchange()</a>, <a class="el" href="exch__coinbase_8cpp_source.html#l00104">slick::sim::exch::CoinbaseExchange::handleMdSubscription()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00426">slick::sim::exch::HyperliquidExchange::handleMdSubscription()</a>, <a class="el" href="exchange_8hpp_source.html#l00042">md_queue()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00099">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exchange_8cpp_source.html#l00407">publishLevelUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00392">publishMDBookUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00421">publishMDOrderUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00474">publishTradeSubscriptionResponse()</a>, <a class="el" href="exchange_8cpp_source.html#l00435">publishTradeSummary()</a>, and <a class="el" href="exchange_8cpp_source.html#l00309">rejectMdSubscription()</a>.</p>
 
 </div>
 </div>
@@ -1475,7 +1477,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="exchange_8hpp_source.html#l00117">117</a> of file <a class="el" href="exchange_8hpp_source.html">exchange.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00131">clientIdFor()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00137">clientIdFor()</a>.</p>
 
 </div>
 </div>
@@ -1605,7 +1607,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="exchange_8hpp_source.html#l00100">100</a> of file <a class="el" href="exchange_8hpp_source.html">exchange.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exch__coinbase_8cpp_source.html#l00023">slick::sim::exch::CoinbaseExchange::CoinbaseExchange()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00024">slick::sim::exch::HyperliquidExchange::HyperliquidExchange()</a>, <a class="el" href="exchange_8cpp_source.html#l00363">rejectCancelOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00338">rejectModifyOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00317">rejectNewOrderRequest()</a>, <a class="el" href="exchange_8hpp_source.html#l00039">response_queue()</a>, <a class="el" href="exchange_8cpp_source.html#l00643">sendOrderCancelPending()</a>, <a class="el" href="exchange_8cpp_source.html#l00594">sendOrderNewPending()</a>, and <a class="el" href="exchange_8cpp_source.html#l00619">sendOrderReplacePending()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exch__coinbase_8cpp_source.html#l00023">slick::sim::exch::CoinbaseExchange::CoinbaseExchange()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00024">slick::sim::exch::HyperliquidExchange::HyperliquidExchange()</a>, <a class="el" href="exchange_8cpp_source.html#l00368">rejectCancelOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00343">rejectModifyOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00322">rejectNewOrderRequest()</a>, <a class="el" href="exchange_8hpp_source.html#l00039">response_queue()</a>, <a class="el" href="exchange_8cpp_source.html#l00648">sendOrderCancelPending()</a>, <a class="el" href="exchange_8cpp_source.html#l00599">sendOrderNewPending()</a>, and <a class="el" href="exchange_8cpp_source.html#l00624">sendOrderReplacePending()</a>.</p>
 
 </div>
 </div>
@@ -1712,7 +1714,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="exchange_8hpp_source.html#l00098">98</a> of file <a class="el" href="exchange_8hpp_source.html">exchange.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00402">publishLevelUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00387">publishMDBookUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00416">publishMDOrderUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00469">publishTradeSubscriptionResponse()</a>, <a class="el" href="exchange_8cpp_source.html#l00430">publishTradeSummary()</a>, <a class="el" href="exchange_8cpp_source.html#l00304">rejectMdSubscription()</a>, <a class="el" href="exchange_8cpp_source.html#l00049">start()</a>, <a class="el" href="exch__coinbase_8cpp_source.html#l00054">slick::sim::exch::CoinbaseExchange::start()</a>, and <a class="el" href="exch__hyperliquid_8cpp_source.html#l00055">slick::sim::exch::HyperliquidExchange::start()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00407">publishLevelUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00392">publishMDBookUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00421">publishMDOrderUpdate()</a>, <a class="el" href="exchange_8cpp_source.html#l00474">publishTradeSubscriptionResponse()</a>, <a class="el" href="exchange_8cpp_source.html#l00435">publishTradeSummary()</a>, <a class="el" href="exchange_8cpp_source.html#l00309">rejectMdSubscription()</a>, <a class="el" href="exchange_8cpp_source.html#l00049">start()</a>, <a class="el" href="exch__coinbase_8cpp_source.html#l00054">slick::sim::exch::CoinbaseExchange::start()</a>, and <a class="el" href="exch__hyperliquid_8cpp_source.html#l00055">slick::sim::exch::HyperliquidExchange::start()</a>.</p>
 
 </div>
 </div>

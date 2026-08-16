@@ -1,5 +1,6 @@
 var types_8hpp =
 [
+    [ "cum_value_t", "types_8hpp.html#ac68d41e163c0546bf5d9c256de19b94a", null ],
     [ "price_t", "types_8hpp.html#a55744a3b84aa316240e0c9d91f4c6f16", null ],
     [ "qty_t", "types_8hpp.html#ab7fcad70f6b4f10b417e66c85efe03de", null ],
     [ "symid_t", "types_8hpp.html#a694d0d358f849cd394e768c19c51c32c", null ],
