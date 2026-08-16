@@ -121,6 +121,12 @@ void Exchange::processRequest()
         case MessageType::MD_SUBSCRIPTION:
         {
             handleMdSubscription(*request);
+            break;
+        }
+        case MessageType::MD_UNSUBSCRIPTION:
+        {
+            handleMdUnsubscription(*request);
+            break;
         }
         default:
             break;
@@ -177,8 +183,7 @@ void Exchange::handleNewOrderRequest(const Request &request)
         order->type = msg.type;
         order->time_in_force = msg.time_in_force;
         order->price = msg.price;
-        order->quantity = msg.qty;
-        order->leaves_quantity = msg.qty;
+        order->resetFillAccounting(msg.qty);
         order->type = msg.type;
         order->status = OrderStatus::PENDING_NEW;
 

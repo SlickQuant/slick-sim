@@ -3,6 +3,7 @@
 #include <limits>
 #include <cstdint>
 #include <string_view>
+#include <boost/multiprecision/cpp_int.hpp>
 
 namespace slick::sim {
 
@@ -10,6 +11,7 @@ using price_t = int_fast64_t;
 using qty_t = int_fast64_t;
 using time_t = uint_fast64_t;
 using symid_t = uint16_t;
+using cum_value_t = boost::multiprecision::uint128_t;
 
 constexpr symid_t INVALID_SYMBOL_ID = std::numeric_limits<symid_t>::max();
 constexpr price_t NULL_PRICE = std::numeric_limits<price_t>::max();
