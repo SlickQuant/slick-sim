@@ -182,6 +182,7 @@ constexpr price_t kPrice101 = 10100000000;  // 101.00 * 1e8
 constexpr price_t kPrice99  = 9900000000;   // 99.00 * 1e8
 constexpr price_t kPrice102 = 10200000000;  // 102.00 * 1e8
 constexpr price_t kPrice98  = 9800000000;   // 98.00 * 1e8
+constexpr qty_t kQty2  = 200000000;         // 2.0 * 1e8
 constexpr qty_t kQty3  = 300000000;         // 3.0 * 1e8
 constexpr qty_t kQty5  = 500000000;         // 5.0 * 1e8
 constexpr qty_t kQty10 = 1000000000;        // 10.0 * 1e8

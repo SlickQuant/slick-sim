@@ -50,7 +50,37 @@ TEST_F(FifoMatchingEngineTest, MatchBuyAgainstSingleSellOrder) {
     EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
     EXPECT_FALSE(trades.empty());
     EXPECT_EQ(buy_order->cum_quantity, kQty10);
+    EXPECT_EQ(buy_order->avg_fill_price, kPrice100);
     EXPECT_EQ(buy_order->leaves_quantity, 0);
+}
+
+TEST_F(FifoMatchingEngineTest, ReusedOrderResetsFillAccounting) {
+    auto reused_book = std::make_shared<OrderBookImpl<OrderBookType::L2>>(kSymbolId, "BTC-USD", Venue::COINBASE, 1);
+    reused_book->addObserver(reused_book->shared_from_this());
+
+    auto* order = reused_book->allocateOrder();
+    order->side = Side::BUY;
+    order->price = kPrice100;
+    order->quantity = kQty10;
+    order->leaves_quantity = kQty10;
+    order->cum_quantity = kQty5;
+    order->cum_value = static_cast<cum_value_t>(kPrice100) * static_cast<cum_value_t>(kQty5);
+    order->avg_fill_price = kPrice100;
+    order->num_fills = 1;
+    order->last_fill_qty = kQty5;
+    order->last_fill_time = 42;
+
+    reused_book->freeOrder(order);
+    auto* fresh_order = reused_book->allocateOrder();
+
+    EXPECT_EQ(fresh_order, order);
+    EXPECT_EQ(fresh_order->quantity, 0);
+    EXPECT_EQ(fresh_order->leaves_quantity, 0);
+    EXPECT_EQ(fresh_order->cum_quantity, 0);
+    EXPECT_EQ(fresh_order->cum_value, cum_value_t{0});
+    EXPECT_EQ(fresh_order->avg_fill_price, 0);
+    EXPECT_EQ(fresh_order->num_fills, 0);
+    EXPECT_FALSE(fresh_order->last_fill_time.has_value());
 }
 
 TEST_F(FifoMatchingEngineTest, MatchSellAgainstSingleBuyOrder) {
@@ -180,6 +210,23 @@ TEST_F(FifoMatchingEngineTest, LastFilledPriceAndQuantityTracking) {
 
     EXPECT_EQ(buy_order->last_fill_price, kPrice100);
     EXPECT_EQ(buy_order->last_fill_qty, kQty10);
+}
+
+TEST_F(FifoMatchingEngineTest, AverageFillPrice_UsesFixedPointWeightedAverage) {
+    auto* sell1 = createTestOrder(order_book_, Side::SELL, kPrice100, kQty3);
+    auto* sell2 = createTestOrder(order_book_, Side::SELL, kPrice101, kQty2);
+    order_book_->addOrder(sell1, 1000, 1);
+    order_book_->addOrder(sell2, 1001, 2);
+
+    auto* buy_order = createTestOrder(order_book_, Side::BUY, kPrice101, kQty5);
+    auto [reject_reason, trades] = matching_engine_->match(
+        buy_order, kPrice101, kQty5, *order_book_, 2000, 2000, 3, SelfMatchPreventionMode::NONE);
+
+    EXPECT_EQ(reject_reason, OrdRejectReason::NONE);
+    EXPECT_EQ(buy_order->cum_quantity, kQty5);
+    EXPECT_EQ(buy_order->avg_fill_price, to_price_t(100.4));
+    EXPECT_EQ(buy_order->leaves_quantity, 0);
+    EXPECT_FALSE(trades.empty());
 }
 
 TEST_F(FifoMatchingEngineTest, EngineType) {

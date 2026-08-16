@@ -136,7 +136,7 @@ find_package(unofficial-uwebsockets CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(jwt-cpp CONFIG REQUIRED)
 find_package(foonathan_memory CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED COMPONENTS uuid)
+find_package(Boost CONFIG REQUIRED COMPONENTS uuid multiprecision)
 
 if(MSVC)
     add_definitions(-D_WIN32_WINNT=0x0601)

@@ -297,6 +297,7 @@ struct Order {
     qty_t leaves_quantity = 0;
     price_t avg_fill_price = 0;
     qty_t cum_quantity = 0;
+    cum_value_t cum_value = 0;
     price_t last_fill_price = 0; 
     qty_t last_fill_qty = 0;
     uint32_t num_fills = 0;
@@ -312,6 +313,20 @@ struct Order {
     std::string cancel_message;
 
     json edit_history = json::array();
+
+    void resetFillAccounting(qty_t new_qty = 0) noexcept {
+        quantity = new_qty;
+        leaves_quantity = new_qty;
+        avg_fill_price = 0;
+        cum_quantity = 0;
+        cum_value = 0;
+        last_fill_price = 0;
+        last_fill_qty = 0;
+        num_fills = 0;
+        fee = 0.0;
+        filled_value = 0.0;
+        last_fill_time.reset();
+    }
     
     Order() = default;
 

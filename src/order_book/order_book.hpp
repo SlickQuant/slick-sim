@@ -184,8 +184,11 @@ public:
             assert(order->leaves_quantity >= 0);
             assert(executed_quantity > 0);
             order->last_update_time = timestamp;
-            order->avg_fill_price = to_price_t(((to_price_double(order->avg_fill_price) * to_qty_double(order->cum_quantity)) + (to_price_double(order->price) * to_qty_double(executed_quantity))) / to_price_double(order->cum_quantity + executed_quantity));
+            order->cum_value += static_cast<cum_value_t>(order->price) * static_cast<cum_value_t>(executed_quantity);
             order->cum_quantity += executed_quantity;
+            order->avg_fill_price = order->cum_quantity > 0
+                ? static_cast<price_t>(order->cum_value / static_cast<cum_value_t>(order->cum_quantity))
+                : 0;
             order->last_fill_price = order->price;
             order->last_fill_qty = executed_quantity;
             order->last_fill_time = timestamp;
@@ -279,6 +282,7 @@ inline Order* OrderBook::allocateOrder() {
     order->id = utils::nextOrderId();
     order->created_time = utils::get_current_time_ns();
     order->last_update_time = order->created_time;
+    order->resetFillAccounting();
     return order;
 }
 

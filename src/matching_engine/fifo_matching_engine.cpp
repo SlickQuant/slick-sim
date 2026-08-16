@@ -192,12 +192,13 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
     }
 
     if (order->status == OrderStatus::PENDING_REPLACE) {
-        order->leaves_quantity += order_qty - order->quantity;  // Restore any reduced quantity from previous modify
-        if (order->leaves_quantity < 0) {
-            order->leaves_quantity = 0;  // Guard against negative leaves quantity
-        }
         order->quantity = order_qty;
         order->price = order_price;
+        if (order->cum_quantity >= order_qty) {
+            order->leaves_quantity = 0;
+        } else {
+            order->leaves_quantity = order_qty - order->cum_quantity;
+        }
         engine.publishOrderModify(order, order_price, order_qty, request_time);
     }
 
@@ -249,10 +250,13 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
 
         LOG_INFO("{} Matching order {} with book order {} for qty {} at price {}", order->symbol, order->id, book_order_id, trade_qty, price);
         assert(trade_qty > 0);
-        order->avg_fill_price = to_price_t(((to_price_double(order->avg_fill_price) * to_qty_double(order->cum_quantity)) + (to_price_double(price) * to_qty_double(trade_qty))) / to_price_double(order->cum_quantity + trade_qty));
+        order->cum_value += static_cast<cum_value_t>(price) * static_cast<cum_value_t>(trade_qty);
+        order->cum_quantity += trade_qty;
+        order->avg_fill_price = order->cum_quantity > 0
+            ? static_cast<price_t>(order->cum_value / static_cast<cum_value_t>(order->cum_quantity))
+            : 0;
         order->last_fill_price = price;
         order->last_fill_qty = trade_qty;
-        order->cum_quantity += trade_qty;
         order->leaves_quantity -= trade_qty;
         assert(order->leaves_quantity >= 0);
 
