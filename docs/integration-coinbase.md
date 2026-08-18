@@ -385,8 +385,8 @@ and the simulator continues numbering from above the highest one seen.
     Every message on this channel is a fill produced by the matching engine. An upstream Coinbase
     print is replayed into the book as an aggressor order rather than forwarded, so what a client
     sees here reflects the simulated book — including fills against its own resting orders. A print
-    that finds no crossable liquidity produces
-    [no message at all](known-gaps.md#a-trade-print-only-reaches-the-tape-if-it-finds-liquidity).
+    that finds no crossable liquidity produces no message at all; its quantity rests in the book as
+    an aggressor order instead.
 
 If the recent-trade history contains a trade stamped **after** the book snapshot the subscriber
 receives, that trade is not settled history for this client — it arrives in a second `"update"`

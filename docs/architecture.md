@@ -149,7 +149,7 @@ linked against a handful of static libraries.
 | `order_gateway` | `src/order_gateway/` | Venue-native REST/WebSocket order entry, plus the unused generic TCP/FIX/SBE gateway |
 | `market_data_publisher` | `src/market_data_publisher/` | Re-encodes internal market data into each venue's own WebSocket format |
 | `md_feed` | `src/md_feed/` | Live market-data ingestion from the real venue |
-| *(header-only)* | `src/common/`, `src/order_book/`, `src/utils/` | Shared types, the order book, and small helpers — no compiled target, included directly |
+| *(header-only)* | `src/common/`, `src/order_book/`, `src/utils/` | Shared types, the order book, and small helpers (ids, timestamps, prices, `fixed_string`) — no compiled target, included directly |
 
 ## Threading model
 

@@ -99,7 +99,7 @@ void TcpOrderGateway::process_message_result(const ParseResult& result, int clie
         const Order& order = result.order.value();
         
         LOG_INFO("Received order: ClientOrderID={}, Symbol={}, Side={}, Qty={}, Price={} from client {}", 
-                 order.client_order_id, order.symbol, static_cast<char>(order.side), 
+                 order.client_order_id.view(), order.symbol.view(), static_cast<char>(order.side), 
                  order.quantity, order.price, client_id);
         
         // Push to lock-free queue

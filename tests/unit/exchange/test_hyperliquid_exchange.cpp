@@ -144,8 +144,8 @@ protected:
 
     Order* addSimOrder(Symbol* sym, Side side, price_t p, qty_t q) {
         auto* order = sym->order_book_->allocateOrder();
-        order->symbol          = sym->symbol_;
-        order->user_id         = "test-user";
+        order->symbol = sym->symbol_;
+        order->user_id = "test-user";
         order->side            = side;
         order->type            = OrderType::LIMIT;
         order->price           = p;

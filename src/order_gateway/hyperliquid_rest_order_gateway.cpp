@@ -2,6 +2,7 @@
 #include <slick/logger.hpp>
 #include <slick/net/http.hpp>
 #include <common/hyperliquid_info_proxy.hpp>
+#include <utils/fixed_string.hpp>
 #include <utils/timestamp.hpp>
 #include <thread>
 #include <chrono>
@@ -219,16 +220,11 @@ void HyperliquidRestOrderGateway::process_order_action(
         auto req_index = request_queue_.reserve();
         auto* request  = request_queue_[req_index];
         request->time_stamp = get_current_time_ns();
-        std::memset(request->symbol, 0, sizeof(request->symbol));
-        std::memcpy(request->symbol, coin.c_str(), std::min(sizeof(request->symbol), coin.size()));
+        utils::copy_wire_field(request->symbol, coin);
         request->msg_type = MessageType::NEW_ORDER_SINGLE;
 
-        std::memset(request->add_order.user_id, 0, sizeof(request->add_order.user_id));
-        std::memcpy(request->add_order.user_id, user_id.c_str(),
-                    std::min(sizeof(request->add_order.user_id) - 1, user_id.size()));
-        std::memset(request->add_order.client_order_id, 0, sizeof(request->add_order.client_order_id));
-        std::memcpy(request->add_order.client_order_id, cloid.c_str(),
-                    std::min(sizeof(request->add_order.client_order_id) - 1, cloid.size()));
+        utils::copy_wire_field(request->add_order.user_id, user_id);
+        utils::copy_wire_field(request->add_order.client_order_id, cloid);
 
         request->add_order.side           = is_buy ? Side::BUY : Side::SELL;
         request->add_order.type           = order_type;
@@ -323,16 +319,11 @@ void HyperliquidRestOrderGateway::process_cancel_action(
         auto req_index = request_queue_.reserve();
         auto* request  = request_queue_[req_index];
         request->time_stamp = get_current_time_ns();
-        std::memset(request->symbol, 0, sizeof(request->symbol));
-        std::memcpy(request->symbol, coin.c_str(), std::min(sizeof(request->symbol), coin.size()));
+        utils::copy_wire_field(request->symbol, coin);
         request->msg_type = MessageType::ORDER_CANCEL_REQUEST;
 
-        std::memset(request->cancel_order.user_id, 0, sizeof(request->cancel_order.user_id));
-        std::memcpy(request->cancel_order.user_id, user_id.c_str(),
-                    std::min(sizeof(request->cancel_order.user_id) - 1, user_id.size()));
-        std::memset(request->cancel_order.order_id, 0, sizeof(request->cancel_order.order_id));
-        std::memcpy(request->cancel_order.order_id, oid_str.c_str(),
-                    std::min(sizeof(request->cancel_order.order_id) - 1, oid_str.size()));
+        utils::copy_wire_field(request->cancel_order.user_id, user_id);
+        utils::copy_wire_field(request->cancel_order.order_id, oid_str);
 
         request_queue_.publish(req_index);
         statuses.push_back({{"success", oid}});
@@ -376,16 +367,11 @@ void HyperliquidRestOrderGateway::process_cancel_by_cloid_action(
         auto req_index = request_queue_.reserve();
         auto* request  = request_queue_[req_index];
         request->time_stamp = get_current_time_ns();
-        std::memset(request->symbol, 0, sizeof(request->symbol));
-        std::memcpy(request->symbol, coin.c_str(), std::min(sizeof(request->symbol), coin.size()));
+        utils::copy_wire_field(request->symbol, coin);
         request->msg_type = MessageType::ORDER_CANCEL_REQUEST;
 
-        std::memset(request->cancel_order.user_id, 0, sizeof(request->cancel_order.user_id));
-        std::memcpy(request->cancel_order.user_id, user_id.c_str(),
-                    std::min(sizeof(request->cancel_order.user_id) - 1, user_id.size()));
-        std::memset(request->cancel_order.client_order_id, 0, sizeof(request->cancel_order.client_order_id));
-        std::memcpy(request->cancel_order.client_order_id, cloid.c_str(),
-                    std::min(sizeof(request->cancel_order.client_order_id) - 1, cloid.size()));
+        utils::copy_wire_field(request->cancel_order.user_id, user_id);
+        utils::copy_wire_field(request->cancel_order.client_order_id, cloid);
 
         request_queue_.publish(req_index);
         statuses.push_back({{"success", cloid}});
@@ -440,16 +426,11 @@ void HyperliquidRestOrderGateway::process_batch_modify_action(
         auto req_index = request_queue_.reserve();
         auto* request  = request_queue_[req_index];
         request->time_stamp = get_current_time_ns();
-        std::memset(request->symbol, 0, sizeof(request->symbol));
-        std::memcpy(request->symbol, coin.c_str(), std::min(sizeof(request->symbol), coin.size()));
+        utils::copy_wire_field(request->symbol, coin);
         request->msg_type = MessageType::ORDER_REPLACE_REQUEST;
 
-        std::memset(request->modify_order.user_id, 0, sizeof(request->modify_order.user_id));
-        std::memcpy(request->modify_order.user_id, user_id.c_str(),
-                    std::min(sizeof(request->modify_order.user_id) - 1, user_id.size()));
-        std::memset(request->modify_order.order_id, 0, sizeof(request->modify_order.order_id));
-        std::memcpy(request->modify_order.order_id, oid_str.c_str(),
-                    std::min(sizeof(request->modify_order.order_id) - 1, oid_str.size()));
+        utils::copy_wire_field(request->modify_order.user_id, user_id);
+        utils::copy_wire_field(request->modify_order.order_id, oid_str);
         request->modify_order.new_price = new_price;
         request->modify_order.new_qty   = new_qty;
 

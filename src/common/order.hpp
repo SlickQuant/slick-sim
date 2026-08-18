@@ -1,12 +1,16 @@
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <chrono>
 #include <cstdint>
+#include <cstring>
+#include <type_traits>
 #include <nlohmann/json.hpp>
 #include <limits>
 #include "types.hpp"
+#include <utils/fixed_string.hpp>
 #include <utils/timestamp.hpp>
 
 using json = nlohmann::json;
@@ -274,13 +278,33 @@ inline constexpr std::string_view to_string(ProductType type) {
     return "UNKNOWN_PRODUCT_TYPE";
 }
 
-struct Order {
-    std::string user_id;
-    std::string client_order_id;
-    std::string order_id;
-    std::string symbol;
-    std::string end_time;
+/// The four identity fields every order carries, in the exact order and width of
+/// the header that opens an OrderResponse.
+///
+/// These were four std::strings, which meant four heap allocations on an object
+/// that is pooled precisely so the order path never allocates, and a publish step
+/// that ran `memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol))`
+/// once per field - four loads of a data pointer, four copies out of four
+/// unrelated heap blocks, and a read past the end of every string shorter than the
+/// wire field it was filling.
+///
+/// Held inline and laid out to match, the whole header goes out in a single
+/// memcpy from memory the order already has hot. Order derives from this so the
+/// block stays contiguous and addressable on its own; messages.hpp static_asserts
+/// the layout against OrderResponse, so resizing a field on either side fails the
+/// build rather than quietly shifting the ids on the wire.
+struct OrderIdentity {
+    utils::fixed_string<32> symbol;
+    utils::fixed_string<37> user_id;
+    utils::fixed_string<37> client_order_id;
+    utils::fixed_string<37> order_id;
+};
 
+static_assert(std::is_standard_layout_v<OrderIdentity>);
+static_assert(sizeof(OrderIdentity) == 32 + 37 + 37 + 37,
+    "OrderIdentity must stay gap-free: it is copied as one block onto the wire");
+
+struct Order : OrderIdentity {
     uint64_t id;
     uint64_t priority = 0;
     Side side = Side::BUY;
@@ -309,6 +333,8 @@ struct Order {
     uint64_t last_update_time = created_time;
     std::optional<uint64_t> last_fill_time;
 
+    // Cold: never on the order hot path, so they sit past the fields that are.
+    std::string end_time;
     std::string reject_message;
     std::string cancel_message;
 

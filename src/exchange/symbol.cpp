@@ -15,7 +15,7 @@ void OrderBookObserver::onOrderUpdate(const OrderUpdate& update) {
 std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Order* order, time_t request_time)
 {
     LOG_INFO("{} Adding order {}: oid={}, client_oid={}, price={}, qty={}, tif={}",
-        symbol_, order->id, order->order_id, order->client_order_id,
+        symbol_.view(), order->id, order->order_id.view(), order->client_order_id.view(),
         to_price_double(order->price), to_qty_double(order->quantity), to_string(order->time_in_force));
 
     // Pass Symbol's SMP mode to matching engine
@@ -26,7 +26,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
 
     // Only add to book if no rejection and remaining quantity exists
     bool resting = false;
-    if (reject_reason == OrdRejectReason::NONE && order->leaves_quantity > 0) {
+    if (reject_reason == OrdRejectReason::NONE && order->leaves_quantity > 0) [[likely]] {
         // Check if TimeInForce allows resting on book
         bool should_rest = (
             order->time_in_force == TimeInForce::DAY ||
@@ -34,18 +34,18 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
             order->time_in_force == TimeInForce::GOOD_TILL_DATE
         );
 
-        if (should_rest) {
+        if (should_rest) [[likely]] {
             order_book_->addOrder(order, order->created_time);
             resting = true;
         } else {
             // IOC: Remainder is implicitly cancelled (not added to book)
             // FOK: Will never reach here (would have been rejected in match)
             LOG_INFO("{} Order {} has TIF={}, not adding to book (leaves_qty={})",
-                symbol_, order->id, static_cast<char>(order->time_in_force), order->leaves_quantity);
+                symbol_.view(), order->id, static_cast<char>(order->time_in_force), order->leaves_quantity);
         }
     }
 
-    if (!resting) {
+    if (!resting) [[unlikely]] {
         // The book is the only thing that takes ownership of an order, so anything
         // that did not rest has to go back to the pool here: fully filled orders,
         // rejects (SMP, FOK), and IOC remainders alike. Freeing only on
@@ -60,7 +60,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
 
 std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::modifyOrder(Order* order, price_t new_price, qty_t new_qty, time_t request_time)
 {
-    LOG_INFO("{} Modifying order {}: oid={}, client_oid={}, new_price={}, new_qty={}", symbol_, order->id, order->order_id, order->client_order_id, new_price, new_qty);
+    LOG_INFO("{} Modifying order {}: oid={}, client_oid={}, new_price={}, new_qty={}", symbol_.view(), order->id, order->order_id.view(), order->client_order_id.view(), new_price, new_qty);
     
     // An amendment re-enters the matching loop, so it needs the same SMP mode a
     // new order gets — otherwise a symbol configured for SMP would still let an
@@ -82,7 +82,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::modifyOrder(O
 
 void Symbol::cancelOrder(Order *order, time_t request_time)
 {
-    LOG_INFO("{} Canceling order: oid={}, client_oid={}", symbol_, order->order_id, order->client_order_id);
+    LOG_INFO("{} Canceling order: oid={}, client_oid={}", symbol_.view(), order->order_id.view(), order->client_order_id.view());
     order->last_update_time = utils::get_current_time_ns();
     order_book_->deleteOrder(order, order->last_update_time);
     matching_engine_->publishOrderCancel(order, request_time);

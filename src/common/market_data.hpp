@@ -87,6 +87,22 @@ struct MarketDataUpdate {
     uint8_t data[0];
 };
 
+#pragma pack(pop)
+
+/// An instrument name at its wire width.
+///
+/// Symbol and OrderBook hold their name in this type, so publishing one is a
+/// fixed-size copy of the whole field rather than
+/// `memcpy(update->symbol, name.c_str(), sizeof(update->symbol))`, which reads
+/// past the end of any name shorter than the field - which is all of them.
+///
+/// Deliberately derived from the wire field rather than spelled out: widening
+/// `MarketDataUpdate::symbol` widens the storage with it, instead of silently
+/// reintroducing the over-read at every publish site.
+using symbol_name_t = utils::fixed_string<sizeof(MarketDataUpdate::symbol)>;
+
+#pragma pack(push, 1)
+
 enum MDSubscriptionRejectReason : uint8_t {
     NONE,
     UNKNOWN_CONTRACT,

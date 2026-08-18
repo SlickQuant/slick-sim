@@ -26,8 +26,7 @@ dispatches on the config key: `coinbase` builds a `CoinbaseExchange`, `hyperliqu
 `HyperliquidExchange`, and **anything else** constructs a plain `Exchange`. Only the two concrete
 adapters populate `md_publisher_` and `order_gateways_`; the base constructor does not.
 
-`Exchange::start()` now tolerates that — `md_publisher_` is null-checked, so a generic exchange no
-longer crashes. What is left is that it does nothing useful:
+`Exchange::start()` does nothing useful:
 
 ```cpp
 thread_ = std::thread([this]() { processRequest(); });
@@ -49,49 +48,7 @@ it is constructed and then skipped with a warning:
 exchange, not a working one. If you add a venue, populating `md_publisher_` **and** overriding
 `start()` with a loop are both mandatory — see [Adding an exchange](extending.md).
 
-!!! note "Previously a crash"
-    Until recently `Exchange::start()` dereferenced `md_publisher_` unconditionally and the `cme`
-    block segfaulted the process on startup — before either working venue was constructed, since
-    `nlohmann::json` iterates object keys in sorted order and `"cme"` sorts before `"coinbase"`.
-    Both that and the `enabled` flag being ignored for non-adapter venues are now fixed.
-
-### Startup aborts if `logs/` does not exist
-
-`main.cpp` calls `logger.add_file_sink("logs/slick-sim.log")` with a path relative to the current
-working directory, and nothing creates the directory first. Run `slick-sim` from a directory with no
-`logs/` subdirectory and the process aborts with exit code 3, writing nothing at all — no console
-message, no log, no clue.
-
-The repository ships a `logs/` directory, so this never bites anyone running from the repo root. It
-bites immediately when running a packaged release binary from a fresh directory.
-
-**What it means:** `mkdir logs` before the first run in any new working directory.
-
 ## Order and market-data plumbing
-
-### Market-data unsubscribe requests are dropped
-
-Both publishers send `MessageType::MD_UNSUBSCRIPTION` requests when a client unsubscribes or
-disconnects, but the `switch` in
-[`Exchange::processRequest()`](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L74-L91)
-handles only `NEW_ORDER_SINGLE`, `ORDER_REPLACE_REQUEST`, `ORDER_CANCEL_REQUEST` and
-`MD_SUBSCRIPTION`. There is no `MD_UNSUBSCRIPTION` case, so `handleMdUnsubscription()` — implemented
-on both adapters — is never called from the request loop.
-
-**What it means:** `Symbol::num_subscriptions_` only ever increases, and upstream feeds are never
-torn down when the last client goes away. Harmless for a long-running sim with a stable symbol set;
-a slow leak otherwise.
-
-### A trade print only reaches the tape if it finds liquidity
-
-The public trade tape is fill-driven: a venue print is replayed through the matching engine as an
-aggressor order, and only the resulting fills are published. A print that finds nothing crossable in
-the mirrored book therefore produces no output at all, and its unfilled remainder simply rests.
-
-**What it means:** tape fidelity tracks book fidelity. While the mirrored book is thin or stale —
-right after startup, or after a feed gap — prints can be dropped from the tape rather than relayed
-verbatim. This is the intended design, not a defect, but it is worth knowing when reconciling the
-simulator's tape against the venue's.
 
 ### `MDUpdateType::ORDER` is never published
 
@@ -145,28 +102,6 @@ md_thread_.join();` — dead code, since nothing ever starts that thread.
 
 **What it means:** market data is processed on the same thread as order requests. See the threading
 model in [Architecture](architecture.md).
-
-## Bugs found while documenting
-
-These are latent defects, not design decisions. They are recorded here because the documentation
-would otherwise describe behaviour the code does not deliver.
-
-### `avg_fill_price` is recomputed in floating point on every fill
-
-Both
-[`OrderBook::executeOrder`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_book/order_book.hpp#L187)
-and the
-[matching loop](https://github.com/SlickQuant/slick-sim/blob/main/src/matching_engine/fifo_matching_engine.cpp#L189)
-round-trip the running average through `double` (`to_price_double` → arithmetic → `to_price_t`) on
-every partial fill, rather than accumulating notional in fixed point. Errors compound across fills.
-
-Worse, when a resting simulator order is filled by an incoming aggressor, **both** functions update
-the same order: `FifoMatchingEngine::match` updates the aggressor's fields, then calls
-`book.executeOrder`, which updates the *resting* order's fields. The commented-out block at
-[`fifo_matching_engine.cpp:272-276`](https://github.com/SlickQuant/slick-sim/blob/main/src/matching_engine/fifo_matching_engine.cpp#L272-L276)
-shows this duplication was noticed for the market-data path.
-
-**What it means:** treat `avg_fill_price` on a heavily partially-filled order as approximate.
 
 ## Configuration and packaging
 

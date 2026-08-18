@@ -56,8 +56,8 @@ protected:
     void sendOrderReplacePending(const Order *order, time_t request_time);
     void sendOrderCancelPending(const Order *order, time_t request_time);
     void publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std::array<uint8_t, 2> &indices);
-    void publishLevelUpdate(const char* symbol, const std::vector<MDLevel> &level_updates);
-    void publishMDOrderUpdate(const char* symbol, const std::vector<MDOrder> &order_updates);
+    void publishLevelUpdate(const symbol_name_t &symbol, const std::vector<MDLevel> &level_updates);
+    void publishMDOrderUpdate(const symbol_name_t &symbol, const std::vector<MDOrder> &order_updates);
     // NOTE: there is deliberately no raw trade relay. A venue trade print is
     // replayed through the matching engine instead, and only the resulting fills
     // are published - see publishTradeSummary and the venues' trade event handlers.

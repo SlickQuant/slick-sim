@@ -84,8 +84,16 @@ void WebsocketMarketDataPublisher::stop() {
 }
 
 void WebsocketMarketDataPublisher::publish_processing() {
-    // Process up to 100 update per call to avoid blocking event loop too long
-    constexpr int max_batch = 100;
+    // Drain up to this many updates before handing the loop back, so socket
+    // writes and the heartbeat timer still get serviced under load.
+    //
+    // Every batch costs one defer, so the limit sets the ratio of scheduling
+    // overhead to work: at 100 a flood re-entered the loop once per 100 updates,
+    // at 1000 once per 1000. The yield still happens often enough that a client
+    // socket is never starved - a batch is bounded by the queue, and the two
+    // snapshot types below cut it short on their own because they are far more
+    // expensive to encode than an incremental update.
+    constexpr int max_batch = 1000;
     int processed = 0;
 
     while (processed < max_batch) {
@@ -102,14 +110,18 @@ void WebsocketMarketDataPublisher::publish_processing() {
 
         if (update->type == MDUpdateType::SUB_RESPONSE ||
             update->type == MDUpdateType::BOOK_SNAPSHOT) {
-            processed = max_batch;
-        } else {
-            ++processed;
+            break;  // A whole book went out - yield rather than start another
         }
+
+        ++processed;
     }
 
-    // Reschedule ourselves to run again on next event loop iteration
-    // schedulePublishProcessing() checks running_ flag
+    // Unconditionally, even when the queue came up empty. This defer is the only
+    // thing that runs publish_processing() again: md_queue_ is a lock-free queue
+    // with no wakeup, and the exchange thread that fills it never touches the
+    // loop. Skipping the reschedule on an empty queue - which looks like an easy
+    // win - stops the publisher permanently the first time it catches up.
+    // schedule_publish_processing() checks the running_ flag.
     schedule_publish_processing();
 }
 

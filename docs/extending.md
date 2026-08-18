@@ -122,8 +122,8 @@ could collide with an existing venue's, namespace them.
 Track pending state per channel, not per symbol: a client can subscribe to a second channel for a
 symbol that already has an active subscription on the first.
 
-Also implement `handleMdUnsubscription` for symmetry, but know that
-[the request loop never calls it](known-gaps.md#market-data-unsubscribe-requests-are-dropped).
+Also implement `handleMdUnsubscription` — the request loop dispatches `MD_UNSUBSCRIPTION` to it, so
+an adapter that omits it leaks upstream subscriptions.
 
 ### Feed callbacks
 
@@ -216,15 +216,25 @@ Inside a route handler, the request side is:
 auto index = request_queue_.reserve();
 auto* request = request_queue_[index];
 request->time_stamp = utils::get_current_time_ns();
-std::memset(request->symbol, 0, sizeof(request->symbol));
-std::memcpy(request->symbol, sym.c_str(), std::min(sizeof(request->symbol), sym.size()));
+utils::copy_wire_field(request->symbol, sym);
 request->msg_type = MessageType::NEW_ORDER_SINGLE;
 // … fill request->add_order …
 request_queue_.publish(index);
 ```
 
-Always `memset` the fixed-size char arrays first and clamp with `std::min` — `Request` is recycled
-memory, and an unclamped `memcpy` overruns into the next union member.
+Always fill the fixed-size char arrays with
+[`utils::copy_wire_field`](https://github.com/SlickQuant/slick-sim/blob/main/src/utils/fixed_string.hpp).
+`Request` is recycled memory and the reader parses these fields as C strings, so a hand-written copy
+has three things to get right and the obvious spellings each miss one:
+
+- `memcpy(dst, s.c_str(), sizeof(dst))` reads past the end of any name shorter than the field, and
+  drops whatever followed it in memory into a field the reader treats as a C string.
+- `memset` + `memcpy(dst, s.c_str(), std::min(sizeof(dst), s.size()))` is bounded but clamps one byte
+  too late: a value that exactly fills the field overwrites the terminator the `memset` left.
+- Neither clears the tail on a *shorter* value written over a longer one in a recycled slot.
+
+`copy_wire_field` truncates to N-1, zero-fills the remainder, and returns `true` when the value did
+not fit, for callers that want to warn.
 
 For the response side you have two options:
 
@@ -258,7 +268,7 @@ On a client `subscribe` message, write an `MD_SUBSCRIPTION` request:
 ```cpp
 auto index = request_queue_.reserve();
 auto* request = request_queue_[index];
-memcpy(request->symbol, coin.c_str(), sizeof(request->symbol));
+utils::copy_wire_field(request->symbol, coin);
 request->msg_type = MessageType::MD_SUBSCRIPTION;
 request->md_subscription.channel = channel_index;
 request->md_subscription.client  = (void*)ws;

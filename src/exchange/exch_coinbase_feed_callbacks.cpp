@@ -208,7 +208,7 @@ void CoinbaseExchange::onLevel2Updates(WebSocketClient * /* client */, uint64_t 
         }
 
         // LOG_DEBUG("Received L2 update for symbol {}: price={}, qty={}, side={}, event_time={}, seq_num={}, flags={}",
-        //     symbol->symbol_, evt.price, evt.qty, evt.side, evt.event_time, evt.seq_num, evt.flags);
+        //     symbol->symbol_.view(), evt.price, evt.qty, evt.side, evt.event_time, evt.seq_num, evt.flags);
 
         // Add to per-symbol priority queue
         state.pending_events.push(std::move(evt));

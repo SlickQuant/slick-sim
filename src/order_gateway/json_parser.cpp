@@ -51,7 +51,7 @@ ParseResult JsonParser::parse_message(const uint8_t* data, size_t length, int cl
                 result.is_complete_message = true;
                 
                 LOG_DEBUG("JSON: Parsed order for client {}: {}", 
-                         client_id, result.order->client_order_id);
+                         client_id, result.order->client_order_id.view());
             } else {
                 result.error_message = "Unknown JSON message type: " + msg_type;
             }
@@ -63,7 +63,7 @@ ParseResult JsonParser::parse_message(const uint8_t* data, size_t length, int cl
                 result.is_complete_message = true;
                 
                 LOG_DEBUG("JSON: Parsed direct order for client {}: {}", 
-                         client_id, result.order->client_order_id);
+                         client_id, result.order->client_order_id.view());
             } else {
                 result.error_message = "Invalid JSON order format - missing required fields";
             }

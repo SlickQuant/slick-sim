@@ -93,7 +93,7 @@ overflows.
 | `ORDER_REPLACE_REQUEST` | `handleModifyOrderRequest` |
 | `ORDER_CANCEL_REQUEST` | `handleCancelOrderRequest` |
 | `MD_SUBSCRIPTION` | `handleMdSubscription` (virtual, per-adapter) |
-| `MD_UNSUBSCRIPTION` | **not handled** — see [Known gaps](known-gaps.md#market-data-unsubscribe-requests-are-dropped) |
+| `MD_UNSUBSCRIPTION` | `handleMdUnsubscription` (virtual, per-adapter) |
 
 ### 3. New order
 
@@ -153,7 +153,7 @@ on `response_queue_`. There are two families of producer:
 | Function | Emitted when |
 | --- | --- |
 | `publishOrderAck` | Order accepted, at the top of `match()` when status is `PENDING_NEW` |
-| `publishOrderExecution` | Each individual fill |
+| `publishOrderExecution` | Each individual fill — once for the aggressor, and once for the resting order it traded against when that order is the simulator's own rather than phantom liquidity |
 | `publishOrderModify` | A `PENDING_REPLACE` order's price/quantity has been applied |
 | `publishOrderCancel` | Explicit cancel, IOC remainder, unfillable FOK, SMP `CANCEL_NEWEST`, or a modify that zeroed the quantity |
 
