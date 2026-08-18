@@ -1,6 +1,9 @@
 var namespaceslick_1_1sim_1_1utils =
 [
+    [ "fixed_string", "classslick_1_1sim_1_1utils_1_1fixed__string.html", "classslick_1_1sim_1_1utils_1_1fixed__string" ],
     [ "RingBuffer", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", "classslick_1_1sim_1_1utils_1_1RingBuffer" ],
+    [ "copy_wire_field", "namespaceslick_1_1sim_1_1utils.html#a9a76746d0605ad46d7115204ce0d8bd9", null ],
+    [ "executeOrder", "namespaceslick_1_1sim_1_1utils.html#a7dd881010d120cac1cd8c1eddb8db938", null ],
     [ "format_heatbeat_timestamp", "namespaceslick_1_1sim_1_1utils.html#a9ac3e6fb1a7e4af2a1f51a467983d28d", null ],
     [ "format_timestamp_iso8601", "namespaceslick_1_1sim_1_1utils.html#ae347d68578e19574b640f4e42d8fe3ab", null ],
     [ "format_timestamp_iso8601", "namespaceslick_1_1sim_1_1utils.html#a675fb87fa2e17d16112aa99cb8c1ad72", null ],

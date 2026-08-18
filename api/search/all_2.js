@@ -9,8 +9,9 @@ var searchData=
   ['book_5fsnapshot_6',['BOOK_SNAPSHOT',['../namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11a7d038e33652dca08a3b6a301f1a1a83a',1,'slick::sim']]],
   ['booksnapshot_7',['BookSnapshot',['../structslick_1_1sim_1_1BookSnapshot.html',1,'slick::sim']]],
   ['bracket_8',['BRACKET',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba62c2198c66464d0dc1b231ef327c09fa',1,'slick::sim']]],
-  ['build_5fproxied_5fresponse_9',['build_proxied_response',['../namespaceslick_1_1sim.html#ac5b21373c9c2df58813575cb6ed29239',1,'slick::sim']]],
-  ['business_5freject_10',['BUSINESS_REJECT',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7ab5e97e4776662c16e63c9b1855a65cb3',1,'slick::sim']]],
-  ['businessrejectreason_11',['BusinessRejectReason',['../namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186',1,'slick::sim']]],
-  ['buy_12',['buy',['../structslick_1_1sim_1_1MDBookUpdate.html#ad55425c5e02a5da67b7184fca1fc9083',1,'slick::sim::MDBookUpdate::buy'],['../namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bda1d9ffad0e2e811fdb3ed5a860dc62d76',1,'slick::sim::BUY']]]
+  ['buffer_5fsize_9',['buffer_size',['../classslick_1_1sim_1_1utils_1_1fixed__string.html#a8e0cf2b528e17f4d2ea016fc56cdd048',1,'slick::sim::utils::fixed_string']]],
+  ['build_5fproxied_5fresponse_10',['build_proxied_response',['../namespaceslick_1_1sim.html#ac5b21373c9c2df58813575cb6ed29239',1,'slick::sim']]],
+  ['business_5freject_11',['BUSINESS_REJECT',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7ab5e97e4776662c16e63c9b1855a65cb3',1,'slick::sim']]],
+  ['businessrejectreason_12',['BusinessRejectReason',['../namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186',1,'slick::sim']]],
+  ['buy_13',['buy',['../structslick_1_1sim_1_1MDBookUpdate.html#ad55425c5e02a5da67b7184fca1fc9083',1,'slick::sim::MDBookUpdate::buy'],['../namespaceslick_1_1sim.html#a2ff671868618aeab6ba2eeef566a32bda1d9ffad0e2e811fdb3ed5a860dc62d76',1,'slick::sim::BUY']]]
 ];

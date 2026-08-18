@@ -12,7 +12,6 @@ var structslick_1_1sim_1_1Order =
     [ "avg_fill_price", "structslick_1_1sim_1_1Order.html#a04a6d3346a3726ddcef66d24cb019eef", null ],
     [ "cancel_message", "structslick_1_1sim_1_1Order.html#a79e772260d40cf45f80626d59be760e5", null ],
     [ "client_id", "structslick_1_1sim_1_1Order.html#adf8dd207865e485f00d151677b829a5d", null ],
-    [ "client_order_id", "structslick_1_1sim_1_1Order.html#a4d080f84e66ce90e26ce3910239d6547", null ],
     [ "created_time", "structslick_1_1sim_1_1Order.html#a43fe52822f3e3c56a820612b0ad6f8d7", null ],
     [ "cum_quantity", "structslick_1_1sim_1_1Order.html#aceb8396c7ec3a3024923f755ea13aa6b", null ],
     [ "cum_value", "structslick_1_1sim_1_1Order.html#a1b31ca4e5b7ca3c59509af04b6d4cfa8", null ],
@@ -27,7 +26,6 @@ var structslick_1_1sim_1_1Order =
     [ "last_update_time", "structslick_1_1sim_1_1Order.html#a5817cf309f2b602d9d7510c07c812989", null ],
     [ "leaves_quantity", "structslick_1_1sim_1_1Order.html#a9d6a68848751915f362819145604846d", null ],
     [ "num_fills", "structslick_1_1sim_1_1Order.html#a7b1074fe04bfa4c2e3324374ee6c910e", null ],
-    [ "order_id", "structslick_1_1sim_1_1Order.html#a4c5d328d128477c192442442bb84203b", null ],
     [ "pending_cancel", "structslick_1_1sim_1_1Order.html#a1d1dd4005b325ed2646e0e7372b73644", null ],
     [ "post_only", "structslick_1_1sim_1_1Order.html#ad8b41170144560f730d8a98e60c08af3", null ],
     [ "price", "structslick_1_1sim_1_1Order.html#a0d41b3cc6c4e418cb100f5621d713713", null ],
@@ -38,8 +36,6 @@ var structslick_1_1sim_1_1Order =
     [ "side", "structslick_1_1sim_1_1Order.html#a715b579c2287f783368b8d1b82eb273d", null ],
     [ "size_in_quote", "structslick_1_1sim_1_1Order.html#a86865e8e34583d114773574f30e559b3", null ],
     [ "status", "structslick_1_1sim_1_1Order.html#a5ea7a6ec13d91272687effcf71f76a15", null ],
-    [ "symbol", "structslick_1_1sim_1_1Order.html#a636c61d98243134d9a52560be3ab2005", null ],
     [ "time_in_force", "structslick_1_1sim_1_1Order.html#a4924ccf1fe71f93639abe370afcd634e", null ],
-    [ "type", "structslick_1_1sim_1_1Order.html#a076cdd7ef73946b8ddbd20ef4045ce85", null ],
-    [ "user_id", "structslick_1_1sim_1_1Order.html#ab47dc9c06c52bd5688927dd3ff256b5e", null ]
+    [ "type", "structslick_1_1sim_1_1Order.html#a076cdd7ef73946b8ddbd20ef4045ce85", null ]
 ];

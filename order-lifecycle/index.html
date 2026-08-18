@@ -1323,7 +1323,7 @@ overflows.</p>
 </tr>
 <tr>
 <td><code>MD_UNSUBSCRIPTION</code></td>
-<td><strong>not handled</strong> — see <a href="../known-gaps/#market-data-unsubscribe-requests-are-dropped">Known gaps</a></td>
+<td><code>handleMdUnsubscription</code> (virtual, per-adapter)</td>
 </tr>
 </tbody>
 </table>
@@ -1408,7 +1408,7 @@ on <code>response_queue_</code>. There are two families of producer:</p>
 </tr>
 <tr>
 <td><code>publishOrderExecution</code></td>
-<td>Each individual fill</td>
+<td>Each individual fill — once for the aggressor, and once for the resting order it traded against when that order is the simulator's own rather than phantom liquidity</td>
 </tr>
 <tr>
 <td><code>publishOrderModify</code></td>

@@ -101,6 +101,7 @@ var messages_8hpp =
       [ "INVALID_SESSION_ID", "messages_8hpp.html#a297ba608de53df48468a6d44a907f989ae59a7fb636a4e551c360e2b5b7b16e4d", null ],
       [ "UNKNOWN", "messages_8hpp.html#a297ba608de53df48468a6d44a907f989a696b031073e74bf2cb98e5ef201d4aa3", null ]
     ] ],
+    [ "setOrderIdentity", "messages_8hpp.html#a3b56b82617e274fd298644fa987ba0c1", null ],
     [ "to_string", "messages_8hpp.html#a4a9beb593429df5794a68b6547f1e637", null ],
     [ "to_string", "messages_8hpp.html#a70370cf402e906a5d9300f02e7c3928d", null ],
     [ "to_string", "messages_8hpp.html#aaa116681b9888db4e2ee7a5aa50c891c", null ],

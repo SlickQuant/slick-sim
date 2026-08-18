@@ -66,12 +66,12 @@ var NAVTREEINDEX =
 "alpaca__historical__data__feed_8hpp.html",
 "classslick_1_1sim_1_1exch_1_1Exchange.html#a3d278d42b22385d736d56abac1207e19",
 "classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#ac7399a56e9afdd251e92d6ae6298399e",
-"common_2order_8hpp.html#a7acd497cb034f1f328fb2f541eb6e4b8a38afd7ae34bd5e3e6fc170d8b09178a3",
-"message__parser_8hpp.html",
-"namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527",
-"structslick_1_1sim_1_1MDOrder.html#a0473161d267bc40daeb70eca7c7ab665",
-"structslick_1_1sim_1_1TradeSummary.html",
-"types_8hpp.html#a4e2c44f2b0c7bd4a4933ac1a5ef128ad"
+"coinbase__trade__encoder_8hpp.html#a5074a4b7b80c260a0ffa0fb6d7cdd86c",
+"index.html",
+"namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a390c90bc8cf017ab1113302becfe4ad1",
+"structslick_1_1sim_1_1CancelOrderMessage.html#a6f3dac7608dc77ca162a01c9a91de71b",
+"structslick_1_1sim_1_1OrderResponse.html#a34e85da328782d06c8747b16f28d2e05",
+"structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a81c540bb48e2379d4380a7864ae941db"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

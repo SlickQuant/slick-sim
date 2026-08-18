@@ -1,6 +1,8 @@
 var classslick_1_1sim_1_1OrderBook =
 [
-    [ "OrderBook", "classslick_1_1sim_1_1OrderBook.html#ac1c2304bbb3405acfd0da4a3800e8b22", null ],
+    [ "StringViewEq", "structslick_1_1sim_1_1OrderBook_1_1StringViewEq.html", "structslick_1_1sim_1_1OrderBook_1_1StringViewEq" ],
+    [ "StringViewHash", "structslick_1_1sim_1_1OrderBook_1_1StringViewHash.html", "structslick_1_1sim_1_1OrderBook_1_1StringViewHash" ],
+    [ "OrderBook", "classslick_1_1sim_1_1OrderBook.html#ab09d218f62c4e9db31cbf7f3be176126", null ],
     [ "~OrderBook", "classslick_1_1sim_1_1OrderBook.html#a3c29057ab9d52000cf9e31465ffa2258", null ],
     [ "addBookOrder", "classslick_1_1sim_1_1OrderBook.html#a50248c0f052f19783f95b6950fd8e7c2", null ],
     [ "addOrder", "classslick_1_1sim_1_1OrderBook.html#afa725e6f1d2d5cbbbcef399572542520", null ],
@@ -25,7 +27,7 @@ var classslick_1_1sim_1_1OrderBook =
     [ "populateMDBookUpdate", "classslick_1_1sim_1_1OrderBook.html#abf00ae9f7ae85d37f4dc222161d40f3b", null ],
     [ "setLastUpdate", "classslick_1_1sim_1_1OrderBook.html#af4ad0a4aae1fc7133d6b8277fca549e4", null ],
     [ "sid", "classslick_1_1sim_1_1OrderBook.html#ad904bf5a2abf7c73bc1a13b980f019f3", null ],
-    [ "symbolName", "classslick_1_1sim_1_1OrderBook.html#a170ae9ca599019bbe518eb4370e6b7cb", null ],
+    [ "symbolName", "classslick_1_1sim_1_1OrderBook.html#ab5fe95a904aa0984447edb2f3ba180bd", null ],
     [ "to_string", "classslick_1_1sim_1_1OrderBook.html#a3c89d0503873efa65e37f572270eda06", null ],
     [ "Observer", "classslick_1_1sim_1_1OrderBook.html#a409a646eb3893cb6b6046fd9452ed61d", null ],
     [ "feed_md_level_quantity_", "classslick_1_1sim_1_1OrderBook.html#ae74daac9219085e56937559b6857779c", null ],
@@ -35,9 +37,9 @@ var classslick_1_1sim_1_1OrderBook =
     [ "next_priority_", "classslick_1_1sim_1_1OrderBook.html#a1a42cc3cf2d73f19d20526fb8730e859", null ],
     [ "order_buffer_", "classslick_1_1sim_1_1OrderBook.html#a7d5c00f412eb166f5beab896193bb5cf", null ],
     [ "orders_", "classslick_1_1sim_1_1OrderBook.html#afd698b84ea9aba8111c98a897ed5ff73", null ],
-    [ "orders_by_client_order_id_", "classslick_1_1sim_1_1OrderBook.html#ae2a4f7cb431b908d02ae4137944ba171", null ],
-    [ "orders_by_order_id_", "classslick_1_1sim_1_1OrderBook.html#a50572884a602cd9ee18f9682d02111f2", null ],
+    [ "orders_by_client_order_id_", "classslick_1_1sim_1_1OrderBook.html#a9043e41d1af6bb1f9261448e682ee294", null ],
+    [ "orders_by_order_id_", "classslick_1_1sim_1_1OrderBook.html#a359018e13cc92bbac772c04715b30e6e", null ],
     [ "sid_", "classslick_1_1sim_1_1OrderBook.html#ae5e70328686b620ce31dd28fd2d21d7c", null ],
-    [ "symbol_", "classslick_1_1sim_1_1OrderBook.html#a18ce90f1113fdb09fe5dab4e63a922ba", null ],
+    [ "symbol_", "classslick_1_1sim_1_1OrderBook.html#a56c7355fc200a02c1ff6d61ff3098f49", null ],
     [ "venue_", "classslick_1_1sim_1_1OrderBook.html#a87f2de71361a987d1fe6cbd0b531bee2", null ]
 ];

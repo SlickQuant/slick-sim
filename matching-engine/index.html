@@ -636,6 +636,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Fixed-point arithmetic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#average-fill-price" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Average fill price
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1155,6 +1172,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Fixed-point arithmetic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#average-fill-price" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Average fill price
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1242,22 +1276,28 @@ against <code>match&lt;Side::SELL&gt;</code>.</p>
 client's <code>NEW</code> execution report therefore always precedes its fills.</p>
 <h3 id="step-1-fill-or-kill-pre-check">Step 1 — fill-or-kill pre-check<a class="headerlink" href="#step-1-fill-or-kill-pre-check" title="Permanent link">&para;</a></h3>
 <p>For <code>TimeInForce::FILL_OR_KILL</code>, <code>canFillCompletely&lt;SIDE&gt;()</code> walks the opposite side of the book
-accumulating available quantity until it either covers the order or hits a price level worse than the
-limit. The scan is SMP-aware: under <code>CANCEL_NEWEST</code> any self-match aborts the scan and returns false;
-under <code>CANCEL_RESTING</code> self-matched orders are skipped, because they would be cancelled rather than
-filled.</p>
+drawing down the order's remaining quantity until it either reaches zero or hits a price level worse
+than the limit. The scan is SMP-aware: under <code>CANCEL_NEWEST</code> any self-match aborts the scan and
+returns false; under <code>CANCEL_RESTING</code> self-matched orders are skipped, because they would be
+cancelled rather than filled. Under <code>NONE</code> they are counted like any other resting order — the order
+really would trade against itself.</p>
+<p>Resolving a resting book entry to its full <code>Order</code> is a hash lookup, and it exists only to compare
+client ids, so the scan skips it entirely when SMP is off and stays inside the price level's own
+array.</p>
 <p>If the scan fails, <code>publishOrderCancel</code> fires and the engine returns <code>FOK_CANNOT_FILL</code> with no trades.</p>
 <h3 id="step-2-apply-a-pending-replace">Step 2 — apply a pending replace<a class="headerlink" href="#step-2-apply-a-pending-replace" title="Permanent link">&para;</a></h3>
 <p>If <code>order-&gt;status == PENDING_REPLACE</code>, the new quantity and price are applied before matching:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">leaves_quantity</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">order_qty</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">quantity</span><span class="p">;</span><span class="w">  </span><span class="c1">// restore any earlier reduction</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">order</span><span class="o">-&gt;</span><span class="n">leaves_quantity</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">leaves_quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order_qty</span><span class="p">;</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">price</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">order_price</span><span class="p">;</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">publishOrderModify</span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">order_price</span><span class="p">,</span><span class="w"> </span><span class="n">order_qty</span><span class="p">,</span><span class="w"> </span><span class="n">request_time</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order_qty</span><span class="p">;</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">price</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="n">order_price</span><span class="p">;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">leaves_quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">cum_quantity</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">order_qty</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">                       </span><span class="o">?</span><span class="w"> </span><span class="mi">0</span><span class="w">                                 </span><span class="c1">// amended at or below what already filled</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">                       </span><span class="o">:</span><span class="w"> </span><span class="n">order_qty</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">cum_quantity</span><span class="p">;</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">publishOrderModify</span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">order_price</span><span class="p">,</span><span class="w"> </span><span class="n">order_qty</span><span class="p">,</span><span class="w"> </span><span class="n">request_time</span><span class="p">);</span>
 </code></pre></div>
-<p>The delta arithmetic preserves fills: an order for 10 that has filled 4 and is amended to 7 ends up
-with <code>leaves_quantity == 3</code>. If the amendment drives leaves to zero, the order is cancelled and the
-engine returns immediately.</p>
+<p>Leaves is recomputed from the cumulative fills rather than adjusted by a delta, so it cannot drift
+from the fill state: an order for 10 that has filled 4 and is amended to 7 ends up with
+<code>leaves_quantity == 3</code>, and one amended to 3 ends up at 0 rather than negative. If the amendment
+drives leaves to zero, the order is cancelled and the engine returns immediately.</p>
 <h3 id="step-3-the-matching-loop">Step 3 — the matching loop<a class="headerlink" href="#step-3-the-matching-loop" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">order_qty</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">best_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">book</span><span class="p">.</span><span class="n">getBestLevel</span><span class="o">&lt;</span><span class="n">SIDE</span><span class="o">&gt;</span><span class="p">();</span>
@@ -1376,7 +1416,7 @@ engine merges them into the current summary:</p>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="n">last_summary</span><span class="p">.</span><span class="n">num_orders</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="n">last_summary</span><span class="p">.</span><span class="n">qty</span><span class="w">        </span><span class="o">+=</span><span class="w"> </span><span class="n">trade_qty</span><span class="p">;</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="n">last_summary</span><span class="p">.</span><span class="n">Trades</span><span class="p">.</span><span class="n">front</span><span class="p">().</span><span class="n">qty</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">trade_qty</span><span class="p">;</span><span class="w">   </span><span class="c1">// grow the aggressor&#39;s leg</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="n">last_summary</span><span class="p">.</span><span class="n">Trades</span><span class="p">.</span><span class="n">front</span><span class="p">().</span><span class="n">qty</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">trade_qty</span><span class="p">;</span><span class="w">   </span><span class="c1">// grow the aggressor's leg</span>
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="n">last_summary</span><span class="p">.</span><span class="n">Trades</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">Trade</span><span class="p">{</span><span class="n">book_order_id</span><span class="p">,</span><span class="w"> </span><span class="n">trade_qty</span><span class="p">});</span>
 <a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">}</span>
 </code></pre></div>
@@ -1416,13 +1456,22 @@ are representable. All comparisons in the matching loop are integer comparisons 
 which flips direction on side.</p>
 <p><code>NULL_PRICE</code> is <code>INT64_MAX</code>. Because it is also a valid <code>price_t</code>, code must test for it explicitly
 before doing arithmetic — the matching loop does, but be careful when adding new paths.</p>
-<div class="admonition warning">
-<p class="admonition-title">Average fill price drifts</p>
-<p><code>avg_fill_price</code> is recomputed by converting to <code>double</code>, doing the weighted average, and
-converting back, on <em>every</em> fill — in both the engine and <code>OrderBook::executeOrder</code>. Errors
-compound across partial fills. See
-<a href="../known-gaps/#avg_fill_price-is-recomputed-in-floating-point-on-every-fill">Known gaps</a>.</p>
-</div>
+<h3 id="average-fill-price">Average fill price<a class="headerlink" href="#average-fill-price" title="Permanent link">&para;</a></h3>
+<p><code>avg_fill_price</code> is derived from a running notional rather than from the previous average, so it
+never accumulates rounding error across partial fills:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">cum_value</span><span class="w">    </span><span class="o">+=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">cum_value_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">price</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">cum_value_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">trade_qty</span><span class="p">);</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">cum_quantity</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">trade_qty</span><span class="p">;</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">avg_fill_price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">cum_quantity</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="o">?</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">price_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">order</span><span class="o">-&gt;</span><span class="n">cum_value</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">cum_value_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">order</span><span class="o">-&gt;</span><span class="n">cum_quantity</span><span class="p">))</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</code></pre></div>
+<p><code>cum_value_t</code> is <code>boost::multiprecision::uint128_t</code>. It has to be wider than <code>price_t</code>: both operands
+are already scaled by <code>1e8</code>, so their product carries <code>1e16</code> and a realistic price × quantity
+overflows 64 bits.</p>
+<p>Two caveats remain. The division truncates rather than rounds, so the result can be one unit of the
+<code>1e8</code> scale below the exact average — bounded, and not compounding, because each fill recomputes from
+the cumulative totals. And the same three lines appear twice: here for the aggressor, and in
+<a href="../order-book/#execution"><code>OrderBook::executeOrder</code></a> for the resting side. They have to stay in step.</p>
 <h2 id="what-the-engine-does-not-do">What the engine does not do<a class="headerlink" href="#what-the-engine-does-not-do" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong><code>post_only</code> is not enforced.</strong> The flag is parsed from Coinbase's <code>limit_limit_gtc.post_only</code>,

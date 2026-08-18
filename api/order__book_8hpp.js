@@ -1,6 +1,8 @@
 var order__book_8hpp =
 [
     [ "slick::sim::OrderBook", "classslick_1_1sim_1_1OrderBook.html", "classslick_1_1sim_1_1OrderBook" ],
+    [ "slick::sim::OrderBook::StringViewHash", "structslick_1_1sim_1_1OrderBook_1_1StringViewHash.html", "structslick_1_1sim_1_1OrderBook_1_1StringViewHash" ],
+    [ "slick::sim::OrderBook::StringViewEq", "structslick_1_1sim_1_1OrderBook_1_1StringViewEq.html", "structslick_1_1sim_1_1OrderBook_1_1StringViewEq" ],
     [ "slick::sim::Empty", "structslick_1_1sim_1_1Empty.html", null ],
     [ "slick::sim::OrderBookImpl< BookType >", "classslick_1_1sim_1_1OrderBookImpl.html", "classslick_1_1sim_1_1OrderBookImpl" ],
     [ "IOrderBookObserver", "order__book_8hpp.html#a9c1f8072ea547439852c1b28bc7be062", null ],

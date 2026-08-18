@@ -11,6 +11,7 @@ var market__data_8hpp =
     [ "slick::sim::MDTrade", "structslick_1_1sim_1_1MDTrade.html", "structslick_1_1sim_1_1MDTrade" ],
     [ "slick::sim::MDTradeUpdate", "structslick_1_1sim_1_1MDTradeUpdate.html", "structslick_1_1sim_1_1MDTradeUpdate" ],
     [ "slick::sim::MDTradeSnapshotResponse", "structslick_1_1sim_1_1MDTradeSnapshotResponse.html", "structslick_1_1sim_1_1MDTradeSnapshotResponse" ],
+    [ "symbol_name_t", "market__data_8hpp.html#aba246b15a6539e278c6d139bd140e888", null ],
     [ "MDSubscriptionRejectReason", "market__data_8hpp.html#a0a9f0bd1a7d704fe4599a7420d34e1d3", [
       [ "NONE", "market__data_8hpp.html#a0a9f0bd1a7d704fe4599a7420d34e1d3a85f539001467e885c9539c6d39233b4f", null ],
       [ "UNKNOWN_CONTRACT", "market__data_8hpp.html#a0a9f0bd1a7d704fe4599a7420d34e1d3a0ebb72bfe67423b3fa130870bfc77835", null ],

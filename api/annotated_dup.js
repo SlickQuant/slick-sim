@@ -47,6 +47,7 @@ var annotated_dup =
           [ "TcpOrderGatewayClientInfo", "structslick_1_1sim_1_1order__gateway_1_1TcpOrderGatewayClientInfo.html", "structslick_1_1sim_1_1order__gateway_1_1TcpOrderGatewayClientInfo" ]
         ] ],
         [ "utils", "namespaceslick_1_1sim_1_1utils.html", [
+          [ "fixed_string", "classslick_1_1sim_1_1utils_1_1fixed__string.html", "classslick_1_1sim_1_1utils_1_1fixed__string" ],
           [ "RingBuffer", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", "classslick_1_1sim_1_1utils_1_1RingBuffer" ]
         ] ],
         [ "AddOrderMessage", "structslick_1_1sim_1_1AddOrderMessage.html", "structslick_1_1sim_1_1AddOrderMessage" ],
@@ -69,6 +70,7 @@ var annotated_dup =
         [ "Order", "structslick_1_1sim_1_1Order.html", "structslick_1_1sim_1_1Order" ],
         [ "OrderBook", "classslick_1_1sim_1_1OrderBook.html", "classslick_1_1sim_1_1OrderBook" ],
         [ "OrderBookImpl", "classslick_1_1sim_1_1OrderBookImpl.html", "classslick_1_1sim_1_1OrderBookImpl" ],
+        [ "OrderIdentity", "structslick_1_1sim_1_1OrderIdentity.html", "structslick_1_1sim_1_1OrderIdentity" ],
         [ "OrderResponse", "structslick_1_1sim_1_1OrderResponse.html", "structslick_1_1sim_1_1OrderResponse" ],
         [ "ProxiedHttpResponse", "structslick_1_1sim_1_1ProxiedHttpResponse.html", "structslick_1_1sim_1_1ProxiedHttpResponse" ],
         [ "Request", "structslick_1_1sim_1_1Request.html", "structslick_1_1sim_1_1Request" ],
@@ -77,5 +79,8 @@ var annotated_dup =
         [ "TradeSummary", "structslick_1_1sim_1_1TradeSummary.html", "structslick_1_1sim_1_1TradeSummary" ],
         [ "TradeSummaryInfo", "structslick_1_1sim_1_1TradeSummaryInfo.html", "structslick_1_1sim_1_1TradeSummaryInfo" ]
       ] ]
+    ] ],
+    [ "std", null, [
+      [ "formatter< slick::sim::utils::fixed_string< N >, CharT >", "structstd_1_1formatter_3_01slick_1_1sim_1_1utils_1_1fixed__string_3_01N_01_4_00_01CharT_01_4.html", "structstd_1_1formatter_3_01slick_1_1sim_1_1utils_1_1fixed__string_3_01N_01_4_00_01CharT_01_4" ]
     ] ]
 ];

@@ -772,17 +772,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#startup-aborts-if-logs-does-not-exist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Startup aborts if logs/ does not exist
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -799,28 +788,6 @@
   
     <nav class="md-nav" aria-label="Order and market-data plumbing">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#market-data-unsubscribe-requests-are-dropped" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Market-data unsubscribe requests are dropped
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#a-trade-print-only-reaches-the-tape-if-it-finds-liquidity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A trade print only reaches the tape if it finds liquidity
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#mdupdatetypeorder-is-never-published" class="md-nav__link">
@@ -871,34 +838,6 @@
     <span class="md-ellipsis">
       
         Exchange::processMdData() and the market-data thread are commented out
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#bugs-found-while-documenting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bugs found while documenting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Bugs found while documenting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#avg_fill_price-is-recomputed-in-floating-point-on-every-fill" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        avg_fill_price is recomputed in floating point on every fill
       
     </span>
   </a>
@@ -1055,17 +994,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#startup-aborts-if-logs-does-not-exist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Startup aborts if logs/ does not exist
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1082,28 +1010,6 @@
   
     <nav class="md-nav" aria-label="Order and market-data plumbing">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#market-data-unsubscribe-requests-are-dropped" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Market-data unsubscribe requests are dropped
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#a-trade-print-only-reaches-the-tape-if-it-finds-liquidity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A trade print only reaches the tape if it finds liquidity
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#mdupdatetypeorder-is-never-published" class="md-nav__link">
@@ -1154,34 +1060,6 @@
     <span class="md-ellipsis">
       
         Exchange::processMdData() and the market-data thread are commented out
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#bugs-found-while-documenting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bugs found while documenting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Bugs found while documenting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#avg_fill_price-is-recomputed-in-floating-point-on-every-fill" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        avg_fill_price is recomputed in floating point on every fill
       
     </span>
   </a>
@@ -1287,8 +1165,7 @@ is a <strong>zero-byte file</strong>. There is no <code>CmeExchange</code>, no E
 dispatches on the config key: <code>coinbase</code> builds a <code>CoinbaseExchange</code>, <code>hyperliquid</code> builds a
 <code>HyperliquidExchange</code>, and <strong>anything else</strong> constructs a plain <code>Exchange</code>. Only the two concrete
 adapters populate <code>md_publisher_</code> and <code>order_gateways_</code>; the base constructor does not.</p>
-<p><code>Exchange::start()</code> now tolerates that — <code>md_publisher_</code> is null-checked, so a generic exchange no
-longer crashes. What is left is that it does nothing useful:</p>
+<p><code>Exchange::start()</code> does nothing useful:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">thread_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">([</span><span class="k">this</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">processRequest</span><span class="p">();</span><span class="w"> </span><span class="p">});</span>
 </code></pre></div>
 <p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L68-L93"><code>Exchange::processRequest()</code></a>
@@ -1302,40 +1179,7 @@ it is constructed and then skipped with a warning:</p>
 <p><strong>What it means:</strong> leave the <code>cme</code> block disabled, or delete it. Enabling it gets you an inert
 exchange, not a working one. If you add a venue, populating <code>md_publisher_</code> <strong>and</strong> overriding
 <code>start()</code> with a loop are both mandatory — see <a href="../extending/">Adding an exchange</a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Previously a crash</p>
-<p>Until recently <code>Exchange::start()</code> dereferenced <code>md_publisher_</code> unconditionally and the <code>cme</code>
-block segfaulted the process on startup — before either working venue was constructed, since
-<code>nlohmann::json</code> iterates object keys in sorted order and <code>"cme"</code> sorts before <code>"coinbase"</code>.
-Both that and the <code>enabled</code> flag being ignored for non-adapter venues are now fixed.</p>
-</div>
-<h3 id="startup-aborts-if-logs-does-not-exist">Startup aborts if <code>logs/</code> does not exist<a class="headerlink" href="#startup-aborts-if-logs-does-not-exist" title="Permanent link">&para;</a></h3>
-<p><code>main.cpp</code> calls <code>logger.add_file_sink("logs/slick-sim.log")</code> with a path relative to the current
-working directory, and nothing creates the directory first. Run <code>slick-sim</code> from a directory with no
-<code>logs/</code> subdirectory and the process aborts with exit code 3, writing nothing at all — no console
-message, no log, no clue.</p>
-<p>The repository ships a <code>logs/</code> directory, so this never bites anyone running from the repo root. It
-bites immediately when running a packaged release binary from a fresh directory.</p>
-<p><strong>What it means:</strong> <code>mkdir logs</code> before the first run in any new working directory.</p>
 <h2 id="order-and-market-data-plumbing">Order and market-data plumbing<a class="headerlink" href="#order-and-market-data-plumbing" title="Permanent link">&para;</a></h2>
-<h3 id="market-data-unsubscribe-requests-are-dropped">Market-data unsubscribe requests are dropped<a class="headerlink" href="#market-data-unsubscribe-requests-are-dropped" title="Permanent link">&para;</a></h3>
-<p>Both publishers send <code>MessageType::MD_UNSUBSCRIPTION</code> requests when a client unsubscribes or
-disconnects, but the <code>switch</code> in
-<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L74-L91"><code>Exchange::processRequest()</code></a>
-handles only <code>NEW_ORDER_SINGLE</code>, <code>ORDER_REPLACE_REQUEST</code>, <code>ORDER_CANCEL_REQUEST</code> and
-<code>MD_SUBSCRIPTION</code>. There is no <code>MD_UNSUBSCRIPTION</code> case, so <code>handleMdUnsubscription()</code> — implemented
-on both adapters — is never called from the request loop.</p>
-<p><strong>What it means:</strong> <code>Symbol::num_subscriptions_</code> only ever increases, and upstream feeds are never
-torn down when the last client goes away. Harmless for a long-running sim with a stable symbol set;
-a slow leak otherwise.</p>
-<h3 id="a-trade-print-only-reaches-the-tape-if-it-finds-liquidity">A trade print only reaches the tape if it finds liquidity<a class="headerlink" href="#a-trade-print-only-reaches-the-tape-if-it-finds-liquidity" title="Permanent link">&para;</a></h3>
-<p>The public trade tape is fill-driven: a venue print is replayed through the matching engine as an
-aggressor order, and only the resulting fills are published. A print that finds nothing crossable in
-the mirrored book therefore produces no output at all, and its unfilled remainder simply rests.</p>
-<p><strong>What it means:</strong> tape fidelity tracks book fidelity. While the mirrored book is thin or stale —
-right after startup, or after a feed gap — prints can be dropped from the tape rather than relayed
-verbatim. This is the intended design, not a defect, but it is worth knowing when reconciling the
-simulator's tape against the venue's.</p>
 <h3 id="mdupdatetypeorder-is-never-published"><code>MDUpdateType::ORDER</code> is never published<a class="headerlink" href="#mdupdatetypeorder-is-never-published" title="Permanent link">&para;</a></h3>
 <p><code>Symbol::onOrderUpdate</code> fills <code>md_order_update_cache_</code>, but every call site clears the cache behind a
 <code>// TODO: publish MD order update</code> comment rather than calling <code>publishMDOrderUpdate</code>. The function
@@ -1373,22 +1217,6 @@ launch a dedicated market-data thread. <code>stop()</code> still contains <code>
 md_thread_.join();</code> — dead code, since nothing ever starts that thread.</p>
 <p><strong>What it means:</strong> market data is processed on the same thread as order requests. See the threading
 model in <a href="../architecture/">Architecture</a>.</p>
-<h2 id="bugs-found-while-documenting">Bugs found while documenting<a class="headerlink" href="#bugs-found-while-documenting" title="Permanent link">&para;</a></h2>
-<p>These are latent defects, not design decisions. They are recorded here because the documentation
-would otherwise describe behaviour the code does not deliver.</p>
-<h3 id="avg_fill_price-is-recomputed-in-floating-point-on-every-fill"><code>avg_fill_price</code> is recomputed in floating point on every fill<a class="headerlink" href="#avg_fill_price-is-recomputed-in-floating-point-on-every-fill" title="Permanent link">&para;</a></h3>
-<p>Both
-<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/order_book/order_book.hpp#L187"><code>OrderBook::executeOrder</code></a>
-and the
-<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/matching_engine/fifo_matching_engine.cpp#L189">matching loop</a>
-round-trip the running average through <code>double</code> (<code>to_price_double</code> → arithmetic → <code>to_price_t</code>) on
-every partial fill, rather than accumulating notional in fixed point. Errors compound across fills.</p>
-<p>Worse, when a resting simulator order is filled by an incoming aggressor, <strong>both</strong> functions update
-the same order: <code>FifoMatchingEngine::match</code> updates the aggressor's fields, then calls
-<code>book.executeOrder</code>, which updates the <em>resting</em> order's fields. The commented-out block at
-<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/matching_engine/fifo_matching_engine.cpp#L272-L276"><code>fifo_matching_engine.cpp:272-276</code></a>
-shows this duplication was noticed for the market-data path.</p>
-<p><strong>What it means:</strong> treat <code>avg_fill_price</code> on a heavily partially-filled order as approximate.</p>
 <h2 id="configuration-and-packaging">Configuration and packaging<a class="headerlink" href="#configuration-and-packaging" title="Permanent link">&para;</a></h2>
 <h3 id="the-default-config-filename-does-not-match-the-committed-sample">The default config filename does not match the committed sample<a class="headerlink" href="#the-default-config-filename-does-not-match-the-committed-sample" title="Permanent link">&para;</a></h3>
 <p>With no command-line argument, <code>main.cpp</code> looks for <strong><code>slick-sim.json</code></strong> in the current directory

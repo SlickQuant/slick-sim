@@ -1,5 +1,6 @@
 var common_2order_8hpp =
 [
+    [ "slick::sim::OrderIdentity", "structslick_1_1sim_1_1OrderIdentity.html", "structslick_1_1sim_1_1OrderIdentity" ],
     [ "slick::sim::Order", "structslick_1_1sim_1_1Order.html", "structslick_1_1sim_1_1Order" ],
     [ "slick::sim::Fill", "structslick_1_1sim_1_1Fill.html", "structslick_1_1sim_1_1Fill" ],
     [ "json", "common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d", null ],

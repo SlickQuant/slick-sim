@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['data_0',['data',['../structslick_1_1sim_1_1MarketDataUpdate.html#a8d7da96c5221ef9710b0470f8f8ced2e',1,'slick::sim::MarketDataUpdate::data'],['../structslick_1_1sim_1_1MDSubscriptionResponse.html#a28feb033c4230c8fa9a06ec0e5a56773',1,'slick::sim::MDSubscriptionResponse::data']]],
+  ['data_0',['data',['../structslick_1_1sim_1_1MarketDataUpdate.html#a8d7da96c5221ef9710b0470f8f8ced2e',1,'slick::sim::MarketDataUpdate::data'],['../structslick_1_1sim_1_1MDSubscriptionResponse.html#a28feb033c4230c8fa9a06ec0e5a56773',1,'slick::sim::MDSubscriptionResponse::data'],['../classslick_1_1sim_1_1utils_1_1fixed__string.html#a12e6d95927ffeedbca5bb2259da753cc',1,'slick::sim::utils::fixed_string::data() const noexcept'],['../classslick_1_1sim_1_1utils_1_1fixed__string.html#aa572bee07758a766b0c82ff132ea5646',1,'slick::sim::utils::fixed_string::data() noexcept']]],
   ['data_5fcursor_5f_1',['data_cursor_',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a2bb92d5c4f4140cb529b1f9ccc409f10',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]],
   ['day_2',['DAY',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a5b1d59b5451c06afb65ab1bc2713cfb4',1,'slick::sim']]],
   ['default_5fprotocol_5f_3',['default_protocol_',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a5b0c0ce01c7aaf17f69d35feb3830d32',1,'slick::sim::order_gateway::TcpOrderGateway']]],

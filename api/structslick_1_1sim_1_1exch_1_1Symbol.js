@@ -27,7 +27,7 @@ var structslick_1_1sim_1_1exch_1_1Symbol =
     [ "num_subscriptions_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a8f70ddb3c53018906c98bf0b5f1fa894", null ],
     [ "order_book_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a8ae3a2bd3ba8cf94b862bb3e946cfc7f", null ],
     [ "smp_mode_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a0848515fd68be6a88dfe0b7ace48db1c", null ],
-    [ "symbol_", "structslick_1_1sim_1_1exch_1_1Symbol.html#af87fe19c60cb383951bd17aec64cd15d", null ],
+    [ "symbol_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a0ada4deda35911ce30d4a71984431949", null ],
     [ "trade_history_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a048b6f60edc692aa007cc6188bc59afb", null ],
     [ "TRADE_HISTORY_CAPACITY", "structslick_1_1sim_1_1exch_1_1Symbol.html#a468ec804364582524f1f6a15494864ed", null ],
     [ "venue_", "structslick_1_1sim_1_1exch_1_1Symbol.html#a8c252b5555b3ce4141999aea03f890cf", null ]
