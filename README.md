@@ -200,7 +200,7 @@ Logs:
 
 ## Testing
 
-Unit tests are built by default (`BUILD_EXCH_SIMULATOR_TESTING=ON`) using GoogleTest, covering the matching engine (FIFO matching, self-match prevention, time-in-force), order book operations, message/type conversions, the Coinbase/Hyperliquid exchange adapters, and the market-data wire encoders (`tests/unit/`).
+Unit tests are built by default (`BUILD_EXCH_SIMULATOR_TESTING=ON`) using GoogleTest, covering the matching engine (FIFO matching, self-match prevention, time-in-force), order book operations, message/type conversions, the fixed-width wire-field helpers, the Coinbase/Hyperliquid exchange adapters, and the market-data wire encoders (`tests/unit/`).
 
 ```bash
 cmake -S . -B build
@@ -263,7 +263,7 @@ slick-sim/
 │   ├── order_gateway/           # venue-native REST/WS order entry gateways
 │   ├── sim/
 │   │   └── main.cpp             # slick-sim entry point
-│   └── utils/                   # order id / timestamp / price helpers (header-only)
+│   └── utils/                   # order id / timestamp / price / fixed-width string helpers (header-only)
 ├── tests/
 │   └── unit/                    # GoogleTest suite (slick_sim_tests)
 ├── LICENSE

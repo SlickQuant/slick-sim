@@ -281,7 +281,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
         if (event.event_time < symbol->order_book_->lastUpdateTime())
         {
             LOG_WARN("[CoinbaseExchange] Skipping stale level update for symbol {}: seq_num={}, event_time={}({}), last_update_time={}({}) last_seq_num={}",
-                     symbol->symbol_,
+                     symbol->symbol_.view(),
                      event.seq_num,
                      utils::format_timestamp_iso8601(event.event_time), event.event_time,
                      utils::format_timestamp_iso8601(symbol->order_book_->lastUpdateTime()), symbol->order_book_->lastUpdateTime(), symbol->order_book_->lastSeqNum());
@@ -326,7 +326,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
 
             if (!symbol->md_level_update_cache_.empty())
             {
-                publishLevelUpdate(symbol->symbol_.c_str(), symbol->md_level_update_cache_);
+                publishLevelUpdate(symbol->symbol_, symbol->md_level_update_cache_);
                 symbol->md_level_update_cache_.clear();
             }
 
@@ -354,7 +354,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
             event.seq_num != state.last_published_level_seq_num)
         {
             publishLevelUpdate(
-                symbol->symbol_.c_str(),
+                symbol->symbol_,
                 level_update_buffer_);
             state.last_published_level_seq_num = level_update_buffer_.back().seq_num;
             level_update_buffer_.clear();
@@ -433,7 +433,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
 
         if (!symbol->md_level_update_cache_.empty())
         {
-            publishLevelUpdate(symbol->symbol_.c_str(), symbol->md_level_update_cache_);
+            publishLevelUpdate(symbol->symbol_, symbol->md_level_update_cache_);
             symbol->md_level_update_cache_.clear();
         }
 

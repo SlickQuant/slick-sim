@@ -1,6 +1,7 @@
 #include <slick/logger.hpp> 
 #include "coinbase_rest_order_gateway.hpp"
 #include <coinbase/auth.hpp>
+#include <utils/fixed_string.hpp>
 #include <cmath>
 #include "coinbase_common.hpp"
 
@@ -320,20 +321,12 @@ void CoinbaseRestOrderGateway::handle_create_order(uWS::HttpResponse<false>* res
 
             // Populate Request struct
             request->time_stamp = utils::get_current_time_ns();
-            std::memset(request->symbol, 0, sizeof(request->symbol));
-            std::memcpy(request->symbol, product_id.c_str(),
-                        std::min(sizeof(request->symbol), product_id.size()));
+            utils::copy_wire_field(request->symbol, product_id);
             request->msg_type = MessageType::NEW_ORDER_SINGLE;
 
             // Populate AddOrderMessage
-            std::memset(request->add_order.user_id, 0, sizeof(request->add_order.user_id));
-            std::memcpy(request->add_order.user_id, user_id.c_str(),
-                        std::min(sizeof(request->add_order.user_id), user_id.size()));
-            std::memset(request->add_order.client_order_id, 0, sizeof(request->add_order.client_order_id));
-            std::memcpy(request->add_order.client_order_id, client_order_id.c_str(),
-                        std::min(sizeof(request->add_order.client_order_id), client_order_id.size()));
-            if (client_order_id.size() >= sizeof(request->add_order.client_order_id)) {
-                request->add_order.client_order_id[sizeof(request->add_order.client_order_id) - 1] = '\0';
+            utils::copy_wire_field(request->add_order.user_id, user_id);
+            if (utils::copy_wire_field(request->add_order.client_order_id, client_order_id)) {
                 LOG_WARN("client_order_id truncated to fit into fixed size buffer: original='{}', truncated='{}'", client_order_id, request->add_order.client_order_id);
             }
             request->add_order.side = side;
@@ -535,16 +528,13 @@ void CoinbaseRestOrderGateway::handle_batch_cancel(uWS::HttpResponse<false>* res
                 auto request_index = request_queue_.reserve();
                 auto* request = request_queue_[request_index];
                 request->time_stamp = utils::get_current_time_ns();
-                std::memset(request->symbol, 0, sizeof(request->symbol));
-                std::memcpy(request->symbol, symbol.c_str(), std::min(sizeof(request->symbol), symbol.size()));
+                utils::copy_wire_field(request->symbol, symbol);
                 request->msg_type = MessageType::ORDER_CANCEL_REQUEST;
 
                 std::memset(&request->cancel_order, 0, sizeof(request->cancel_order));
-                std::memcpy(request->cancel_order.user_id, user_id.c_str(),
-                            std::min(sizeof(request->cancel_order.user_id), user_id.size()));
+                utils::copy_wire_field(request->cancel_order.user_id, user_id);
                 // Leave client_order_id empty — engine falls through to findOrderByOrderId
-                std::memcpy(request->cancel_order.order_id, order_id.c_str(),
-                            std::min(sizeof(request->cancel_order.order_id), order_id.size()));
+                utils::copy_wire_field(request->cancel_order.order_id, order_id);
 
                 request_queue_.publish(request_index);
                 LOG_INFO("Submitted cancel request: user={}, order_id={}, symbol={}", user_id, order_id, symbol);
@@ -704,15 +694,12 @@ void CoinbaseRestOrderGateway::handle_edit_order(uWS::HttpResponse<false>* res, 
             auto request_index = request_queue_.reserve();
             auto* request = request_queue_[request_index];
             request->time_stamp = utils::get_current_time_ns();
-            std::memset(request->symbol, 0, sizeof(request->symbol));
-            std::memcpy(request->symbol, symbol.c_str(), std::min(sizeof(request->symbol), symbol.size()));
+            utils::copy_wire_field(request->symbol, symbol);
             request->msg_type = MessageType::ORDER_REPLACE_REQUEST;
 
             std::memset(&request->modify_order, 0, sizeof(request->modify_order));
-            std::memcpy(request->modify_order.user_id, user_id.c_str(),
-                        std::min(sizeof(request->modify_order.user_id), user_id.size()));
-            std::memcpy(request->modify_order.order_id, order_id.c_str(),
-                        std::min(sizeof(request->modify_order.order_id), order_id.size()));
+            utils::copy_wire_field(request->modify_order.user_id, user_id);
+            utils::copy_wire_field(request->modify_order.order_id, order_id);
             request->modify_order.new_price = new_price;
             request->modify_order.new_qty = new_qty;
 

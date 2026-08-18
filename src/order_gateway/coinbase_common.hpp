@@ -93,12 +93,12 @@ inline json to_json(const Order& order) {
     }
 
     return {
-        {"order_id", order.order_id},
-        {"product_id", order.symbol},
-        {"user_id", order.user_id},
+        {"order_id", order.order_id.c_str()},
+        {"product_id", order.symbol.c_str()},
+        {"user_id", order.user_id.c_str()},
         {"order_configuration", order_config},
         {"side", to_string(order.side)},
-        {"client_order_id", order.client_order_id},
+        {"client_order_id", order.client_order_id.c_str()},
         {"status", to_string(order.status)},
         {"time_in_force", to_coinbase_string(order.time_in_force)},
         {"created_time", utils::format_timestamp_iso8601()},

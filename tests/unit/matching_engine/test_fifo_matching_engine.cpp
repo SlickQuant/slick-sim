@@ -6,6 +6,8 @@
 #include <common/messages.hpp>
 #include <slick/queue.h>
 #include <slick/object_pool.h>
+#include <set>
+#include <string>
 #include "../test_helpers.hpp"
 
 using namespace slick::sim;
@@ -231,4 +233,130 @@ TEST_F(FifoMatchingEngineTest, AverageFillPrice_UsesFixedPointWeightedAverage) {
 
 TEST_F(FifoMatchingEngineTest, EngineType) {
     EXPECT_EQ(matching_engine_->type(), MatchingEngine::Type::FIFO);
+}
+
+// ---------------------------------------------------------------------------
+// A trade has two sides, and both belong to a client when both orders are the
+// simulator's own. The aggressor's owner has always been told; the resting
+// order's owner was not.
+//
+// `match()` publishes an execution report for the aggressor and then calls
+// `book.executeOrder(book_order_id, …)`, which books the fill onto the resting
+// Order but cannot publish anything — `OrderBook` holds no reference to the
+// matching engine — and, when the resting order is fully filled, only removes it
+// from the lookup maps without returning it to the pool. So the resting client
+// saw its order vanish with no fill report, and the pooled Order leaked.
+//
+// The market-data replay path in the second `match()` overload always did this
+// correctly, which is what makes the omission visible as an inconsistency.
+// ---------------------------------------------------------------------------
+
+TEST_F(FifoMatchingEngineTest, RestingOrderOwnerGetsAnExecutionReport) {
+    auto* resting = createTestOrder(order_book_, Side::SELL, kPrice100, kQty10,
+                                    TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/1);
+    order_book_->addOrder(resting, 1000, 1);
+    const std::string resting_order_id(resting->order_id.c_str());
+
+    // A different client crosses it.
+    auto* aggressor = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10,
+                                      TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/2);
+    collector_->reset();
+
+    auto [reject_reason, trades] = matching_engine_->match(
+        aggressor, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
+    ASSERT_EQ(reject_reason, OrdRejectReason::NONE);
+
+    int resting_fills = 0;
+    int aggressor_fills = 0;
+    for (const auto& response : collector_->collect()) {
+        if (response.exec_type != ExecType::TRADE) {
+            continue;
+        }
+        if (resting_order_id == response.order_id) {
+            ++resting_fills;
+            EXPECT_EQ(response.last_fill_price, kPrice100);
+            EXPECT_EQ(response.cum_qty, kQty10);
+            EXPECT_EQ(response.leaves_qty, 0);
+            EXPECT_EQ(response.order_status, OrderStatus::FILLED);
+            EXPECT_EQ(response.side, Side::SELL);
+        } else {
+            ++aggressor_fills;
+        }
+    }
+
+    EXPECT_EQ(aggressor_fills, 1);
+    EXPECT_EQ(resting_fills, 1) << "the resting order's owner was never told its order filled";
+}
+
+TEST_F(FifoMatchingEngineTest, PartiallyFilledRestingOrderReportsRemainingLeaves) {
+    auto* resting = createTestOrder(order_book_, Side::SELL, kPrice100, kQty10,
+                                    TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/1);
+    order_book_->addOrder(resting, 1000, 1);
+    const std::string resting_order_id(resting->order_id.c_str());
+
+    auto* aggressor = createTestOrder(order_book_, Side::BUY, kPrice100, kQty3,
+                                      TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/2);
+    collector_->reset();
+
+    matching_engine_->match(aggressor, kPrice100, kQty3, *order_book_, 2000, 2000, 2,
+                            SelfMatchPreventionMode::NONE);
+
+    bool seen = false;
+    for (const auto& response : collector_->collect()) {
+        if (response.exec_type == ExecType::TRADE && resting_order_id == response.order_id) {
+            seen = true;
+            EXPECT_EQ(response.last_qty, kQty3);
+            EXPECT_EQ(response.cum_qty, kQty3);
+            EXPECT_EQ(response.leaves_qty, kQty10 - kQty3);
+            EXPECT_EQ(response.order_status, OrderStatus::PARTIALLY_FILLED);
+        }
+    }
+    EXPECT_TRUE(seen) << "no fill report for the partially filled resting order";
+
+    // Still live, so it must stay in the book and keep its remaining quantity.
+    EXPECT_EQ(order_book_->findOrder(resting->id), resting);
+    EXPECT_EQ(resting->leaves_quantity, kQty10 - kQty3);
+}
+
+TEST_F(FifoMatchingEngineTest, FullyFilledRestingOrdersAreReturnedToThePool) {
+    // Rest-and-fill the same shape repeatedly against a deliberately small pool. The
+    // pool hands out fresh slots until it wraps, so reuse is only observable once the
+    // round count passes its capacity; a leak then shows as a fresh slot every pass,
+    // which is how it degrades in production — silently, because slick::ObjectPool
+    // falls back to the heap once exhausted rather than failing.
+    constexpr uint_fast32_t kPoolSize = 8;
+    constexpr int kRounds = 64;
+    std::shared_ptr<OrderBook> pooled_book(
+        new OrderBookImpl<OrderBookType::L2>(kSymbolId, "BTC-USD", Venue::COINBASE, kPoolSize));
+    pooled_book->addObserver(pooled_book->shared_from_this());
+
+    std::set<const Order*> resting_slots;
+
+    for (int i = 0; i < kRounds; ++i) {
+        // Sequence numbers must keep climbing across rounds — the L3 book ignores an
+        // update older than the last one it applied, so reusing them here would make
+        // later rounds silently fail to rest.
+        const uint64_t rest_seq = static_cast<uint64_t>(i) * 2 + 1;
+        const uint64_t fill_seq = rest_seq + 1;
+
+        auto* resting = createTestOrder(pooled_book, Side::SELL, kPrice100, kQty10,
+                                        TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/1);
+        resting_slots.insert(resting);
+        pooled_book->addOrder(resting, 1000 + i, rest_seq);
+
+        auto* aggressor = createTestOrder(pooled_book, Side::BUY, kPrice100, kQty10,
+                                          TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/2);
+        matching_engine_->match(aggressor, kPrice100, kQty10, *pooled_book, 2000 + i, 2000 + i,
+                                fill_seq, SelfMatchPreventionMode::NONE);
+        ASSERT_EQ(aggressor->leaves_quantity, 0) << "round " << i << " did not trade";
+        ASSERT_EQ(resting->leaves_quantity, 0);
+
+        // The aggressor's own recycling belongs to Symbol::addOrder, not the engine.
+        pooled_book->freeOrder(aggressor);
+    }
+
+    EXPECT_LE(resting_slots.size(), kPoolSize)
+        << "fully filled resting orders were not returned to the pool: "
+        << resting_slots.size() << " distinct slots drawn across " << kRounds
+        << " rounds from a pool of " << kPoolSize;
 }

@@ -115,8 +115,8 @@ protected:
     // Add a resting simulator order directly to the symbol's order book.
     Order* addSimOrder(Symbol* sym, Side side, price_t price, qty_t qty) {
         auto* order = sym->order_book_->allocateOrder();
-        order->symbol          = sym->symbol_;
-        order->user_id         = "test-user";
+        order->symbol = sym->symbol_;
+        order->user_id = "test-user";
         order->side            = side;
         order->type            = OrderType::LIMIT;
         order->price           = price;

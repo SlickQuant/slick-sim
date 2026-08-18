@@ -48,7 +48,7 @@ ParseResult FixParser::parse_message(const uint8_t* data, size_t length, int cli
                 
                 if (result.has_order()) {
                     LOG_DEBUG("FIX: Parsed order for client {}: {}", client_id, 
-                             result.order->client_order_id);
+                             result.order->client_order_id.view());
                     return result;
                 }
             }
@@ -81,7 +81,7 @@ Order FixParser::parse_new_order_single(const FIX44::NewOrderSingle& message, in
     FIX::ClOrdID clOrdID;
     message.get(clOrdID);
     order.client_order_id = clOrdID.getValue();
-    
+
     FIX::Symbol symbol;
     message.get(symbol);
     order.symbol = symbol.getValue();

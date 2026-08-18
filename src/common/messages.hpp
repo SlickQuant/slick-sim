@@ -1,7 +1,10 @@
 #pragma once
 
 #include <string>
+#include <cstddef>
+#include <cstring>
 #include <format>
+#include <type_traits>
 #include <common/order.hpp>
 
 namespace slick::sim {
@@ -321,6 +324,27 @@ struct TradeSummary {
 };
 
 #pragma pack(pop)
+
+// setOrderIdentity() copies an order's OrderIdentity over the head of an
+// OrderResponse in one go, which is only valid while the two layouts agree byte
+// for byte. Adding, reordering or resizing a field at either end fails the build
+// here rather than silently shifting the ids on the wire.
+static_assert(std::is_standard_layout_v<OrderResponse>);
+static_assert(offsetof(OrderResponse, symbol) == offsetof(OrderIdentity, symbol));
+static_assert(offsetof(OrderResponse, user_id) == offsetof(OrderIdentity, user_id));
+static_assert(offsetof(OrderResponse, client_order_id) == offsetof(OrderIdentity, client_order_id));
+static_assert(offsetof(OrderResponse, order_id) == offsetof(OrderIdentity, order_id));
+static_assert(sizeof(OrderResponse::symbol) == decltype(OrderIdentity::symbol)::buffer_size());
+static_assert(sizeof(OrderResponse::user_id) == decltype(OrderIdentity::user_id)::buffer_size());
+static_assert(sizeof(OrderResponse::client_order_id) == decltype(OrderIdentity::client_order_id)::buffer_size());
+static_assert(sizeof(OrderResponse::order_id) == decltype(OrderIdentity::order_id)::buffer_size());
+static_assert(offsetof(OrderResponse, error_message) == sizeof(OrderIdentity));
+
+/// Fills the symbol/user_id/client_order_id/order_id header of a response from an
+/// order. One fixed-size copy, replacing four copies out of four heap blocks.
+inline void setOrderIdentity(OrderResponse &response, const Order &order) noexcept {
+    std::memcpy(&response, static_cast<const OrderIdentity *>(&order), sizeof(OrderIdentity));
+}
 
 struct TradeSummaryInfo {
     time_t timestamp = 0;

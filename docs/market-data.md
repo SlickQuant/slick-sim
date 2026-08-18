@@ -263,7 +263,7 @@ auto index = md_queue_.reserve(sz);
 auto* update = reinterpret_cast<MarketDataUpdate*>(md_queue_[index]);
 update->type  = MDUpdateType::LEVEL;
 update->venue = venue_;
-std::memcpy(update->symbol, symbol, sizeof(update->symbol));
+std::memcpy(update->symbol, symbol.data(), sizeof(update->symbol));   // symbol is a symbol_name_t
 auto* payload = reinterpret_cast<MDLevelUpdate*>(update->data);
 // … fill payload …
 md_queue_.publish(index, sz);
@@ -282,6 +282,12 @@ Consumers do the mirror: `read(cursor)`, cast to `MarketDataUpdate*`, switch on 
 | 32 | 1 | `Venue venue` | |
 | 33 | 1 | `MDUpdateType type` | Selects the payload type |
 | 34 | — | `uint8_t data[0]` | Payload begins here |
+
+`Symbol` and `OrderBook` both hold their name as `symbol_name_t`, declared next to this struct as
+`utils::fixed_string<sizeof(MarketDataUpdate::symbol)>`. Producers therefore copy the whole field as
+a fixed block. The type is derived from the wire field on purpose: widening `symbol[32]` widens the
+storage with it, rather than leaving every publish site reading `sizeof(update->symbol)` bytes out of
+a narrower buffer.
 
 ### Payload by `MDUpdateType`
 
@@ -382,6 +388,17 @@ Each publisher runs a uWS event loop and drains `md_queue_` from a private curso
 `publish_market_data_update`. Client subscriptions are tracked per channel and per symbol, so a frame
 for an unsubscribed symbol is dropped cheaply.
 
+`publish_processing` drains up to 1000 frames per pass before handing the loop back, so a flood costs
+one `loop_->defer` per batch rather than per frame; a `SUB_RESPONSE` or `BOOK_SNAPSHOT` cuts the batch
+short, since a whole book is far more expensive to encode than an incremental update.
+
+!!! warning "The reschedule must stay unconditional"
+    `publish_processing` re-arms itself via `schedule_publish_processing()` even when the queue came
+    up empty, and that is deliberate. The `defer` it posts is the *only* thing that runs the function
+    again: `md_queue_` is a lock-free queue with no wakeup mechanism, and the exchange thread that
+    fills it never touches the publisher's loop. Skipping the reschedule when the queue is empty
+    looks like an easy saving and stops the publisher permanently the first time it catches up.
+
 The wire formats produced are documented per venue:
 
 - [Coinbase market-data channels](integration-coinbase.md#market-data-websocket)
@@ -390,8 +407,7 @@ The wire formats produced are documented per venue:
 Subscriptions travel in the opposite direction: a client's `subscribe` message causes the publisher to
 write a `MD_SUBSCRIPTION` `Request` onto `request_queue_`, which the exchange thread handles by
 creating the symbol (if new), attaching a feed, and marking the symbol pending until the first
-snapshot arrives. Unsubscribes are written the same way but
-[never processed](known-gaps.md#market-data-unsubscribe-requests-are-dropped).
+snapshot arrives. Unsubscribes are written the same way and dispatched to `handleMdUnsubscription`.
 
 ### The recent-trade snapshot
 

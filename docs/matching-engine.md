@@ -50,10 +50,15 @@ client's `NEW` execution report therefore always precedes its fills.
 ### Step 1 — fill-or-kill pre-check
 
 For `TimeInForce::FILL_OR_KILL`, `canFillCompletely<SIDE>()` walks the opposite side of the book
-accumulating available quantity until it either covers the order or hits a price level worse than the
-limit. The scan is SMP-aware: under `CANCEL_NEWEST` any self-match aborts the scan and returns false;
-under `CANCEL_RESTING` self-matched orders are skipped, because they would be cancelled rather than
-filled.
+drawing down the order's remaining quantity until it either reaches zero or hits a price level worse
+than the limit. The scan is SMP-aware: under `CANCEL_NEWEST` any self-match aborts the scan and
+returns false; under `CANCEL_RESTING` self-matched orders are skipped, because they would be
+cancelled rather than filled. Under `NONE` they are counted like any other resting order — the order
+really would trade against itself.
+
+Resolving a resting book entry to its full `Order` is a hash lookup, and it exists only to compare
+client ids, so the scan skips it entirely when SMP is off and stays inside the price level's own
+array.
 
 If the scan fails, `publishOrderCancel` fires and the engine returns `FOK_CANNOT_FILL` with no trades.
 
@@ -62,16 +67,18 @@ If the scan fails, `publishOrderCancel` fires and the engine returns `FOK_CANNOT
 If `order->status == PENDING_REPLACE`, the new quantity and price are applied before matching:
 
 ```cpp
-order->leaves_quantity += order_qty - order->quantity;  // restore any earlier reduction
-if (order->leaves_quantity < 0) order->leaves_quantity = 0;
 order->quantity = order_qty;
 order->price    = order_price;
+order->leaves_quantity = order->cum_quantity >= order_qty
+                       ? 0                                 // amended at or below what already filled
+                       : order_qty - order->cum_quantity;
 publishOrderModify(order, order_price, order_qty, request_time);
 ```
 
-The delta arithmetic preserves fills: an order for 10 that has filled 4 and is amended to 7 ends up
-with `leaves_quantity == 3`. If the amendment drives leaves to zero, the order is cancelled and the
-engine returns immediately.
+Leaves is recomputed from the cumulative fills rather than adjusted by a delta, so it cannot drift
+from the fill state: an order for 10 that has filled 4 and is amended to 7 ends up with
+`leaves_quantity == 3`, and one amended to 3 ends up at 0 rather than negative. If the amendment
+drives leaves to zero, the order is cancelled and the engine returns immediately.
 
 ### Step 3 — the matching loop
 
@@ -261,11 +268,27 @@ which flips direction on side.
 `NULL_PRICE` is `INT64_MAX`. Because it is also a valid `price_t`, code must test for it explicitly
 before doing arithmetic — the matching loop does, but be careful when adding new paths.
 
-!!! warning "Average fill price drifts"
-    `avg_fill_price` is recomputed by converting to `double`, doing the weighted average, and
-    converting back, on *every* fill — in both the engine and `OrderBook::executeOrder`. Errors
-    compound across partial fills. See
-    [Known gaps](known-gaps.md#avg_fill_price-is-recomputed-in-floating-point-on-every-fill).
+### Average fill price
+
+`avg_fill_price` is derived from a running notional rather than from the previous average, so it
+never accumulates rounding error across partial fills:
+
+```cpp
+order->cum_value    += static_cast<cum_value_t>(price) * static_cast<cum_value_t>(trade_qty);
+order->cum_quantity += trade_qty;
+order->avg_fill_price = order->cum_quantity > 0
+    ? static_cast<price_t>(order->cum_value / static_cast<cum_value_t>(order->cum_quantity))
+    : 0;
+```
+
+`cum_value_t` is `boost::multiprecision::uint128_t`. It has to be wider than `price_t`: both operands
+are already scaled by `1e8`, so their product carries `1e16` and a realistic price × quantity
+overflows 64 bits.
+
+Two caveats remain. The division truncates rather than rounds, so the result can be one unit of the
+`1e8` scale below the exact average — bounded, and not compounding, because each fill recomputes from
+the cumulative totals. And the same three lines appear twice: here for the aggressor, and in
+[`OrderBook::executeOrder`](order-book.md#execution) for the resting side. They have to stay in step.
 
 ## What the engine does not do
 

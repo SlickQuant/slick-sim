@@ -41,7 +41,11 @@ struct Symbol {
 
     symid_t id_ = INVALID_SYMBOL_ID;
     Venue venue_;
-    std::string symbol_;
+    /// Wire-ready, so the publish path copies it as a fixed block. As a
+    /// std::string it was copied with
+    /// `memcpy(update->symbol, symbol_.c_str(), sizeof(update->symbol))`, which
+    /// reads past the end of every name shorter than the wire field.
+    symbol_name_t symbol_;
     engine::MatchingEngine *matching_engine_;
     std::shared_ptr<OrderBook> order_book_;
     std::atomic_uint16_t num_subscriptions_ = 0;
@@ -51,9 +55,14 @@ struct Symbol {
     std::shared_ptr<OrderBookObserver> book_observer_;
     utils::RingBuffer<MDTrade> trade_history_{TRADE_HISTORY_CAPACITY};
 
+    /// Both caches are filled by book observers and drained by the exchange
+    /// thread, which only ever `clear()`s them, so the capacity reserved here is
+    /// the capacity they keep for the process's lifetime. Sized for the largest
+    /// batch a busy instrument produces in one feed message so a market-data
+    /// flood never reaches the allocator.
     Symbol() : book_observer_(std::make_shared<OrderBookObserver>(this)) {
-        md_level_update_cache_.reserve(64);
-        md_order_update_cache_.reserve(256);
+        md_level_update_cache_.reserve(256);
+        md_order_update_cache_.reserve(1024);
     };
     ~Symbol() = default;
 
@@ -67,6 +76,11 @@ struct Symbol {
         , matching_engine_(std::exchange(other.matching_engine_, nullptr))
         , order_book_(std::move(other.order_book_))
         , num_subscriptions_(other.num_subscriptions_.load(std::memory_order_relaxed))
+        // Moved, not left default-constructed: SymbolManager::createSymbol builds a
+        // Symbol on the stack and moves it into the vector, so a dropped cache here
+        // means every symbol in the process runs with zero reserved capacity.
+        , md_level_update_cache_(std::move(other.md_level_update_cache_))
+        , md_order_update_cache_(std::move(other.md_order_update_cache_))
         , book_observer_(std::make_shared<OrderBookObserver>(this))
         , trade_history_(std::move(other.trade_history_))
         , traded_qty_credit_(std::move(other.traded_qty_credit_))
@@ -84,6 +98,8 @@ struct Symbol {
             matching_engine_ = std::exchange(other.matching_engine_, nullptr);
             order_book_ = std::move(other.order_book_);
             num_subscriptions_.store(other.num_subscriptions_.load(std::memory_order_relaxed), std::memory_order_relaxed);
+            md_level_update_cache_ = std::move(other.md_level_update_cache_);
+            md_order_update_cache_ = std::move(other.md_order_update_cache_);
             trade_history_ = std::move(other.trade_history_);
             traded_qty_credit_ = std::move(other.traded_qty_credit_);
         }

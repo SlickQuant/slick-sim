@@ -81,6 +81,46 @@
   queue memory.
 - `MDTrade::event_time`, `seq_num` and `flags` are now set on every trade written to a subscription
   snapshot. Two of the three Coinbase producers left them as whatever the recycled queue slot held.
+- Every publish path read past the end of the name it was copying. `memcpy(dst, name.c_str(),
+  sizeof(dst))` copies the full width of the wire field out of a buffer holding only as many
+  characters as the name actually has — 32 bytes read from a 7-character `"BTC-USD"`. It appeared on
+  `Order`'s four identity fields (once per field, four times per response, in all seven response
+  builders), on `Symbol::symbol_` in `publishTradeSummary`, `publishTradeSubscriptionResponse`,
+  `publishLevelUpdate` and `publishMDOrderUpdate`, on `OrderBook::symbol_` in both `populateL2*`
+  methods, and on the subscribe and unsubscribe paths of both publishers. Names are now held at their
+  wire width, so the copy is in bounds by construction.
+- The over-read was not only a technical one on the publisher subscribe/unsubscribe paths, which also
+  skipped the zero-fill: whatever followed the name in memory landed in `Request::symbol`, and the
+  exchange thread reads that field as a C string. A single non-zero byte there changed the symbol
+  being subscribed to, so it worked only because a short `std::string`'s inline buffer happens to be
+  zero-padded.
+- The REST gateways left wire fields unterminated. Both used
+  `memcpy(dst, s.c_str(), std::min(sizeof(dst), s.size()))`, which is bounded but clamps one byte too
+  late: a value that exactly fills the field overwrites the last zero the preceding `memset` wrote,
+  and the reader then runs past the end of the field. It affected `symbol`, `user_id` and `order_id`
+  on Coinbase and `symbol` on Hyperliquid; only Coinbase's `client_order_id` had a hand-written guard.
+  All 24 such copies now go through `utils::copy_wire_field`, which truncates to N-1, zero-fills the
+  remainder, and reports truncation so the existing `client_order_id` warning still fires.
+- The resting side of a trade now gets an execution report. When one client's order filled another's
+  resting order, only the aggressor's owner was told: `match()` publishes for the aggressor and then
+  calls `book.executeOrder()`, which books the fill onto the resting `Order` but cannot publish —
+  `OrderBook` holds no reference to the matching engine. The resting client saw its order silently
+  disappear from the book with no `TRADE` report, no fill price and no quantity. Only the aggressor
+  path was affected; the market-data replay path in the second `match()` overload always reported
+  both sides, and SMP's `CANCEL_RESTING` always published its cancel to the resting owner.
+- A resting order filled completely by another client's order is returned to the pool. On a full
+  fill `OrderBook::executeOrder` drops it from the three lookup maps but never calls `freeOrder`, so
+  every completed passive fill leaked a pooled `Order` — and `slick::ObjectPool` falls back to the
+  heap once exhausted, so it degraded silently rather than failing. This is the same leak already
+  fixed for rejects and IOC remainders in `Symbol::addOrder`, on the path that fills instead.
+- An amendment recomputes `leaves_quantity` from `cum_quantity` instead of adjusting it by the
+  quantity delta, so it cannot drift from the fill state. An order amended to at or below what it has
+  already filled now settles at zero leaves and is cancelled, rather than relying on a negative-value
+  guard after the fact.
+- `Symbol`'s move constructor and move assignment dropped `md_level_update_cache_` and
+  `md_order_update_cache_` instead of moving them. `SymbolManager::createSymbol` builds a `Symbol` on
+  the stack and moves it into a vector, so every symbol in the process ran with zero reserved
+  capacity and both caches reallocated from scratch as market data arrived.
 
 ## Changed
 
@@ -94,6 +134,47 @@
   role is served by the bounded per-symbol `Symbol::trade_history_`, which is fed by every published
   trade rather than only by relayed venue prints. `MDUpdateType::TRADE` is retained as a reserved
   enumerator so the values after it keep their numbering.
+- New `utils::fixed_string<N>` (`src/utils/fixed_string.hpp`): a null-terminated buffer stored inline,
+  laid out as exactly `char[N]` so a run of them matches a run of fixed-width wire fields byte for
+  byte. Alongside it, `utils::copy_wire_field(dst_array, src_view)` replaces every
+  `memcpy(dst, s.c_str(), sizeof(dst))` and `memset` + clamped-`memcpy` pair in the tree.
+  **When logging one, pass `.view()`** — slick-logger dispatches on exact argument types and falls
+  through to `std::to_string` for anything else, so passing a `fixed_string` is a compile error rather
+  than a wrong value. `std::format` and `operator<<` work directly.
+- `Order`'s `symbol`, `user_id`, `client_order_id` and `order_id` are `utils::fixed_string` instead of
+  `std::string`, grouped into an `OrderIdentity` base that `Order` derives from. Assignment, `.empty()`,
+  comparison and formatting are unchanged at the call site. Two consequences: the order path no longer
+  allocates for them — the 36-character `order_id` always exceeded the small-string buffer — and a
+  response header is filled by one `setOrderIdentity()` memcpy of the whole block rather than four
+  copies out of four unrelated heap blocks. `messages.hpp` static_asserts the layout against
+  `OrderResponse`, so resizing a field on either side fails the build.
+- `Symbol::symbol_` and `OrderBook::symbol_` are `symbol_name_t`, declared in `market_data.hpp` as
+  `utils::fixed_string<sizeof(MarketDataUpdate::symbol)>`. Deliberately derived from the wire field
+  rather than spelled out, so widening that field widens the storage with it instead of silently
+  reintroducing the over-read at every publish site. `OrderBook::symbolName()` returns it, and
+  `Exchange::publishLevelUpdate`/`publishMDOrderUpdate` take it in place of a bare `const char*`, so
+  the width guarantee survives the call.
+- `OrderBook`'s `orders_by_client_order_id_` and `orders_by_order_id_` are keyed by
+  `utils::fixed_string<37>` rather than `std::string`, removing a second heap allocation per resting
+  order. The existing transparent `StringViewHash`/`StringViewEq` functors take `std::string_view`, so
+  lookups by `string_view` still find a `fixed_string` key unchanged.
+- `OrderBook::allocateOrder` no longer constructs a `boost::uuids::random_generator` per call, which
+  seeded a Mersenne twister from the OS entropy source for every order. It is now a
+  `static thread_local`, and the UUID is rendered with `to_chars` straight into the order's own buffer
+  instead of through a `boost::lexical_cast<std::string>` temporary.
+- `Symbol`'s market-data caches reserve 256 levels and 1024 orders, up from 64 and 256. Every call
+  site only ever `clear()`s them, so the reserved capacity is what they keep for the process's
+  lifetime.
+- `canFillCompletely` no longer resolves each resting order to its full `Order` when self-match
+  prevention is off — that lookup exists only to compare client ids, and it was a hash lookup per
+  order on every fill-or-kill pre-check. Its redundant `available_qty` accumulator and the unreachable
+  post-loop check are gone; the early return already covers every path that finds enough liquidity.
+- `WebsocketMarketDataPublisher::publish_processing` drains up to 1000 updates per pass instead of
+  100, so a market-data flood costs one `loop_->defer` per 1000 updates rather than per 100. The
+  reschedule stays unconditional and is now commented to say why: that defer is the only thing that
+  runs the function again, since `md_queue_` is lock-free with no wakeup and the exchange thread never
+  touches the loop, so skipping it on an empty queue would stop the publisher permanently the first
+  time it caught up.
 
 # v0.1.1 - 08-12-2026
 

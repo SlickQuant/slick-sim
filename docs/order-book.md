@@ -40,11 +40,17 @@ The book distinguishes them by a simple rule:
 > Everything else in the L3 book is phantom.
 
 ```cpp
-std::unordered_map<uint64_t, Order*>     orders_;                    // simulator orders only
-std::unordered_map<std::string, Order*>  orders_by_client_order_id_;
-std::unordered_map<std::string, Order*>  orders_by_order_id_;
-std::unordered_map<price_t, qty_t>       feed_md_level_quantity_;    // phantom qty per level
+std::unordered_map<uint64_t, Order*>                orders_;   // simulator orders only
+std::unordered_map<fixed_string<37>, Order*, …>     orders_by_client_order_id_;
+std::unordered_map<fixed_string<37>, Order*, …>     orders_by_order_id_;
+std::unordered_map<price_t, qty_t>                  feed_md_level_quantity_;  // phantom qty per level
 ```
+
+The two id indices are keyed by the order's own
+[`utils::fixed_string`](https://github.com/SlickQuant/slick-sim/blob/main/src/utils/fixed_string.hpp)
+type rather than `std::string`, so inserting one does not allocate a copy of the key. They carry the
+transparent `StringViewHash`/`StringViewEq` functors, which take `std::string_view` — a `fixed_string`
+converts to one implicitly, so both the keys and the `string_view` lookups go through the same pair.
 
 `findOrder(id)` returning `nullptr` therefore *means* "this is a phantom order", and the code uses it
 that way throughout — for example in `HyperliquidExchange::applyPhantomLevelUpdate`:
@@ -111,8 +117,17 @@ Every simulator order carries three identifiers:
 | Identifier | Type | Source | Used for |
 | --- | --- | --- | --- |
 | `id` | `uint64_t` | `utils::nextOrderId()`, a global atomic starting at 1 | The L3 book's key; what phantom orders also use |
-| `order_id` | `std::string` | Random Boost UUID in `allocateOrder()` | The exchange order id the client sees |
-| `client_order_id` | `std::string` | Client-supplied | Client-side correlation |
+| `order_id` | `fixed_string<37>` | Random Boost UUID in `allocateOrder()` | The exchange order id the client sees |
+| `client_order_id` | `fixed_string<37>` | Client-supplied | Client-side correlation |
+
+Those two, plus `symbol` and `user_id`, live in an `OrderIdentity` base that `Order` derives from,
+laid out to match the header of an `OrderResponse` byte for byte. That is what lets
+`setOrderIdentity()` fill a response's four id fields with a single memcpy; `messages.hpp`
+static_asserts the layout, so resizing a field on either side fails the build rather than quietly
+shifting the ids on the wire. They behave like strings at the call site — assignment, `.empty()`,
+comparison, `std::format` — with one exception: **`LOG_*` calls need `.view()`**, because
+slick-logger dispatches on exact argument types and falls through to `std::to_string` otherwise. That
+is a compile error, not a silent wrong value.
 
 `Symbol::findOrderByClientOrderId` is preferred over `findOrderByOrderId` at every call site — the
 modify and cancel handlers only fall back to `order_id` when `client_order_id` is empty.
@@ -129,27 +144,36 @@ Orders come from a `slick::ObjectPool<Order>` sized to the book's `buffer_size` 
 ```cpp
 Order* allocateOrder() {
     auto* order = order_buffer_.allocate();
-    order->order_id = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+
+    static thread_local boost::uuids::random_generator uuid_gen;
+    const boost::uuids::uuid u = uuid_gen();
+    boost::uuids::to_chars(u, order->order_id.data());   // 36 chars, straight into the order
+    order->order_id.data()[36] = '\0';
+
     order->id = utils::nextOrderId();
     order->created_time = utils::get_current_time_ns();
     order->last_update_time = order->created_time;
+    order->resetFillAccounting();
     return order;
 }
 ```
 
-The pool recycles memory, so `allocateOrder` hands back a *previously used* `Order` with all its old
-field values intact except the four it overwrites. `Exchange::handleNewOrderRequest` then assigns
-symbol, side, type, TIF, price, quantity, leaves, status, `client_order_id` and `user_id` — but not
-`cum_quantity`, `avg_fill_price`, `num_fills`, `fee`, `reject_message`, `cancel_message` or
-`edit_history`. Those carry over from whatever order last occupied the slot.
+The generator is `thread_local` rather than constructed per call: building one seeds a Mersenne
+twister from the OS entropy source, which cost far more than the id it produced. Orders are allocated
+on the exchange thread, and `thread_local` keeps this correct if that ever stops holding. A rendered
+UUID is exactly 36 characters, which is the capacity of `order_id`, so it is written straight into the
+order's own buffer — a `static_assert` ties the two together.
 
-`freeOrder` returns an order to the pool, called from `Symbol::addOrder`/`modifyOrder` when
-`leaves_quantity == 0` and unconditionally from `Symbol::cancelOrder`.
+The pool recycles memory, so `allocateOrder` hands back a *previously used* `Order`.
+`resetFillAccounting()` clears the fill state (`cum_quantity`, `cum_value`, `avg_fill_price`,
+`last_fill_*`, `num_fills`, `fee`, `filled_value`), and `Exchange::handleNewOrderRequest` then assigns
+symbol, side, type, TIF, price, quantity, leaves, status, `client_order_id` and `user_id`. Fields
+outside both sets — `reject_message`, `cancel_message`, `edit_history` — still carry over from
+whatever order last occupied the slot.
 
-!!! note "UUID generation cost"
-    `allocateOrder` constructs a fresh `boost::uuids::random_generator` on every call, seeding a new
-    PRNG per order. For a project whose stated priority is performance this is an obvious hot-path
-    cost; a `thread_local` generator would avoid it.
+`freeOrder` returns an order to the pool. `Symbol::addOrder` calls it for anything that did not rest —
+fully filled orders, rejects and IOC remainders alike — `modifyOrder` when `leaves_quantity == 0`, and
+`Symbol::cancelOrder` unconditionally.
 
 ## Queue priority
 
@@ -175,8 +199,9 @@ bool executeOrder(OrderId order_id, Quantity executed_quantity, uint64_t timesta
     auto* order = findOrder(order_id);
     if (order) {
         order->leaves_quantity -= executed_quantity;
-        order->avg_fill_price   = /* recomputed via double */;
+        order->cum_value       += cum_value_t(order->price) * cum_value_t(executed_quantity);
         order->cum_quantity    += executed_quantity;
+        order->avg_fill_price   = order->cum_value / order->cum_quantity;   // integer, see below
         order->last_fill_price  = order->price;
         order->last_fill_qty    = executed_quantity;
         order->last_fill_time   = timestamp;
@@ -190,11 +215,16 @@ bool executeOrder(OrderId order_id, Quantity executed_quantity, uint64_t timesta
 
 The `if (order)` guard is what makes it safe to call for phantom orders too.
 
-Note `order->last_fill_price = order->price` — the *order's own* price, not the trade price. For a
-resting order those are the same. For an aggressor they need not be, which is why
-`FifoMatchingEngine::match` sets `last_fill_price` to the actual level price itself before calling
-`executeOrder`. The two writes overlap; see
-[Known gaps](known-gaps.md#avg_fill_price-is-recomputed-in-floating-point-on-every-fill).
+Note `order->last_fill_price = order->price` — the *order's own* price, not a trade price passed in.
+That is correct here because this only ever runs against the **resting** side: `executeOrder` is
+called with the book order's id, and a resting order trades at its own price. An aggressor's fill
+price is the level it matched, which `FifoMatchingEngine::match` writes onto the aggressor directly;
+it is never routed through this function, because an order does not enter `orders_` until after it
+has finished matching.
+
+The fill accounting here mirrors the aggressor-side arithmetic in the matching engine, including the
+`cum_value` running notional that keeps `avg_fill_price` free of accumulated rounding error — see
+[average fill price](matching-engine.md#average-fill-price). The two copies have to stay in step.
 
 ## Snapshot generation
 

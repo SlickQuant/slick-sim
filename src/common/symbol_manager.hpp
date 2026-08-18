@@ -37,7 +37,7 @@ public:
     exch::Symbol* createSymbol(std::string_view sym, Venue venue) {
         exch::Symbol symbol;
         symbol.id_ = static_cast<symid_t>(symbols_.size());
-        symbol.symbol_ = std::string(sym);
+        symbol.symbol_ = sym;
         symbol.venue_ = venue;
         symbols_.emplace_back(std::move(symbol));
         symbols_by_name_.emplace(std::string(sym), &symbols_.back());

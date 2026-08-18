@@ -2,6 +2,7 @@
 #include "coinbase_publisher.hpp"
 #include "coinbase_trade_encoder.hpp"
 #include <common/symbol_manager.hpp>
+#include <utils/fixed_string.hpp>
 #include <utils/timestamp.hpp>
 
 using namespace slick::sim::md_publisher;
@@ -229,7 +230,7 @@ void CoinbasePublisher::handle_message(wsT *ws, std::string_view message) {
                     auto index = request_queue_.reserve();
                     auto *request = request_queue_[index];
                     std::string symbol = prod.get<std::string>();
-                    memcpy(request->symbol, symbol.c_str(), sizeof(request->symbol));
+                    utils::copy_wire_field(request->symbol, symbol);
                     request->msg_type = MessageType::MD_SUBSCRIPTION;
                     auto channel_index = static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2);
                     request->md_subscription.channel = channel_index;
@@ -249,7 +250,7 @@ void CoinbasePublisher::handle_message(wsT *ws, std::string_view message) {
                     auto index = request_queue_.reserve();
                     auto *request = request_queue_[index];
                     std::string symbol = prod.get<std::string>();
-                    memcpy(request->symbol, symbol.c_str(), sizeof(request->symbol));
+                    utils::copy_wire_field(request->symbol, symbol);
                     request->msg_type = MessageType::MD_SUBSCRIPTION;
                     auto channel_index = static_cast<uint8_t>(coinbase::WebSocketChannel::MARKET_TRADES);
                     request->md_subscription.channel = channel_index;
@@ -269,7 +270,7 @@ void CoinbasePublisher::handle_message(wsT *ws, std::string_view message) {
                     auto index = request_queue_.reserve();
                     auto *request = request_queue_[index];
                     std::string symbol = prod.get<std::string>();
-                    memcpy(request->symbol, symbol.c_str(), sizeof(request->symbol));
+                    utils::copy_wire_field(request->symbol, symbol);
                     request->msg_type = MessageType::MD_SUBSCRIPTION;
                     auto channel_index = static_cast<uint8_t>(coinbase::WebSocketChannel::TICKER);
                     request->md_subscription.channel = channel_index;
@@ -382,7 +383,7 @@ void CoinbasePublisher::unsubscribe_md(wsT *ws) {
             LOG_INFO("Client {:p} unsubscribe channel {}: {}", ws, coinbase::to_string(static_cast<coinbase::WebSocketChannel>(channel)), symbol);
             auto index = request_queue_.reserve();
             auto *request = request_queue_[index];
-            memcpy(request->symbol, symbol.data(), sizeof(request->symbol));
+            utils::copy_wire_field(request->symbol, symbol);
             request->msg_type = MessageType::MD_UNSUBSCRIPTION;
             request->md_subscription.channel = static_cast<uint8_t>(channel);
             request->md_subscription.client = (void*)ws;

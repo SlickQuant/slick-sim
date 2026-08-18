@@ -9,10 +9,7 @@ std::atomic<uint64_t> MatchingEngine::next_trade_id_{1};
 void MatchingEngine::publishOrderAck(const Order *order, time_t request_time) {
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
-    memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+    setOrderIdentity(response, *order);
     response.response_type = MessageType::EXECUTION_REPORT;
     response.exec_type = ExecType::NEW;
     response.order_status = OrderStatus::NEW;
@@ -35,10 +32,7 @@ void MatchingEngine::publishOrderAck(const Order *order, time_t request_time) {
 void MatchingEngine::publishOrderExecution(const Order *order) {
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
-    memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+    setOrderIdentity(response, *order);
     response.response_type = MessageType::EXECUTION_REPORT;
     response.exec_type = ExecType::TRADE;
     response.order_status = order->leaves_quantity ? OrderStatus::PARTIALLY_FILLED : OrderStatus::FILLED;
@@ -61,10 +55,7 @@ void MatchingEngine::publishOrderExecution(const Order *order) {
 void MatchingEngine::publishOrderModify(const Order *order, price_t new_price, qty_t new_qty, time_t request_time) {
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
-    memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+    setOrderIdentity(response, *order);
     response.response_type = MessageType::EXECUTION_REPORT;
     response.exec_type = ExecType::REPLACED;
     response.order_status = OrderStatus::REPLACED;
@@ -86,10 +77,7 @@ void MatchingEngine::publishOrderModify(const Order *order, price_t new_price, q
 void MatchingEngine::publishOrderCancel(const Order *order, time_t request_time) {
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
-    memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+    setOrderIdentity(response, *order);
     response.response_type = MessageType::EXECUTION_REPORT;
     response.exec_type = ExecType::CANCELED;
     response.order_status = OrderStatus::CANCELED;

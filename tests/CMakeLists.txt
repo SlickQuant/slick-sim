@@ -22,6 +22,7 @@ add_executable(slick_sim_tests
     # Priority 2: Order Tests
     unit/common/test_order.cpp
     unit/common/test_order_conversions.cpp
+    unit/common/test_fixed_string.cpp
 
     # Priority 3: Order Book Tests
     unit/order_book/test_orderbook_operations.cpp

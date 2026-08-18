@@ -206,7 +206,7 @@ void Exchange::handleNewOrderRequest(const Request &request)
 
         if (!symbol->md_level_update_cache_.empty())
         {
-            publishLevelUpdate(symbol->symbol_.c_str(), symbol->md_level_update_cache_);
+            publishLevelUpdate(symbol->symbol_, symbol->md_level_update_cache_);
             symbol->md_level_update_cache_.clear();
         }
 
@@ -239,7 +239,7 @@ void Exchange::handleModifyOrderRequest(const Request &request)
 
         if (!order)
         {
-            LOG_WARN(std::format("{} OrderId {} not found for modification", symbol->symbol_, request.modify_order.order_id));
+            LOG_WARN(std::format("{} OrderId {} not found for modification", symbol->symbol_.view(), request.modify_order.order_id));
             rejectModifyOrderRequest(request, OrdRejectReason::UNKNOWN_ORDER);
             return;
         }
@@ -263,7 +263,7 @@ void Exchange::handleModifyOrderRequest(const Request &request)
 
         if (!symbol->md_level_update_cache_.empty())
         {
-            publishLevelUpdate(symbol->symbol_.c_str(), symbol->md_level_update_cache_);
+            publishLevelUpdate(symbol->symbol_, symbol->md_level_update_cache_);
             symbol->md_level_update_cache_.clear();
         }
 
@@ -296,7 +296,7 @@ void Exchange::handleCancelOrderRequest(const Request &request)
 
         if (!order)
         {
-            LOG_WARN(std::format("{} OrderId {} not found for cancellation", symbol->symbol_, request.cancel_order.order_id));
+            LOG_WARN(std::format("{} OrderId {} not found for cancellation", symbol->symbol_.view(), request.cancel_order.order_id));
             rejectCancelOrderRequest(request, OrdRejectReason::UNKNOWN_ORDER);
             return;
         }
@@ -396,7 +396,7 @@ void Exchange::publishMDBookUpdate([[maybe_unused]] symid_t sid, OrderBook &orde
     MarketDataUpdate *update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
     update->type = MDUpdateType::BOOK;
     update->venue = venue_;
-    std::strncpy(update->symbol, order_book.symbolName().data(), sizeof(update->symbol));
+    std::memcpy(update->symbol, order_book.symbolName().data(), sizeof(update->symbol));
     MDBookUpdate *book_update = reinterpret_cast<MDBookUpdate *>(update->data);
     book_update->update_index[0] = indices[0];
     book_update->update_index[1] = indices[1];
@@ -404,28 +404,28 @@ void Exchange::publishMDBookUpdate([[maybe_unused]] symid_t sid, OrderBook &orde
     md_queue_.publish(index, sz);
 }
 
-void Exchange::publishLevelUpdate(const char *symbol, const std::vector<MDLevel> &level_updates)
+void Exchange::publishLevelUpdate(const symbol_name_t &symbol, const std::vector<MDLevel> &level_updates)
 {
     auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDLevelUpdate) + level_updates.size() * sizeof(MDLevel));
     auto index = md_queue_.reserve(sz);
     auto *update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
     update->type = MDUpdateType::LEVEL;
     update->venue = venue_;
-    std::memcpy(update->symbol, symbol, sizeof(update->symbol));
+    std::memcpy(update->symbol, symbol.data(), sizeof(update->symbol));
     auto *level_update = reinterpret_cast<MDLevelUpdate *>(update->data);
     level_update->num_level_update = static_cast<uint32_t>(level_updates.size());
     std::memcpy(level_update->levels, level_updates.data(), level_updates.size() * sizeof(MDLevel));
     md_queue_.publish(index, sz);
 }
 
-void Exchange::publishMDOrderUpdate(const char *symbol, const std::vector<MDOrder> &order_updates)
+void Exchange::publishMDOrderUpdate(const symbol_name_t &symbol, const std::vector<MDOrder> &order_updates)
 {
     auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDOrderUpdate) + order_updates.size() * sizeof(MDOrder));
     auto index = md_queue_.reserve(sz);
     auto *update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
     update->type = MDUpdateType::ORDER;
     update->venue = venue_;
-    std::memcpy(update->symbol, symbol, sizeof(update->symbol));
+    std::memcpy(update->symbol, symbol.data(), sizeof(update->symbol));
     auto *order_update = reinterpret_cast<MDOrderUpdate *>(update->data);
     order_update->num_orders = static_cast<uint32_t>(order_updates.size());
     std::memcpy(order_update->orders, order_updates.data(), order_updates.size() * sizeof(MDOrder));
@@ -445,7 +445,7 @@ void Exchange::publishTradeSummary(Symbol *symbol, const TradeSummaryInfo &trade
     auto update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
     update->type = MDUpdateType::TRADE_SUMMARY;
     update->venue = venue_;
-    std::memcpy(update->symbol, symbol->symbol_.c_str(), sizeof(update->symbol));
+    std::memcpy(update->symbol, symbol->symbol_.data(), sizeof(update->symbol));
     auto summary = reinterpret_cast<TradeSummary *>(update->data);
     summary->timestamp = trade_summary.timestamp;
     summary->trade_id = trade_id;
@@ -479,7 +479,7 @@ void Exchange::publishTradeSubscriptionResponse(Symbol *symbol, uint8_t channel)
     auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(MDTradeSnapshotResponse) + num_trades * sizeof(MDTrade));
     auto index = md_queue_.reserve(sz);
     auto *update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
-    std::memcpy(update->symbol, symbol->symbol_.c_str(), sizeof(update->symbol));
+    std::memcpy(update->symbol, symbol->symbol_.data(), sizeof(update->symbol));
     update->venue = venue_;
     update->type = MDUpdateType::SUB_RESPONSE;
 
@@ -600,10 +600,7 @@ void Exchange::sendOrderNewPending(const Order *order, time_t request_time)
 {
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
-    memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+    setOrderIdentity(response, *order);
     response.response_type = MessageType::EXECUTION_REPORT;
     response.exec_type = ExecType::NEW;
     response.order_status = OrderStatus::PENDING_NEW;
@@ -625,10 +622,7 @@ void Exchange::sendOrderReplacePending(const Order *order, time_t request_time)
 {
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
-    memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+    setOrderIdentity(response, *order);
     response.response_type = MessageType::EXECUTION_REPORT;
     response.exec_type = ExecType::PENDING_REPLACE;
     response.order_status = OrderStatus::PENDING_REPLACE;
@@ -649,10 +643,7 @@ void Exchange::sendOrderCancelPending(const Order *order, time_t request_time)
 {
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
-    memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol));
-    memcpy(response.user_id, order->user_id.c_str(), sizeof(response.user_id));
-    memcpy(response.client_order_id, order->client_order_id.c_str(), sizeof(response.client_order_id));
-    memcpy(response.order_id, order->order_id.c_str(), sizeof(response.order_id));
+    setOrderIdentity(response, *order);
     response.response_type = MessageType::EXECUTION_REPORT;
     response.exec_type = ExecType::PENDING_CANCEL;
     response.order_status = OrderStatus::PENDING_CANCEL;

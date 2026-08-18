@@ -2,6 +2,7 @@
 #include "hyperliquid_trade_encoder.hpp"
 #include <slick/logger.hpp>
 #include <common/hyperliquid_info_proxy.hpp>
+#include <utils/fixed_string.hpp>
 #include <utils/timestamp.hpp>
 #include <cstring>
 #include <format>
@@ -233,7 +234,7 @@ void HyperliquidPublisher::subscribe_channel(wsT* ws, HyperliquidChannel channel
 
     auto index = request_queue_.reserve();
     auto* request = request_queue_[index];
-    memcpy(request->symbol, coin.c_str(), sizeof(request->symbol));
+    utils::copy_wire_field(request->symbol, coin);
     request->msg_type = MessageType::MD_SUBSCRIPTION;
     request->md_subscription.channel = ch;
     request->md_subscription.client  = (void*)ws;
@@ -470,7 +471,7 @@ void HyperliquidPublisher::unsubscribe_md(wsT* ws) {
         for (const auto& coin : ud->subs[ch].active) {
             auto index = request_queue_.reserve();
             auto* req  = request_queue_[index];
-            memcpy(req->symbol, coin.data(), sizeof(req->symbol));
+            utils::copy_wire_field(req->symbol, coin);
             req->msg_type = MessageType::MD_UNSUBSCRIPTION;
             req->md_subscription.channel = ch;
             req->md_subscription.client  = (void*)ws;

@@ -42,12 +42,15 @@ class OrderBook;
 
 class OrderBook : public OrderBookL3, public orderbook::IOrderBookObserver, public std::enable_shared_from_this<OrderBook> {
 public:
-    OrderBook(symid_t sid, std::string symbol, Venue venue, uint_fast32_t buffer_size = 65536)
+    OrderBook(symid_t sid, std::string_view symbol, Venue venue, uint_fast32_t buffer_size = 65536)
         : OrderBookL3(sid, buffer_size, 500)
         , venue_(venue)
-        , symbol_(std::move(symbol))
+        , symbol_(symbol)
         , order_buffer_(buffer_size)
     {
+        orders_.reserve(1024);
+        orders_by_client_order_id_.reserve(1024);
+        orders_by_order_id_.reserve(1024);
     }
     ~OrderBook() override = default;
 
@@ -59,7 +62,9 @@ public:
     Order* findOrderByOrderId(std::string_view order_id);
     Order* findOrder(uint64_t id);
 
-    const std::string& symbolName() const noexcept {
+    /// Wire-ready, so publishers copy it as a fixed block instead of reading
+    /// `sizeof(field)` bytes out of a shorter std::string.
+    const symbol_name_t& symbolName() const noexcept {
         return symbol_;
     }
 
@@ -180,19 +185,7 @@ public:
     bool executeOrder(slick::orderbook::OrderId order_id, slick::orderbook::Quantity executed_quantity, uint64_t timestamp, uint64_t seq_num = 0, bool is_last_in_batch = true) override {
         auto *order = findOrder(order_id);
         if (order) {
-            order->leaves_quantity -= executed_quantity;
-            assert(order->leaves_quantity >= 0);
-            assert(executed_quantity > 0);
-            order->last_update_time = timestamp;
-            order->cum_value += static_cast<cum_value_t>(order->price) * static_cast<cum_value_t>(executed_quantity);
-            order->cum_quantity += executed_quantity;
-            order->avg_fill_price = order->cum_quantity > 0
-                ? static_cast<price_t>(order->cum_value / static_cast<cum_value_t>(order->cum_quantity))
-                : 0;
-            order->last_fill_price = order->price;
-            order->last_fill_qty = executed_quantity;
-            order->last_fill_time = timestamp;
-            order->num_fills += 1;
+            utils::executeOrder(order, order->price, executed_quantity, timestamp);
         }
         auto rt = OrderBookL3::executeOrder(order_id, executed_quantity, timestamp, seq_num, is_last_in_batch);
         if (order && order->leaves_quantity == 0) {
@@ -234,11 +227,30 @@ protected:
     uint64_t last_seq_num_ = 0;
     symid_t sid_;
     Venue venue_;
-    std::string symbol_;
+    symbol_name_t symbol_;
+    struct StringViewHash {
+        using is_transparent = void;
+        size_t operator()(std::string_view value) const noexcept {
+            return std::hash<std::string_view>{}(value);
+        }
+    };
+
+    struct StringViewEq {
+        using is_transparent = void;
+        bool operator()(std::string_view lhs, std::string_view rhs) const noexcept {
+            return lhs == rhs;
+        }
+    };
+
     slick::ObjectPool<Order> order_buffer_;
     std::unordered_map<uint64_t, Order*> orders_;
-    std::unordered_map<std::string, Order*> orders_by_client_order_id_;
-    std::unordered_map<std::string, Order*> orders_by_order_id_;
+    // Keyed by the order's own fixed_string type rather than std::string: a
+    // std::string key meant a second heap allocation per resting order, on top of
+    // the one the Order used to make for the id itself. The transparent functors
+    // above take string_view, which fixed_string converts to, so both the keys and
+    // the string_view lookups below go through unchanged.
+    std::unordered_map<utils::fixed_string<37>, Order*, StringViewHash, StringViewEq> orders_by_client_order_id_;
+    std::unordered_map<utils::fixed_string<37>, Order*, StringViewHash, StringViewEq> orders_by_order_id_;
     OrderUpdate last_order_update_;
     std::unordered_map<price_t, qty_t> feed_md_level_quantity_;     // tracking the level quantity exclude exchange orders
 };
@@ -253,8 +265,8 @@ enum class OrderBookType {
 template<OrderBookType BookType>
 class OrderBookImpl : public OrderBook {
 public:
-    OrderBookImpl(symid_t sid, std::string symbol, Venue venue, uint_fast32_t buffer_size = 65536)
-        : OrderBook(sid, std::move(symbol), venue, buffer_size)
+    OrderBookImpl(symid_t sid, std::string_view symbol, Venue venue, uint_fast32_t buffer_size = 65536)
+        : OrderBook(sid, symbol, venue, buffer_size)
     {
     }
     ~OrderBookImpl() override = default;
@@ -277,8 +289,23 @@ inline uint64_t OrderBook::next_priority_ = 0;
 
 inline Order* OrderBook::allocateOrder() {
     auto *order = order_buffer_.allocate();
-    boost::uuids::uuid u = boost::uuids::random_generator()();
-    order->order_id = boost::lexical_cast<std::string>(u);
+
+    // The generator seeds a Mersenne twister from the OS entropy source when it is
+    // constructed, so building one per order - as `random_generator()()` did - cost
+    // far more than the id it produced. One per thread instead; orders are
+    // allocated on the exchange thread, and thread_local keeps that true if that
+    // ever stops holding.
+    static thread_local boost::uuids::random_generator uuid_gen;
+    const boost::uuids::uuid u = uuid_gen();
+
+    // A UUID renders as exactly 36 characters, which is the capacity of the id
+    // field, so it goes straight into the order's own buffer. lexical_cast built a
+    // std::string first and threw it away.
+    static_assert(decltype(Order::order_id)::capacity() == 36,
+        "order_id must hold a rendered UUID exactly");
+    boost::uuids::to_chars(u, order->order_id.data());
+    order->order_id.data()[36] = '\0';
+
     order->id = utils::nextOrderId();
     order->created_time = utils::get_current_time_ns();
     order->last_update_time = order->created_time;
@@ -335,12 +362,12 @@ inline void OrderBook::onOrderUpdate(const OrderUpdate& update) {
 }
 
 inline Order* OrderBook::findOrderByClientOrderId(std::string_view client_order_id) {
-    auto it = orders_by_client_order_id_.find(std::string(client_order_id));
+    auto it = orders_by_client_order_id_.find(client_order_id);
     return it == orders_by_client_order_id_.end() ? nullptr : it->second;
 }
 
 inline Order* OrderBook::findOrderByOrderId(std::string_view client_order_id) {
-    auto it = orders_by_order_id_.find(std::string(client_order_id));
+    auto it = orders_by_order_id_.find(client_order_id);
     return it == orders_by_order_id_.end() ? nullptr : it->second;
 }
 
@@ -412,7 +439,7 @@ inline void OrderBookImpl<OrderBookType::L2>::populateL2SubscriptionResponse(sli
     auto sz = sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse) + sizeof(BookSnapshot) + (bid_levels.size() + ask_levels.size()) * sizeof(MDLevel);
     auto index = md_update_queue.reserve(static_cast<uint32_t>(sz));
     auto *update = reinterpret_cast<MarketDataUpdate*>(md_update_queue[index]);
-    memcpy(update->symbol, symbol_.c_str(), sizeof(update->symbol));
+    memcpy(update->symbol, symbol_.data(), sizeof(update->symbol));
     update->venue = venue_;
     update->type = MDUpdateType::SUB_RESPONSE;
 
@@ -445,7 +472,7 @@ inline void OrderBookImpl<OrderBookType::L2>::populateL2Snapshot(slick::queue<ui
     auto sz = sizeof(MarketDataUpdate) + sizeof(BookSnapshot) + (bid_levels.size() + ask_levels.size()) * sizeof(MDLevel);
     auto index = md_update_queue.reserve(static_cast<uint32_t>(sz));
     auto *update = reinterpret_cast<MarketDataUpdate*>(md_update_queue[index]);
-    memcpy(update->symbol, symbol_.c_str(), sizeof(update->symbol));
+    memcpy(update->symbol, symbol_.data(), sizeof(update->symbol));
     update->venue = venue_;
     update->type = MDUpdateType::BOOK_SNAPSHOT;
 
