@@ -68,10 +68,10 @@ var NAVTREEINDEX =
 "classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#a4c330f4ccca8259f6b8f706092cf490c",
 "coinbase__common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d",
 "hyperliquid__live__ws__feed_8hpp.html",
-"namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a6a988ff7c17c22ee74b7d26edf10d227",
-"structslick_1_1sim_1_1AddOrderMessage.html#ad1ecf5ed5ded3fa95c70582ccfc049a5",
-"structslick_1_1sim_1_1OrderResponse.html#a01442a764935811210694de385409454",
-"structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html#a28c812e24aee5c470dec23e876477142"
+"namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a696b031073e74bf2cb98e5ef201d4aa3",
+"structslick_1_1sim_1_1AddOrderMessage.html#a9dcc7d132040218f774c87d33d6f66c8",
+"structslick_1_1sim_1_1OrderResponse.html",
+"structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html#a1764fcd6fb8e13a999bda008034684d8"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

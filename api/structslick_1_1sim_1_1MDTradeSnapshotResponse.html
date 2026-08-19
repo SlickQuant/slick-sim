@@ -123,7 +123,7 @@ Public Attributes</h2></td></tr>
 <div class="textblock"><p>Payload of a SUB_RESPONSE for a venue's trade channel. </p>
 <p>The trades are split against the book snapshot the subscriber receives alongside this response: a trade stamped after the book's last update is not reflected in that book, so replaying it as history would misrepresent it as settled. Those trades go in the update block instead and are delivered as a normal trade update. </p>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00146">146</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00158">158</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="aac01f07702155407dc408979a1682b78" name="aac01f07702155407dc408979a1682b78"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aac01f07702155407dc408979a1682b78">&#9670;&#160;</a></span>num_snapshot</h2>
@@ -139,7 +139,7 @@ Public Attributes</h2></td></tr>
 
 <p>trades the subscriber's book snapshot reflects </p>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00147">147</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00159">159</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -157,7 +157,7 @@ Public Attributes</h2></td></tr>
 
 <p>trades it does not - deliver as a normal update </p>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00148">148</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00160">160</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -176,9 +176,9 @@ Public Attributes</h2></td></tr>
 <p>The snapshot block, then the update block, each contiguous and each chronological within itself. </p>
 <p>The producer partitions into these two blocks rather than copying in history order: a trade the book absorbed is history whatever its timestamp, so an applied trade can follow an unapplied print that is newer than the book, and history order would interleave the blocks. </p>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00154">154</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00166">166</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00478">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00482">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>.</p>
 
 </div>
 </div>

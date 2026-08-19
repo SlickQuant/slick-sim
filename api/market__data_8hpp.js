@@ -37,5 +37,6 @@ var market__data_8hpp =
       [ "F_IS_SNAPSHOT", "market__data_8hpp.html#abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7", null ],
       [ "F_END_EVENT", "market__data_8hpp.html#abd546ae4b297b0e3dc896f1b130d6167a4c77e6821af972588e76a507a600b618", null ],
       [ "F_NOT_IN_BOOK", "market__data_8hpp.html#abd546ae4b297b0e3dc896f1b130d6167a19b7cfba7906dc0dd07f6bd7224b3dc0", null ]
-    ] ]
+    ] ],
+    [ "to_string", "market__data_8hpp.html#aa6e75f7b95b05d860ac06f0c66d44281", null ]
 ];
