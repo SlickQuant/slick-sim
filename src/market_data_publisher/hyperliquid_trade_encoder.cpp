@@ -16,8 +16,8 @@ json encode_trade(const char* coin, uint64_t trade_id, uint64_t event_time,
     return {
         {"coin", coin},
         {"side", aggressor_side == Side::BUY ? "B" : "A"},
-        {"px",   std::to_string(to_price_double(price))},
-        {"sz",   std::to_string(to_qty_double(qty))},
+        {"px",   to_price_string(price)},
+        {"sz",   to_qty_string(qty)},
         {"time", event_time / utils::ONE_MILLISECOND_NS},
         {"hash", "0x0"},
         {"tid",  trade_id}

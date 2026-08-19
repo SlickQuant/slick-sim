@@ -30,7 +30,7 @@ inline json to_json(const Order& order) {
             order_config = {
                 {
                     "market_market_ioc", { 
-                        {"base_size", std::to_string(order.qty_double())}
+                        {"base_size", to_qty_string(order.quantity)}
                     }
                 }
             };
@@ -39,7 +39,7 @@ inline json to_json(const Order& order) {
             order_config = {
                 {
                     "market_market_fok", { 
-                        {"base_size", std::to_string(order.qty_double())}
+                        {"base_size", to_qty_string(order.quantity)}
                     }
                 }
             };
@@ -50,8 +50,8 @@ inline json to_json(const Order& order) {
             order_config = {
                 {
                     "limit_limit_gtc", { 
-                        {"base_size", std::to_string(order.qty_double())},
-                        {"limit_price", std::to_string(order.price_double())},
+                        {"base_size", to_qty_string(order.quantity)},
+                        {"limit_price", to_price_string(order.price)},
                         {"post_only", order.post_only},
                     }
                 }
@@ -62,8 +62,8 @@ inline json to_json(const Order& order) {
         //     order_config = {
         //         {
         //             "market_market_fok", { 
-        //                 {"base_size", std::to_string(order.qty_double())},
-        //                 {"limit_price", std::to_string(order.price_double())},
+        //                 {"base_size", to_qty_string(order.quantity)},
+        //                 {"limit_price", to_price_string(order.price)},
         //                 {"end_time", order.end_time},
         //                 {"post_only", order.post_only},
         //             }
@@ -74,8 +74,8 @@ inline json to_json(const Order& order) {
             order_config = {
                 {
                     "sor_limit_ioc", { 
-                        {"base_size", std::to_string(order.qty_double())},
-                        {"limit_price", std::to_string(order.price_double())}
+                        {"base_size", to_qty_string(order.quantity)},
+                        {"limit_price", to_price_string(order.price)}
                     }
                 }
             };
@@ -84,8 +84,8 @@ inline json to_json(const Order& order) {
             order_config = {
                 {
                     "market_market_fok", { 
-                        {"base_size", std::to_string(order.qty_double())},
-                        {"limit_price", std::to_string(order.price_double())},
+                        {"base_size", to_qty_string(order.quantity)},
+                        {"limit_price", to_price_string(order.price)},
                     }
                 }
             };
@@ -103,8 +103,8 @@ inline json to_json(const Order& order) {
         {"time_in_force", to_coinbase_string(order.time_in_force)},
         {"created_time", utils::format_timestamp_iso8601()},
         {"completion_percentage", std::to_string(order.cum_qty_double() / order.qty_double() * 100)},
-        {"filled_size", std::to_string(order.cum_qty_double())},
-        {"average_filled_price", std::to_string(order.avg_fill_price_double())},
+        {"filled_size", to_qty_string(order.cum_quantity)},
+        {"average_filled_price", to_price_string(order.avg_fill_price)},
         {"number_of_fills", std::to_string(order.num_fills)},
         {"fee", std::to_string(order.fee)},
         {"filled_value", std::to_string(order.filled_value)},
@@ -130,7 +130,7 @@ inline json to_json(const Order& order) {
         {"attached_order_configuration", {{}}},
         {"current_pending_replace", {{}}},
         {"commission_detail_total", {{}}},
-        {"workable_size", std::to_string(order.leaves_qty_double())},
+        {"workable_size", to_qty_string(order.leaves_quantity)},
         {"workable_size_completion_pct", std::to_string(order.leaves_qty_double() / order.qty_double() * 100)},
     };
 }

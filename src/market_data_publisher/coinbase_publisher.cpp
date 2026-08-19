@@ -461,16 +461,16 @@ void CoinbasePublisher::publish_subscription_response(MarketDataUpdate *update) 
             for (; i < snapshot->num_bid; ++i) {
                 updates.push_back({
                     {"side", "bid"},
-                    {"price_level", std::to_string(to_price_double(levels[i].price))},
-                    {"new_quantity", std::to_string(to_qty_double(levels[i].qty))}
+                    {"price_level", to_price_string(levels[i].price)},
+                    {"new_quantity", to_qty_string(levels[i].qty)}
                 });
             }
 
             for (; i < total_levels; ++i) {
                 updates.push_back({
                     {"side", "offer"},
-                    {"price_level", std::to_string(to_price_double(levels[i].price))},
-                    {"new_quantity", std::to_string(to_qty_double(levels[i].qty))}
+                    {"price_level", to_price_string(levels[i].price)},
+                    {"new_quantity", to_qty_string(levels[i].qty)}
                 });
             }
 
@@ -581,16 +581,16 @@ void CoinbasePublisher::publish_level_snapshot(MarketDataUpdate *update) {
         for (; i < snapshot->num_bid; ++i) {
             updates.push_back({
                 {"side", "bid"},
-                {"price_level", std::to_string(to_price_double(snapshot->levels[i].price))},
-                {"new_quantity", std::to_string(to_qty_double(snapshot->levels[i].qty))}
+                {"price_level", to_price_string(snapshot->levels[i].price)},
+                {"new_quantity", to_qty_string(snapshot->levels[i].qty)}
             });
         }
 
         for (; i < total_levels; ++i) {
             updates.push_back({
                 {"side", "offer"},
-                {"price_level", std::to_string(to_price_double(snapshot->levels[i].price))},
-                {"new_quantity", std::to_string(to_qty_double(snapshot->levels[i].qty))}
+                {"price_level", to_price_string(snapshot->levels[i].price)},
+                {"new_quantity", to_qty_string(snapshot->levels[i].qty)}
             });
         }
 
@@ -637,8 +637,8 @@ void CoinbasePublisher::publish_level_update(MarketDataUpdate *update) {
             //           level.event_time);
             updates.push_back({
                 {"side", level.side ? "offer" : "bid"},
-                {"price_level", std::to_string(to_price_double(level.price))},
-                {"new_quantity", std::to_string(to_qty_double(level.qty))},
+                {"price_level", to_price_string(level.price)},
+                {"new_quantity", to_qty_string(level.qty)},
                 {"event_time", format_timestamp_iso8601(level.event_time, 9)}
             });
         }

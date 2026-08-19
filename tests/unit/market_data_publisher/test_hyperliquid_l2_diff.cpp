@@ -8,8 +8,10 @@ using namespace slick::sim::md_publisher;
 using json = nlohmann::json;
 
 namespace {
-std::string px(double p) { return std::to_string(to_price_double(to_price_t(p))); }
-std::string sz(double q) { return std::to_string(to_qty_double(to_qty_t(q))); }
+// Expected values are written out in full rather than recomputed with the same
+// formatter the code under test uses - a helper mirroring the implementation agrees
+// with it however wrong both are, which is how "0.00011628" went out as "0.000116"
+// unnoticed.
 }
 
 // ===========================================================================
@@ -35,8 +37,8 @@ TEST(HyperliquidL2Diff, ChangedQuantity_ReportedInL) {
     auto diff = compute_l2_diff(prev_bid, empty, curr_bid, empty);
 
     ASSERT_EQ(diff.l[0].size(), 1u);
-    EXPECT_EQ(diff.l[0][0]["p"], px(99.0));
-    EXPECT_EQ(diff.l[0][0]["s"], sz(7.0));
+    EXPECT_EQ(diff.l[0][0]["p"], "99");
+    EXPECT_EQ(diff.l[0][0]["s"], "7");
     EXPECT_TRUE(diff.r[0].empty());
 }
 
@@ -48,8 +50,8 @@ TEST(HyperliquidL2Diff, NewLevel_ReportedInL) {
     auto diff = compute_l2_diff(prev_bid, empty, curr_bid, empty);
 
     ASSERT_EQ(diff.l[0].size(), 1u);
-    EXPECT_EQ(diff.l[0][0]["p"], px(97.0));
-    EXPECT_EQ(diff.l[0][0]["s"], sz(2.0));
+    EXPECT_EQ(diff.l[0][0]["p"], "97");
+    EXPECT_EQ(diff.l[0][0]["s"], "2");
 }
 
 TEST(HyperliquidL2Diff, RemovedLevel_ReportedAsIndexIntoPreviousArray) {
@@ -91,10 +93,10 @@ TEST(HyperliquidL2Diff, MixedChangeAddRemove_BothSidesIndependent) {
     auto diff = compute_l2_diff(prev_bid, prev_ask, curr_bid, curr_ask);
 
     ASSERT_EQ(diff.l[0].size(), 2u);
-    EXPECT_EQ(diff.l[0][0]["p"], px(99.0));
-    EXPECT_EQ(diff.l[0][0]["s"], sz(7.0));
-    EXPECT_EQ(diff.l[0][1]["p"], px(97.0));
-    EXPECT_EQ(diff.l[0][1]["s"], sz(2.0));
+    EXPECT_EQ(diff.l[0][0]["p"], "99");
+    EXPECT_EQ(diff.l[0][0]["s"], "7");
+    EXPECT_EQ(diff.l[0][1]["p"], "97");
+    EXPECT_EQ(diff.l[0][1]["s"], "2");
 
     ASSERT_EQ(diff.r[0].size(), 1u);
     EXPECT_EQ(diff.r[0][0], 2);

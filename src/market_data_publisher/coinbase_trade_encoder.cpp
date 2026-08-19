@@ -21,8 +21,8 @@ json encode_trade(const char* product_id, uint64_t trade_id, uint64_t event_time
     return {
         {"trade_id",   std::to_string(trade_id)},
         {"product_id", product_id},
-        {"price",      std::to_string(to_price_double(price))},
-        {"size",       std::to_string(to_qty_double(qty))},
+        {"price",      to_price_string(price)},
+        {"size",       to_qty_string(qty)},
         {"side",       to_string(aggressor_side)},
         {"time",       utils::format_timestamp_iso8601(event_time, TRADE_TIME_DIGITS)}
     };

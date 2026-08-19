@@ -11,8 +11,10 @@ using json = nlohmann::json;
 
 namespace {
 
-std::string px(double p) { return std::to_string(to_price_double(to_price_t(p))); }
-std::string sz(double q) { return std::to_string(to_qty_double(to_qty_t(q))); }
+// Expected values are written out in full rather than recomputed with the same
+// formatter the code under test uses - a helper mirroring the implementation agrees
+// with it however wrong both are, which is how "0.00011628" went out as "0.000116"
+// unnoticed.
 
 // TradeSummary ends in a flexible array member, so back it with real storage.
 struct SummaryBuffer {
@@ -75,8 +77,8 @@ TEST(CoinbaseTradeEncoder, Update_NumericFieldsAreStrings) {
     EXPECT_TRUE(trade["price"].is_string());
     EXPECT_TRUE(trade["size"].is_string());
     EXPECT_TRUE(trade["trade_id"].is_string());
-    EXPECT_EQ(trade["price"], px(60455.46));
-    EXPECT_EQ(trade["size"], sz(0.00011628));
+    EXPECT_EQ(trade["price"], "60455.46");
+    EXPECT_EQ(trade["size"], "0.00011628");
     EXPECT_EQ(trade["trade_id"], "42");
     EXPECT_EQ(trade["product_id"], "BTC-USD");
 }

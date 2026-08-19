@@ -283,16 +283,16 @@ void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* updat
         curr_ask.reserve(snapshot->num_ask);
         for (uint32_t i = 0; i < snapshot->num_bid; ++i) {
             bids.push_back({
-                {"px", std::to_string(to_price_double(levels[i].price))},
-                {"sz", std::to_string(to_qty_double(levels[i].qty))},
+                {"px", to_price_string(levels[i].price)},
+                {"sz", to_qty_string(levels[i].qty)},
                 {"n",  levels[i].num_orders}
             });
             curr_bid.emplace_back(levels[i].price, levels[i].qty);
         }
         for (uint32_t i = snapshot->num_bid; i < snapshot->num_bid + snapshot->num_ask; ++i) {
             asks.push_back({
-                {"px", std::to_string(to_price_double(levels[i].price))},
-                {"sz", std::to_string(to_qty_double(levels[i].qty))},
+                {"px", to_price_string(levels[i].price)},
+                {"sz", to_qty_string(levels[i].qty)},
                 {"n",  levels[i].num_orders}
             });
             curr_ask.emplace_back(levels[i].price, levels[i].qty);
@@ -381,16 +381,16 @@ void HyperliquidPublisher::publish_book_snapshot(MarketDataUpdate* update) {
     curr_ask.reserve(snapshot->num_ask);
     for (uint32_t i = 0; i < snapshot->num_bid; ++i) {
         bids.push_back({
-            {"px", std::to_string(to_price_double(levels[i].price))},
-            {"sz", std::to_string(to_qty_double(levels[i].qty))},
+            {"px", to_price_string(levels[i].price)},
+            {"sz", to_qty_string(levels[i].qty)},
             {"n",  levels[i].num_orders}
         });
         curr_bid.emplace_back(levels[i].price, levels[i].qty);
     }
     for (uint32_t i = snapshot->num_bid; i < snapshot->num_bid + snapshot->num_ask; ++i) {
         asks.push_back({
-            {"px", std::to_string(to_price_double(levels[i].price))},
-            {"sz", std::to_string(to_qty_double(levels[i].qty))},
+            {"px", to_price_string(levels[i].price)},
+            {"sz", to_qty_string(levels[i].qty)},
             {"n",  levels[i].num_orders}
         });
         curr_ask.emplace_back(levels[i].price, levels[i].qty);

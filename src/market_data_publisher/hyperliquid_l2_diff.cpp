@@ -12,11 +12,11 @@ using namespace slick::sim;
 namespace {
 
 std::string format_price(price_t price) {
-    return std::to_string(to_price_double(price));
+    return to_price_string(price);
 }
 
 std::string format_qty(qty_t qty) {
-    return std::to_string(to_qty_double(qty));
+    return to_qty_string(qty);
 }
 
 // One side's contribution to "l" (changed/added, in current order) and "r"

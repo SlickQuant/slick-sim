@@ -367,14 +367,14 @@ void CoinbaseWebsocketOrderGateway::handle_order_response(const OrderResponse &r
                 {"type", "update"},
                 {"orders", json::array({
                     json::object({
-                        {"avg_price", std::to_string(to_price_double(response.avg_fill_price))},
+                        {"avg_price", to_price_string(response.avg_fill_price)},
                         {"client_order_id", std::string(response.client_order_id)},
                         {"completion_percentage", std::to_string(response.qty > 0 ? (to_qty_double(response.cum_qty) / response.qty) * 100 : 0.0)},
                         {"contract_expiry_type", "UNKNOWN_CONTRACT_EXPIRY_TYPE"},
-                        {"cumulative_quantity", std::to_string(to_qty_double(response.cum_qty))},
+                        {"cumulative_quantity", to_qty_string(response.cum_qty)},
                         {"filled_value", std::to_string(filled_value)},
-                        {"leaves_quantity", std::to_string(to_qty_double(response.leaves_qty))},
-                        {"limit_price", std::to_string(to_price_double(response.price))},
+                        {"leaves_quantity", to_qty_string(response.leaves_qty)},
+                        {"limit_price", to_price_string(response.price)},
                         {"number_of_fills", std::to_string(response.last_qty > 0 ? response.cum_qty / response.last_qty : 0)},
                         {"order_id", std::string(response.order_id)},
                         {"order_side", response.side == Side::BUY ? "BUY" : "SELL"},
