@@ -1,5 +1,7 @@
 #include <slick/logger.hpp>
 #include "coinbase_publisher.hpp"
+#include "sequenced_message.hpp"
+#include <optional>
 #include "coinbase_trade_encoder.hpp"
 #include <common/symbol_manager.hpp>
 #include <utils/fixed_string.hpp>
@@ -517,6 +519,14 @@ void CoinbasePublisher::publish_subscription_response(MarketDataUpdate *update) 
             return;
         }
 
+        // Serialised before the loop: the book snapshot is the largest message this
+        // publisher sends, and several sockets can be waiting on the same one.
+        SequencedMessage snapshot_payload(snapshot_msg);
+        std::optional<SequencedMessage> update_payload;
+        if (!update_msg.is_null()) {
+            update_payload.emplace(update_msg);
+        }
+
         for (const auto &ws : it->second) {
             auto *user_data = ws->getUserData();
             auto &subscription_info = user_data->subscription_info[response->channel];
@@ -525,14 +535,12 @@ void CoinbasePublisher::publish_subscription_response(MarketDataUpdate *update) 
                 subscription_info.pending_subscriptions.erase(it_sym);
                 subscription_info.received_subscriptions.emplace_back(update->symbol);
 
-                snapshot_msg["sequence_num"] = user_data->seq_num++;
-                ws->send(snapshot_msg.dump(), uWS::OpCode::TEXT);
+                ws->send(snapshot_payload.render(user_data->seq_num++), uWS::OpCode::TEXT);
 
                 LOG_DEBUG("CoinbasePublisher send {} snapshot", update->symbol);
 
-                if (!update_msg.is_null()) {
-                    update_msg["sequence_num"] = user_data->seq_num++;
-                    ws->send(update_msg.dump(), uWS::OpCode::TEXT);
+                if (update_payload) {
+                    ws->send(update_payload->render(user_data->seq_num++), uWS::OpCode::TEXT);
                 }
 
                 if (subscription_info.pending_subscriptions.empty()) {
@@ -606,11 +614,11 @@ void CoinbasePublisher::publish_level_snapshot(MarketDataUpdate *update) {
             }}}
         };
 
+        SequencedMessage snapshot_payload(snapshot_msg);
         for (auto it = range.first; it != range.second; ++it) {
             auto *ws = it->second;
             auto *user_data = ws->getUserData();
-            snapshot_msg["sequence_num"] = user_data->seq_num++;
-            ws->send(snapshot_msg.dump(), uWS::OpCode::TEXT);
+            ws->send(snapshot_payload.render(user_data->seq_num++), uWS::OpCode::TEXT);
         }
     }
 }
@@ -654,11 +662,11 @@ void CoinbasePublisher::publish_level_update(MarketDataUpdate *update) {
             }}}
         };
 
+        SequencedMessage update_payload(update_msg);
         for (auto it = range.first; it != range.second; ++it) {
             auto *ws = it->second;
             auto *user_data = ws->getUserData();
-            update_msg["sequence_num"] = user_data->seq_num++;
-            ws->send(update_msg.dump(), uWS::OpCode::TEXT);
+            ws->send(update_payload.render(user_data->seq_num++), uWS::OpCode::TEXT);
         }
     }
 }
@@ -676,11 +684,11 @@ void CoinbasePublisher::publish_trade_summary(MarketDataUpdate *update) {
     auto *summary = reinterpret_cast<TradeSummary*>(update->data);
     auto trade_msg = encode_market_trade(update->symbol, *summary);
 
+    SequencedMessage trade_payload(trade_msg);
     for (auto it = range.first; it != range.second; ++it) {
         auto *ws = it->second;
         auto *user_data = ws->getUserData();
-        trade_msg["sequence_num"] = user_data->seq_num++;
-        ws->send(trade_msg.dump(), uWS::OpCode::TEXT);
+        ws->send(trade_payload.render(user_data->seq_num++), uWS::OpCode::TEXT);
     }
 }
 

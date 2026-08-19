@@ -50,6 +50,31 @@ exchange, not a working one. If you add a venue, populating `md_publisher_` **an
 
 ## Order and market-data plumbing
 
+### REST order handlers block the gateway's event loop
+
+Every REST handler that needs a reply from the matching engine waits for it by polling
+`response_queue_` in a loop with a 100 microsecond sleep, up to a 5 second timeout. That loop runs
+on the gateway's **only** uWebSockets event-loop thread, so while one request waits, no other
+client's request on that gateway is served at all - not even one that would answer instantly.
+
+The batch handlers are worse, because they poll once per entry rather than once per request:
+[`handle_batch_cancel`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/coinbase_rest_order_gateway.cpp#L638)
+and Hyperliquid's
+[`process_order_action`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/hyperliquid_rest_order_gateway.cpp#L263)
+wait inside the loop over the batch, so a ten-order batch can hold the loop for ten separate
+timeouts.
+
+**What it means:** REST throughput is one in-flight request per gateway, and a single order that the
+engine never answers stalls every other client for five seconds. It is not a correctness problem -
+requests are still served first-come-first-served, since the request and response queues are both
+FIFO and the exchange thread is single-threaded - but it puts a hard ceiling on concurrency.
+
+`order_gateway::PendingResponses` is the correlation half of the fix: a handler registers what it is
+waiting for and returns, and the reply completes the HTTP response when it arrives. The uWebSockets
+half - holding an `HttpResponse` past handler return, cancelling on abort, and the per-request
+timeout timer - is deliberately not done yet, because nothing exercises the REST gateway over HTTP
+and those are precisely the parts that fail as a use-after-free rather than a wrong answer.
+
 ### `MDUpdateType::ORDER` is never published
 
 `Symbol::onOrderUpdate` fills `md_order_update_cache_`, but every call site clears the cache behind a

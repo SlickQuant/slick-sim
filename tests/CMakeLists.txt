@@ -44,9 +44,11 @@ add_executable(slick_sim_tests
     # Priority 6: Order Gateway Tests
     unit/order_gateway/test_hyperliquid_rest_client_manager.cpp
     unit/order_gateway/test_order_store.cpp
+    unit/order_gateway/test_pending_responses.cpp
 
     # Priority 7: Market Data Publisher Tests
     unit/market_data_publisher/test_hyperliquid_l2_diff.cpp
+    unit/market_data_publisher/test_sequenced_message.cpp
     unit/market_data_publisher/test_coinbase_trade_encoder.cpp
     unit/market_data_publisher/test_hyperliquid_trade_encoder.cpp
 )
