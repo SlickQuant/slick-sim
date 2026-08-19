@@ -990,5 +990,5 @@ TEST_F(CoinbaseExchangeTest, MdUnsubscriptionForUnknownSymbolIsIgnored) {
 
     exchange_->drainOneRequest();
 
-    EXPECT_EQ(SymbolManager::instance().getSymbol("TEST-UNSUB-NEVER-SEEN"), nullptr);
+    EXPECT_EQ(SymbolManager::instance().getSymbol("TEST-UNSUB-NEVER-SEEN", Venue::COINBASE), nullptr);
 }

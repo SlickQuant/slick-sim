@@ -111,7 +111,7 @@ void HyperliquidExchange::onHyperliquidDisconnected() {
     LOG_WARN("Hyperliquid WebSocket feed disconnected");
     // Mark all tracked symbols as pending so snapshots are re-sent on reconnect
     for (auto &[coin, feed] : map_coin_feed_) {
-        auto *symbol = sym_mgr.getSymbol(coin);
+        auto *symbol = sym_mgr.getSymbol(coin, venue_);
         if (symbol) {
             pending_md_subscription_[static_cast<size_t>(HyperliquidChannel::L2_BOOK)].emplace(symbol);
             pending_md_subscription_[static_cast<size_t>(HyperliquidChannel::L2)].emplace(symbol);
@@ -157,7 +157,7 @@ void HyperliquidExchange::processL2Snapshot(const nlohmann::json& data) {
 
     const std::string coin = data["coin"].get<std::string>();
 
-    auto *symbol = sym_mgr.getSymbol(coin);
+    auto *symbol = sym_mgr.getSymbol(coin, venue_);
     if (!symbol) {
         symbol = addSymbol(coin);
     }
@@ -222,7 +222,7 @@ void HyperliquidExchange::processL2Diff(const nlohmann::json& data) {
 
     const auto coin = data["c"].get<std::string_view>();
 
-    auto *symbol = sym_mgr.getSymbol(coin);
+    auto *symbol = sym_mgr.getSymbol(coin, venue_);
     if (!symbol) {
         symbol = addSymbol(coin);
     }
@@ -372,7 +372,7 @@ void HyperliquidExchange::processTradesEvent(const nlohmann::json& data) {
     const std::string coin = data[0].value("coin", "");
     if (coin.empty()) return;
 
-    auto *symbol = sym_mgr.getSymbol(coin);
+    auto *symbol = sym_mgr.getSymbol(coin, venue_);
     if (!symbol) return;
 
     auto &book = *symbol->order_book_;
@@ -427,7 +427,7 @@ void HyperliquidExchange::handleMdSubscription(const Request &request) {
     const auto &msg = request.md_subscription;
     std::string coin = request.symbol;
 
-    auto *symbol = sym_mgr.getSymbol(coin);
+    auto *symbol = sym_mgr.getSymbol(coin, venue_);
     bool is_new = false;
     if (!symbol) {
         symbol = addSymbol(coin);
@@ -496,7 +496,7 @@ void HyperliquidExchange::handleMdSubscription(const Request &request) {
 
 void HyperliquidExchange::handleMdUnsubscription(const Request &request) {
     std::string coin = request.symbol;
-    auto *symbol = sym_mgr.getSymbol(coin);
+    auto *symbol = sym_mgr.getSymbol(coin, venue_);
     if (!symbol) return;
 
     if (symbol->num_subscriptions_.fetch_sub(1, std::memory_order_relaxed) == 1) {

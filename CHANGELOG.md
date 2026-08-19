@@ -121,6 +121,16 @@
   `md_order_update_cache_` instead of moving them. `SymbolManager::createSymbol` builds a `Symbol` on
   the stack and moves it into a vector, so every symbol in the process ran with zero reserved
   capacity and both caches reallocated from scratch as market data arrived.
+- `SymbolManager` handed out `Symbol*` that went stale. It owned its instruments in a
+  `std::vector` reserved for 512 while storing raw pointers to them in its lookup map, so creating
+  the 513th relocated every element: the map's entries, the pointers the exchanges had stored at
+  subscription time, and the return value of the create that triggered it all dangled at once.
+  Storage is now a `std::deque`, which never moves an element it already holds.
+- `SymbolManager`'s lookup was keyed on the instrument name alone, so the same ticker on two venues
+  collided. The second `createSymbol` found the name present, and its `Symbol` was built but never
+  became reachable — every lookup for it returned the other venue's instrument, routing orders and
+  market data to the wrong book. The map is keyed by `(Venue, name)` now, and `getSymbol` takes the
+  venue. Re-creating an existing instrument returns it rather than stranding a duplicate.
 - Both heartbeat timers wrote their `this` pointer past the end of the timer allocation.
   `us_create_timer(loop, fallthrough, ext_size)` takes the extension size as its **third** argument,
   and both call sites passed `0` before storing a pointer at `us_timer_ext(timer)` — an

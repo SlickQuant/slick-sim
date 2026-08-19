@@ -158,7 +158,7 @@ int Exchange::clientIdFor(const char *user_id)
 
 void Exchange::handleNewOrderRequest(const Request &request)
 {
-    auto *symbol = symbol_mgr.getSymbol(request.symbol);
+    auto *symbol = symbol_mgr.getSymbol(request.symbol, venue_);
     if (!symbol)
     {
         rejectNewOrderRequest(request, OrdRejectReason::UNKNOWN_CONTRACT);
@@ -224,7 +224,7 @@ void Exchange::handleNewOrderRequest(const Request &request)
 
 void Exchange::handleModifyOrderRequest(const Request &request)
 {
-    auto *symbol = symbol_mgr.getSymbol(request.symbol);
+    auto *symbol = symbol_mgr.getSymbol(request.symbol, venue_);
     if (!symbol)
     {
         rejectModifyOrderRequest(request, OrdRejectReason::UNKNOWN_CONTRACT);
@@ -281,7 +281,7 @@ void Exchange::handleModifyOrderRequest(const Request &request)
 
 void Exchange::handleCancelOrderRequest(const Request &request)
 {
-    auto *symbol = symbol_mgr.getSymbol(request.symbol);
+    auto *symbol = symbol_mgr.getSymbol(request.symbol, venue_);
     if (!symbol)
     {
         rejectCancelOrderRequest(request, OrdRejectReason::UNKNOWN_CONTRACT);

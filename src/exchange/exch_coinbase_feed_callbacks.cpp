@@ -65,7 +65,7 @@ void CoinbaseExchange::onMarketDataDisconnected(WebSocketClient *client)
     // Mark symbols as pending subscription so the snapshot is re-requested on reconnect
     for (const auto &sym : symbols)
     {
-        auto *symbol = sym_mgr.getSymbol(sym);
+        auto *symbol = sym_mgr.getSymbol(sym, venue_);
         if (symbol)
         {
             pending_md_subscription_[coinbase::WebSocketChannel::LEVEL2].emplace(symbol);
@@ -98,7 +98,7 @@ void CoinbaseExchange::onUserDataDisconnected(WebSocketClient *client)
 
 void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t seq_num, const coinbase::Level2UpdateBatch &snapshot)
 {
-    auto *symbol = sym_mgr.getSymbol(snapshot.product_id);
+    auto *symbol = sym_mgr.getSymbol(snapshot.product_id, venue_);
     if (!symbol) [[unlikely]]
     {
         return;
@@ -177,7 +177,7 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
 
 void CoinbaseExchange::onLevel2Updates(WebSocketClient * /* client */, uint64_t seq_num, const coinbase::Level2UpdateBatch &update_batch)
 {
-    auto *symbol = sym_mgr.getSymbol(update_batch.product_id);
+    auto *symbol = sym_mgr.getSymbol(update_batch.product_id, venue_);
     if (!symbol) [[unlikely]]
     {
         return;
@@ -222,7 +222,7 @@ void CoinbaseExchange::onMarketTradesSnapshot(WebSocketClient * /* client */, ui
     {
         return;
     }
-    Symbol *symbol = sym_mgr.getSymbol(snapshots[0].product_id);
+    Symbol *symbol = sym_mgr.getSymbol(snapshots[0].product_id, venue_);
     if (!symbol || !pending_subscriptions.contains(symbol))
     {
         return;
@@ -269,7 +269,7 @@ void CoinbaseExchange::onMarketTrades(WebSocketClient * /* client */, uint64_t s
 {
     for (const auto &trade : trades)
     {
-        auto *symbol = sym_mgr.getSymbol(trade.product_id);
+        auto *symbol = sym_mgr.getSymbol(trade.product_id, venue_);
         if (!symbol) [[unlikely]]
         {
             continue;
