@@ -342,6 +342,14 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
         LOG_TRACE("  Matching with {} book order {} for qty {} at price {}", order_id, book_order_id, trad_qty, trade_price);
 
         auto* our_order = book.findOrder(book_order_id);
+
+        // Decremented before the fill is booked, not after: is_last_in_batch is
+        // `qty == 0`, and the loop only runs while qty > 0, so reading it first made
+        // the flag permanently false. The level update carrying the final fill then
+        // never set F_END_EVENT, and a client batching until the end-of-event marker
+        // never saw its batch close. The order-driven overload above already does
+        // it in this order.
+        qty -= trad_qty;
         book.executeOrder(book_order_id, trad_qty, event_time, seq_num, qty == 0);
 
         if (our_order) {
@@ -351,8 +359,6 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
                 book.deleteOrder(our_order);
             }
         }
-
-        qty -= trad_qty;
 
         // A resting order the simulator does not own is phantom liquidity mirroring
         // the real market. Tracked separately so the exchange can tell how much of
