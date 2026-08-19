@@ -121,6 +121,14 @@
   `md_order_update_cache_` instead of moving them. `SymbolManager::createSymbol` builds a `Symbol` on
   the stack and moves it into a vector, so every symbol in the process ran with zero reserved
   capacity and both caches reallocated from scratch as market data arrived.
+- The Coinbase publisher serialises each market-data message once instead of once per subscriber.
+  Every subscriber gets its own `sequence_num`, so the payload differed by a single integer - but
+  `dump()` sat inside the fan-out loop, walking the whole document and building a fresh string for
+  each socket. `md_publisher::SequencedMessage` dumps once and splices the number in with
+  `std::to_chars` into a reused buffer. Measured on a ten-level `l2_data` update with 50
+  subscribers: ~47x faster. Applies to the level updates, book snapshots, subscription snapshots and
+  trade prints; the remaining `dump()` calls are genuinely per-socket content. Hyperliquid already
+  sent one shared payload to every socket and is unchanged.
 - The market-data replay overload of `match()` marks the end of a batch. `is_last_in_batch` was
   passed as `qty == 0` but read *before* the fill was subtracted, and the loop only runs while
   `qty > 0`, so it was permanently false. The level update carrying the final fill of a replayed
@@ -181,6 +189,17 @@
   `WebsocketMarketDataPublisher` (so every venue's market-data publisher) and
   `CoinbaseWebsocketOrderGateway`. Both now request `sizeof(T*)`.
 
+- `order_gateway::PendingResponses` (`src/order_gateway/pending_responses.hpp`): correlates an
+  in-flight HTTP request with the execution report that answers it, so a REST handler can register
+  what it is waiting for and return instead of polling. It is the first half of removing the
+  blocking waits described in [known gaps](docs/known-gaps.md); nothing calls it yet, because the
+  uWebSockets side - holding an `HttpResponse` past handler return, the abort path, and the
+  per-request timer - is being done as its own change with an integration test, none of the REST
+  gateway being exercised over HTTP today. Waiters are matched by predicate rather than a keyed
+  lookup because the handlers correlate on different things: a create knows its `client_order_id`,
+  a cancel only the timestamp it stamped. A timer that fires after its report already arrived is a
+  no-op, and an abandoned waiter is never completed, so neither can answer a request twice or write
+  to a closed socket.
 - `order_gateway::OrderStore` (`src/order_gateway/order_store.hpp`): a gateway-side projection of
   order state, folded from the execution-report stream. A gateway cannot answer "list this user's
   orders" from the order books - those belong to the exchange thread - but every response carries the
