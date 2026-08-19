@@ -1,4 +1,5 @@
 #include "rest_ws_order_gateway.hpp"
+#include "order_store.hpp"
 #include <slick/net/http.hpp>
 #include <nlohmann/json.hpp>
 // #define JWT_DISABLE_PICOJSON
@@ -49,6 +50,11 @@ private:
     };
 
     std::unordered_map<std::string, std::string> order_id_to_symbol_;
+
+    /// Backs GET /orders/historical/batch. Fed from the execution-report stream on
+    /// this gateway's own loop thread - see OrderStore for why the order books
+    /// themselves are not an option.
+    OrderStore orders_;
 
     OrderValidationResult validate_order(const std::string& product_id, double price_d, double qty_d, OrderType order_type) const;
 

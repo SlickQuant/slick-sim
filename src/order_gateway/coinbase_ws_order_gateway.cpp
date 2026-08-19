@@ -154,9 +154,8 @@ void CoinbaseWebsocketOrderGateway::handle_message(wsT *ws, std::string_view mes
                     // Send subscription confirmation
                     {
                         json orders = json::array();
-                        auto range = orders_by_client_id_.equal_range(user_data->user_id);
-                        for (auto it = range.first; it != range.second; ++it) {
-                            orders.push_back(to_json(it->second));
+                        for (const Order *order : orders_.orders_of(user_data->user_id)) {
+                            orders.push_back(to_json(*order));
                         }
                         json response = {
                             {"channel", "user"},
@@ -313,6 +312,11 @@ void CoinbaseWebsocketOrderGateway::process_all_responses() {
 
         // Process the order response
         auto& response = *data;
+
+        // Record it before anything else. This has to happen whether or not the
+        // owner is connected: a client that subscribes later still expects its
+        // earlier orders in the snapshot, and this is the only pass over the stream.
+        orders_.apply(response);
 
         // Extract user_id from the order response
         std::string user_id = response.user_id;
