@@ -12,8 +12,10 @@ using json = nlohmann::json;
 
 namespace {
 
-std::string px(double p) { return std::to_string(to_price_double(to_price_t(p))); }
-std::string sz(double q) { return std::to_string(to_qty_double(to_qty_t(q))); }
+// Expected values are written out in full rather than recomputed with the same
+// formatter the code under test uses - a helper mirroring the implementation agrees
+// with it however wrong both are, which is how "0.00011628" went out as "0.000116"
+// unnoticed.
 
 // TradeSummary ends in a flexible array member, so back it with real storage.
 struct SummaryBuffer {
@@ -68,8 +70,8 @@ TEST(HyperliquidTradeEncoder, PriceAndSizeAreStrings_TidIsNumeric) {
     EXPECT_TRUE(trade["px"].is_string());
     EXPECT_TRUE(trade["sz"].is_string());
     EXPECT_TRUE(trade["tid"].is_number());
-    EXPECT_EQ(trade["px"], px(3000.5));
-    EXPECT_EQ(trade["sz"], sz(1.25));
+    EXPECT_EQ(trade["px"], "3000.5");
+    EXPECT_EQ(trade["sz"], "1.25");
     EXPECT_EQ(trade["tid"], 42u);
     // The simulator has no on-chain transaction to reference.
     EXPECT_EQ(trade["hash"], "0x0");

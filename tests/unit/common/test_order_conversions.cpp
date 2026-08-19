@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <common/order.hpp>
 #include <common/types.hpp>
+#include <limits>
 #include <slick/object_pool.h>
 #include "../test_helpers.hpp"
 
@@ -110,4 +111,56 @@ TEST_F(OrderConversionsTest, PrecisionLoss_VeryLargeNumbers) {
 
     // Should maintain 8 decimal precision
     EXPECT_NEAR(123456.78901234, back, kEpsilon);
+}
+
+// ===========================================================================
+// Fixed-point rounding and exact rendering
+// ===========================================================================
+
+// `price * 1e8` is a binary floating-point multiply, and most decimal fractions
+// have no exact binary form, so the product lands just under the intended integer.
+// Truncating there cost a whole tick on very ordinary values.
+TEST(FixedPointTest, ScalingRoundsToNearestTickRatherThanTruncating) {
+    EXPECT_EQ(to_price_t(8.2), 820000000);      // 8.2 * 1e8 == 819999999.99999988
+    EXPECT_EQ(to_price_t(0.29), 29000000);      // 28999999.999999996
+    EXPECT_EQ(to_price_t(4.35), 435000000);     // 434999999.99999994
+    EXPECT_EQ(to_price_t(0.07), 7000000);
+    EXPECT_EQ(to_price_t(123.456), 12345600000);
+
+    EXPECT_EQ(to_qty_t(8.2), 820000000);
+    EXPECT_EQ(to_qty_t(0.29), 29000000);
+}
+
+TEST(FixedPointTest, ScalingRoundsNegativesAwayFromZero) {
+    EXPECT_EQ(to_price_t(-8.2), -820000000);
+    EXPECT_EQ(to_price_t(-0.29), -29000000);
+}
+
+TEST(FixedPointTest, ScalingRoundTripsThroughTheDoubleForm) {
+    for (double v : {8.2, 0.29, 4.35, 0.07, 60455.46, 0.00011628, 3000.5}) {
+        EXPECT_DOUBLE_EQ(to_price_double(to_price_t(v)), v) << "value " << v;
+    }
+}
+
+// std::to_string(double) formats with %f - six fractional digits - but the scale
+// carries eight. A size of 0.00011628 went out as "0.000116", and a single tick as
+// "0.000000", which a receiver reads as zero.
+TEST(FixedPointTest, RenderingKeepsAllEightFractionalDigits) {
+    EXPECT_EQ(to_qty_string(to_qty_t(0.00011628)), "0.00011628");
+    EXPECT_EQ(to_price_string(1), "0.00000001");
+    EXPECT_EQ(to_price_string(to_price_t(0.12345678)), "0.12345678");
+}
+
+TEST(FixedPointTest, RenderingTrimsTrailingZerosAndWholeNumbers) {
+    EXPECT_EQ(to_price_string(to_price_t(99.0)), "99");
+    EXPECT_EQ(to_price_string(to_price_t(3000.5)), "3000.5");
+    EXPECT_EQ(to_price_string(to_price_t(60455.46)), "60455.46");
+    EXPECT_EQ(to_price_string(0), "0");
+}
+
+TEST(FixedPointTest, RenderingHandlesNegativesAndTheDomainEdge) {
+    EXPECT_EQ(to_price_string(to_price_t(-8.2)), "-8.2");
+    EXPECT_EQ(to_price_string(-1), "-0.00000001");
+    // Negating through the unsigned domain keeps the most negative value intact.
+    EXPECT_EQ(to_fixed_string(std::numeric_limits<int_fast64_t>::min()).front(), '-');
 }

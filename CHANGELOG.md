@@ -121,6 +121,19 @@
   `md_order_update_cache_` instead of moving them. `SymbolManager::createSymbol` builds a `Symbol` on
   the stack and moves it into a vector, so every symbol in the process ran with zero reserved
   capacity and both caches reallocated from scratch as market data arrived.
+- `to_price_t`/`to_qty_t` round to the nearest tick instead of truncating. `value * 1e8` is a binary
+  floating-point multiply and most decimal fractions have no exact binary form, so the product lands
+  just below the intended integer and the cast threw the remainder away: 8.2 became 819999999, a
+  price of 8.19999999. 0.29 and 4.35 went the same way, on both prices and quantities, for every
+  value parsed off a venue feed or a client order.
+- Fixed-point values are rendered onto the wire straight from the integer, by the new
+  `to_price_string`/`to_qty_string`, instead of through `std::to_string(double)`. That formats with
+  `%f` - exactly six fractional digits - while the scale carries eight: a size of 0.00011628 was
+  published as "0.000116", and a single tick as "0.000000", which a receiver reads as zero. All 41
+  outbound sites across the publishers, encoders and REST/WS gateways now use the exact form.
+  Genuine doubles - fees, notional values, completion percentages - are unchanged. Whole numbers
+  render without a decimal point and trailing fractional zeros are trimmed, so 99.0 is "99" and 8.2
+  is "8.2" rather than "8.200000".
 - `MDSubscriptionResponse::reject_reason` is now written on every path and checked before the
   payload behind it is read. Three gaps lined up: `rejectMdSubscription` took a reason and marked it
   `[[maybe_unused]]`, the L2 accept path set only `channel`, and both publishers cast
