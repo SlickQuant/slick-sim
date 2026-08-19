@@ -310,7 +310,7 @@ void Exchange::handleCancelOrderRequest(const Request &request)
     }
 }
 
-void Exchange::rejectMdSubscription(const Request &request, [[maybe_unused]] MDSubscriptionRejectReason reason)
+void Exchange::rejectMdSubscription(const Request &request, MDSubscriptionRejectReason reason)
 {
     auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse));
     auto index = md_queue_.reserve(sz);
@@ -320,6 +320,10 @@ void Exchange::rejectMdSubscription(const Request &request, [[maybe_unused]] MDS
     memcpy(update->symbol, request.symbol, sizeof(update->symbol));
     auto *rsp = reinterpret_cast<MDSubscriptionResponse *>(update->data);
     rsp->channel = request.md_subscription.channel;
+    // The reason was accepted and then dropped, leaving the field holding whatever
+    // the recycled queue slot did - so a reject could arrive claiming NONE, and the
+    // publisher would go on to read a book snapshot this frame never reserved.
+    rsp->reject_reason = reason;
     md_queue_.publish(index, sz);
 }
 

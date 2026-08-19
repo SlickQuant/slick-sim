@@ -30,6 +30,9 @@ public:
     // processRequest() takes one request per call, the same way the exchange
     // thread's spin loop drives it.
     void drainOneRequest() { processRequest(); }
+    // Nothing calls rejectMdSubscription yet - exposed so the frame it produces can
+    // be checked before something does.
+    using CoinbaseExchange::rejectMdSubscription;
 };
 
 // ---------------------------------------------------------------------------
@@ -991,4 +994,64 @@ TEST_F(CoinbaseExchangeTest, MdUnsubscriptionForUnknownSymbolIsIgnored) {
     exchange_->drainOneRequest();
 
     EXPECT_EQ(SymbolManager::instance().getSymbol("TEST-UNSUB-NEVER-SEEN", Venue::COINBASE), nullptr);
+}
+
+// ===========================================================================
+// MD subscription responses - reject_reason
+// ===========================================================================
+
+// A reject frame reserves room for the response header and nothing more. The
+// reason used to be accepted and then dropped, so the field carried whatever the
+// recycled queue slot held: a reject could arrive claiming NONE, and a publisher
+// that trusts the field goes on to read a BookSnapshot the frame never reserved.
+TEST_F(CoinbaseExchangeTest, RejectedMdSubscriptionCarriesItsReason) {
+    Request req{};
+    utils::copy_wire_field(req.symbol, std::string_view("TEST-REJECT-1"));
+    req.msg_type = MessageType::MD_SUBSCRIPTION;
+    req.md_subscription.channel = static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2);
+    req.md_subscription.client = nullptr;
+
+    md_collector_->reset();
+    exchange_->rejectMdSubscription(req, MDSubscriptionRejectReason::UNKNOWN_CONTRACT);
+
+    bool seen = false;
+    for (auto* update : md_collector_->collect(MDUpdateType::SUB_RESPONSE)) {
+        if (std::string_view(update->symbol) != "TEST-REJECT-1") {
+            continue;
+        }
+        seen = true;
+        auto* response = reinterpret_cast<MDSubscriptionResponse*>(update->data);
+        EXPECT_EQ(response->channel,
+                  static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2));
+        EXPECT_EQ(response->reject_reason, MDSubscriptionRejectReason::UNKNOWN_CONTRACT)
+            << "the reject was published without the reason it was given";
+    }
+    EXPECT_TRUE(seen) << "no SUB_RESPONSE was published for the rejected subscription";
+}
+
+// The accepted path carries a book snapshot, and says so, rather than leaving the
+// discriminant to whatever the slot last held.
+TEST_F(CoinbaseExchangeTest, AcceptedL2SubscriptionReportsNoRejectReason) {
+    auto* sym = registerSymbol("TEST-ACCEPT-1");
+    addSimOrder(sym, Side::BUY, kPrice99, kQty5);
+
+    md_collector_->reset();
+    sym->order_book_->populateL2SubscriptionResponse(
+        exchange_->md_queue(), static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2));
+
+    bool seen = false;
+    for (auto* update : md_collector_->collect(MDUpdateType::SUB_RESPONSE)) {
+        if (std::string_view(update->symbol) != "TEST-ACCEPT-1") {
+            continue;
+        }
+        seen = true;
+        auto* response = reinterpret_cast<MDSubscriptionResponse*>(update->data);
+        EXPECT_EQ(response->reject_reason, MDSubscriptionRejectReason::NONE);
+
+        // And the snapshot it claims to carry is really there.
+        auto* snapshot = reinterpret_cast<BookSnapshot*>(response->data);
+        EXPECT_EQ(snapshot->num_bid, 1u);
+        EXPECT_EQ(snapshot->num_ask, 0u);
+    }
+    EXPECT_TRUE(seen) << "no SUB_RESPONSE was published for the accepted subscription";
 }
