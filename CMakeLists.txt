@@ -33,6 +33,23 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
     add_definitions(-DNDEBUG)
 endif()
 
+# Must precede every find_package/FetchContent call below.
+#
+# slick-shm's exported target declares Threads::Threads in its link interface but
+# does not find_dependency(Threads) itself, so the target has to already exist by
+# the time its config is read. It is reached transitively and early:
+# slick-logger -> slick-queue -> slick-shm. Without this, a configure that takes
+# the FetchContent path for slick-logger (which happens whenever vcpkg's port is
+# older than the version required below) fails at generate time with:
+#
+#   The link interface of target "slick::shm" contains: Threads::Threads
+#   but the target was not found.
+#
+# Threads was previously found only as a side effect of a later dependency's
+# config - too late, and not something to rely on.
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 include(FetchContent)
 
 set(SLICK_LOGGER_ENABLE_SOURCE_LOCATION OFF CACHE BOOL "" FORCE)
