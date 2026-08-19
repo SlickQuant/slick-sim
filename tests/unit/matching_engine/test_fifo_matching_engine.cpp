@@ -360,3 +360,85 @@ TEST_F(FifoMatchingEngineTest, FullyFilledRestingOrdersAreReturnedToThePool) {
         << resting_slots.size() << " distinct slots drawn across " << kRounds
         << " rounds from a pool of " << kPoolSize;
 }
+
+// An amendment recomputes leaves_quantity from cum_quantity rather than adjusting
+// it by the quantity delta. The two agree while the new quantity stays above what
+// has already filled, and diverge sharply when it does not: delta math takes leaves
+// negative, and the order then depends on a guard elsewhere to notice.
+TEST_F(FifoMatchingEngineTest, AmendBelowFilledQuantitySettlesAtZeroLeaves) {
+    // Partially fill a buy for 10: only 5 is available to trade against.
+    auto* resting = createTestOrder(order_book_, Side::SELL, kPrice100, kQty5,
+                                    TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/2);
+    order_book_->addOrder(resting, 1000, 1);
+
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10,
+                                  TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/1);
+    auto [reason, trades] = matching_engine_->match(
+        order, kPrice100, kQty10, *order_book_, 2000, 2000, 2, SelfMatchPreventionMode::NONE);
+    ASSERT_EQ(reason, OrdRejectReason::NONE);
+    ASSERT_EQ(order->cum_quantity, kQty5);
+    ASSERT_EQ(order->leaves_quantity, kQty5);
+
+    const std::string order_id(order->order_id.c_str());
+
+    // Amend down to 3, below the 5 already filled. Delta math would land at
+    // 5 + (3 - 10) = -2.
+    order->status = OrderStatus::PENDING_REPLACE;
+    collector_->reset();
+    auto [amend_reason, amend_trades] = matching_engine_->match(
+        order, kPrice100, kQty3, *order_book_, 3000, 3000, 3, SelfMatchPreventionMode::NONE);
+
+    EXPECT_EQ(amend_reason, OrdRejectReason::NONE);
+    EXPECT_EQ(order->leaves_quantity, 0) << "leaves went negative instead of settling at zero";
+    EXPECT_EQ(order->quantity, kQty3);
+    EXPECT_EQ(order->cum_quantity, kQty5) << "the amendment must not disturb what already filled";
+
+    bool canceled = false;
+    for (const auto& response : collector_->collect()) {
+        if (response.exec_type == ExecType::CANCELED && order_id == response.order_id) {
+            canceled = true;
+            EXPECT_EQ(response.leaves_qty, 0);
+            EXPECT_EQ(response.cum_qty, kQty5);
+        }
+    }
+    EXPECT_TRUE(canceled)
+        << "an order amended to at or below its filled quantity must be cancelled";
+}
+
+TEST_F(FifoMatchingEngineTest, AmendAboveFilledQuantityRecomputesLeavesFromCumQuantity) {
+    auto* resting = createTestOrder(order_book_, Side::SELL, kPrice100, kQty5,
+                                    TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/2);
+    order_book_->addOrder(resting, 1000, 1);
+
+    auto* order = createTestOrder(order_book_, Side::BUY, kPrice100, kQty10,
+                                  TimeInForce::GOOD_TILL_CANCEL, /*client_id=*/1);
+    matching_engine_->match(order, kPrice100, kQty10, *order_book_, 2000, 2000, 2,
+                            SelfMatchPreventionMode::NONE);
+    ASSERT_EQ(order->cum_quantity, kQty5);
+
+    const std::string order_id(order->order_id.c_str());
+
+    // Raise to 15. The resting sell is gone, so nothing more can trade and the
+    // amendment's only effect is on the order's own accounting.
+    order->status = OrderStatus::PENDING_REPLACE;
+    collector_->reset();
+    auto [amend_reason, amend_trades] = matching_engine_->match(
+        order, kPrice100, kQty15, *order_book_, 3000, 3000, 3, SelfMatchPreventionMode::NONE);
+
+    EXPECT_EQ(amend_reason, OrdRejectReason::NONE);
+    EXPECT_EQ(order->quantity, kQty15);
+    EXPECT_EQ(order->leaves_quantity, kQty15 - kQty5);
+    EXPECT_EQ(order->cum_quantity, kQty5);
+
+    bool replaced = false;
+    for (const auto& response : collector_->collect()) {
+        if (response.exec_type == ExecType::REPLACED && order_id == response.order_id) {
+            replaced = true;
+            EXPECT_EQ(response.qty, kQty15);
+            EXPECT_EQ(response.leaves_qty, kQty15 - kQty5);
+        }
+        EXPECT_NE(response.exec_type, ExecType::CANCELED)
+            << "an amendment that leaves quantity outstanding must not cancel the order";
+    }
+    EXPECT_TRUE(replaced) << "no REPLACED report for the amended order";
+}

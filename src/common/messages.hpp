@@ -359,6 +359,12 @@ struct TradeSummaryInfo {
     qty_t phantom_qty = 0;
     int32_t num_orders;
     std::vector<Trade> Trades;
+
+    /// One aggressor leg plus the resting legs it swept. A summary covers a single
+    /// price level, so the leg count is small and bounded in practice - reserving
+    /// up front turns the 2 reallocations a two-leg fill would otherwise make
+    /// (capacity 1, then 2) into one allocation, and covers deeper sweeps free.
+    TradeSummaryInfo() { Trades.reserve(4); }
 };
 
 }   // end namespace slick::sim

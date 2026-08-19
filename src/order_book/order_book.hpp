@@ -22,8 +22,6 @@
 #include <boost/lexical_cast.hpp>
 #include <utils/order.hpp>
 
-// #include <slick/logger.hpp> // TODO: remove this include after debugging
-
 namespace slick::sim {
 
 using OrderBookL3 = slick::orderbook::OrderBookL3;
@@ -228,19 +226,8 @@ protected:
     symid_t sid_;
     Venue venue_;
     symbol_name_t symbol_;
-    struct StringViewHash {
-        using is_transparent = void;
-        size_t operator()(std::string_view value) const noexcept {
-            return std::hash<std::string_view>{}(value);
-        }
-    };
-
-    struct StringViewEq {
-        using is_transparent = void;
-        bool operator()(std::string_view lhs, std::string_view rhs) const noexcept {
-            return lhs == rhs;
-        }
-    };
+    using StringViewHash = utils::StringViewHash;
+    using StringViewEq = utils::StringViewEq;
 
     slick::ObjectPool<Order> order_buffer_;
     std::unordered_map<uint64_t, Order*> orders_;
