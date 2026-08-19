@@ -6,5 +6,7 @@ var searchData=
   ['subinfo_3',['SubInfo',['../structslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData_1_1SubInfo.html',1,'slick::sim::md_publisher::HyperliquidPerSocketData']]],
   ['subscriptioninfo_4',['SubscriptionInfo',['../structslick_1_1sim_1_1md__publisher_1_1PerSocketData_1_1SubscriptionInfo.html',1,'slick::sim::md_publisher::PerSocketData']]],
   ['symbol_5',['Symbol',['../structslick_1_1sim_1_1exch_1_1Symbol.html',1,'slick::sim::exch']]],
-  ['symbolmanager_6',['SymbolManager',['../classslick_1_1sim_1_1SymbolManager.html',1,'slick::sim']]]
+  ['symbolkey_6',['SymbolKey',['../structslick_1_1sim_1_1SymbolKey.html',1,'slick::sim']]],
+  ['symbolkeyhash_7',['SymbolKeyHash',['../structslick_1_1sim_1_1SymbolKeyHash.html',1,'slick::sim']]],
+  ['symbolmanager_8',['SymbolManager',['../classslick_1_1sim_1_1SymbolManager.html',1,'slick::sim']]]
 ];

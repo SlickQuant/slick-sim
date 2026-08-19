@@ -76,6 +76,8 @@ var annotated_dup =
         [ "OrderResponse", "structslick_1_1sim_1_1OrderResponse.html", "structslick_1_1sim_1_1OrderResponse" ],
         [ "ProxiedHttpResponse", "structslick_1_1sim_1_1ProxiedHttpResponse.html", "structslick_1_1sim_1_1ProxiedHttpResponse" ],
         [ "Request", "structslick_1_1sim_1_1Request.html", "structslick_1_1sim_1_1Request" ],
+        [ "SymbolKey", "structslick_1_1sim_1_1SymbolKey.html", "structslick_1_1sim_1_1SymbolKey" ],
+        [ "SymbolKeyHash", "structslick_1_1sim_1_1SymbolKeyHash.html", "structslick_1_1sim_1_1SymbolKeyHash" ],
         [ "SymbolManager", "classslick_1_1sim_1_1SymbolManager.html", "classslick_1_1sim_1_1SymbolManager" ],
         [ "Trade", "structslick_1_1sim_1_1Trade.html", "structslick_1_1sim_1_1Trade" ],
         [ "TradeSummary", "structslick_1_1sim_1_1TradeSummary.html", "structslick_1_1sim_1_1TradeSummary" ],

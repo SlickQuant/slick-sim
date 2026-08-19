@@ -93,6 +93,8 @@ var hierarchy =
     [ "slick::sim::md_publisher::HyperliquidPerSocketData::SubInfo", "structslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData_1_1SubInfo.html", null ],
     [ "slick::sim::md_publisher::PerSocketData::SubscriptionInfo", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData_1_1SubscriptionInfo.html", null ],
     [ "slick::sim::exch::Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", null ],
+    [ "slick::sim::SymbolKey", "structslick_1_1sim_1_1SymbolKey.html", null ],
+    [ "slick::sim::SymbolKeyHash", "structslick_1_1sim_1_1SymbolKeyHash.html", null ],
     [ "slick::sim::SymbolManager", "classslick_1_1sim_1_1SymbolManager.html", null ],
     [ "slick::sim::order_gateway::TcpOrderGatewayClientInfo", "structslick_1_1sim_1_1order__gateway_1_1TcpOrderGatewayClientInfo.html", null ],
     [ "slick::socket::TCPServerBase", null, [

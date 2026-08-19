@@ -393,7 +393,7 @@ Static Public Attributes</h2></td></tr>
 
 <p>Drops the tape history, so a venue that is about to resend its own trade snapshot does not end up replaying the overlap twice. </p>
 
-<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00177">177</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00179">179</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00056">trade_history_</a>, and <a class="el" href="symbol_8hpp_source.html#l00040">TRADE_HISTORY_CAPACITY</a>.</p>
 
@@ -424,7 +424,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00182">182</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00184">184</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00055">book_observer_</a>, <a class="el" href="symbol_8hpp_source.html#l00042">id_</a>, <a class="el" href="symbol_8hpp_source.html#l00050">order_book_</a>, <a class="el" href="symbol_8hpp_source.html#l00048">symbol_</a>, and <a class="el" href="symbol_8hpp_source.html#l00043">venue_</a>.</p>
 
@@ -479,7 +479,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 <p>Records that a trade print consumed <code>phantom_consumed</code> of the phantom liquidity resting at (side, price). </p>
 <p>The venue will report the same reduction again in its own level update for that trade. Applying both would reduce the level twice, so the level path offsets against this credit when the update predates the trade. Only phantom quantity is credited: when a trade fills the simulator's own resting order the venue's level still legitimately drops by that amount, because that liquidity really did trade at the venue. </p>
 
-<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00118">118</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00120">120</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00022">slick::sim::SELL</a>.</p>
 
@@ -509,7 +509,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00200">200</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00202">202</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00050">order_book_</a>.</p>
 
@@ -541,7 +541,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00192">192</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00194">194</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00050">order_book_</a>.</p>
 
@@ -571,7 +571,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00196">196</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00198">198</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00050">order_book_</a>.</p>
 
@@ -721,7 +721,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00093">93</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00095">95</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00042">id_</a>, <a class="el" href="symbol_8hpp_source.html#l00049">matching_engine_</a>, <a class="el" href="symbol_8hpp_source.html#l00053">md_level_update_cache_</a>, <a class="el" href="symbol_8hpp_source.html#l00054">md_order_update_cache_</a>, <a class="el" href="symbol_8hpp_source.html#l00051">num_subscriptions_</a>, <a class="el" href="symbol_8hpp_source.html#l00050">order_book_</a>, <a class="el" href="symbol_8hpp_source.html#l00048">symbol_</a>, <a class="el" href="symbol_8hpp_source.html#l00056">trade_history_</a>, <a class="el" href="types_8hpp_source.html#l00038">slick::sim::UNKNOWN_VENUE</a>, and <a class="el" href="symbol_8hpp_source.html#l00043">venue_</a>.</p>
 
@@ -753,7 +753,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p>Appends a trade to the tape history that serves the subscribe snapshot. </p>
 
-<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00171">171</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00173">173</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00056">trade_history_</a>.</p>
 
@@ -804,7 +804,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 <p>Returns the quantity traded at (side, price) that a level update stamped <code>as_of</code> does not yet reflect, and drops every credit it does reflect. </p>
 <p>Credits are resolved individually rather than summed: an update landing between two trades at the same price reflects the earlier one and not the later one, so offsetting by both would over-reduce the level. Credits it does not reflect are kept for the next update to resolve; the ones it does are dropped, so stale credit can never survive to swallow a genuine cancel. </p>
 
-<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00142">142</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00144">144</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00022">slick::sim::SELL</a>.</p>
 
@@ -827,7 +827,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00055">55</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00072">Symbol()</a>, and <a class="el" href="symbol_8hpp_source.html#l00182">createOrderBook()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00072">Symbol()</a>, and <a class="el" href="symbol_8hpp_source.html#l00184">createOrderBook()</a>.</p>
 
 </div>
 </div>
@@ -845,7 +845,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00042">42</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00182">createOrderBook()</a>, <a class="el" href="symbol__manager_8hpp_source.html#l00037">slick::sim::SymbolManager::createSymbol()</a>, <a class="el" href="symbol_8hpp_source.html#l00093">operator=()</a>, and <a class="el" href="exchange_8cpp_source.html#l00439">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00184">createOrderBook()</a>, <a class="el" href="symbol_8hpp_source.html#l00095">operator=()</a>, and <a class="el" href="exchange_8cpp_source.html#l00439">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
 
 </div>
 </div>
@@ -863,7 +863,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00049">49</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">addOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00083">cancelOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00061">modifyOrder()</a>, and <a class="el" href="symbol_8hpp_source.html#l00093">operator=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">addOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00083">cancelOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00061">modifyOrder()</a>, and <a class="el" href="symbol_8hpp_source.html#l00095">operator=()</a>.</p>
 
 </div>
 </div>
@@ -881,7 +881,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00053">53</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00063">Symbol()</a>, <a class="el" href="symbol_8cpp_source.html#l00092">onPriceLevelUpdate()</a>, and <a class="el" href="symbol_8hpp_source.html#l00093">operator=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00063">Symbol()</a>, <a class="el" href="symbol_8cpp_source.html#l00092">onPriceLevelUpdate()</a>, and <a class="el" href="symbol_8hpp_source.html#l00095">operator=()</a>.</p>
 
 </div>
 </div>
@@ -899,7 +899,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00054">54</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00063">Symbol()</a>, <a class="el" href="symbol_8cpp_source.html#l00105">onOrderUpdate()</a>, and <a class="el" href="symbol_8hpp_source.html#l00093">operator=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00063">Symbol()</a>, <a class="el" href="symbol_8cpp_source.html#l00105">onOrderUpdate()</a>, and <a class="el" href="symbol_8hpp_source.html#l00095">operator=()</a>.</p>
 
 </div>
 </div>
@@ -917,7 +917,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00051">51</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exch__hyperliquid_8cpp_source.html#l00426">slick::sim::exch::HyperliquidExchange::handleMdSubscription()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00497">slick::sim::exch::HyperliquidExchange::handleMdUnsubscription()</a>, and <a class="el" href="symbol_8hpp_source.html#l00093">operator=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exch__hyperliquid_8cpp_source.html#l00426">slick::sim::exch::HyperliquidExchange::handleMdSubscription()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00497">slick::sim::exch::HyperliquidExchange::handleMdUnsubscription()</a>, and <a class="el" href="symbol_8hpp_source.html#l00095">operator=()</a>.</p>
 
 </div>
 </div>
@@ -935,7 +935,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00050">50</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00072">Symbol()</a>, <a class="el" href="symbol_8cpp_source.html#l00015">addOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00083">cancelOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00182">createOrderBook()</a>, <a class="el" href="symbol_8hpp_source.html#l00200">findOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00192">findOrderByClientOrderId()</a>, <a class="el" href="symbol_8hpp_source.html#l00196">findOrderByOrderId()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00426">slick::sim::exch::HyperliquidExchange::handleMdSubscription()</a>, <a class="el" href="symbol_8cpp_source.html#l00061">modifyOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00093">operator=()</a>, <a class="el" href="exchange_8cpp_source.html#l00478">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, and <a class="el" href="exchange_8cpp_source.html#l00547">slick::sim::exch::Exchange::reconcilePhantomQty()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00072">Symbol()</a>, <a class="el" href="symbol_8cpp_source.html#l00015">addOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00083">cancelOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00184">createOrderBook()</a>, <a class="el" href="symbol_8hpp_source.html#l00202">findOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00194">findOrderByClientOrderId()</a>, <a class="el" href="symbol_8hpp_source.html#l00198">findOrderByOrderId()</a>, <a class="el" href="exch__hyperliquid_8cpp_source.html#l00426">slick::sim::exch::HyperliquidExchange::handleMdSubscription()</a>, <a class="el" href="symbol_8cpp_source.html#l00061">modifyOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00095">operator=()</a>, <a class="el" href="exchange_8cpp_source.html#l00478">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, and <a class="el" href="exchange_8cpp_source.html#l00547">slick::sim::exch::Exchange::reconcilePhantomQty()</a>.</p>
 
 </div>
 </div>
@@ -974,7 +974,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00048">48</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">addOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00083">cancelOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00182">createOrderBook()</a>, <a class="el" href="symbol__manager_8hpp_source.html#l00037">slick::sim::SymbolManager::createSymbol()</a>, <a class="el" href="symbol_8cpp_source.html#l00061">modifyOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00093">operator=()</a>, <a class="el" href="exchange_8cpp_source.html#l00478">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, and <a class="el" href="exchange_8cpp_source.html#l00439">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">addOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00083">cancelOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00184">createOrderBook()</a>, <a class="el" href="symbol_8cpp_source.html#l00061">modifyOrder()</a>, <a class="el" href="symbol_8hpp_source.html#l00095">operator=()</a>, <a class="el" href="exchange_8cpp_source.html#l00478">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, and <a class="el" href="exchange_8cpp_source.html#l00439">slick::sim::exch::Exchange::publishTradeSummary()</a>.</p>
 
 </div>
 </div>
@@ -992,7 +992,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00056">56</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00177">clearTradeHistory()</a>, <a class="el" href="symbol_8hpp_source.html#l00093">operator=()</a>, <a class="el" href="exchange_8cpp_source.html#l00478">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, and <a class="el" href="symbol_8hpp_source.html#l00171">recordTrade()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00179">clearTradeHistory()</a>, <a class="el" href="symbol_8hpp_source.html#l00095">operator=()</a>, <a class="el" href="exchange_8cpp_source.html#l00478">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, and <a class="el" href="symbol_8hpp_source.html#l00173">recordTrade()</a>.</p>
 
 </div>
 </div>
@@ -1021,7 +1021,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00040">40</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00177">clearTradeHistory()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00179">clearTradeHistory()</a>.</p>
 
 </div>
 </div>
@@ -1039,7 +1039,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p class="definition">Definition at line <a class="el" href="symbol_8hpp_source.html#l00043">43</a> of file <a class="el" href="symbol_8hpp_source.html">symbol.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00182">createOrderBook()</a>, <a class="el" href="symbol__manager_8hpp_source.html#l00037">slick::sim::SymbolManager::createSymbol()</a>, and <a class="el" href="symbol_8hpp_source.html#l00093">operator=()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8hpp_source.html#l00184">createOrderBook()</a>, and <a class="el" href="symbol_8hpp_source.html#l00095">operator=()</a>.</p>
 
 </div>
 </div>

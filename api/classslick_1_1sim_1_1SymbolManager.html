@@ -102,7 +102,7 @@ $(document).ready(function(){initNavTree('classslick_1_1sim_1_1SymbolManager.htm
 <div class="dynheader">
 Collaboration diagram for slick::sim::SymbolManager:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classslick_1_1sim_1_1SymbolManager__coll__graph.svg" width="202" height="216"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classslick_1_1sim_1_1SymbolManager__coll__graph.svg" width="202" height="236"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -115,12 +115,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4d96b0d02de41452215962490f7b2068"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af45c255682407800d9d3ca1753c4fa05" id="r_af45c255682407800d9d3ca1753c4fa05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classslick_1_1sim_1_1SymbolManager.html">SymbolManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1SymbolManager.html#af45c255682407800d9d3ca1753c4fa05">operator=</a> (<a class="el" href="classslick_1_1sim_1_1SymbolManager.html">SymbolManager</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:af45c255682407800d9d3ca1753c4fa05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a448679b7f8c75c7b820c2da0246ee9f7" id="r_a448679b7f8c75c7b820c2da0246ee9f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structslick_1_1sim_1_1exch_1_1Symbol.html">exch::Symbol</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1SymbolManager.html#a448679b7f8c75c7b820c2da0246ee9f7">getSymbol</a> (std::string_view sym) const</td></tr>
-<tr class="separator:a448679b7f8c75c7b820c2da0246ee9f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a7a262fd997641be94d6467dd238a7f" id="r_a5a7a262fd997641be94d6467dd238a7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structslick_1_1sim_1_1exch_1_1Symbol.html">exch::Symbol</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1SymbolManager.html#a5a7a262fd997641be94d6467dd238a7f">getSymbol</a> (std::string_view sym, <a class="el" href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04">Venue</a> venue) const</td></tr>
+<tr class="memdesc:a5a7a262fd997641be94d6467dd238a7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A venue is required: see <a class="el" href="structslick_1_1sim_1_1SymbolKey.html" title="Identity of an instrument: a name is only unique within a venue.">SymbolKey</a>.  <br /></td></tr>
+<tr class="separator:a5a7a262fd997641be94d6467dd238a7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6573a9ed0ef849ba318868db5a328cf9" id="r_a6573a9ed0ef849ba318868db5a328cf9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structslick_1_1sim_1_1exch_1_1Symbol.html">exch::Symbol</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1SymbolManager.html#a6573a9ed0ef849ba318868db5a328cf9">getSymbol</a> (<a class="el" href="namespaceslick_1_1sim.html#a694d0d358f849cd394e768c19c51c32c">symid_t</a> sid)</td></tr>
 <tr class="separator:a6573a9ed0ef849ba318868db5a328cf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ab024153a88318b3704d98ca489bf50" id="r_a2ab024153a88318b3704d98ca489bf50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structslick_1_1sim_1_1exch_1_1Symbol.html">exch::Symbol</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1SymbolManager.html#a2ab024153a88318b3704d98ca489bf50">createSymbol</a> (std::string_view sym, <a class="el" href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04">Venue</a> venue)</td></tr>
+<tr class="memdesc:a2ab024153a88318b3704d98ca489bf50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the existing instrument if this (venue, name) already has one, so a double create cannot strand a Symbol that nothing can look up.  <br /></td></tr>
 <tr class="separator:a2ab024153a88318b3704d98ca489bf50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66a9f87129ff641a95278e0ea2ad5dba" id="r_a66a9f87129ff641a95278e0ea2ad5dba"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1SymbolManager.html#a66a9f87129ff641a95278e0ea2ad5dba">size</a> () const noexcept</td></tr>
+<tr class="separator:a66a9f87129ff641a95278e0ea2ad5dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -129,7 +133,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00010">10</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00034">34</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a5daa9e44b964bda0de656bd4b58c7be4" name="a5daa9e44b964bda0de656bd4b58c7be4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5daa9e44b964bda0de656bd4b58c7be4">&#9670;&#160;</a></span>SymbolManager() <span class="overload">[1/2]</span></h2>
@@ -218,14 +222,14 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00037">37</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
+<p>Returns the existing instrument if this (venue, name) already has one, so a double create cannot strand a Symbol that nothing can look up. </p>
 
-<p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00042">slick::sim::exch::Symbol::id_</a>, <a class="el" href="symbol_8hpp_source.html#l00048">slick::sim::exch::Symbol::symbol_</a>, and <a class="el" href="symbol_8hpp_source.html#l00043">slick::sim::exch::Symbol::venue_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00067">67</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 
 </div>
 </div>
-<a id="a448679b7f8c75c7b820c2da0246ee9f7" name="a448679b7f8c75c7b820c2da0246ee9f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a448679b7f8c75c7b820c2da0246ee9f7">&#9670;&#160;</a></span>getSymbol() <span class="overload">[1/2]</span></h2>
+<a id="a5a7a262fd997641be94d6467dd238a7f" name="a5a7a262fd997641be94d6467dd238a7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a7a262fd997641be94d6467dd238a7f">&#9670;&#160;</a></span>getSymbol() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -237,8 +241,18 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname"><a class="el" href="structslick_1_1sim_1_1exch_1_1Symbol.html">exch::Symbol</a> * slick::sim::SymbolManager::getSymbol </td>
           <td>(</td>
           <td class="paramtype">std::string_view&#160;</td>
-          <td class="paramname"><em>sym</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>sym</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04">Venue</a>&#160;</td>
+          <td class="paramname"><em>venue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -248,7 +262,9 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00022">22</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
+<p>A venue is required: see <a class="el" href="structslick_1_1sim_1_1SymbolKey.html" title="Identity of an instrument: a name is only unique within a venue.">SymbolKey</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00047">47</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 
 </div>
 </div>
@@ -276,7 +292,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00030">30</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00058">58</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 
 </div>
 </div>
@@ -303,11 +319,11 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00012">12</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00036">36</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="symbol__manager_8hpp_source.html#l00012">instance()</a>.</p>
+<p class="reference">References <a class="el" href="symbol__manager_8hpp_source.html#l00036">instance()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol__manager_8hpp_source.html#l00012">instance()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol__manager_8hpp_source.html#l00036">instance()</a>.</p>
 
 </div>
 </div>
@@ -360,6 +376,33 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66a9f87129ff641a95278e0ea2ad5dba" name="a66a9f87129ff641a95278e0ea2ad5dba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66a9f87129ff641a95278e0ea2ad5dba">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t slick::sim::SymbolManager::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00084">84</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 
 </div>
 </div>

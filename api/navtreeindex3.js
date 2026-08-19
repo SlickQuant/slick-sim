@@ -1,5 +1,7 @@
 var NAVTREEINDEX3 =
 {
+"coinbase__trade__encoder_8cpp.html":[2,0,2,2],
+"coinbase__trade__encoder_8cpp.html#a5074a4b7b80c260a0ffa0fb6d7cdd86c":[2,0,2,2,1],
 "coinbase__trade__encoder_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d":[2,0,2,2,0],
 "coinbase__trade__encoder_8cpp.html#adab8fd9efcac99e51df638d66d095f9f":[2,0,2,2,2],
 "coinbase__trade__encoder_8cpp_source.html":[2,0,2,2],
@@ -140,8 +142,8 @@ var NAVTREEINDEX3 =
 "fixed__string_8hpp.html":[2,0,8,0],
 "fixed__string_8hpp.html#a9a76746d0605ad46d7115204ce0d8bd9":[2,0,8,0,4],
 "fixed__string_8hpp_source.html":[2,0,8,0],
-"functions.html":[1,3,0],
 "functions.html":[1,3,0,0],
+"functions.html":[1,3,0],
 "functions_a.html":[1,3,0,1],
 "functions_b.html":[1,3,0,2],
 "functions_c.html":[1,3,0,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX3 =
 "hyperliquid__rest__order__gateway_8hpp_source.html":[2,0,6,8],
 "hyperliquid__trade__encoder_8cpp.html":[2,0,2,8],
 "hyperliquid__trade__encoder_8cpp.html#a4dfc455026fcf7bce0e437d7c2cfa28c":[2,0,2,8,1],
-"hyperliquid__trade__encoder_8cpp.html#a7bed2c0cbe11a3e2699db1cce486903d":[2,0,2,8,2],
-"hyperliquid__trade__encoder_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d":[2,0,2,8,0],
-"hyperliquid__trade__encoder_8cpp_source.html":[2,0,2,8]
+"hyperliquid__trade__encoder_8cpp.html#a7bed2c0cbe11a3e2699db1cce486903d":[2,0,2,8,2]
 };

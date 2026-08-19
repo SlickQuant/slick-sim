@@ -64,14 +64,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "alpaca__historical__data__feed_8hpp.html",
-"classslick_1_1sim_1_1exch_1_1Exchange.html#a21d9d0718b643b607b92da55a57caa7d",
-"classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#a5acb79c734c0dcbd0d1c547be5426923",
-"coinbase__trade__encoder_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d",
-"hyperliquid__trade__encoder_8hpp.html",
-"namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685",
-"structslick_1_1sim_1_1CancelOrderMessage.html#a3f848d9a7e929b7c338dd5332dc6a23f",
-"structslick_1_1sim_1_1OrderResponse.html#a4a5fd7713ad0b6393942e14ed65b5321",
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a17be6ece881e8a9b97eb584854d8699d"
+"classslick_1_1sim_1_1exch_1_1Exchange.html#a1504ddfbf4ab78fb07ed44f68b898113",
+"classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#a4c330f4ccca8259f6b8f706092cf490c",
+"coinbase__trade__encoder_8cpp.html",
+"hyperliquid__trade__encoder_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d",
+"namespaceslick_1_1sim.html#a70370cf402e906a5d9300f02e7c3928d",
+"structslick_1_1sim_1_1CancelOrderMessage.html",
+"structslick_1_1sim_1_1OrderResponse.html#a3e76e7218b86fbe864f04c5758d97f61",
+"structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a10792fc6fb4e560598c81ef8c5209a61"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

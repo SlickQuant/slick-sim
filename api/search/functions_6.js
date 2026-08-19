@@ -9,5 +9,5 @@ var searchData=
   ['getclient_6',['getClient',['../classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#a83edb7ab40257b31771ebb85cab4f36c',1,'slick::sim::md_feed::CoinbaseLiveWSFeed']]],
   ['getinfo_7',['getInfo',['../classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html#a00a079c0612a0cf6804febbaef109460',1,'slick::sim::md_feed::HyperliquidLiveWSFeed']]],
   ['getmdlevelqty_8',['getMDLevelQty',['../classslick_1_1sim_1_1OrderBook.html#a246c1b7340456916b785ca78a03b1c94',1,'slick::sim::OrderBook']]],
-  ['getsymbol_9',['getsymbol',['../classslick_1_1sim_1_1SymbolManager.html#a448679b7f8c75c7b820c2da0246ee9f7',1,'slick::sim::SymbolManager::getSymbol(std::string_view sym) const'],['../classslick_1_1sim_1_1SymbolManager.html#a6573a9ed0ef849ba318868db5a328cf9',1,'slick::sim::SymbolManager::getSymbol(symid_t sid)']]]
+  ['getsymbol_9',['getsymbol',['../classslick_1_1sim_1_1SymbolManager.html#a5a7a262fd997641be94d6467dd238a7f',1,'slick::sim::SymbolManager::getSymbol(std::string_view sym, Venue venue) const'],['../classslick_1_1sim_1_1SymbolManager.html#a6573a9ed0ef849ba318868db5a328cf9',1,'slick::sim::SymbolManager::getSymbol(symid_t sid)']]]
 ];
