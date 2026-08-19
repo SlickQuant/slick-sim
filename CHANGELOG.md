@@ -121,6 +121,12 @@
   `md_order_update_cache_` instead of moving them. `SymbolManager::createSymbol` builds a `Symbol` on
   the stack and moves it into a vector, so every symbol in the process ran with zero reserved
   capacity and both caches reallocated from scratch as market data arrived.
+- Both REST gateways' create-order handlers captured the response cursor *after* publishing the
+  request. `slick::queue::initial_reading_index()` returns the queue's current write cursor, and the
+  exchange thread is a spin loop, so it could consume the request and publish `PENDING_NEW` in the
+  gap — leaving the handler polling from a point past its own response until it gave up and returned
+  a 504 timeout for an order that had actually been accepted, and might already have filled. The
+  capture now precedes the enqueue, matching the cancel and modify handlers that already did this.
 - `SymbolManager` handed out `Symbol*` that went stale. It owned its instruments in a
   `std::vector` reserved for 512 while storing raw pointers to them in its lookup map, so creating
   the 513th relocated every element: the map's entries, the pointers the exchanges had stored at
