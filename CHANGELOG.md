@@ -121,6 +121,12 @@
   `md_order_update_cache_` instead of moving them. `SymbolManager::createSymbol` builds a `Symbol` on
   the stack and moves it into a vector, so every symbol in the process ran with zero reserved
   capacity and both caches reallocated from scratch as market data arrived.
+- The market-data replay overload of `match()` marks the end of a batch. `is_last_in_batch` was
+  passed as `qty == 0` but read *before* the fill was subtracted, and the loop only runs while
+  `qty > 0`, so it was permanently false. The level update carrying the final fill of a replayed
+  venue print therefore never set `UpdateFlags::F_END_EVENT`, and a client batching updates until
+  the end-of-event marker never saw its batch close. The order-driven overload already subtracted
+  first; the two now agree.
 - `to_price_t`/`to_qty_t` round to the nearest tick instead of truncating. `value * 1e8` is a binary
   floating-point multiply and most decimal fractions have no exact binary form, so the product lands
   just below the intended integer and the cast threw the remainder away: 8.2 became 819999999, a

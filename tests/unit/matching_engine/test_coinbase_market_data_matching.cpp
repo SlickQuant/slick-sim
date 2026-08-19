@@ -687,3 +687,93 @@ TEST_F(CoinbaseMarketDataMatchingTest, TradeUpdate_SellTrade_MatchesRestingBuyOr
     EXPECT_EQ(qty, 0);
     EXPECT_EQ(buy_order->cum_quantity, kQty10);
 }
+
+// ===========================================================================
+// End-of-batch marking on the replay path
+// ===========================================================================
+
+namespace {
+
+// Records the LastInBatch flag the book stamps on each level update. That flag is
+// what Symbol::onPriceLevelUpdate turns into UpdateFlags::F_END_EVENT, which is the
+// marker a client uses to know a batch of updates is complete.
+class LevelUpdateRecorder : public IOrderBookObserver {
+public:
+    struct Entry {
+        price_t price;
+        bool last_in_batch;
+    };
+    std::vector<Entry> updates;
+
+    void onPriceLevelUpdate(const PriceLevelUpdate& update) override {
+        updates.push_back({update.price,
+                           (update.change_flags & slick::orderbook::ChangeFlag::LastInBatch) != 0});
+    }
+};
+
+}  // namespace
+
+// is_last_in_batch is `qty == 0`, and this loop only runs while qty > 0, so reading
+// it before subtracting the fill made it permanently false: the level update
+// carrying the final fill never announced the end of the event.
+TEST_F(CoinbaseMarketDataMatchingTest, FinalFillOfAReplayedTradeIsMarkedEndOfBatch) {
+    auto recorder = std::make_shared<LevelUpdateRecorder>();
+    order_book_->addObserver(recorder);
+
+    // Phantom liquidity mirroring the venue: 10 @ 100 on the offer.
+    order_book_->addOrder(kMarketOrderId + 1, to_book_side(Side::SELL),
+                          kPrice100, kQty10, kT1, 0, 1, true);
+    recorder->updates.clear();
+
+    // The venue prints a buy that consumes all of it.
+    qty_t qty = kQty10;
+    matching_engine_->match(Side::BUY, kMarketOrderId, kPrice100, qty, *order_book_, kT2, 2);
+
+    ASSERT_EQ(qty, 0) << "the print did not fully trade";
+    ASSERT_FALSE(recorder->updates.empty()) << "the fill produced no level update";
+    EXPECT_TRUE(recorder->updates.back().last_in_batch)
+        << "the level update carrying the final fill did not close the batch";
+}
+
+// Sweeping several levels marks only the last of them.
+TEST_F(CoinbaseMarketDataMatchingTest, OnlyTheFinalFillOfASweepClosesTheBatch) {
+    auto recorder = std::make_shared<LevelUpdateRecorder>();
+    order_book_->addObserver(recorder);
+
+    order_book_->addOrder(kMarketOrderId + 1, to_book_side(Side::SELL),
+                          kPrice100, kQty5, kT1, 0, 1, true);
+    order_book_->addOrder(kMarketOrderId + 2, to_book_side(Side::SELL),
+                          kPrice101, kQty5, kT1, 0, 2, true);
+    recorder->updates.clear();
+
+    qty_t qty = kQty10;
+    matching_engine_->match(Side::BUY, kMarketOrderId, kPrice101, qty, *order_book_, kT2, 3);
+
+    ASSERT_EQ(qty, 0);
+    ASSERT_GE(recorder->updates.size(), 2u);
+    EXPECT_TRUE(recorder->updates.back().last_in_batch);
+    for (size_t i = 0; i + 1 < recorder->updates.size(); ++i) {
+        EXPECT_FALSE(recorder->updates[i].last_in_batch)
+            << "update " << i << " closed the batch early";
+    }
+}
+
+// A print the book cannot fully absorb leaves a remainder, and its caller rests that
+// remainder carrying the venue's own end-of-event flag - so the fills must not claim
+// to have closed the batch themselves.
+TEST_F(CoinbaseMarketDataMatchingTest, FillsDoNotCloseTheBatchWhenAPrintIsNotFullyFilled) {
+    auto recorder = std::make_shared<LevelUpdateRecorder>();
+    order_book_->addObserver(recorder);
+
+    order_book_->addOrder(kMarketOrderId + 1, to_book_side(Side::SELL),
+                          kPrice100, kQty5, kT1, 0, 1, true);
+    recorder->updates.clear();
+
+    qty_t qty = kQty10;   // more than the book holds
+    matching_engine_->match(Side::BUY, kMarketOrderId, kPrice100, qty, *order_book_, kT2, 2);
+
+    EXPECT_EQ(qty, kQty10 - kQty5) << "the remainder should be left for the caller to rest";
+    for (const auto& update : recorder->updates) {
+        EXPECT_FALSE(update.last_in_batch);
+    }
+}
