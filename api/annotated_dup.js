@@ -48,7 +48,9 @@ var annotated_dup =
         ] ],
         [ "utils", "namespaceslick_1_1sim_1_1utils.html", [
           [ "fixed_string", "classslick_1_1sim_1_1utils_1_1fixed__string.html", "classslick_1_1sim_1_1utils_1_1fixed__string" ],
-          [ "RingBuffer", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", "classslick_1_1sim_1_1utils_1_1RingBuffer" ]
+          [ "RingBuffer", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", "classslick_1_1sim_1_1utils_1_1RingBuffer" ],
+          [ "StringViewEq", "structslick_1_1sim_1_1utils_1_1StringViewEq.html", "structslick_1_1sim_1_1utils_1_1StringViewEq" ],
+          [ "StringViewHash", "structslick_1_1sim_1_1utils_1_1StringViewHash.html", "structslick_1_1sim_1_1utils_1_1StringViewHash" ]
         ] ],
         [ "AddOrderMessage", "structslick_1_1sim_1_1AddOrderMessage.html", "structslick_1_1sim_1_1AddOrderMessage" ],
         [ "BookSnapshot", "structslick_1_1sim_1_1BookSnapshot.html", "structslick_1_1sim_1_1BookSnapshot" ],

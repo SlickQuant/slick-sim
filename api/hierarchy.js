@@ -17,6 +17,7 @@ var hierarchy =
     [ "slick::sim::utils::fixed_string< N >", "classslick_1_1sim_1_1utils_1_1fixed__string.html", null ],
     [ "slick::sim::utils::fixed_string< 32 >", "classslick_1_1sim_1_1utils_1_1fixed__string.html", null ],
     [ "slick::sim::utils::fixed_string< 37 >", "classslick_1_1sim_1_1utils_1_1fixed__string.html", null ],
+    [ "slick::sim::utils::fixed_string< sizeof(AddOrderMessage::user_id)>", "classslick_1_1sim_1_1utils_1_1fixed__string.html", null ],
     [ "slick::sim::utils::fixed_string< sizeof(MarketDataUpdate::symbol)>", "classslick_1_1sim_1_1utils_1_1fixed__string.html", null ],
     [ "std::formatter", null, [
       [ "std::formatter< slick::sim::utils::fixed_string< N >, CharT >", "structstd_1_1formatter_3_01slick_1_1sim_1_1utils_1_1fixed__string_3_01N_01_4_00_01CharT_01_4.html", null ]
@@ -87,8 +88,8 @@ var hierarchy =
     [ "slick::sim::Request", "structslick_1_1sim_1_1Request.html", null ],
     [ "slick::sim::utils::RingBuffer< T >", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", null ],
     [ "slick::sim::utils::RingBuffer< slick::sim::MDTrade >", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", null ],
-    [ "slick::sim::OrderBook::StringViewEq", "structslick_1_1sim_1_1OrderBook_1_1StringViewEq.html", null ],
-    [ "slick::sim::OrderBook::StringViewHash", "structslick_1_1sim_1_1OrderBook_1_1StringViewHash.html", null ],
+    [ "slick::sim::utils::StringViewEq", "structslick_1_1sim_1_1utils_1_1StringViewEq.html", null ],
+    [ "slick::sim::utils::StringViewHash", "structslick_1_1sim_1_1utils_1_1StringViewHash.html", null ],
     [ "slick::sim::md_publisher::HyperliquidPerSocketData::SubInfo", "structslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData_1_1SubInfo.html", null ],
     [ "slick::sim::md_publisher::PerSocketData::SubscriptionInfo", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData_1_1SubscriptionInfo.html", null ],
     [ "slick::sim::exch::Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", null ],

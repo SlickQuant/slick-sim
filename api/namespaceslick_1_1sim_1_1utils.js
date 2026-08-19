@@ -2,6 +2,8 @@ var namespaceslick_1_1sim_1_1utils =
 [
     [ "fixed_string", "classslick_1_1sim_1_1utils_1_1fixed__string.html", "classslick_1_1sim_1_1utils_1_1fixed__string" ],
     [ "RingBuffer", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", "classslick_1_1sim_1_1utils_1_1RingBuffer" ],
+    [ "StringViewEq", "structslick_1_1sim_1_1utils_1_1StringViewEq.html", "structslick_1_1sim_1_1utils_1_1StringViewEq" ],
+    [ "StringViewHash", "structslick_1_1sim_1_1utils_1_1StringViewHash.html", "structslick_1_1sim_1_1utils_1_1StringViewHash" ],
     [ "copy_wire_field", "namespaceslick_1_1sim_1_1utils.html#a9a76746d0605ad46d7115204ce0d8bd9", null ],
     [ "executeOrder", "namespaceslick_1_1sim_1_1utils.html#a7dd881010d120cac1cd8c1eddb8db938", null ],
     [ "format_heatbeat_timestamp", "namespaceslick_1_1sim_1_1utils.html#a9ac3e6fb1a7e4af2a1f51a467983d28d", null ],

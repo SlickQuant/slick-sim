@@ -1,5 +1,6 @@
 var structslick_1_1sim_1_1TradeSummaryInfo =
 [
+    [ "TradeSummaryInfo", "structslick_1_1sim_1_1TradeSummaryInfo.html#a7267fb3eb434472d8543d0f13c5ead21", null ],
     [ "aggressor_side", "structslick_1_1sim_1_1TradeSummaryInfo.html#a6d9b66266269d71dc7b4b4d675d993e9", null ],
     [ "num_orders", "structslick_1_1sim_1_1TradeSummaryInfo.html#a32dca98252bd88be91d48a4aee54503f", null ],
     [ "phantom_qty", "structslick_1_1sim_1_1TradeSummaryInfo.html#ae1e57d6a2daae54098c920bc343ea73d", null ],

@@ -1,7 +1,7 @@
 var classslick_1_1sim_1_1OrderBook =
 [
-    [ "StringViewEq", "structslick_1_1sim_1_1OrderBook_1_1StringViewEq.html", "structslick_1_1sim_1_1OrderBook_1_1StringViewEq" ],
-    [ "StringViewHash", "structslick_1_1sim_1_1OrderBook_1_1StringViewHash.html", "structslick_1_1sim_1_1OrderBook_1_1StringViewHash" ],
+    [ "StringViewEq", "classslick_1_1sim_1_1OrderBook.html#a13222c8c9bd173fb9f7f61c696f10c05", null ],
+    [ "StringViewHash", "classslick_1_1sim_1_1OrderBook.html#a91c26e474a18c1896b2d4446a50aa6b7", null ],
     [ "OrderBook", "classslick_1_1sim_1_1OrderBook.html#ab09d218f62c4e9db31cbf7f3be176126", null ],
     [ "~OrderBook", "classslick_1_1sim_1_1OrderBook.html#a3c29057ab9d52000cf9e31465ffa2258", null ],
     [ "addBookOrder", "classslick_1_1sim_1_1OrderBook.html#a50248c0f052f19783f95b6950fd8e7c2", null ],

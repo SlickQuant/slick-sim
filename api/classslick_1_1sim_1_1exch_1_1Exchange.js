@@ -28,7 +28,7 @@ var classslick_1_1sim_1_1exch_1_1Exchange =
     [ "sendOrderReplacePending", "classslick_1_1sim_1_1exch_1_1Exchange.html#aac8b8f421c3e04e2d491647cbf9d9dcc", null ],
     [ "start", "classslick_1_1sim_1_1exch_1_1Exchange.html#a450557643509b6c8281337444730dea3", null ],
     [ "stop", "classslick_1_1sim_1_1exch_1_1Exchange.html#aea60ed859dda12087429935f03d436ad", null ],
-    [ "client_ids_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a9c0749c9757ee7f771a2bb5c3f21121c", null ],
+    [ "client_ids_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a99ea6954623fda86bf2f5842d6c482d9", null ],
     [ "enabled_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a78cedfdf13d25dd72d80042f1ccd2865", null ],
     [ "matching_engines_", "classslick_1_1sim_1_1exch_1_1Exchange.html#aafddb36f569aab7e89bc61f5efe06c42", null ],
     [ "md_feed_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a0cff3510e50e06387254abf3454147d2", null ],
