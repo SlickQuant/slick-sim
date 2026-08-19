@@ -432,6 +432,9 @@ inline void OrderBookImpl<OrderBookType::L2>::populateL2SubscriptionResponse(sli
 
     auto *response = reinterpret_cast<MDSubscriptionResponse*>(update->data);
     response->channel = channel;
+    // Set explicitly, never left to the recycled slot: this frame does carry a book
+    // snapshot, and the publisher decides whether to read one from this field.
+    response->reject_reason = MDSubscriptionRejectReason::NONE;
 
     auto *snapshot = reinterpret_cast<BookSnapshot*>(response->data);
     snapshot->num_bid = static_cast<uint32_t>(bid_levels.size());

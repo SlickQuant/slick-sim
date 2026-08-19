@@ -121,6 +121,15 @@
   `md_order_update_cache_` instead of moving them. `SymbolManager::createSymbol` builds a `Symbol` on
   the stack and moves it into a vector, so every symbol in the process ran with zero reserved
   capacity and both caches reallocated from scratch as market data arrived.
+- `MDSubscriptionResponse::reject_reason` is now written on every path and checked before the
+  payload behind it is read. Three gaps lined up: `rejectMdSubscription` took a reason and marked it
+  `[[maybe_unused]]`, the L2 accept path set only `channel`, and both publishers cast
+  `response->data` to a `BookSnapshot` without consulting the field. A reject reserves room for the
+  response header alone, so a publisher reaching past it reads `num_bid`/`num_ask` from beyond the
+  frame and then walks that many levels - Hyperliquid also `reserve()`s on those counts. Latent
+  rather than live: nothing calls `rejectMdSubscription` yet, which is why it has never bitten.
+  Publishers now report the rejection to the channel's subscribers instead, via the venue's own
+  error message, and `to_string(MDSubscriptionRejectReason)` names it.
 - The Coinbase WebSocket `user` channel sends the subscriber its real orders. The snapshot read
   `orders_by_client_id_`, which was declared but never written, so it was always empty whatever the
   client had traded. That container and two more beside it (`orders_`, `order_fills_`) were dead and

@@ -255,6 +255,20 @@ void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* updat
     auto it = channel_sub.find(update->symbol);
     if (it == channel_sub.end() || it->second.empty()) return;
 
+    // A reject reserves room for the response header and nothing else, so the
+    // BookSnapshot read below would run off the end of the frame - and reserve()
+    // whatever level count the leftover bytes happened to describe. Tell the
+    // subscribers why instead.
+    if (response->reject_reason != MDSubscriptionRejectReason::NONE) {
+        auto message = std::format("subscription to `{}` rejected: {}",
+                                   update->symbol, to_string(response->reject_reason));
+        LOG_WARN(message);
+        for (auto* ws : it->second) {
+            send_error(ws, message);
+        }
+        return;
+    }
+
     auto channel = static_cast<HyperliquidChannel>(ch);
     json snapshot_msg;
     json update_msg;   // trades newer than the book snapshot, if any

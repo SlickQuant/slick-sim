@@ -109,6 +109,18 @@ enum MDSubscriptionRejectReason : uint8_t {
     MARKET_CLOSED,
 };
 
+inline constexpr std::string_view to_string(MDSubscriptionRejectReason reason) {
+    switch (reason) {
+    case MDSubscriptionRejectReason::NONE:
+        return "NONE";
+    case MDSubscriptionRejectReason::UNKNOWN_CONTRACT:
+        return "UNKNOWN_CONTRACT";
+    case MDSubscriptionRejectReason::MARKET_CLOSED:
+        return "MARKET_CLOSED";
+    }
+    return "UNKNOWN_REJECT_REASON";
+}
+
 struct MDSubscriptionResponse {
     uint8_t channel;
     MDSubscriptionRejectReason reject_reason;
