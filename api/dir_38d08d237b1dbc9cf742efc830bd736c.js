@@ -14,6 +14,7 @@ var dir_38d08d237b1dbc9cf742efc830bd736c =
     [ "message_parser.cpp", "message__parser_8cpp.html", null ],
     [ "message_parser.hpp", "message__parser_8hpp.html", "message__parser_8hpp" ],
     [ "order_gateway.hpp", "order__gateway_8hpp.html", "order__gateway_8hpp" ],
+    [ "order_store.hpp", "order__store_8hpp.html", "order__store_8hpp" ],
     [ "rest_ws_order_gateway.cpp", "rest__ws__order__gateway_8cpp.html", null ],
     [ "rest_ws_order_gateway.hpp", "rest__ws__order__gateway_8hpp.html", "rest__ws__order__gateway_8hpp" ],
     [ "sbe_parser.cpp", "sbe__parser_8cpp.html", null ],

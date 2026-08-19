@@ -15,11 +15,12 @@ var searchData=
   ['allocateorder_12',['allocateOrder',['../classslick_1_1sim_1_1OrderBook.html#ae5f7981d61f1bb821cb8a3c82f8ebbe7',1,'slick::sim::OrderBook']]],
   ['alpaca_5fhistorical_5fdata_5ffeed_2ehpp_13',['alpaca_historical_data_feed.hpp',['../alpaca__historical__data__feed_8hpp.html',1,'']]],
   ['already_5flogged_5fin_14',['ALREADY_LOGGED_IN',['../namespaceslick_1_1sim.html#a297ba608de53df48468a6d44a907f989a98c9a339bc2b633b85dbf111a342416e',1,'slick::sim']]],
-  ['assign_15',['assign',['../classslick_1_1sim_1_1utils_1_1fixed__string.html#aa23a3cbc85ff3ba492b356586d6a3c9f',1,'slick::sim::utils::fixed_string']]],
-  ['at_5fthe_5fopening_16',['AT_THE_OPENING',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ad117e6770a732d85d40bba12caa3f173',1,'slick::sim']]],
-  ['authenticate_17',['authenticate',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a1e13c3c083cb058fd0535e4c207d5f51',1,'slick::sim::order_gateway::CoinbaseRestOrderGateway']]],
-  ['authenticated_18',['authenticated',['../structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a84bc07bfdee736a7cd1f5c914f97e1d6',1,'slick::sim::order_gateway::PerSocketData']]],
-  ['auto_5fdetect_5fprotocol_5f_19',['auto_detect_protocol_',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a7dbb94581dbc804fb730906743990f5b',1,'slick::sim::order_gateway::TcpOrderGateway']]],
-  ['avg_5ffill_5fprice_20',['avg_fill_price',['../structslick_1_1sim_1_1Order.html#a04a6d3346a3726ddcef66d24cb019eef',1,'slick::sim::Order::avg_fill_price'],['../structslick_1_1sim_1_1OrderResponse.html#a7c2a7af521027d3e0b09905018b68c90',1,'slick::sim::OrderResponse::avg_fill_price']]],
-  ['avg_5ffill_5fprice_5fdouble_21',['avg_fill_price_double',['../structslick_1_1sim_1_1Order.html#a8c8269f0f4a6ce78371591ba1f733f9a',1,'slick::sim::Order']]]
+  ['apply_15',['apply',['../classslick_1_1sim_1_1order__gateway_1_1OrderStore.html#aa567107b9266478212f70c4608f15c78',1,'slick::sim::order_gateway::OrderStore']]],
+  ['assign_16',['assign',['../classslick_1_1sim_1_1utils_1_1fixed__string.html#aa23a3cbc85ff3ba492b356586d6a3c9f',1,'slick::sim::utils::fixed_string']]],
+  ['at_5fthe_5fopening_17',['AT_THE_OPENING',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ad117e6770a732d85d40bba12caa3f173',1,'slick::sim']]],
+  ['authenticate_18',['authenticate',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a1e13c3c083cb058fd0535e4c207d5f51',1,'slick::sim::order_gateway::CoinbaseRestOrderGateway']]],
+  ['authenticated_19',['authenticated',['../structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a84bc07bfdee736a7cd1f5c914f97e1d6',1,'slick::sim::order_gateway::PerSocketData']]],
+  ['auto_5fdetect_5fprotocol_5f_20',['auto_detect_protocol_',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a7dbb94581dbc804fb730906743990f5b',1,'slick::sim::order_gateway::TcpOrderGateway']]],
+  ['avg_5ffill_5fprice_21',['avg_fill_price',['../structslick_1_1sim_1_1Order.html#a04a6d3346a3726ddcef66d24cb019eef',1,'slick::sim::Order::avg_fill_price'],['../structslick_1_1sim_1_1OrderResponse.html#a7c2a7af521027d3e0b09905018b68c90',1,'slick::sim::OrderResponse::avg_fill_price']]],
+  ['avg_5ffill_5fprice_5fdouble_22',['avg_fill_price_double',['../structslick_1_1sim_1_1Order.html#a8c8269f0f4a6ce78371591ba1f733f9a',1,'slick::sim::Order']]]
 ];

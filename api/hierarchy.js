@@ -80,6 +80,7 @@ var hierarchy =
       [ "slick::sim::Order", "structslick_1_1sim_1_1Order.html", null ]
     ] ],
     [ "slick::sim::OrderResponse", "structslick_1_1sim_1_1OrderResponse.html", null ],
+    [ "slick::sim::order_gateway::OrderStore", "classslick_1_1sim_1_1order__gateway_1_1OrderStore.html", null ],
     [ "slick::sim::order_gateway::ParseResult", "structslick_1_1sim_1_1order__gateway_1_1ParseResult.html", null ],
     [ "slick::sim::md_publisher::PerSocketData", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html", null ],
     [ "slick::sim::order_gateway::PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", null ],

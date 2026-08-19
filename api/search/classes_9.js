@@ -6,5 +6,6 @@ var searchData=
   ['orderbookobserver_3',['OrderBookObserver',['../structslick_1_1sim_1_1exch_1_1OrderBookObserver.html',1,'slick::sim::exch']]],
   ['ordergateway_4',['OrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html',1,'slick::sim::order_gateway']]],
   ['orderidentity_5',['OrderIdentity',['../structslick_1_1sim_1_1OrderIdentity.html',1,'slick::sim']]],
-  ['orderresponse_6',['OrderResponse',['../structslick_1_1sim_1_1OrderResponse.html',1,'slick::sim']]]
+  ['orderresponse_6',['OrderResponse',['../structslick_1_1sim_1_1OrderResponse.html',1,'slick::sim']]],
+  ['orderstore_7',['OrderStore',['../classslick_1_1sim_1_1order__gateway_1_1OrderStore.html',1,'slick::sim::order_gateway']]]
 ];

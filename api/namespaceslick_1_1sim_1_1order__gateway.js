@@ -12,6 +12,7 @@ var namespaceslick_1_1sim_1_1order__gateway =
     [ "MessageParser", "classslick_1_1sim_1_1order__gateway_1_1MessageParser.html", "classslick_1_1sim_1_1order__gateway_1_1MessageParser" ],
     [ "MessageParserFactory", "classslick_1_1sim_1_1order__gateway_1_1MessageParserFactory.html", "classslick_1_1sim_1_1order__gateway_1_1MessageParserFactory" ],
     [ "OrderGateway", "classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1OrderGateway" ],
+    [ "OrderStore", "classslick_1_1sim_1_1order__gateway_1_1OrderStore.html", "classslick_1_1sim_1_1order__gateway_1_1OrderStore" ],
     [ "ParseResult", "structslick_1_1sim_1_1order__gateway_1_1ParseResult.html", "structslick_1_1sim_1_1order__gateway_1_1ParseResult" ],
     [ "PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData" ],
     [ "PostRequestData", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData" ],

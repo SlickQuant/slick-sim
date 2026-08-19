@@ -66,12 +66,12 @@ var NAVTREEINDEX =
 "alpaca__historical__data__feed_8hpp.html",
 "classslick_1_1sim_1_1exch_1_1Exchange.html#a1504ddfbf4ab78fb07ed44f68b898113",
 "classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#a4c330f4ccca8259f6b8f706092cf490c",
-"coinbase__trade__encoder_8cpp.html",
-"hyperliquid__trade__encoder_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d",
-"namespaceslick_1_1sim.html#a70370cf402e906a5d9300f02e7c3928d",
-"structslick_1_1sim_1_1CancelOrderMessage.html",
-"structslick_1_1sim_1_1OrderResponse.html#a3e76e7218b86fbe864f04c5758d97f61",
-"structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a10792fc6fb4e560598c81ef8c5209a61"
+"coinbase__common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d",
+"hyperliquid__live__ws__feed_8hpp.html",
+"namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a6a988ff7c17c22ee74b7d26edf10d227",
+"structslick_1_1sim_1_1AddOrderMessage.html#ad1ecf5ed5ded3fa95c70582ccfc049a5",
+"structslick_1_1sim_1_1OrderResponse.html#a01442a764935811210694de385409454",
+"structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html#a28c812e24aee5c470dec23e876477142"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
