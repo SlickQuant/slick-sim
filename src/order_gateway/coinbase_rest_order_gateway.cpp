@@ -25,8 +25,43 @@ struct PostRequestData {
 
 }  // namespace
 
+namespace {
+
+bool iequals(std::string_view lhs, std::string_view rhs) noexcept {
+    return lhs.size() == rhs.size()
+        && std::equal(lhs.begin(), lhs.end(), rhs.begin(), [](char a, char b) {
+               return std::tolower(static_cast<unsigned char>(a))
+                   == std::tolower(static_cast<unsigned char>(b));
+           });
+}
+
+/// Matches Coinbase's `order_status` filter against a simulator OrderStatus.
+///
+/// Most values map straight onto to_string(status). The exception is OPEN, which on
+/// Coinbase means "still working" rather than any single state, so it has to cover
+/// every status an order can sit in while it still has quantity outstanding.
+bool matches_order_status(std::string_view filter, OrderStatus status) noexcept {
+    if (iequals(filter, "OPEN")) {
+        switch (status) {
+        case OrderStatus::NEW:
+        case OrderStatus::PARTIALLY_FILLED:
+        case OrderStatus::PENDING_NEW:
+        case OrderStatus::PENDING_CANCEL:
+        case OrderStatus::PENDING_REPLACE:
+        case OrderStatus::REPLACED:
+            return true;
+        default:
+            return false;
+        }
+    }
+    return iequals(filter, to_string(status));
+}
+
+}   // namespace
+
 CoinbaseRestOrderGateway::CoinbaseRestOrderGateway(const json& config, slick::queue<Request> &request_queue, slick::queue<OrderResponse> &response_queue)
     : RestWsOrderGateway(Venue::COINBASE, request_queue, response_queue, config.value("port", 3000))
+    , orders_(response_queue)
 {
     if (config.contains("initial_products")) {
         products_ = config["initial_products"].get<std::string>();
@@ -183,11 +218,61 @@ void CoinbaseRestOrderGateway::handle_get_orders(uWS::HttpResponse<false>* res, 
         return;
     }
 
+    // Query parameters are read before anything else: `req` is only valid for the
+    // duration of this call, and uWebSockets recycles it as soon as we return.
+    const std::string product_id(req->getQuery("product_id"));
+    const std::string order_side(req->getQuery("order_side"));
+    const std::string order_status(req->getQuery("order_status"));
+    const std::string limit_param(req->getQuery("limit"));
+
+    size_t limit = std::numeric_limits<size_t>::max();
+    if (!limit_param.empty()) {
+        char *parse_end = nullptr;
+        const auto parsed = std::strtoull(limit_param.c_str(), &parse_end, 10);
+        if (parse_end == limit_param.c_str() || *parse_end != '\0') {
+            res->writeStatus("400 Bad Request")
+                ->writeHeader("Content-Type", "application/json")
+                ->end(R"({"error":"INVALID_ARGUMENT","error_details":"limit must be a number","message":"limit must be a number"})");
+            return;
+        }
+        limit = static_cast<size_t>(parsed);
+    }
+
+    // Catch up on everything the exchange has reported since the last listing. Done
+    // here rather than on a timer because the create-order handler blocks this same
+    // loop thread while it waits for its response, so scheduled work is not reliably
+    // able to run between requests.
+    orders_.drain();
+
+    json orders = json::array();
+    for (const Order *order : orders_.orders_of(user_id)) {
+        if (!product_id.empty() && product_id != order->symbol.view()) {
+            continue;
+        }
+        if (!order_side.empty() && !iequals(order_side, to_string(order->side))) {
+            continue;
+        }
+        if (!order_status.empty() && !matches_order_status(order_status, order->status)) {
+            continue;
+        }
+        if (orders.size() >= limit) {
+            break;
+        }
+        orders.push_back(coinbase::to_json(*order));
+    }
+
+    // `has_next`/`cursor` are part of the documented envelope. The whole (filtered)
+    // result is returned in one page, so the cursor is always empty - a client that
+    // pages correctly still terminates.
     json response = {
-        {"orders", json::array()}
+        {"orders", std::move(orders)},
+        {"sequence", "0"},
+        {"has_next", false},
+        {"cursor", ""}
     };
 
-    // TODO: get orders from order gateway's internal state or database instead of maintaining separate state in REST client manager
+    res->writeHeader("Content-Type", "application/json")
+        ->end(response.dump());
 }
 
 void CoinbaseRestOrderGateway::handle_create_order(uWS::HttpResponse<false>* res, uWS::HttpRequest* req) {
@@ -541,7 +626,7 @@ void CoinbaseRestOrderGateway::handle_batch_cancel(uWS::HttpResponse<false>* res
 
                 std::memset(&request->cancel_order, 0, sizeof(request->cancel_order));
                 utils::copy_wire_field(request->cancel_order.user_id, user_id);
-                // Leave client_order_id empty — engine falls through to findOrderByOrderId
+                // Leave client_order_id empty - engine falls through to findOrderByOrderId
                 utils::copy_wire_field(request->cancel_order.order_id, order_id);
 
                 request_queue_.publish(request_index);

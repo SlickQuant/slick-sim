@@ -1,4 +1,5 @@
 #include "rest_ws_order_gateway.hpp"
+#include "order_store.hpp"
 #include <nlohmann/json.hpp>
 // #define JWT_DISABLE_PICOJSON
 #include <jwt-cpp/jwt.h>
@@ -50,9 +51,13 @@ class CoinbaseWebsocketOrderGateway : public RestWsOrderGateway {
 
     std::string products_;
     std::unordered_map<std::string, std::string> product_by_id_;
-    std::unordered_map<std::string, Order> orders_;
-    std::unordered_multimap<std::string, Order> orders_by_client_id_;
-    std::unordered_multimap<std::string, Fill> order_fills_;
+    /// Backs the `user` channel's subscribe snapshot. Fed from process_all_responses(),
+    /// which already reads every execution report, so this store keeps no cursor of
+    /// its own - see OrderStore.
+    ///
+    /// Replaces three containers that were declared but never populated: the snapshot
+    /// read one of them and so was always empty, whatever the client had traded.
+    OrderStore orders_;
     double fee_rate_ = 0.0012; // 1.2%
 
 public:

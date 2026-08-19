@@ -121,6 +121,15 @@
   `md_order_update_cache_` instead of moving them. `SymbolManager::createSymbol` builds a `Symbol` on
   the stack and moves it into a vector, so every symbol in the process ran with zero reserved
   capacity and both caches reallocated from scratch as market data arrived.
+- The Coinbase WebSocket `user` channel sends the subscriber its real orders. The snapshot read
+  `orders_by_client_id_`, which was declared but never written, so it was always empty whatever the
+  client had traded. That container and two more beside it (`orders_`, `order_fills_`) were dead and
+  are gone, replaced by the shared `OrderStore` - fed from `process_all_responses()`, which already
+  reads every execution report, so the gateway takes no second pass over the queue.
+- Coinbase `GET /api/v3/brokerage/orders/historical/batch` answers. The authenticated path built a
+  response body and returned without calling `end()`, so the request was never completed and the
+  client blocked until its own timeout; only the 401 path replied. It also had nothing to report -
+  the endpoint was a stub whose orders array was always empty.
 - Both REST gateways' create-order handlers captured the response cursor *after* publishing the
   request. `slick::queue::initial_reading_index()` returns the queue's current write cursor, and the
   exchange thread is a spin loop, so it could consume the request and publish `PENDING_NEW` in the
@@ -143,6 +152,17 @@
   out-of-bounds heap write of `sizeof(void*)` bytes, read back on every ping. It affected
   `WebsocketMarketDataPublisher` (so every venue's market-data publisher) and
   `CoinbaseWebsocketOrderGateway`. Both now request `sizeof(T*)`.
+
+- `order_gateway::OrderStore` (`src/order_gateway/order_store.hpp`): a gateway-side projection of
+  order state, folded from the execution-report stream. A gateway cannot answer "list this user's
+  orders" from the order books - those belong to the exchange thread - but every response carries the
+  order's identity and its state at that moment, so replaying the stream rebuilds each order without
+  touching anything the exchange owns. One instance per gateway with its own queue cursor, so it
+  never disturbs the handlers polling the same queue for their own responses, and no locking is
+  needed because a gateway only touches it from its own event loop. Two feeding modes: a store
+  constructed with a queue drains it on demand (the REST gateway, which has no continuous reader
+  of its own), while a default-constructed one is fed through `apply()` by an owner already
+  reading the stream (the WebSocket gateway).
 
 ## Changed
 
