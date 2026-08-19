@@ -504,6 +504,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a8e93ba7e1a0f18cd02f6650f86f87f5d" id="r_a8e93ba7e1a0f18cd02f6650f86f87f5d"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a8e93ba7e1a0f18cd02f6650f86f87f5d">to_string</a> (<a class="el" href="namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026b">ProductType</a> type)</td></tr>
 <tr class="separator:a8e93ba7e1a0f18cd02f6650f86f87f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa876c66c9ff46e555cfef22c9870553c" id="r_aa876c66c9ff46e555cfef22c9870553c"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#aa876c66c9ff46e555cfef22c9870553c">to_price_t</a> (double price)</td></tr>
+<tr class="memdesc:aa876c66c9ff46e555cfef22c9870553c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scales a decimal into the fixed-point representation, rounding to the nearest tick rather than truncating.  <br /></td></tr>
 <tr class="separator:aa876c66c9ff46e555cfef22c9870553c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a519d12d39dbb18824aa7b211cc2400fc" id="r_a519d12d39dbb18824aa7b211cc2400fc"><td class="memItemLeft" align="right" valign="top">constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a519d12d39dbb18824aa7b211cc2400fc">to_price_double</a> (<a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> price)</td></tr>
 <tr class="separator:a519d12d39dbb18824aa7b211cc2400fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -511,6 +512,13 @@ Functions</h2></td></tr>
 <tr class="separator:ae7c6270f5b2c86ea08ee204453208c2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7eb343b14332f99fb29ac1deadaf468" id="r_af7eb343b14332f99fb29ac1deadaf468"><td class="memItemLeft" align="right" valign="top">constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#af7eb343b14332f99fb29ac1deadaf468">to_qty_double</a> (<a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> qty)</td></tr>
 <tr class="separator:af7eb343b14332f99fb29ac1deadaf468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a726a954c44bb07aa064e107eef7d0ebe" id="r_a726a954c44bb07aa064e107eef7d0ebe"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a726a954c44bb07aa064e107eef7d0ebe">to_fixed_string</a> (int_fast64_t value)</td></tr>
+<tr class="memdesc:a726a954c44bb07aa064e107eef7d0ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders a fixed-point value as an exact decimal string.  <br /></td></tr>
+<tr class="separator:a726a954c44bb07aa064e107eef7d0ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3844198c585908c27fac6edc20383c5" id="r_ad3844198c585908c27fac6edc20383c5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#ad3844198c585908c27fac6edc20383c5">to_price_string</a> (<a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> price)</td></tr>
+<tr class="separator:ad3844198c585908c27fac6edc20383c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c54f37191771de649b6e7e34dc4acc" id="r_ae2c54f37191771de649b6e7e34dc4acc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#ae2c54f37191771de649b6e7e34dc4acc">to_qty_string</a> (<a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> qty)</td></tr>
+<tr class="separator:ae2c54f37191771de649b6e7e34dc4acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51b9e1564e639b0d549f3009d003645b" id="r_a51b9e1564e639b0d549f3009d003645b"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a51b9e1564e639b0d549f3009d003645b">to_string</a> (<a class="el" href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04">Venue</a> venue)</td></tr>
 <tr class="separator:a51b9e1564e639b0d549f3009d003645b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ffabc39614e251a835823f9db68d22e" id="r_a7ffabc39614e251a835823f9db68d22e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04">Venue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a7ffabc39614e251a835823f9db68d22e">to_venue</a> (std::string_view exch)</td></tr>
@@ -542,7 +550,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00014">14</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00015">15</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -606,7 +614,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00010">10</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00011">11</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -638,7 +646,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00011">11</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00012">12</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -690,7 +698,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00013">13</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00014">14</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -706,7 +714,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00012">12</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00013">13</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -1352,7 +1360,7 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="a2e99a148afa0fe8ce39517deb691df04a8a593195a5b868135def50740adfd9c1" name="a2e99a148afa0fe8ce39517deb691df04a8a593195a5b868135def50740adfd9c1"></a>__COUNT__&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00037">37</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00095">95</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -1561,6 +1569,42 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 </div>
 </div>
+<a id="a726a954c44bb07aa064e107eef7d0ebe" name="a726a954c44bb07aa064e107eef7d0ebe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a726a954c44bb07aa064e107eef7d0ebe">&#9670;&#160;</a></span>to_fixed_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string slick::sim::to_fixed_string </td>
+          <td>(</td>
+          <td class="paramtype">int_fast64_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Renders a fixed-point value as an exact decimal string. </p>
+<p>Formats straight from the integer, never through double. <code>std::to_string(double)</code> formats with <code>f</code>, which emits exactly six fractional digits, but the scale here carries eight: a size of 0.00011628 went onto the wire as "0.000116", and one tick, 0.00000001, as "0.000000" - a value the receiver reads as zero.</p>
+<p>Trailing fractional zeros are trimmed, and the point is omitted entirely for a whole number, so 8.2 renders as "8.2" rather than "8.20000000". </p>
+
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00057">57</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00019">DOUBLE_MULTIPLIER</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="types_8hpp_source.html#l00092">to_price_string()</a>, and <a class="el" href="types_8hpp_source.html#l00093">to_qty_string()</a>.</p>
+
+</div>
+</div>
 <a id="a519d12d39dbb18824aa7b211cc2400fc" name="a519d12d39dbb18824aa7b211cc2400fc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a519d12d39dbb18824aa7b211cc2400fc">&#9670;&#160;</a></span>to_price_double()</h2>
 
@@ -1585,11 +1629,43 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00025">25</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00036">36</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="types_8hpp_source.html#l00018">DOUBLE_MULTIPLIER</a>.</p>
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00019">DOUBLE_MULTIPLIER</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="common_2order_8hpp_source.html#l00383">slick::sim::Order::avg_fill_price_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00379">slick::sim::Order::last_fill_price_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00318">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00359">slick::sim::Order::price_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00379">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
+
+</div>
+</div>
+<a id="ad3844198c585908c27fac6edc20383c5" name="ad3844198c585908c27fac6edc20383c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3844198c585908c27fac6edc20383c5">&#9670;&#160;</a></span>to_price_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string slick::sim::to_price_string </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a>&#160;</td>
+          <td class="paramname"><em>price</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00092">92</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00057">to_fixed_string()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
 
 </div>
 </div>
@@ -1617,9 +1693,12 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00021">21</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p>Scales a decimal into the fixed-point representation, rounding to the nearest tick rather than truncating. </p>
+<p><code>price * 1e8</code> is a binary floating-point multiply, and most decimal fractions have no exact binary form, so the product lands just under the intended integer: 8.2 * 1e8 is 819999999.99999988, and a plain cast to an integer throws the fraction away, yielding 819999999 - a price of 8.19999999. The same happens to 0.29 and 4.35, and to quantities. Adding half a tick before truncating rounds to nearest instead, which lands on the intended value for every decimal that fits in the scale. </p>
 
-<p class="reference">References <a class="el" href="types_8hpp_source.html#l00018">DOUBLE_MULTIPLIER</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00032">32</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00019">DOUBLE_MULTIPLIER</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00099">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00178">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00268">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, and <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00218">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot()</a>.</p>
 
@@ -1649,11 +1728,43 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00033">33</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00044">44</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="types_8hpp_source.html#l00018">DOUBLE_MULTIPLIER</a>.</p>
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00019">DOUBLE_MULTIPLIER</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="common_2order_8hpp_source.html#l00367">slick::sim::Order::cum_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00375">slick::sim::Order::last_fill_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00371">slick::sim::Order::leaves_qty_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00318">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00363">slick::sim::Order::qty_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00379">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
+
+</div>
+</div>
+<a id="ae2c54f37191771de649b6e7e34dc4acc" name="ae2c54f37191771de649b6e7e34dc4acc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2c54f37191771de649b6e7e34dc4acc">&#9670;&#160;</a></span>to_qty_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string slick::sim::to_qty_string </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a>&#160;</td>
+          <td class="paramname"><em>qty</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00093">93</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00057">to_fixed_string()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
 
 </div>
 </div>
@@ -1681,9 +1792,9 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00029">29</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00040">40</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="types_8hpp_source.html#l00018">DOUBLE_MULTIPLIER</a>.</p>
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00019">DOUBLE_MULTIPLIER</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00099">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00178">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00268">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, and <a class="el" href="exch__coinbase__feed__callbacks_8cpp_source.html#l00218">slick::sim::exch::CoinbaseExchange::onMarketTradesSnapshot()</a>.</p>
 
@@ -2110,9 +2221,9 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00047">47</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00105">105</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="types_8hpp_source.html#l00044">__COUNT__</a>, <a class="el" href="types_8hpp_source.html#l00039">CME</a>, <a class="el" href="types_8hpp_source.html#l00041">COINBASE</a>, <a class="el" href="types_8hpp_source.html#l00042">HYPERLIQUID</a>, <a class="el" href="types_8hpp_source.html#l00040">ICE</a>, <a class="el" href="types_8hpp_source.html#l00043">STOCK</a>, and <a class="el" href="types_8hpp_source.html#l00038">UNKNOWN_VENUE</a>.</p>
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00102">__COUNT__</a>, <a class="el" href="types_8hpp_source.html#l00097">CME</a>, <a class="el" href="types_8hpp_source.html#l00099">COINBASE</a>, <a class="el" href="types_8hpp_source.html#l00100">HYPERLIQUID</a>, <a class="el" href="types_8hpp_source.html#l00098">ICE</a>, <a class="el" href="types_8hpp_source.html#l00101">STOCK</a>, and <a class="el" href="types_8hpp_source.html#l00096">UNKNOWN_VENUE</a>.</p>
 
 </div>
 </div>
@@ -2140,9 +2251,9 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00066">66</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00124">124</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="types_8hpp_source.html#l00039">CME</a>, <a class="el" href="types_8hpp_source.html#l00041">COINBASE</a>, <a class="el" href="types_8hpp_source.html#l00042">HYPERLIQUID</a>, <a class="el" href="types_8hpp_source.html#l00040">ICE</a>, <a class="el" href="types_8hpp_source.html#l00043">STOCK</a>, and <a class="el" href="types_8hpp_source.html#l00038">UNKNOWN_VENUE</a>.</p>
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00097">CME</a>, <a class="el" href="types_8hpp_source.html#l00099">COINBASE</a>, <a class="el" href="types_8hpp_source.html#l00100">HYPERLIQUID</a>, <a class="el" href="types_8hpp_source.html#l00098">ICE</a>, <a class="el" href="types_8hpp_source.html#l00101">STOCK</a>, and <a class="el" href="types_8hpp_source.html#l00096">UNKNOWN_VENUE</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00041">main()</a>.</p>
 
@@ -2169,9 +2280,9 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00018">18</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00019">19</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="types_8hpp_source.html#l00025">to_price_double()</a>, <a class="el" href="types_8hpp_source.html#l00021">to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00033">to_qty_double()</a>, and <a class="el" href="types_8hpp_source.html#l00029">to_qty_t()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="types_8hpp_source.html#l00057">to_fixed_string()</a>, <a class="el" href="types_8hpp_source.html#l00036">to_price_double()</a>, <a class="el" href="types_8hpp_source.html#l00032">to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00044">to_qty_double()</a>, and <a class="el" href="types_8hpp_source.html#l00040">to_qty_t()</a>.</p>
 
 </div>
 </div>
@@ -2195,7 +2306,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00019">19</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00020">20</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -2219,7 +2330,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00016">16</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00017">17</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -2243,7 +2354,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00017">17</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00018">18</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">canFillCompletely()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00318">match()</a>, <a class="el" href="exchange_8cpp_source.html#l00376">slick::sim::exch::Exchange::rejectCancelOrderRequest()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00074">wouldSelfMatch()</a>.</p>
 

@@ -69,9 +69,9 @@ var NAVTREEINDEX =
 "coinbase__common_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d",
 "hyperliquid__live__ws__feed_8hpp.html",
 "namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a696b031073e74bf2cb98e5ef201d4aa3",
-"structslick_1_1sim_1_1AddOrderMessage.html#a9dcc7d132040218f774c87d33d6f66c8",
-"structslick_1_1sim_1_1OrderResponse.html",
-"structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html#a1764fcd6fb8e13a999bda008034684d8"
+"structslick_1_1sim_1_1AddOrderMessage.html#a5744fbb18583fc2e3c5f5844c92d841d",
+"structslick_1_1sim_1_1OrderIdentity.html#a4e5ea1aa4597ea459c78b0f01183a5b3",
+"structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
