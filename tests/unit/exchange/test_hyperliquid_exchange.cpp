@@ -175,7 +175,7 @@ TEST_F(HyperliquidExchangeTest, L2Book_BidAndAskLevels_BothSidesPopulated) {
     exchange_->onL2BookUpdate(msg);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-A1");
+    auto* sym = SymbolManager::instance().getSymbol("HL-A1", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
 
     auto [bid_level, bi] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
@@ -199,7 +199,7 @@ TEST_F(HyperliquidExchangeTest, L2Book_SecondUpdate_ClearsAndRebuilds) {
     exchange_->onL2BookUpdate(msg2);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-A2");
+    auto* sym = SymbolManager::instance().getSymbol("HL-A2", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
 
     // Only the second snapshot's level remains
@@ -220,7 +220,7 @@ TEST_F(HyperliquidExchangeTest, L2Book_ZeroSizeLevel_Skipped) {
     exchange_->onL2BookUpdate(msg);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-A3");
+    auto* sym = SymbolManager::instance().getSymbol("HL-A3", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
 
     auto [level100, i] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
@@ -236,7 +236,7 @@ TEST_F(HyperliquidExchangeTest, L2Book_UnrecognizedShape_MessageIgnored) {
     exchange_->onL2BookUpdate(bad_msg);
     exchange_->drainEvents();  // must not crash
     // No symbol created
-    EXPECT_EQ(SymbolManager::instance().getSymbol("HL-A4"), nullptr);
+    EXPECT_EQ(SymbolManager::instance().getSymbol("HL-A4", Venue::HYPERLIQUID), nullptr);
 }
 
 TEST_F(HyperliquidExchangeTest, L2Book_EmptyLevels_BookClearedOnly) {
@@ -250,7 +250,7 @@ TEST_F(HyperliquidExchangeTest, L2Book_EmptyLevels_BookClearedOnly) {
     exchange_->onL2BookUpdate(msg2);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-A5");
+    auto* sym = SymbolManager::instance().getSymbol("HL-A5", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
     EXPECT_TRUE(sym->order_book_->isEmpty());
 }
@@ -405,7 +405,7 @@ TEST_F(HyperliquidExchangeTest, Diff_UntouchedLevelsSurvive_RegressionForClearBu
     exchange_->onL2BookUpdate(diff);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-F1");
+    auto* sym = SymbolManager::instance().getSymbol("HL-F1", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
 
     auto [lv100, i1] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
@@ -443,7 +443,7 @@ TEST_F(HyperliquidExchangeTest, Diff_ExistingLevelQtyIncrease_GrowsByDelta) {
     exchange_->onL2BookUpdate(diff);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-F3");
+    auto* sym = SymbolManager::instance().getSymbol("HL-F3", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
     auto [lv, i] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
     ASSERT_NE(lv, nullptr);
@@ -510,7 +510,7 @@ TEST_F(HyperliquidExchangeTest, Diff_RemovalIndex_ResolvesCorrectPrice) {
     exchange_->onL2BookUpdate(diff);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-F6");
+    auto* sym = SymbolManager::instance().getSymbol("HL-F6", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
 
     auto [lv100, i1] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
@@ -535,7 +535,7 @@ TEST_F(HyperliquidExchangeTest, Diff_OutOfRangeRemovalIndex_SkippedGracefully) {
     exchange_->onL2BookUpdate(diff);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-F7");
+    auto* sym = SymbolManager::instance().getSymbol("HL-F7", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
 
     auto [lv100, i1] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
@@ -562,7 +562,7 @@ TEST_F(HyperliquidExchangeTest, Diff_ThenNewSnapshot_FullyReplacesState) {
     exchange_->onL2BookUpdate(snap2);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-F8");
+    auto* sym = SymbolManager::instance().getSymbol("HL-F8", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
 
     auto [lv100, i1] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
@@ -688,7 +688,7 @@ TEST_F(HyperliquidExchangeTest, Subscription_NewCoin_CreatesSymbol) {
     auto req = makeMDSubRequest("HL-D1", HyperliquidChannel::L2_BOOK);
     exchange_->subscribeToMD(req);
 
-    EXPECT_NE(SymbolManager::instance().getSymbol("HL-D1"), nullptr);
+    EXPECT_NE(SymbolManager::instance().getSymbol("HL-D1", Venue::HYPERLIQUID), nullptr);
 }
 
 TEST_F(HyperliquidExchangeTest, Subscription_NewCoin_WritesMdQueueEntry) {
@@ -903,7 +903,7 @@ TEST_F(HyperliquidExchangeTest, Subscription_NewCoin_L2Channel_CreatesSymbol) {
     auto req = makeMDSubRequest("HL-D4", HyperliquidChannel::L2);
     exchange_->subscribeToMD(req);
 
-    EXPECT_NE(SymbolManager::instance().getSymbol("HL-D4"), nullptr);
+    EXPECT_NE(SymbolManager::instance().getSymbol("HL-D4", Venue::HYPERLIQUID), nullptr);
 }
 
 TEST_F(HyperliquidExchangeTest, Subscription_NewCoin_L2Channel_WritesTaggedSubResponse) {
@@ -978,7 +978,7 @@ TEST_F(HyperliquidExchangeTest, EventQueue_L2ThenTrades_ProcessedInOrder) {
     exchange_->onTradesUpdate(tr_msg);
     exchange_->drainEvents();  // both processed in order, no crash
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-E1");
+    auto* sym = SymbolManager::instance().getSymbol("HL-E1", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
     auto [level, idx] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
     ASSERT_NE(level, nullptr);  // L2 book was applied
@@ -992,7 +992,7 @@ TEST_F(HyperliquidExchangeTest, EventQueue_MultipleL2Updates_OnlyLastStateVisibl
     exchange_->onL2BookUpdate(msg2);
     exchange_->drainEvents();
 
-    auto* sym = SymbolManager::instance().getSymbol("HL-E2");
+    auto* sym = SymbolManager::instance().getSymbol("HL-E2", Venue::HYPERLIQUID);
     ASSERT_NE(sym, nullptr);
 
     // Only levels from msg2 remain

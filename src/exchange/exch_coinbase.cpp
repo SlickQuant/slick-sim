@@ -89,7 +89,7 @@ void CoinbaseExchange::start()
 
 Symbol *CoinbaseExchange::addSymbol(std::string_view product_id)
 {
-    assert(!sym_mgr.getSymbol(product_id));
+    assert(!sym_mgr.getSymbol(product_id, venue_));
     auto symbol = sym_mgr.createSymbol(product_id, Venue::COINBASE);
     assert(symbol);
     if (!matching_engines_[engine::MatchingEngine::Type::FIFO])
@@ -106,7 +106,7 @@ void CoinbaseExchange::handleMdSubscription(const Request &request)
 {
     const auto &msg = request.md_subscription;
     std::string sym = request.symbol;
-    auto *symbol = sym_mgr.getSymbol(sym);
+    auto *symbol = sym_mgr.getSymbol(sym, venue_);
     if (!symbol)
     {
         symbol = addSymbol(sym);
@@ -199,7 +199,7 @@ void CoinbaseExchange::handleMdSubscription(const Request &request)
 void CoinbaseExchange::handleMdUnsubscription(const Request &request)
 {
     std::string sym = request.symbol;
-    auto *symbol = sym_mgr.getSymbol(sym);
+    auto *symbol = sym_mgr.getSymbol(sym, venue_);
     if (!symbol)
     {
         return;

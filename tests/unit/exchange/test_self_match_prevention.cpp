@@ -64,7 +64,7 @@ protected:
         req.msg_type = MessageType::MD_SUBSCRIPTION;
         req.md_subscription.channel = static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2);
         exchange.subscribeMd(req);
-        return SymbolManager::instance().getSymbol(product_id);
+        return SymbolManager::instance().getSymbol(product_id, Venue::COINBASE);
     }
 
     Request makeOrder(const std::string &product_id, const std::string &user_id,

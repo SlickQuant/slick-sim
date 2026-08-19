@@ -76,9 +76,11 @@ struct Symbol {
         , matching_engine_(std::exchange(other.matching_engine_, nullptr))
         , order_book_(std::move(other.order_book_))
         , num_subscriptions_(other.num_subscriptions_.load(std::memory_order_relaxed))
-        // Moved, not left default-constructed: SymbolManager::createSymbol builds a
-        // Symbol on the stack and moves it into the vector, so a dropped cache here
-        // means every symbol in the process runs with zero reserved capacity.
+        // Moved, not left default-constructed: a Symbol that is moved must arrive
+        // with the capacity the constructor reserved, or it runs the rest of its
+        // life reallocating both caches as market data arrives. SymbolManager now
+        // constructs in place and never moves one, so nothing in the simulator
+        // exercises this today - which is exactly why it is worth stating.
         , md_level_update_cache_(std::move(other.md_level_update_cache_))
         , md_order_update_cache_(std::move(other.md_order_update_cache_))
         , book_observer_(std::make_shared<OrderBookObserver>(this))
