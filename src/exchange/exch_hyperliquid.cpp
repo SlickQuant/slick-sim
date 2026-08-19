@@ -1,3 +1,4 @@
+#include <slick/logger.hpp>
 #include "exch_hyperliquid.hpp"
 #include <md_feed/hyperliquid_live_ws_feed.hpp>
 #include <matching_engine/fifo_matching_engine.hpp>
@@ -5,7 +6,6 @@
 #include <utils/timestamp.hpp>
 #include <utils/order.hpp>
 #include <order_book/order_book.hpp>
-#include <slick/logger.hpp>
 #include <algorithm>
 #include <chrono>
 #include <cstring>

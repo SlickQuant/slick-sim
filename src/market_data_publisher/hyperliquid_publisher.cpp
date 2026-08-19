@@ -1,6 +1,6 @@
+#include <slick/logger.hpp>
 #include "hyperliquid_publisher.hpp"
 #include "hyperliquid_trade_encoder.hpp"
-#include <slick/logger.hpp>
 #include <common/hyperliquid_info_proxy.hpp>
 #include <utils/fixed_string.hpp>
 #include <utils/timestamp.hpp>

@@ -121,6 +121,12 @@
   `md_order_update_cache_` instead of moving them. `SymbolManager::createSymbol` builds a `Symbol` on
   the stack and moves it into a vector, so every symbol in the process ran with zero reserved
   capacity and both caches reallocated from scratch as market data arrived.
+- Both heartbeat timers wrote their `this` pointer past the end of the timer allocation.
+  `us_create_timer(loop, fallthrough, ext_size)` takes the extension size as its **third** argument,
+  and both call sites passed `0` before storing a pointer at `us_timer_ext(timer)` — an
+  out-of-bounds heap write of `sizeof(void*)` bytes, read back on every ping. It affected
+  `WebsocketMarketDataPublisher` (so every venue's market-data publisher) and
+  `CoinbaseWebsocketOrderGateway`. Both now request `sizeof(T*)`.
 
 ## Changed
 
@@ -175,6 +181,15 @@
   runs the function again, since `md_queue_` is lock-free with no wakeup and the exchange thread never
   touches the loop, so skipping it on an empty queue would stop the publisher permanently the first
   time it caught up.
+- `Exchange::clientIdFor` looks the user up by `std::string_view` and only materialises a key when
+  the user is new. It ran once per new order and built a `std::string` every time purely to probe the
+  map — an allocation for any `user_id` past the small-string buffer, on a path whose whole point is
+  not to allocate. `client_ids_` is keyed by `utils::fixed_string<sizeof(AddOrderMessage::user_id)>`
+  so the stored key is inline too.
+- `StringViewHash`/`StringViewEq` moved from private members of `OrderBook` to `utils`, since
+  `client_ids_` now needs the same transparent lookup. `OrderBook` keeps its old names as aliases.
+- `TradeSummaryInfo` reserves four legs in `Trades`. A summary covers one price level, so even the
+  common two-leg fill (one aggressor, one resting) reallocated twice growing 1 → 2.
 
 # v0.1.1 - 08-12-2026
 

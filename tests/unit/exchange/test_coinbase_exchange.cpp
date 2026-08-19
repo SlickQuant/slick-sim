@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <slick/logger.hpp>
 #include <exchange/exch_coinbase.hpp>
 #include <common/symbol_manager.hpp>
 #include <matching_engine/fifo_matching_engine.hpp>
@@ -26,6 +27,9 @@ class TestableCoinbaseExchange : public CoinbaseExchange {
 public:
     using CoinbaseExchange::CoinbaseExchange;
     void drainSequencedEvents() { processSequencedEvents(true); }
+    // processRequest() takes one request per call, the same way the exchange
+    // thread's spin loop drives it.
+    void drainOneRequest() { processRequest(); }
 };
 
 // ---------------------------------------------------------------------------
@@ -932,4 +936,59 @@ TEST_F(CoinbaseExchangeTest, InterleavedLevel2_MatchThenBuild_CorrectFinalState)
     auto [level, idx] = sym->order_book_->getLevel(to_book_side(Side::SELL), kPrice102);
     ASSERT_NE(level, nullptr);
     EXPECT_EQ(level->total_quantity, kQty5);
+}
+
+// ===========================================================================
+// processRequest dispatch — MD_UNSUBSCRIPTION
+// ===========================================================================
+
+// Both publishers write an MD_UNSUBSCRIPTION request when a client unsubscribes
+// or disconnects, but processRequest()'s switch once handled only NEW_ORDER_SINGLE,
+// ORDER_REPLACE_REQUEST, ORDER_CANCEL_REQUEST and MD_SUBSCRIPTION. The request was
+// read off the queue and dropped, so handleMdUnsubscription() — implemented on both
+// adapters — never ran, num_subscriptions_ only ever climbed, and the upstream feed
+// was never torn down when the last client went away.
+TEST_F(CoinbaseExchangeTest, MdUnsubscriptionRequestReachesTheHandler) {
+    auto* sym = registerSymbol("TEST-UNSUB-1");
+    sym->num_subscriptions_.store(2, std::memory_order_relaxed);
+
+    auto enqueueUnsubscribe = [&](std::string_view name) {
+        auto& queue = exchange_->request_queue();
+        auto index = queue.reserve();
+        auto* request = queue[index];
+        utils::copy_wire_field(request->symbol, name);
+        request->msg_type = MessageType::MD_UNSUBSCRIPTION;
+        request->md_subscription.channel =
+            static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2);
+        request->md_subscription.client = nullptr;
+        queue.publish(index);
+    };
+
+    // Two subscribers, so this one drops the count without tearing the feed down.
+    enqueueUnsubscribe("TEST-UNSUB-1");
+    exchange_->drainOneRequest();
+    EXPECT_EQ(sym->num_subscriptions_.load(std::memory_order_relaxed), 2u - 1u)
+        << "MD_UNSUBSCRIPTION was dropped by processRequest()'s switch";
+
+    // The last subscriber leaving also takes the feed-teardown branch.
+    enqueueUnsubscribe("TEST-UNSUB-1");
+    exchange_->drainOneRequest();
+    EXPECT_EQ(sym->num_subscriptions_.load(std::memory_order_relaxed), 0u);
+}
+
+// An unsubscribe naming a symbol nobody ever subscribed to is dropped by the
+// handler, not by the switch above it.
+TEST_F(CoinbaseExchangeTest, MdUnsubscriptionForUnknownSymbolIsIgnored) {
+    auto& queue = exchange_->request_queue();
+    auto index = queue.reserve();
+    auto* request = queue[index];
+    utils::copy_wire_field(request->symbol, std::string_view("TEST-UNSUB-NEVER-SEEN"));
+    request->msg_type = MessageType::MD_UNSUBSCRIPTION;
+    request->md_subscription.channel = static_cast<uint8_t>(coinbase::WebSocketChannel::LEVEL2);
+    request->md_subscription.client = nullptr;
+    queue.publish(index);
+
+    exchange_->drainOneRequest();
+
+    EXPECT_EQ(SymbolManager::instance().getSymbol("TEST-UNSUB-NEVER-SEEN"), nullptr);
 }

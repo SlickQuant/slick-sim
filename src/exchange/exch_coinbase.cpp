@@ -1,3 +1,4 @@
+#include <slick/logger.hpp>
 #include "exch_coinbase.hpp"
 #include <md_feed/coinbase_live_ws_feed.hpp>
 #include <matching_engine/fifo_matching_engine.hpp>

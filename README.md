@@ -4,6 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/SlickQuant/slick-sim/actions/workflows/ci.yml/badge.svg)](https://github.com/SlickQuant/slick-sim/actions/workflows/ci.yml)
 [![Documentation](https://github.com/SlickQuant/slick-sim/actions/workflows/documentation.yml/badge.svg)](https://slickquant.github.io/slick-sim/)
+[![Sanitizers](https://github.com/SlickQuant/slick-sim/actions/workflows/asan.yml/badge.svg)](https://github.com/SlickQuant/slick-sim/actions/workflows/asan.yml)
 [![GitHub release](https://img.shields.io/github/v/release/SlickQuant/slick-sim)](https://github.com/SlickQuant/slick-sim/releases)
 
 A exchange simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and serves that exchange's own APIs on local ports — the same **order-entry** endpoints you would send orders to, and the same **market-data** channels you would subscribe to for prices. A trading client connects and trades against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
@@ -229,6 +230,8 @@ unaffected if Doxygen is absent.
 
 [`ci.yml`](.github/workflows/ci.yml) builds and tests every push/PR to `main` across Windows and Ubuntu (Debug + Release). macOS is currently excluded — GitHub's Intel (`macos-13`) runners have very limited hosted capacity and queue indefinitely, and the ARM `macos-latest` runners can't build `quickfix` (its vcpkg port excludes `arm64-osx`). Since there's no `vcpkg.json` manifest, each job clones and bootstraps vcpkg itself and installs the required ports in classic mode (cached per-OS) before configuring CMake.
 
+[`asan.yml`](.github/workflows/asan.yml) runs the same test suite on Ubuntu under AddressSanitizer and UndefinedBehaviorSanitizer. It must configure `Debug`: `ENABLE_ASAN` only injects `-fsanitize=address,undefined` into the `*_DEBUG` flag variables, so a Release configuration would produce an unsanitized binary and a green run that checked nothing — the job asserts the built binary actually carries `__asan_*` symbols rather than trusting that. Leak detection is off, because the process deliberately exits with live singletons and pooled objects that LeakSanitizer would report; enabling it needs a suppressions file first. Expect roughly 3x the normal test runtime.
+
 [`documentation.yml`](.github/workflows/documentation.yml) builds the MkDocs site and the Doxygen API reference, merges them into one tree (`/` and `/api` respectively), and publishes to the `gh-pages` branch on pushes to `main`. It deliberately does *not* configure CMake — Doxygen parses the sources directly, so the job needs only `doxygen`, `graphviz` and Python, and runs in about a minute instead of inheriting `ci.yml`'s vcpkg dependency chain. Pull requests build and upload the site as an artifact without deploying. Two further jobs lint the Markdown and check its links.
 
 [`release.yml`](.github/workflows/release.yml) triggers on `v*` tags. Rather than rebuilding, it reuses the Release-config Windows and Linux binaries `ci.yml` already built and tested for that exact commit (downloaded from that CI run's artifacts), packages each with its runtime libraries and the sample config, and drafts a GitHub Release with both archives attached. This means the tagged commit must already have a successful `ci.yml` run on `main` — tag what you've already merged, not an untested commit. Release notes are pulled from the matching `# vX.Y.Z` section of the [`CHANGELOG.md`](CHANGELOG.md) file, if present.
@@ -240,6 +243,7 @@ slick-sim/
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml               # build + test on push/PR (Windows, Ubuntu)
+│       ├── asan.yml             # ASan + UBSan test run (Ubuntu, Debug)
 │       ├── documentation.yml    # MkDocs + Doxygen → GitHub Pages
 │       └── release.yml          # tag-triggered GitHub Release with Windows binary
 ├── CHANGELOG.md                 # per-version notes, consumed by release.yml

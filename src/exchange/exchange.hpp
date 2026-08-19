@@ -113,7 +113,13 @@ protected:
     /// Self-match prevention mode applied to every symbol on this venue, from the
     /// `self_match_prevention` config key. Stamped onto each Symbol as it is created.
     SelfMatchPreventionMode smp_mode_ = SelfMatchPreventionMode::NONE;
-    std::unordered_map<std::string, int> client_ids_;
+    /// Keyed by the same fixed_string width as `AddOrderMessage::user_id`, with
+    /// transparent functors so `clientIdFor` can look up by string_view. As a
+    /// `std::unordered_map<std::string, int>` every new order built a std::string
+    /// key just to probe the map, allocating for any user_id past the small-string
+    /// buffer even though the entry was almost always already there.
+    std::unordered_map<utils::fixed_string<sizeof(AddOrderMessage::user_id)>, int,
+                       utils::StringViewHash, utils::StringViewEq> client_ids_;
     int next_client_id_ = 0;
 };
 

@@ -32,7 +32,11 @@ void WebsocketMarketDataPublisher::start() {
                 // Create heartbeat timer in the event loop
                 // Use defer() to create timer with proper lambda capture
                 loop_->defer([this]() {
-                    heartbeat_timer_ = us_create_timer((struct us_loop_t*)loop_, 0, 0);
+                    // The third argument is ext_size, not a flag: it is the number
+                    // of bytes us_timer_ext() hands back. Passing 0 and then
+                    // writing a pointer there overruns the timer allocation.
+                    heartbeat_timer_ = us_create_timer((struct us_loop_t*)loop_, 0,
+                                                       sizeof(WebsocketMarketDataPublisher*));
 
                     // Store 'this' pointer in timer extension data
                     *((WebsocketMarketDataPublisher**)us_timer_ext(heartbeat_timer_)) = this;

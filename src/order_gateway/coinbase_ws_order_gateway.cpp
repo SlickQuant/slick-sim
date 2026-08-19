@@ -87,7 +87,11 @@ void CoinbaseWebsocketOrderGateway::setup_routes(uWS::App &app) {
 
 void CoinbaseWebsocketOrderGateway::on_listen_socket([[maybe_unused]] us_listen_socket_t *listen_socket) {
     loop_->defer([this]() {
-        heartbeat_timer_ = us_create_timer((struct us_loop_t*)loop_, 0, 0);
+        // The third argument is ext_size, not a flag: it is the number of bytes
+        // us_timer_ext() hands back. Passing 0 and then writing a pointer there
+        // overruns the timer allocation.
+        heartbeat_timer_ = us_create_timer((struct us_loop_t*)loop_, 0,
+                                           sizeof(CoinbaseWebsocketOrderGateway*));
 
         // Store 'this' pointer in timer extension data
         *((CoinbaseWebsocketOrderGateway**)us_timer_ext(heartbeat_timer_)) = this;

@@ -1,0 +1,118 @@
+name: Sanitizers
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  asan:
+    name: ASan + UBSan (Linux, Debug)
+    runs-on: ubuntu-latest
+    # ASan roughly triples the test suite's runtime. This is a ceiling to stop a
+    # hung job burning the default six hours, not an expected duration.
+    timeout-minutes: 90
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Clone vcpkg
+      shell: bash
+      run: git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ runner.temp }}/vcpkg"
+
+    # Same reasoning as ci.yml: the SlickQuant dependencies build their Release
+    # config with -march=native, so a cache restored onto a runner with a narrower
+    # instruction set dies with SIGILL inside the dependency. Key on the runner's
+    # CPU features so a cache is only reused on compatible hardware.
+    - name: CPU signature for the vcpkg cache key
+      id: cpusig
+      shell: bash
+      run: |
+        raw=$(grep -m1 '^flags' /proc/cpuinfo | cut -d: -f2 | tr ' ' '\n' \
+              | grep -E '^(sse4_[12]|avx|avx2|avx512[a-z0-9_]*|bmi[12]|fma)$' | sort -u | tr '\n' ',')
+        echo "CPU signature source: $raw"
+        echo "sig=$(printf '%s' "$raw" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+    # The dependency set below is identical to ci.yml's, so the restore-keys prefix
+    # deliberately matches the cache ci.yml writes: an exact-key miss here still
+    # warm-starts from ci.yml's Linux cache and vcpkg then has nothing left to
+    # build. Keep the two install lists in sync — the exact key hashes both files
+    # so editing either one invalidates it.
+    - name: Cache vcpkg
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ runner.temp }}/vcpkg/installed
+          ${{ runner.temp }}/vcpkg/downloads
+          ${{ runner.temp }}/vcpkg/packages
+        key: vcpkg-${{ runner.os }}-cpu${{ steps.cpusig.outputs.sig }}-${{ hashFiles('.github/workflows/ci.yml', '.github/workflows/asan.yml') }}
+        restore-keys: |
+          vcpkg-${{ runner.os }}-cpu${{ steps.cpusig.outputs.sig }}-
+
+    - name: Bootstrap vcpkg
+      shell: bash
+      run: "${{ runner.temp }}/vcpkg/bootstrap-vcpkg.sh -disableMetrics"
+
+    - name: Install dependencies via vcpkg
+      shell: bash
+      run: |
+        "${{ runner.temp }}/vcpkg/vcpkg" install \
+          quickfix \
+          nlohmann-json \
+          jwt-cpp \
+          foonathan-memory \
+          boost-uuid \
+          boost-multiprecision \
+          gtest \
+          slick-logger \
+          slick-socket \
+          slick-object-pool \
+          coinbase-advanced-cpp \
+          slickquant-hyperliquid-cpp \
+          "uwebsockets[core,ssl,zlib]"
+
+    # CMAKE_BUILD_TYPE=Debug is load-bearing, not a preference: ENABLE_ASAN puts
+    # -fsanitize=address,undefined into CMAKE_CXX_FLAGS_DEBUG and
+    # CMAKE_EXE_LINKER_FLAGS_DEBUG only (see CMakeLists.txt). Configuring Release
+    # with ENABLE_ASAN=ON on GCC/Clang produces a build with no sanitizer in it and
+    # a green job that checked nothing.
+    - name: Configure CMake
+      shell: bash
+      run: >
+        cmake -B build
+        -DCMAKE_BUILD_TYPE=Debug
+        -DENABLE_ASAN=ON
+        -DBUILD_EXCH_SIMULATOR_TESTING=ON
+        -DCMAKE_TOOLCHAIN_FILE="${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+
+    - name: Build
+      run: cmake --build build --parallel
+
+    - name: Verify the sanitizer is actually linked
+      shell: bash
+      run: |
+        # A silently unsanitized binary would make every run below pass for the
+        # wrong reason, so fail loudly here instead.
+        if ! nm -C build/tests/slick_sim_tests 2>/dev/null | grep -q '__asan_'; then
+          echo "::error::slick_sim_tests contains no __asan_* symbols - ASan did not apply"
+          exit 1
+        fi
+        echo "ASan symbols present."
+
+    - name: Run tests under ASan + UBSan
+      working-directory: build
+      env:
+        # detect_leaks is off deliberately. The process exits with live singletons
+        # (SymbolManager) and pooled Orders that are never individually freed, so
+        # LeakSanitizer reports them at exit and would keep this job permanently
+        # red. Turning it on is worthwhile but is its own piece of work - it needs
+        # a suppressions file for the intentional cases first.
+        ASAN_OPTIONS: detect_leaks=0:strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1
+        # UBSan only warns by default and would let a failure pass as a green run.
+        UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+      run: ctest --output-on-failure

@@ -105,6 +105,26 @@ public:
     }
 };
 
+/// Transparent hash/equality for maps keyed by fixed_string.
+///
+/// `is_transparent` is what lets a lookup take a `std::string_view` (or a bare
+/// `const char*` from a wire field) without materialising the key type first, so
+/// the common already-present case costs no construction at all. fixed_string
+/// converts to string_view implicitly, so keys hash identically either way.
+struct StringViewHash {
+    using is_transparent = void;
+    size_t operator()(std::string_view value) const noexcept {
+        return std::hash<std::string_view>{}(value);
+    }
+};
+
+struct StringViewEq {
+    using is_transparent = void;
+    bool operator()(std::string_view lhs, std::string_view rhs) const noexcept {
+        return lhs == rhs;
+    }
+};
+
 } // namespace slick::sim::utils
 
 /// Lets fixed_string drop into std::format and therefore into every LOG_* call,

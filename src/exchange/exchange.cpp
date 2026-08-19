@@ -1,6 +1,6 @@
+#include <slick/logger.hpp>
 #include "exchange.hpp"
 #include <common/symbol_manager.hpp>
-#include <slick/logger.hpp>
 #include <utils/order.hpp>
 #include <utils/timestamp.hpp>
 
@@ -143,13 +143,17 @@ int Exchange::clientIdFor(const char *user_id)
         return -1;
     }
 
-    std::string key(user_id, len);
-    auto [it, inserted] = client_ids_.try_emplace(std::move(key), next_client_id_);
-    if (inserted)
+    // Heterogeneous lookup first: this runs once per new order, and the same
+    // handful of users submit all of them, so the hit path must not build a key.
+    std::string_view key(user_id, len);
+    if (auto it = client_ids_.find(key); it != client_ids_.end())
     {
-        ++next_client_id_;
+        return it->second;
     }
-    return it->second;
+
+    // First order from this user - only now is a key worth materialising, and it
+    // is stored inline rather than on the heap.
+    return client_ids_.emplace(key, next_client_id_++).first->second;
 }
 
 void Exchange::handleNewOrderRequest(const Request &request)
