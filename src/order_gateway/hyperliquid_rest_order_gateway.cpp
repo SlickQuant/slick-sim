@@ -217,6 +217,14 @@ void HyperliquidRestOrderGateway::process_order_action(
             cloid = std::format("hl_{}", get_current_time_ns());
         }
 
+        // Captured before the request is queued, not after. initial_reading_index()
+        // returns the response queue's current write cursor, and the exchange thread is
+        // a hot spin loop - it can consume the request and publish PENDING_NEW before
+        // this thread runs its next instruction. Reading that cursor after publishing
+        // therefore starts the poll *past* our own response, and the order comes back
+        // to the client as a timeout while it is resting, or already filled, in the book.
+        uint64_t response_read_index = response_queue_.initial_reading_index();
+
         auto req_index = request_queue_.reserve();
         auto* request  = request_queue_[req_index];
         request->time_stamp = get_current_time_ns();
@@ -242,7 +250,6 @@ void HyperliquidRestOrderGateway::process_order_action(
             strnlen(request->add_order.client_order_id, sizeof(request->add_order.client_order_id)));
 
         request_queue_.publish(req_index);
-        uint64_t response_read_index = response_queue_.initial_reading_index();
 
         LOG_INFO("HyperliquidREST: order queued user={} coin={} side={} px={} sz={} cloid={}",
                  user_id, coin, is_buy ? "B" : "A", price_str, size_str, cloid);
