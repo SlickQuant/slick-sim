@@ -50,13 +50,6 @@ void CoinbaseExchange::onMarketDataDisconnected(WebSocketClient *client)
         }
     }
 
-    // Remove old feed from tracking
-    md_feeds_.erase(std::remove(md_feeds_.begin(), md_feeds_.end(), disconnected_feed), md_feeds_.end());
-    for (const auto &sym : symbols)
-    {
-        map_symbol_feed_.erase(sym);
-    }
-
     if (symbols.empty())
     {
         return;
@@ -74,14 +67,17 @@ void CoinbaseExchange::onMarketDataDisconnected(WebSocketClient *client)
         }
     }
 
-    // Create and start a new feed
-    auto new_feed = std::make_shared<md_feed::CoinbaseLiveWSFeed>(ws_mux_, this, symbols);
-    md_feeds_.emplace_back(new_feed);
-    for (const auto &sym : symbols)
-    {
-        map_symbol_feed_.emplace(sym, new_feed);
-    }
-    new_feed->start();
+    // Restart the feed that dropped rather than building a replacement. A
+    // WebSocketClient registers its producers on the shared multiplexer from its
+    // constructor, and stream_buffer_multiplexer has no way to unregister them - so a
+    // second client throws std::invalid_argument on the first duplicate id, uncaught
+    // on the exchange thread. Handing it a fresh offset instead would only trade that
+    // for a leak: the multiplexer owns each producer's stream_buffer, so every
+    // reconnect would strand the 64MB market-data and 16MB user-data rings of the
+    // client it replaced. Neither is necessary - `start()` calls
+    // WebSocketClient::subscribe(), which reopens a socket whose status is past
+    // CONNECTED and then re-sends the subscription.
+    disconnected_feed->start();
 
     LOG_INFO("WebSocket {:p} restarted market data feed for {} symbol(s)", (void *)client, symbols.size());
 }
@@ -107,6 +103,24 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
     auto &pending_l2_subscriptions = pending_md_subscription_[coinbase::WebSocketChannel::LEVEL2];
     auto it = pending_l2_subscriptions.find(symbol);
     symbol->order_book_->clear();
+
+    // Everything still queued describes the book that clear() just discarded, so it
+    // must not be replayed onto the rebuilt one. poll() drains the callbacks that
+    // delivered this snapshot and only then runs processSequencedEvents, so a trade
+    // received before a reconnect would otherwise match against fresh liquidity and
+    // fabricate fills - dispatchEvent's TRADE branch has no stale-timestamp guard to
+    // stop it, and the level branch's guard only compares against the rebuilt book.
+    // Everything queued at this point does predate the snapshot: every callback runs
+    // on the exchange thread in arrival order, so whatever arrives after this one is
+    // enqueued after this line.
+    auto &state = symbol_event_state_[symbol];
+    state.pending_events = {};
+
+    // One stamp for the whole snapshot: every update in it shares a sequence, and
+    // equal sequences pass the book's guard. It comes from the same counter the
+    // dispatch loop uses - this path bypasses the event queue entirely, and the two
+    // must not stamp the book out of different sequence spaces.
+    const uint64_t book_seq_num = nextBookSeqNum(symbol, state);
     std::vector<MDLevel> level_updates;
     std::vector<MDTrade> trade_updates;
 
@@ -119,10 +133,10 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
         auto qty = to_qty_t(update.new_quantity);
 
         auto order_id = utils::nextOrderId();
-        auto trade_summaries = symbol->matching_engine_->match(side, order_id, price, qty, *symbol->order_book_.get(), update.event_time, seq_num);
+        auto trade_summaries = symbol->matching_engine_->match(side, order_id, price, qty, *symbol->order_book_.get(), update.event_time, book_seq_num);
         if (qty)
         {
-            symbol->order_book_->addOrder(order_id, book_side, price, qty, update.event_time, seq_num, it_update == it_last);
+            symbol->order_book_->addBookOrder(order_id, book_side, price, qty, update.event_time, book_seq_num, it_update == it_last);
         }
 
         if (!trade_summaries.empty())
@@ -186,8 +200,20 @@ void CoinbaseExchange::onLevel2Updates(WebSocketClient * /* client */, uint64_t 
     // Get or create event state for this symbol
     auto &state = symbol_event_state_[symbol];
 
-    // Add each update to per-symbol pending_events queue
-    for (auto it = update_batch.updates.rbegin(), it_last = std::prev(update_batch.updates.rend()); it != update_batch.updates.rend(); ++it)
+    // Add each update to per-symbol pending_events queue.
+    //
+    // Both enqueue loops in this file walk their batch in reverse *dispatch* order:
+    // the element visited first takes the lowest sequence_id, and EventCompare pops
+    // the highest first, so the element enqueued first is dispatched last. The
+    // end-of-event marker therefore belongs on the element the loop visits first.
+    // `std::prev(rend())` is the opposite one - enqueued last, dispatched *first* -
+    // so marking it closed every batch on its opening update, and a client batching
+    // until the marker acted on one update out of the whole batch.
+    //
+    // onLevel2Snapshot is not the same shape: it applies its batch inline with no
+    // queue to reverse it, so the equivalent test there really is the final element.
+    const auto it_dispatched_last = update_batch.updates.rbegin();
+    for (auto it = update_batch.updates.rbegin(); it != update_batch.updates.rend(); ++it)
     {
         auto &update = *it;
         Event evt;
@@ -199,7 +225,7 @@ void CoinbaseExchange::onLevel2Updates(WebSocketClient * /* client */, uint64_t 
         evt.price = to_price_t(update.price_level);
         evt.qty = to_qty_t(update.new_quantity);
         evt.side = static_cast<Side>(update.side);
-        evt.flags = it == it_last ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE;
+        evt.flags = it == it_dispatched_last ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE;
 
         // Update last_event_time to track latest event_time seen
         if (state.last_event_time < evt.event_time)
@@ -267,8 +293,12 @@ void CoinbaseExchange::onMarketTradesSnapshot(WebSocketClient * /* client */, ui
 
 void CoinbaseExchange::onMarketTrades(WebSocketClient * /* client */, uint64_t seq_num, const std::vector<coinbase::MarketTrade> &trades)
 {
-    for (const auto &trade : trades)
+    // Coinbase sends market_trades newest-first, so this loop runs forward and the
+    // batch is dispatched back-to-front - see onLevel2Updates. trades.begin() is
+    // enqueued first and therefore dispatched last, so it carries the marker.
+    for (auto it = trades.begin(); it != trades.end(); ++it)
     {
+        const auto &trade = *it;
         auto *symbol = sym_mgr.getSymbol(trade.product_id, venue_);
         if (!symbol) [[unlikely]]
         {
@@ -287,6 +317,7 @@ void CoinbaseExchange::onMarketTrades(WebSocketClient * /* client */, uint64_t s
         evt.price = to_price_t(trade.price);
         evt.qty = to_qty_t(trade.size);
         evt.side = static_cast<Side>(trade.side);
+        evt.flags = it == trades.begin() ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE;
 
         // Update last_event_time to track latest event_time seen
         if (state.last_event_time < evt.event_time)

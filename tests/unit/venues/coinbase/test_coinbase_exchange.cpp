@@ -1055,3 +1055,195 @@ TEST_F(CoinbaseExchangeTest, AcceptedL2SubscriptionReportsNoRejectReason) {
     }
     EXPECT_TRUE(seen) << "no SUB_RESPONSE was published for the accepted subscription";
 }
+
+// ===========================================================================
+// Book sequencing — dispatch order, not arrival order
+// ===========================================================================
+
+// The regression that produced stale levels: the event queue pops by event_time,
+// but every OrderBookL3 mutator silently discards a mutation whose sequence
+// regresses. Coinbase routinely delivers a trade *after* an l2 batch while
+// stamping it with an *earlier* event_time, so the trade dispatches first
+// carrying the higher venue seq_num - and the l2 batch it overtook was then
+// dropped in its entirety, level retirement and all. Measured on a recorded
+// session, that sank 38.6% of all level updates.
+//
+// Here the level at 100 is retired by an l2 update that arrived first (seq 11,
+// event_time 300); a trade that arrived second (seq 12) carries event_time 250
+// and so dispatches ahead of it. The retirement must still apply.
+TEST_F(CoinbaseExchangeTest, TradeOvertakingLevelUpdate_DoesNotSinkIt) {
+    auto* sym = registerSymbol("TEST-SEQ-1");
+
+    // A phantom BUY level at 100, established first.
+    auto seed = makeBatch("TEST-SEQ-1", {
+        makeL2Update(coinbase::Side::BUY, 100.0, 5.0, 200)
+    });
+    exchange_->onLevel2Updates(nullptr, 10, seed);
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice100), kQty5);
+
+    // Arrives first (seq 11), but timestamped later: the venue retires the level.
+    auto retire = makeBatch("TEST-SEQ-1", {
+        makeL2Update(coinbase::Side::BUY, 100.0, 0.0, 300)
+    });
+    exchange_->onLevel2Updates(nullptr, 11, retire);
+
+    // Arrives second (seq 12), but timestamped earlier, so it dispatches first and
+    // stamps the book. It crosses nothing - the book holds no asks - so it only
+    // rests at 90 and must not disturb the level at 100.
+    exchange_->onMarketTrades(nullptr, 12, {
+        makeMarketTrade("TEST-SEQ-1", coinbase::Side::BUY, 90.0, 1.0, 250)
+    });
+
+    drainEvents();
+
+    // Before the fix the retirement was rejected and the level survived at 5.0.
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice100), 0)
+        << "the level update was dropped because the trade ahead of it stamped a higher sequence";
+    auto [level, idx] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    EXPECT_EQ(level, nullptr) << "phantom liquidity left resting above the market";
+}
+
+// The same inversion in the other direction: an l2 batch that dispatches ahead of
+// a trade must not stop that trade from taking liquidity. Here the trade arrives
+// first (seq 20) with the later event_time, so the l2 batch that arrived second
+// (seq 21, earlier event_time) dispatches ahead of it and stamps the book.
+TEST_F(CoinbaseExchangeTest, LevelUpdateOvertakingTrade_TradeStillFills) {
+    auto* sym = registerSymbol("TEST-SEQ-2");
+
+    auto* sim_sell = addSimOrder(sym, Side::SELL, kPrice100, kQty5);
+
+    // Arrives first, timestamped later.
+    exchange_->onMarketTrades(nullptr, 20, {
+        makeMarketTrade("TEST-SEQ-2", coinbase::Side::BUY, 100.0, 5.0, 400)
+    });
+
+    // Arrives second, timestamped earlier - dispatches ahead of the trade.
+    auto batch = makeBatch("TEST-SEQ-2", {
+        makeL2Update(coinbase::Side::BUY, 95.0, 2.0, 350)
+    });
+    exchange_->onLevel2Updates(nullptr, 21, batch);
+
+    drainEvents();
+
+    // The trade must still have consumed the resting simulator order.
+    EXPECT_EQ(sim_sell->cum_quantity, kQty5)
+        << "the trade replay was rejected by the sequence the level update stamped";
+    EXPECT_EQ(sim_sell->leaves_quantity, 0);
+}
+
+// A reconnect snapshot rebuilds the book through a path that bypasses the event
+// queue entirely. It has to draw from the same sequence counter the dispatch loop
+// uses - OrderBookL3::clear() does not reset the book's sequence, so a snapshot
+// stamping from a separate space would either be discarded itself or strand every
+// event dispatched after it.
+TEST_F(CoinbaseExchangeTest, SnapshotAfterUpdates_SharesTheDispatchSequenceSpace) {
+    auto* sym = registerSymbol("TEST-SEQ-3");
+
+    // Run the dispatch counter up first.
+    for (int i = 0; i < 5; ++i) {
+        auto batch = makeBatch("TEST-SEQ-3", {
+            makeL2Update(coinbase::Side::BUY, 90.0 + i, 1.0, 100 + static_cast<uint64_t>(i))
+        });
+        exchange_->onLevel2Updates(nullptr, static_cast<uint64_t>(30 + i), batch);
+        drainEvents();
+    }
+
+    // A snapshot arrives on the network callback, outside the queue.
+    auto snapshot = makeBatch("TEST-SEQ-3", {
+        makeL2Update(coinbase::Side::BUY, 100.0, 4.0, 500)
+    });
+    exchange_->onLevel2Snapshot(nullptr, 99, snapshot);
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice100), 400000000);
+
+    // And an update dispatched after it still applies.
+    auto after = makeBatch("TEST-SEQ-3", {
+        makeL2Update(coinbase::Side::BUY, 100.0, 1.0, 600)
+    });
+    exchange_->onLevel2Updates(nullptr, 100, after);
+    drainEvents();
+
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice100), 100000000)
+        << "the update after the snapshot was discarded by the book's sequence guard";
+}
+
+// A snapshot is a reset, not an event: it discards the book, so it has to discard
+// the events still queued against that book too. poll() drains the callbacks that
+// delivered the snapshot and only then runs processSequencedEvents, so without this
+// a trade received before a reconnect replays against the rebuilt book - and the
+// TRADE branch of dispatchEvent has no stale-timestamp guard to catch it, so it
+// matches, fabricates fills, and removes liquidity that is genuinely there.
+TEST_F(CoinbaseExchangeTest, SnapshotDiscardsEventsQueuedBeforeIt) {
+    auto* sym = registerSymbol("TEST-SNAPQ-1");
+
+    // A SELL print arrives and is queued, but never drained.
+    exchange_->onMarketTrades(nullptr, 5, {
+        makeMarketTrade("TEST-SNAPQ-1", coinbase::Side::SELL, 100.0, 5.0, 200)
+    });
+
+    // The connection drops and a fresh snapshot rebuilds the book, putting real
+    // liquidity at exactly the price that stale print would sweep.
+    auto snapshot = makeBatch("TEST-SNAPQ-1", {
+        makeL2Update(coinbase::Side::BUY, 100.0, 5.0, 500)
+    });
+    exchange_->onLevel2Snapshot(nullptr, 0, snapshot);
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice100), kQty5);
+
+    drainEvents();
+
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice100), kQty5)
+        << "a trade received before the snapshot replayed against the rebuilt book";
+}
+
+// Two things a multi-update batch has to get right, both about F_END_EVENT.
+//
+// The batch is enqueued in reverse dispatch order, so array index 0 dispatches
+// first and index 1 dispatches last. So:
+//
+//   - index 0 is not the end of anything. It carries the marker only if
+//     reconcilePhantomQty hard-codes is_last_in_batch instead of forwarding
+//     end_event, which closed the batch on its very first update.
+//   - index 1 is the last dispatched and must carry the marker. onLevel2Updates
+//     used to put it on `std::prev(rend())` - the element enqueued last, which is
+//     the one dispatched *first* - so the marker sat on the wrong end entirely.
+//
+// Both updates target existing levels, so neither takes the new-level branch that
+// publishes and clears md_level_update_cache_ and both entries survive to be read.
+TEST_F(CoinbaseExchangeTest, MultiUpdateBatch_EndOfEventMarksTheLastDispatchedUpdate) {
+    auto* sym = registerSymbol("TEST-EOE-1");
+
+    auto seed = makeBatch("TEST-EOE-1", {
+        makeL2Update(coinbase::Side::BUY, 100.0, 5.0, 200),
+        makeL2Update(coinbase::Side::BUY, 99.0,  5.0, 200),
+    });
+    exchange_->onLevel2Updates(nullptr, 1, seed);
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice100), kQty5);
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice99), kQty5);
+    sym->md_level_update_cache_.clear();
+
+    auto batch = makeBatch("TEST-EOE-1", {
+        makeL2Update(coinbase::Side::BUY, 100.0, 8.0, 300),   // dispatches first
+        makeL2Update(coinbase::Side::BUY, 99.0,  7.0, 300),   // dispatches last
+    });
+    exchange_->onLevel2Updates(nullptr, 2, batch);
+    drainEvents();
+
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice100), 800000000);
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice99), 700000000);
+
+    bool seen_100 = false, seen_99 = false;
+    for (const auto& lvl : sym->md_level_update_cache_) {
+        if (lvl.price == kPrice100) {
+            seen_100 = true;
+            EXPECT_FALSE(lvl.flags & UpdateFlags::F_END_EVENT)
+                << "the batch's first update closed the batch";
+        } else if (lvl.price == kPrice99) {
+            seen_99 = true;
+            EXPECT_TRUE(lvl.flags & UpdateFlags::F_END_EVENT)
+                << "the batch's last update did not close the batch";
+        }
+    }
+    EXPECT_TRUE(seen_100) << "no update published for the first level";
+    EXPECT_TRUE(seen_99) << "no update published for the second level";
+}

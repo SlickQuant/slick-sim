@@ -97,7 +97,11 @@ public:
             seq_num, is_last_in_batch);
     }
 
-    virtual void addBookOrder(uint64_t order_id, slick::orderbook::Side book_side, price_t price, qty_t qty, uint64_t timestamp, uint64_t seq_num) = 0;
+    /// Rest phantom (market-data) liquidity. Prefer this over the inherited
+    /// OrderBookL3::addOrder - that one takes `priority` as its sixth argument, so
+    /// a call that means to pass a sequence there silently lands it in `priority`
+    /// and shifts the sequence and batch flag one place along.
+    virtual void addBookOrder(uint64_t order_id, slick::orderbook::Side book_side, price_t price, qty_t qty, uint64_t timestamp, uint64_t seq_num, bool is_last_in_batch = true) = 0;
 
     void deleteOrder(Order* order, uint64_t timestamp, uint64_t seq_num = 0, bool is_last_in_batch = true) {
         deleteOrder(order->id, timestamp, seq_num, is_last_in_batch);
@@ -181,6 +185,18 @@ public:
     }
 
     bool executeOrder(slick::orderbook::OrderId order_id, slick::orderbook::Quantity executed_quantity, uint64_t timestamp, uint64_t seq_num = 0, bool is_last_in_batch = true) override {
+        // OrderBookL3 discards a mutation whose sequence regresses, but it does so
+        // *after* the fill below has already been booked onto our own Order - which
+        // reported a fill to the client that the book never took, and once
+        // leaves_quantity reached zero erased the order from the lookup maps while
+        // the L3 book kept it resting: permanently invisible phantom liquidity.
+        // Mirror the base's condition and fail before touching anything. The order
+        // of the two mutations below cannot simply be swapped instead: the base
+        // fires onOrderUpdate, which zeroes leaves_quantity on a full execution, and
+        // utils::executeOrder would then subtract from zero.
+        if (seq_num > 0 && seq_num < getLastSeqNum()) {
+            return false;
+        }
         auto *order = findOrder(order_id);
         if (order) {
             utils::executeOrder(order, order->price, executed_quantity, timestamp);
@@ -258,7 +274,7 @@ public:
     }
     ~OrderBookImpl() override = default;
 
-    void addBookOrder(uint64_t order_id, slick::orderbook::Side book_side, price_t price, qty_t qty, uint64_t timestamp, uint64_t seq_num) override;
+    void addBookOrder(uint64_t order_id, slick::orderbook::Side book_side, price_t price, qty_t qty, uint64_t timestamp, uint64_t seq_num, bool is_last_in_batch = true) override;
 
     void populateMDBookUpdate(MDBookUpdate &book_update) override;
     void populateL2SubscriptionResponse(slick::queue<uint8_t> &md_update_queue, uint8_t channel) override;
@@ -371,8 +387,9 @@ inline void OrderBookImpl<BookType>::addBookOrder(
     price_t price,
     qty_t qty,
     uint64_t timestamp,
-    uint64_t seq_num) {
-    addOrder(order_id, book_side, price, qty, timestamp, nextOrderPriority(), seq_num, true);
+    uint64_t seq_num,
+    bool is_last_in_batch) {
+    addOrder(order_id, book_side, price, qty, timestamp, nextOrderPriority(), seq_num, is_last_in_batch);
 }
 
 template<OrderBookType BookType>

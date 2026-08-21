@@ -213,6 +213,67 @@
   `CoinbaseLiveWSFeed` forwards the offset to the SDK client along with the two default endpoint URLs
   it has to name to reach that argument.
 
+- The Coinbase book is stamped with dispatch order rather than the venue's `sequence_num`. Every
+  `OrderBookL3` mutator discards a call whose sequence regresses and says so only through a `bool`
+  return that nothing checked, and the event queue reorders into `event_time` order — a different
+  order from the arrival order that sequence counts. Coinbase's l2 `event_time` lags its message
+  timestamp by 100–200 ms while a trade's is near-live, so a trade routinely dispatched ahead of an
+  l2 batch that arrived before it and sank the whole batch, every update in one sharing a
+  `sequence_num`. A recorded session lost 38.6% of level updates and 16.1% of trade replays that way:
+  levels never retired (a bid left resting 35 dollars above the market ten minutes after the venue
+  removed it) and the matching loop re-filled the same phantom order 98 times in 217 ms, publishing a
+  fabricated trade print each pass. `processSequencedEvents` now hands `dispatchEvent` a per-symbol
+  counter that is monotonic in dispatch order by construction; `event.seq_num` stays the venue's
+  number for `MDLevel`, `setLastUpdate` and the publish batching. `onLevel2Snapshot` draws from the
+  same counter — it bypasses the queue, and `clear()` does not reset the book's sequence. An
+  enqueue-time counter cannot serve: `sequence_id` regresses harder still, because the tie-break pops
+  the highest first and 90% of events share an `(event_time, type)`.
+- Phantom liquidity is rested through `OrderBook::addBookOrder()` rather than the inherited
+  `OrderBookL3::addOrder()`. That one takes `priority` sixth, so the seven-argument calls in
+  `dispatchEvent` and `onLevel2Snapshot` were passing the sequence as a priority and
+  `flags & F_END_EVENT` — 0 or 2 — as the sequence, which pinned the book's sequence at 2 and gave
+  every phantom order a priority from the venue's counter instead of `nextOrderPriority()`.
+  `addBookOrder` now takes `is_last_in_batch` so the end-of-event flag survives the move.
+- A dropped Coinbase market-data connection restarts the feed it had rather than building a
+  replacement. `WebSocketClient` registers its producers on the shared multiplexer from its
+  constructor and `stream_buffer_multiplexer` cannot unregister them, so the replacement threw
+  `std::invalid_argument` on the first duplicate id, uncaught on the exchange thread. Handing it a
+  fresh offset would only have traded that for a leak — the multiplexer owns each producer's
+  stream_buffer, so every reconnect stranded the outgoing client's 64MB market-data and 16MB
+  user-data rings. Neither is needed: `WebSocketClient::subscribe()` reopens a socket whose status is
+  past `CONNECTED`, which is what `CoinbaseLiveWSFeed::start()` calls.
+- The end-of-event marker sits on the update a batch dispatches **last**. Both enqueue loops walk
+  their batch in reverse dispatch order — the element enqueued first takes the lowest `sequence_id`
+  and `EventCompare` pops the highest first — so `onLevel2Updates` flagging `std::prev(rend())`
+  put `F_END_EVENT` on the element dispatched *first*. Every batch closed on its opening update, and a
+  client batching until the marker acted on one update out of the whole batch. `onLevel2Snapshot` was
+  already correct: it applies its batch inline, with no queue to reverse it.
+- `onMarketTrades` sets `Event::flags`, which it never assigned. `Event evt;` default-initialises, so
+  `dispatchEvent`'s trade branch decided `is_last_in_batch` for a resting remainder from an
+  indeterminate value. The field now also carries a default initialiser.
+- A Coinbase l2 snapshot discards the events still queued for that symbol. A snapshot is a reset: it
+  clears the book, and `poll()` drains the callbacks that delivered it before running
+  `processSequencedEvents`, so anything left in the queue replayed onto the rebuilt book. A trade
+  received before a reconnect would match against fresh liquidity, fabricate fills and remove
+  quantity that was genuinely there — `dispatchEvent`'s TRADE branch has no stale-timestamp guard, and
+  the level branch's compares only against the rebuilt book. Everything queued when the snapshot
+  arrives does predate it, since callbacks run on the exchange thread in arrival order.
+- `Exchange::reconcilePhantomQty` forwards `end_event` when a level's quantity increases, as its
+  decrease branch already did. It reaches the book as `ChangeFlag::LastInBatch`, which
+  `Symbol::onPriceLevelUpdate` republishes as `F_END_EVENT`, so an increase that was not its batch's
+  final update closed the batch early and a client batching until the marker acted on half of one.
+- A rejected `executeOrder` ends the match loop instead of silently re-matching. Both
+  `FifoMatchingEngine::match` overloads discarded the return value, so a declined execution left the
+  resting order at full quantity and the next pass matched it again — spinning until the aggressor's
+  quantity ran out and publishing a fill every pass. The replay overload also gives back the quantity
+  it had already deducted, so the caller does not rest a short remainder.
+- `OrderBook::executeOrder` checks the sequence before booking anything. It applied the fill to the
+  simulator's own `Order` first and only then called the base, so a rejected execution still reported
+  a fill to the client and, once `leaves_quantity` reached zero, erased the order from the lookup maps
+  while the L3 book kept it resting — phantom liquidity nothing could find again. The two mutations
+  cannot simply be swapped: the base fires `onOrderUpdate`, which zeroes `leaves_quantity` on a full
+  execution, and `utils::executeOrder` would then subtract from zero.
+
 ## Changed
 
 - `Exchange::publishTradeSummary` takes a `Symbol*` rather than a symbol name, so it can stamp the

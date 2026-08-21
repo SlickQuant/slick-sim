@@ -59,7 +59,10 @@ private:
         price_t price;
         qty_t qty;
         Side side;
-        UpdateFlags flags;
+        // Defaulted because onMarketTrades used to leave it alone: `Event evt;`
+        // default-initialises, so dispatchEvent's TRADE branch read an indeterminate
+        // value to decide is_last_in_batch for a resting remainder.
+        UpdateFlags flags = UpdateFlags::F_NONE;
     };
 
     // std::priority_queue pops the *greatest* element, so every comparison here is
@@ -107,9 +110,23 @@ private:
         uint64_t last_seq_num = 0;
         uint64_t next_sequence_id = 0;
         uint64_t last_published_level_seq_num = 0;
+        // Stamped onto every book mutation in place of the venue's seq_num. The
+        // book silently discards a mutation whose sequence regresses, and both
+        // venue-side counters regress here by construction: this queue reorders
+        // arrival into event_time order, so a trade that arrived late carrying an
+        // earlier event_time dispatches ahead of the l2 batch it overtook - and
+        // takes the higher seq_num with it, sinking that whole batch. Only a
+        // counter handed out at dispatch is monotonic in dispatch order.
+        uint64_t next_book_seq_num = 0;
     };
 
-    void dispatchEvent(Symbol* symbol, const Event& event, SymbolEventState& state);
+    /// Next sequence to stamp on a book mutation for `symbol`. Monotonic in
+    /// dispatch order, and never below what the book already holds - clear() does
+    /// not reset OrderBookL3's sequence, so a reconnect snapshot would otherwise
+    /// re-stamp from underneath it and have every mutation discarded.
+    uint64_t nextBookSeqNum(Symbol* symbol, SymbolEventState& state);
+
+    void dispatchEvent(Symbol* symbol, const Event& event, SymbolEventState& state, uint64_t book_seq_num);
     void populateMDTradesResponse(Symbol* symbol);
 
 private:
