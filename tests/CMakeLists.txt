@@ -12,12 +12,12 @@ include(GoogleTest)
 # ==============================================================================
 # Unit Tests Executable
 # ==============================================================================
-add_executable(slick_sim_tests
+set(SLICK_SIM_TEST_SOURCES
     # Priority 1: Matching Engine Tests
     unit/matching_engine/test_fifo_matching_engine.cpp
     unit/matching_engine/test_matching_engine_smp.cpp
     unit/matching_engine/test_matching_engine_tif.cpp
-    unit/matching_engine/test_coinbase_market_data_matching.cpp
+    unit/matching_engine/test_feed_liquidity_matching.cpp
 
     # Priority 2: Order Tests
     unit/common/test_order.cpp
@@ -31,28 +31,47 @@ add_executable(slick_sim_tests
     # Priority 4: Symbol Tests
     unit/exchange/test_symbol.cpp
     unit/exchange/test_symbol_manager.cpp
-    unit/exchange/test_coinbase_exchange.cpp
-    unit/exchange/test_hyperliquid_exchange.cpp
-    unit/exchange/test_self_match_prevention.cpp
     unit/exchange/test_order_pool_recycling.cpp
+    unit/exchange/test_exchange_registry.cpp
+    unit/exchange/test_exchange_lifecycle.cpp
 
     # Priority 5: Type & Message Tests
     unit/common/test_types.cpp
     unit/common/test_messages.cpp
-    unit/common/test_hyperliquid_info_proxy.cpp
 
     # Priority 6: Order Gateway Tests
-    unit/order_gateway/test_hyperliquid_rest_client_manager.cpp
     unit/order_gateway/test_order_store.cpp
     unit/order_gateway/test_pending_responses.cpp
 
     # Priority 7: Market Data Publisher Tests
-    unit/market_data_publisher/test_hyperliquid_l2_diff.cpp
     unit/market_data_publisher/test_sequenced_message.cpp
-    unit/market_data_publisher/test_coinbase_trade_encoder.cpp
-    unit/market_data_publisher/test_hyperliquid_trade_encoder.cpp
 )
 
+# One block per venue, gated on the TARGET rather than the option so a venue
+# disabled for any other reason drops its suite too.
+if(TARGET slick_sim_venue_coinbase)
+    list(APPEND SLICK_SIM_TEST_SOURCES
+        unit/venues/coinbase/test_coinbase_exchange.cpp
+        unit/venues/coinbase/test_self_match_prevention.cpp
+        unit/venues/coinbase/test_coinbase_trade_encoder.cpp
+    )
+endif()
+
+if(TARGET slick_sim_venue_hyperliquid)
+    list(APPEND SLICK_SIM_TEST_SOURCES
+        unit/venues/hyperliquid/test_hyperliquid_exchange.cpp
+        unit/venues/hyperliquid/test_hyperliquid_rest_client_manager.cpp
+        unit/venues/hyperliquid/test_hyperliquid_info_proxy.cpp
+        unit/venues/hyperliquid/test_hyperliquid_trade_encoder.cpp
+        unit/venues/hyperliquid/test_hyperliquid_l2_diff.cpp
+    )
+endif()
+
+add_executable(slick_sim_tests ${SLICK_SIM_TEST_SOURCES})
+
+# slick::logger, slick::queue, slick::object-pool, slick::orderbook,
+# nlohmann_json and the src/ include root all arrive via slick_sim_core, which
+# `exchange` links PUBLIC.
 target_link_libraries(slick_sim_tests
     PRIVATE
         matching_engine
@@ -60,18 +79,17 @@ target_link_libraries(slick_sim_tests
         order_gateway
         GTest::gtest
         GTest::gtest_main
-        slick::logger
-        slick::queue
-        slick::object-pool
-        slick::orderbook
-        slick::net
-        nlohmann_json::nlohmann_json
 )
+# Same helper the executable uses, so the two binaries cannot end up with
+# different venue sets. Each venue's PUBLIC dependencies come with it, which is how
+# the Hyperliquid info-proxy suite gets slick::net::Http - a library that only the
+# venues that declared it need, and that does not exist as a target at all in a
+# venues-off build.
+slick_sim_link_venues(slick_sim_tests)
 
 target_include_directories(slick_sim_tests
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/src
 )
 
 # UBSan's alignment check is disabled for the test binary only.

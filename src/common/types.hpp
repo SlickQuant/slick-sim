@@ -92,28 +92,64 @@ inline std::string to_fixed_string(int_fast64_t value) {
 inline std::string to_price_string(price_t price) { return to_fixed_string(price); }
 inline std::string to_qty_string(qty_t qty) { return to_fixed_string(qty); }
 
+namespace detail {
+
+/// ASCII case-insensitive compare, used for every venue-name lookup.
+///
+/// Not `std::tolower`: that is locale-dependent, and passing it a `char` whose
+/// value is negative - which every byte above 0x7F is on a signed-char platform -
+/// is undefined behaviour.
+inline bool iequals(std::string_view a, std::string_view b) noexcept {
+    if (a.size() != b.size()) {
+        return false;
+    }
+    for (size_t i = 0; i < a.size(); ++i) {
+        char ca = a[i];
+        char cb = b[i];
+        if (ca >= 'a' && ca <= 'z') { ca = static_cast<char>(ca - ('a' - 'A')); }
+        if (cb >= 'a' && cb <= 'z') { cb = static_cast<char>(cb - ('a' - 'A')); }
+        if (ca != cb) {
+            return false;
+        }
+    }
+    return true;
+}
+
+}   // end namespace detail
+
+/// One line per venue: the enumerator, then the canonical name `to_string`
+/// returns and `to_venue` accepts. Adding a venue is this line and nothing else -
+/// the enum, `to_string` and `to_venue` are all generated from it.
+///
+/// APPEND ONLY. `Venue` is written into every MarketDataUpdate frame and into the
+/// shared-memory md queue, so inserting in the middle renumbers the existing
+/// venues under any process already reading a queue or a capture file.
+///
+/// This list is deliberately NOT conditional on the per-venue build options. A
+/// Venue is an identity written on the wire, not a claim that an adapter was
+/// compiled in: `to_venue("coinbase")` still yields COINBASE in a build with the
+/// Coinbase adapter switched off, which is what lets a capture recorded elsewhere
+/// still be read here.
+#define SLICK_SIM_VENUE_LIST(X)   \
+    X(CME,         "CME")         \
+    X(ICE,         "ICE")         \
+    X(COINBASE,    "COINBASE")    \
+    X(HYPERLIQUID, "HYPERLIQUID") \
+    X(STOCK,       "STOCK")
+
 enum Venue : uint8_t {
     UNKNOWN_VENUE,
-    CME,
-    ICE,
-    COINBASE,
-    HYPERLIQUID,
-    STOCK,
+#define SLICK_SIM_VENUE_ENUMERATOR(name, text) name,
+    SLICK_SIM_VENUE_LIST(SLICK_SIM_VENUE_ENUMERATOR)
+#undef SLICK_SIM_VENUE_ENUMERATOR
     __COUNT__,  // for internal use only
 };
 
 inline const char* to_string(Venue venue) {
     switch(venue) {
-    case Venue::CME:
-        return "CME";
-    case Venue::ICE:
-        return "ICE";
-    case Venue::COINBASE:
-        return "COINBASE";
-    case Venue::HYPERLIQUID:
-        return "HYPERLIQUID";
-    case Venue::STOCK:
-        return "STOCK";
+#define SLICK_SIM_VENUE_CASE(name, text) case Venue::name: return text;
+    SLICK_SIM_VENUE_LIST(SLICK_SIM_VENUE_CASE)
+#undef SLICK_SIM_VENUE_CASE
     case Venue::__COUNT__:
     case Venue::UNKNOWN_VENUE:
         break;
@@ -121,27 +157,16 @@ inline const char* to_string(Venue venue) {
     return "UNKNOWN";
 }
 
+/// Matches case-insensitively. The previous hand-written chain compared against
+/// the exact all-upper and exact all-lower spelling only, so a config key of
+/// "Coinbase" silently resolved to UNKNOWN_VENUE despite the docs promising
+/// otherwise. ExchangeRegistry resolves its keys with the same `iequals`, so a
+/// config key behaves identically whichever of the two looks it up.
 inline Venue to_venue(std::string_view exch) {
-    if (exch == "CME" || exch == "cme") {
-        return Venue::CME;
-    }
-
-    if (exch == "ICE" || exch == "ice") {
-        return Venue::ICE;
-    }
-
-    if (exch == "COINBASE" || exch == "coinbase") {
-        return Venue::COINBASE;
-    }
-
-    if (exch == "HYPERLIQUID" || exch == "hyperliquid") {
-        return Venue::HYPERLIQUID;
-    }
-
-    if (exch == "STOCK" || exch == "stock") {
-        return Venue::STOCK;
-    }
-
+#define SLICK_SIM_VENUE_MATCH(name, text) \
+    if (detail::iequals(exch, text)) { return Venue::name; }
+    SLICK_SIM_VENUE_LIST(SLICK_SIM_VENUE_MATCH)
+#undef SLICK_SIM_VENUE_MATCH
     return Venue::UNKNOWN_VENUE;
 }
 

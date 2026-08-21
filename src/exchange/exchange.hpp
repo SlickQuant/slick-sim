@@ -93,6 +93,16 @@ protected:
     virtual void handleMdSubscription(const Request &/* request */) {}
     virtual void handleMdUnsubscription(const Request &/* request */) {}
 
+    /// One iteration of the exchange thread's loop, called continuously between
+    /// `start()` and `stop()`. Override it to drain the venue SDK and release any
+    /// feed events it queued; the base loop calls `processRequest()` immediately
+    /// after it on every tick, so an adapter never rewrites the loop itself.
+    ///
+    /// Runs on the exchange thread - the only thread that touches books - so an
+    /// override may mutate them directly. An adapter with no feed leaves this
+    /// alone and still serves clients matching against each other.
+    virtual void poll() {}
+
 
 protected:
     Venue venue_;
@@ -100,6 +110,14 @@ protected:
     queue<OrderResponse> response_queue_;
     queue<uint8_t> md_queue_;
     std::shared_ptr<md_feed::MDFeed> md_feed_;
+    /// Both adapters used to declare their own copy of this, which is why the base
+    /// `stop()` never stopped a feed. One vector, driven by base start/stop.
+    ///
+    /// Adapters populate it at different times: Hyperliquid builds its feeds in its
+    /// constructor, so `start()` below is what starts them; Coinbase creates one
+    /// per subscription and starts it there, so the vector is empty when `start()`
+    /// runs. Both are fine - `start()` starts whatever already exists.
+    std::vector<std::shared_ptr<md_feed::MDFeed>> md_feeds_;
     std::thread thread_;
     std::thread md_thread_;
     std::atomic_bool run_{true};

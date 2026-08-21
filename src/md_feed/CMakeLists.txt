@@ -1,12 +1,8 @@
-add_library(md_feed STATIC
-    hyperliquid_live_ws_feed.cpp
-)
-
-target_include_directories(md_feed PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/..
-)
-target_link_libraries(md_feed PUBLIC
-    slick::logger
-    hyperliquid
+# Header-only since the venue split: MDFeed is start()/stop() and every
+# implementation now lives with its venue under src/venues/. Kept as a named
+# target rather than folded into slick_sim_core because it is the seam a
+# historical replay feed will implement.
+add_library(md_feed INTERFACE)
+target_link_libraries(md_feed INTERFACE
+    slick_sim_core
 )

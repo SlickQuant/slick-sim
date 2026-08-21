@@ -82,7 +82,6 @@ jobs:
         "${{ runner.temp }}/vcpkg/vcpkg" install \
           quickfix \
           nlohmann-json \
-          jwt-cpp \
           foonathan-memory \
           boost-uuid \
           boost-multiprecision \
@@ -164,3 +163,149 @@ jobs:
       with:
         name: slick-sim-${{ runner.os }}-release
         path: release-stage/*
+
+  # Venue adapters are optional (SLICK_SIM_ENABLE_COINBASE / _HYPERLIQUID), and the
+  # configuration nobody builds locally is the one that rots: all venues off.
+  #
+  # The job's real assertion is the dependency list, not a grep. Each configuration
+  # installs only the packages it is supposed to need, so a core target that has
+  # quietly picked up a venue SDK — or a venue that has picked up the *other*
+  # venue's — fails to configure or link here, instead of working everywhere the
+  # SDK happens to be present. `build-and-test` above installs everything and so
+  # cannot catch that class of regression at all.
+  venue-options:
+    name: venue options (${{ matrix.name }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # No venue SDK, no quickfix and - the sharp edge - no slick-net. That one
+          # belongs to the adapters that speak HTTP/WS, not to the simulator, so with
+          # none of them built main.cpp's log bridge is compiled out
+          # (SLICK_SIM_HAS_SLICK_NET is unset) and nothing links it. This entry fails
+          # the moment anything in the core reaches for networking again.
+          - name: no venues
+            slug: none
+            cmake_flags: >-
+              -DSLICK_SIM_ENABLE_COINBASE=OFF
+              -DSLICK_SIM_ENABLE_HYPERLIQUID=OFF
+              -DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF
+            venue_packages: ''
+            expect_venues: 'none'
+          - name: coinbase only
+            slug: coinbase
+            cmake_flags: -DSLICK_SIM_ENABLE_HYPERLIQUID=OFF
+            venue_packages: quickfix slick-socket "uwebsockets[core,ssl,zlib]" slick-net jwt-cpp coinbase-advanced-cpp
+            expect_venues: 'coinbase'
+          - name: hyperliquid only
+            slug: hyperliquid
+            cmake_flags: -DSLICK_SIM_ENABLE_COINBASE=OFF
+            venue_packages: quickfix slick-socket "uwebsockets[core,ssl,zlib]" slick-net slickquant-hyperliquid-cpp
+            expect_venues: 'hyperliquid'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Clone vcpkg
+      shell: bash
+      run: git clone --depth 1 https://github.com/microsoft/vcpkg.git "${{ runner.temp }}/vcpkg"
+
+    # Same reasoning as build-and-test: the SlickQuant dependencies build Release
+    # with -march=native, so a cache must only be reused on compatible hardware.
+    - name: CPU signature for the vcpkg cache key
+      id: cpusig
+      shell: bash
+      run: |
+        raw=$(grep -m1 '^flags' /proc/cpuinfo | cut -d: -f2 | tr ' ' '\n' \
+              | grep -E '^(sse4_[12]|avx|avx2|avx512[a-z0-9_]*|bmi[12]|fma)$' | sort -u | tr '\n' ',')
+        echo "CPU signature source: $raw"
+        echo "sig=$(printf '%s' "$raw" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+    # Keyed on the configuration slug as well: each entry installs a different set
+    # of packages into its vcpkg tree, so they must not share a cache entry.
+    - name: Cache vcpkg
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ runner.temp }}/vcpkg/installed
+          ${{ runner.temp }}/vcpkg/downloads
+          ${{ runner.temp }}/vcpkg/packages
+        key: vcpkg-venues-${{ matrix.slug }}-${{ runner.os }}-cpu${{ steps.cpusig.outputs.sig }}-${{ hashFiles('.github/workflows/ci.yml') }}
+
+    - name: Bootstrap vcpkg
+      shell: bash
+      run: |
+        "${{ runner.temp }}/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+
+    # Deliberately minimal: this list is the assertion, and what is missing from it
+    # matters more than what is in it. slick-queue is named because slick_sim_core
+    # links slick::queue and it only ever arrived transitively. Everything that
+    # follows an option is per-configuration instead: slick-net and uWebSockets for
+    # the venues that serve HTTP/WS, jwt-cpp for Coinbase alone, quickfix and
+    # slick-socket for the TCP gateway. So the "no venues" entry installs a core's
+    # worth of packages and nothing else - it fails the moment a core target reaches
+    # for a wire protocol again. slick-orderbook is absent from every entry because
+    # CMake fetches it with FetchContent when find_package misses it.
+    - name: Install dependencies via vcpkg
+      shell: bash
+      run: |
+        "${{ runner.temp }}/vcpkg/vcpkg" install \
+          nlohmann-json \
+          jwt-cpp \
+          foonathan-memory \
+          boost-uuid \
+          boost-multiprecision \
+          gtest \
+          slick-logger \
+          slick-object-pool \
+          slick-queue \
+          ${{ matrix.venue_packages }}
+
+    - name: Configure CMake
+      shell: bash
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_TOOLCHAIN_FILE="${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+          ${{ matrix.cmake_flags }} 2>&1 | tee configure.log
+
+    # src/venues/CMakeLists.txt prints exactly which adapters were enabled. Assert
+    # it, so a typo in an option name shows up as a failure rather than as a job
+    # that quietly builds the default configuration and passes.
+    - name: Assert the enabled venue set
+      shell: bash
+      env:
+        EXPECT: ${{ matrix.expect_venues }}
+      run: |
+        echo "Expecting venues: $EXPECT"
+        # Anchored on a space or end-of-line so "coinbase" does not also match
+        # "coinbase;hyperliquid" - which is exactly what a mistyped or silently
+        # ignored option flag would produce.
+        grep -E "slick-sim venues: ${EXPECT}( |\$)" configure.log
+
+    - name: Build
+      run: cmake --build build --parallel
+
+    - name: Run tests
+      working-directory: build
+      run: ctest --output-on-failure
+
+    # An enabled config key with no adapter compiled in must fail loudly. This used
+    # to construct a generic Exchange that bound no ports and processed at most one
+    # request before going silent.
+    - name: Assert an unbuilt venue key is rejected at startup
+      if: matrix.slug == 'none'
+      shell: bash
+      working-directory: build
+      run: |
+        mkdir -p logs           # startup aborts with exit 3 and no output without it
+        set +e
+        output=$(./src/slick-sim ../config/slick_sim.json 2>&1)
+        status=$?
+        set -e
+        echo "$output"
+        echo "exit status: $status"
+        test "$status" -ne 0
+        echo "$output" | grep -F 'No venue adapter for exchanges."coinbase"'
