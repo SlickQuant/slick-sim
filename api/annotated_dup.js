@@ -27,6 +27,7 @@ var annotated_dup =
           [ "L2Diff", "structslick_1_1sim_1_1md__publisher_1_1L2Diff.html", "structslick_1_1sim_1_1md__publisher_1_1L2Diff" ],
           [ "MarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher" ],
           [ "PerSocketData", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData" ],
+          [ "SequencedMessage", "classslick_1_1sim_1_1md__publisher_1_1SequencedMessage.html", "classslick_1_1sim_1_1md__publisher_1_1SequencedMessage" ],
           [ "WebsocketMarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html", "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher" ]
         ] ],
         [ "order_gateway", "namespaceslick_1_1sim_1_1order__gateway.html", [
@@ -40,6 +41,7 @@ var annotated_dup =
           [ "OrderGateway", "classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1OrderGateway" ],
           [ "OrderStore", "classslick_1_1sim_1_1order__gateway_1_1OrderStore.html", "classslick_1_1sim_1_1order__gateway_1_1OrderStore" ],
           [ "ParseResult", "structslick_1_1sim_1_1order__gateway_1_1ParseResult.html", "structslick_1_1sim_1_1order__gateway_1_1ParseResult" ],
+          [ "PendingResponses", "classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html", "classslick_1_1sim_1_1order__gateway_1_1PendingResponses" ],
           [ "PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData" ],
           [ "PostRequestData", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData" ],
           [ "RestWsOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway" ],

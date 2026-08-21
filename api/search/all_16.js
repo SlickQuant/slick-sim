@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['websocketclient_0',['WebSocketClient',['../namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6',1,'slick::sim::exch']]],
-  ['websocketmarketdatapublisher_1',['websocketmarketdatapublisher',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher'],['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#af84d636dba86cae8576f0e885eaf4dd2',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher::WebsocketMarketDataPublisher()']]],
-  ['wouldselfmatch_2',['wouldSelfMatch',['../fifo__matching__engine_8cpp.html#a9bbed30af98ffbd9a5e6b07a1c945ee9',1,'fifo_matching_engine.cpp']]],
-  ['ws_5fmd_5fpublisher_2ecpp_3',['ws_md_publisher.cpp',['../ws__md__publisher_8cpp.html',1,'']]],
-  ['ws_5fmd_5fpublisher_2ehpp_4',['ws_md_publisher.hpp',['../ws__md__publisher_8hpp.html',1,'']]],
-  ['ws_5fthread_5f_5',['ws_thread_',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a7622b209fb33d55abfdb941c8ba91e09',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]]
+  ['venue_0',['venue',['../structslick_1_1sim_1_1MarketDataUpdate.html#ab9af9c037d8a36847d3a673f96c22e05',1,'slick::sim::MarketDataUpdate::venue'],['../structslick_1_1sim_1_1SymbolKey.html#a4c0a6224e1d6b514d4a583c6de2234c0',1,'slick::sim::SymbolKey::venue'],['../namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04',1,'slick::sim::Venue']]],
+  ['venue_5f_1',['venue_',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a5a3fc6bccaf1054851431376c36436ad',1,'slick::sim::exch::Exchange::venue_'],['../structslick_1_1sim_1_1exch_1_1Symbol.html#a8c252b5555b3ce4141999aea03f890cf',1,'slick::sim::exch::Symbol::venue_'],['../classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html#a62741c78bf3c838806c65a272c23eeb6',1,'slick::sim::md_publisher::MarketDataPublisher::venue_'],['../classslick_1_1sim_1_1OrderBook.html#a87f2de71361a987d1fe6cbd0b531bee2',1,'slick::sim::OrderBook::venue_'],['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html#a6cb10a45e121f29fb5fdd127c896f799',1,'slick::sim::order_gateway::OrderGateway::venue_']]],
+  ['view_2',['view',['../classslick_1_1sim_1_1utils_1_1fixed__string.html#acf0b39d20cad3e99b35c53df75c3d2a1',1,'slick::sim::utils::fixed_string']]]
 ];

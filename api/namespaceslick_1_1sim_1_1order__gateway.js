@@ -14,6 +14,7 @@ var namespaceslick_1_1sim_1_1order__gateway =
     [ "OrderGateway", "classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1OrderGateway" ],
     [ "OrderStore", "classslick_1_1sim_1_1order__gateway_1_1OrderStore.html", "classslick_1_1sim_1_1order__gateway_1_1OrderStore" ],
     [ "ParseResult", "structslick_1_1sim_1_1order__gateway_1_1ParseResult.html", "structslick_1_1sim_1_1order__gateway_1_1ParseResult" ],
+    [ "PendingResponses", "classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html", "classslick_1_1sim_1_1order__gateway_1_1PendingResponses" ],
     [ "PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData" ],
     [ "PostRequestData", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData" ],
     [ "RestWsOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway" ],

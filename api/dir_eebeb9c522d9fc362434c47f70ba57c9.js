@@ -12,6 +12,7 @@ var dir_eebeb9c522d9fc362434c47f70ba57c9 =
     [ "hyperliquid_trade_encoder.hpp", "hyperliquid__trade__encoder_8hpp.html", "hyperliquid__trade__encoder_8hpp" ],
     [ "market_data_publisher.cpp", "market__data__publisher_8cpp.html", null ],
     [ "market_data_publisher.hpp", "market__data__publisher_8hpp.html", "market__data__publisher_8hpp" ],
+    [ "sequenced_message.hpp", "sequenced__message_8hpp.html", "sequenced__message_8hpp" ],
     [ "ws_md_publisher.cpp", "ws__md__publisher_8cpp.html", null ],
     [ "ws_md_publisher.hpp", "ws__md__publisher_8hpp.html", "ws__md__publisher_8hpp" ]
 ];

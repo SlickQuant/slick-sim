@@ -5,9 +5,10 @@ var searchData=
   ['day_2',['DAY',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a5b1d59b5451c06afb65ab1bc2713cfb4',1,'slick::sim']]],
   ['default_5fprotocol_5f_3',['default_protocol_',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a5b0c0ce01c7aaf17f69d35feb3830d32',1,'slick::sim::order_gateway::TcpOrderGateway']]],
   ['deleteorder_4',['deleteorder',['../classslick_1_1sim_1_1OrderBook.html#acb39267c415946175b2c0212b62af84f',1,'slick::sim::OrderBook::deleteOrder(Order *order, uint64_t timestamp, uint64_t seq_num=0, bool is_last_in_batch=true)'],['../classslick_1_1sim_1_1OrderBook.html#af2dc1636bef9bfe8aea3caf95100c9f3',1,'slick::sim::OrderBook::deleteOrder(Order *order)']]],
-  ['done_5ffor_5fday_5',['DONE_FOR_DAY',['../namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a867d2af5b0e1e6553fff251700bcde07',1,'slick::sim']]],
-  ['double_5fmultiplier_6',['DOUBLE_MULTIPLIER',['../namespaceslick_1_1sim.html#a38e4bb0c99978731af2941d656a5bf2e',1,'slick::sim']]],
-  ['drain_7',['drain',['../classslick_1_1sim_1_1order__gateway_1_1OrderStore.html#a27d054d00bcd44dda82e802559db0854',1,'slick::sim::order_gateway::OrderStore']]],
-  ['draineventqueue_8',['drainEventQueue',['../classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#a1daaa52c58c16cc5821b694ccbba8cec',1,'slick::sim::exch::HyperliquidExchange']]],
-  ['duplicate_5frequest_5fid_9',['DUPLICATE_REQUEST_ID',['../namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a971578f294a88d61c51a82a800e5047a',1,'slick::sim']]]
+  ['dispatch_5',['dispatch',['../classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#abb5b27ed69577d3e02090029da73f155',1,'slick::sim::order_gateway::PendingResponses']]],
+  ['done_5ffor_5fday_6',['DONE_FOR_DAY',['../namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a867d2af5b0e1e6553fff251700bcde07',1,'slick::sim']]],
+  ['double_5fmultiplier_7',['DOUBLE_MULTIPLIER',['../namespaceslick_1_1sim.html#a38e4bb0c99978731af2941d656a5bf2e',1,'slick::sim']]],
+  ['drain_8',['drain',['../classslick_1_1sim_1_1order__gateway_1_1OrderStore.html#a27d054d00bcd44dda82e802559db0854',1,'slick::sim::order_gateway::OrderStore']]],
+  ['draineventqueue_9',['drainEventQueue',['../classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#a1daaa52c58c16cc5821b694ccbba8cec',1,'slick::sim::exch::HyperliquidExchange']]],
+  ['duplicate_5frequest_5fid_10',['DUPLICATE_REQUEST_ID',['../namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a971578f294a88d61c51a82a800e5047a',1,'slick::sim']]]
 ];

@@ -8,5 +8,6 @@ var searchData=
   ['encode_5fmarket_5ftrades_5',['encode_market_trades',['../namespaceslick_1_1sim_1_1md__publisher.html#adab8fd9efcac99e51df638d66d095f9f',1,'slick::sim::md_publisher']]],
   ['encode_5ftrade_5fmessage_6',['encode_trade_message',['../namespaceslick_1_1sim_1_1md__publisher.html#a7bed2c0cbe11a3e2699db1cce486903d',1,'slick::sim::md_publisher::encode_trade_message(const char *coin, const TradeSummary &amp;summary)'],['../namespaceslick_1_1sim_1_1md__publisher.html#a4dfc455026fcf7bce0e437d7c2cfa28c',1,'slick::sim::md_publisher::encode_trade_message(const char *coin, const MDTrade *trades, uint32_t num_trades)']]],
   ['exchange_7',['Exchange',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a6e7f20119dc47d85605fd346d7b82501',1,'slick::sim::exch::Exchange']]],
-  ['executeorder_8',['executeorder',['../classslick_1_1sim_1_1OrderBook.html#aca4a2a57f782ecd2e69c905b292dbffb',1,'slick::sim::OrderBook::executeOrder()'],['../namespaceslick_1_1sim_1_1utils.html#a7dd881010d120cac1cd8c1eddb8db938',1,'slick::sim::utils::executeOrder()']]]
+  ['executeorder_8',['executeorder',['../classslick_1_1sim_1_1OrderBook.html#aca4a2a57f782ecd2e69c905b292dbffb',1,'slick::sim::OrderBook::executeOrder()'],['../namespaceslick_1_1sim_1_1utils.html#a7dd881010d120cac1cd8c1eddb8db938',1,'slick::sim::utils::executeOrder()']]],
+  ['expire_9',['expire',['../classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#ab61dc85c6b026102f408619c95ba6bf5',1,'slick::sim::order_gateway::PendingResponses']]]
 ];

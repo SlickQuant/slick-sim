@@ -790,6 +790,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#rest-order-handlers-block-the-gateways-event-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST order handlers block the gateway's event loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mdupdatetypeorder-is-never-published" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1012,6 +1023,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#rest-order-handlers-block-the-gateways-event-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST order handlers block the gateway's event loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mdupdatetypeorder-is-never-published" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1180,6 +1202,26 @@ it is constructed and then skipped with a warning:</p>
 exchange, not a working one. If you add a venue, populating <code>md_publisher_</code> <strong>and</strong> overriding
 <code>start()</code> with a loop are both mandatory — see <a href="../extending/">Adding an exchange</a>.</p>
 <h2 id="order-and-market-data-plumbing">Order and market-data plumbing<a class="headerlink" href="#order-and-market-data-plumbing" title="Permanent link">&para;</a></h2>
+<h3 id="rest-order-handlers-block-the-gateways-event-loop">REST order handlers block the gateway's event loop<a class="headerlink" href="#rest-order-handlers-block-the-gateways-event-loop" title="Permanent link">&para;</a></h3>
+<p>Every REST handler that needs a reply from the matching engine waits for it by polling
+<code>response_queue_</code> in a loop with a 100 microsecond sleep, up to a 5 second timeout. That loop runs
+on the gateway's <strong>only</strong> uWebSockets event-loop thread, so while one request waits, no other
+client's request on that gateway is served at all - not even one that would answer instantly.</p>
+<p>The batch handlers are worse, because they poll once per entry rather than once per request:
+<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/coinbase_rest_order_gateway.cpp#L638"><code>handle_batch_cancel</code></a>
+and Hyperliquid's
+<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/hyperliquid_rest_order_gateway.cpp#L263"><code>process_order_action</code></a>
+wait inside the loop over the batch, so a ten-order batch can hold the loop for ten separate
+timeouts.</p>
+<p><strong>What it means:</strong> REST throughput is one in-flight request per gateway, and a single order that the
+engine never answers stalls every other client for five seconds. It is not a correctness problem -
+requests are still served first-come-first-served, since the request and response queues are both
+FIFO and the exchange thread is single-threaded - but it puts a hard ceiling on concurrency.</p>
+<p><code>order_gateway::PendingResponses</code> is the correlation half of the fix: a handler registers what it is
+waiting for and returns, and the reply completes the HTTP response when it arrives. The uWebSockets
+half - holding an <code>HttpResponse</code> past handler return, cancelling on abort, and the per-request
+timeout timer - is deliberately not done yet, because nothing exercises the REST gateway over HTTP
+and those are precisely the parts that fail as a use-after-free rather than a wrong answer.</p>
 <h3 id="mdupdatetypeorder-is-never-published"><code>MDUpdateType::ORDER</code> is never published<a class="headerlink" href="#mdupdatetypeorder-is-never-published" title="Permanent link">&para;</a></h3>
 <p><code>Symbol::onOrderUpdate</code> fills <code>md_order_update_cache_</code>, but every call site clears the cache behind a
 <code>// TODO: publish MD order update</code> comment rather than calling <code>publishMDOrderUpdate</code>. The function

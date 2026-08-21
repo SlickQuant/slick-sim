@@ -6,6 +6,7 @@ var namespaceslick_1_1sim_1_1md__publisher =
     [ "L2Diff", "structslick_1_1sim_1_1md__publisher_1_1L2Diff.html", "structslick_1_1sim_1_1md__publisher_1_1L2Diff" ],
     [ "MarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher" ],
     [ "PerSocketData", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData" ],
+    [ "SequencedMessage", "classslick_1_1sim_1_1md__publisher_1_1SequencedMessage.html", "classslick_1_1sim_1_1md__publisher_1_1SequencedMessage" ],
     [ "WebsocketMarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html", "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher" ],
     [ "HyperliquidChannel", "namespaceslick_1_1sim_1_1md__publisher.html#adb469b15aebdbcd086f81cde707c217f", null ],
     [ "json", "namespaceslick_1_1sim_1_1md__publisher.html#a02b4e3df58198a5455aed08691e4b67e", null ],
