@@ -16,8 +16,16 @@ public:
     CoinbaseLiveWSFeed(
         slick::stream_buffer_multiplexer& mux,
         coinbase::UserThreadWebsocketCallbacks *callbacks,
-        const std::vector<std::string> &symbols = {})
-        : ws_client_(std::make_shared<coinbase::WebSocketClient>(callbacks, mux))
+        const std::vector<std::string> &symbols = {},
+        uint32_t producer_offset = 0
+    )
+        : ws_client_(std::make_shared<coinbase::WebSocketClient>(
+                callbacks, 
+                mux,
+                "wss://advanced-trade-ws.coinbase.com",
+                "wss://advanced-trade-ws-user.coinbase.com",
+                producer_offset
+            ))
         , symbols_(std::move(symbols))
     {
         ws_client_->logData("logs/coinbase_data");

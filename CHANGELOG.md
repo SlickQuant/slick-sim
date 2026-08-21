@@ -203,6 +203,15 @@
 - `BUILD_COINBASE_ADVANCED_TESTS=OFF` moved from the top-level slick-orderbook block, where it ran
   *after* the Coinbase SDK had already been populated and so never reached it, into the Coinbase
   FetchContent path it names.
+- Every live Coinbase market-data feed gets its own block of multiplexer producer ids. The feeds share
+  `CoinbaseExchange::ws_mux_` but each took the default `producer_offset` of 0, so the second feed's
+  `WebSocketClient` claimed producer ids that the first had already registered, and
+  `stream_buffer_multiplexer::add_producer` throws `std::invalid_argument` on a duplicate id — uncaught
+  on the exchange thread, so subscribing a second symbol to a live feed terminated the process.
+  `handleMdSubscription` now passes `symbol->id_ * coinbase::ProducerType::_PRODUCER_TYPE_COUNT_`,
+  reserving one id per producer type (market/user data and their control streams) per symbol, and
+  `CoinbaseLiveWSFeed` forwards the offset to the SDK client along with the two default endpoint URLs
+  it has to name to reach that argument.
 
 ## Changed
 

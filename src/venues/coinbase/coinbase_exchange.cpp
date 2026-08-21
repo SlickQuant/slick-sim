@@ -107,7 +107,7 @@ void CoinbaseExchange::handleMdSubscription(const Request &request)
                 LOG_WARN("Unsupported channel {} for symbol {}", static_cast<int>(msg.channel), sym);
                 return;
             }
-            md_feeds_.emplace_back(std::make_shared<md_feed::CoinbaseLiveWSFeed>(ws_mux_, this, std::vector<std::string>{sym}));
+            md_feeds_.emplace_back(std::make_shared<md_feed::CoinbaseLiveWSFeed>(ws_mux_, this, std::vector<std::string>{sym}, symbol->id_ * coinbase::ProducerType::_PRODUCER_TYPE_COUNT_));
             auto &feed = md_feeds_.back();
             feed->start();
             map_symbol_feed_.emplace(sym, feed);
