@@ -777,3 +777,51 @@ TEST_F(CoinbaseMarketDataMatchingTest, FillsDoNotCloseTheBatchWhenAPrintIsNotFul
         EXPECT_FALSE(update.last_in_batch);
     }
 }
+
+// =============================================================================
+// A rejected execution must not become a re-match loop
+// =============================================================================
+
+// The book discards a mutation whose sequence regresses and reports it only
+// through its return value, which this loop used to throw away. The resting order
+// therefore kept its full quantity, the next pass matched it again, and the loop
+// spun until the aggressor's quantity ran out - publishing a fill per pass against
+// liquidity that never moved. A recorded session showed 98 such fills against one
+// order in 217ms, all of them fabricated.
+TEST_F(CoinbaseMarketDataMatchingTest, FeedReplay_RejectedExecution_DoesNotRematchSameOrder) {
+    auto* sell_order = createTestOrder(order_book_, Side::SELL, kPrice100, kQty5);
+    order_book_->addOrder(sell_order, kT1, 100);   // book sequence is now 100
+
+    // An aggressor big enough to sweep the resting order several times over, and a
+    // sequence the book will refuse.
+    qty_t qty = kQty5 * 4;
+    auto trades = matching_engine_->match(Side::BUY, kMarketOrderId, kPrice100, qty, *order_book_, kT2, 50);
+
+    EXPECT_TRUE(trades.empty()) << "published a fill the book never booked";
+    EXPECT_EQ(qty, kQty5 * 4) << "quantity was consumed by a trade that did not happen";
+
+    // The resting order is untouched and still resting at full size.
+    EXPECT_EQ(sell_order->cum_quantity, 0);
+    EXPECT_EQ(sell_order->leaves_quantity, kQty5);
+    auto [level, idx] = order_book_->getLevel(to_book_side(Side::SELL), kPrice100);
+    ASSERT_NE(level, nullptr);
+    EXPECT_EQ(level->total_quantity, kQty5);
+}
+
+// The same guard one layer down: OrderBook::executeOrder books the fill onto the
+// simulator's own Order before OrderBookL3 gets a chance to reject it, so a
+// regressed sequence used to report a fill to the client that the book never took
+// - and once leaves_quantity reached zero it erased the order from the lookup maps
+// while the L3 book kept it resting, as phantom liquidity nothing could find again.
+TEST_F(CoinbaseMarketDataMatchingTest, ExecuteOrder_RejectedBySequence_LeavesOrderUntouched) {
+    auto* sell_order = createTestOrder(order_book_, Side::SELL, kPrice100, kQty5);
+    order_book_->addOrder(sell_order, kT1, 100);
+
+    EXPECT_FALSE(order_book_->executeOrder(sell_order->id, kQty5, kT2, 50));
+
+    EXPECT_EQ(sell_order->cum_quantity, 0) << "booked a fill the L3 book rejected";
+    EXPECT_EQ(sell_order->leaves_quantity, kQty5);
+    EXPECT_EQ(sell_order->num_fills, 0);
+    // Still findable, so it can still be cancelled and still be freed.
+    EXPECT_EQ(order_book_->findOrder(sell_order->id), sell_order);
+}

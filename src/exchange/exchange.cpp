@@ -618,7 +618,11 @@ void Exchange::reconcilePhantomQty(Symbol *symbol, Side side, price_t price, qty
     {
         // Level qty increased, assume new orders added at the back. Create new phantom order to represent then increment
         auto size = target_qty - md_level_qty;
-        book.addBookOrder(utils::nextOrderId(), to_book_side(side), price, size, event_time, seq_num);
+        // end_event has to reach the book, exactly as the decrease branch below
+        // passes it: it becomes ChangeFlag::LastInBatch, which Symbol::onPriceLevelUpdate
+        // republishes as F_END_EVENT. Defaulting it to true closed the batch early
+        // for every increase that was not the last update in its batch.
+        book.addBookOrder(utils::nextOrderId(), to_book_side(side), price, size, event_time, seq_num, end_event);
     }
     else if (target_qty < md_level_qty)
     {

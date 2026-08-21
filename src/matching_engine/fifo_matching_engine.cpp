@@ -251,7 +251,16 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
 
         engine.publishOrderExecution(order);
 
-        book.executeOrder(book_order_id, trade_qty, event_time, seq_num, order_qty == 0);
+        if (!book.executeOrder(book_order_id, trade_qty, event_time, seq_num, order_qty == 0)) [[unlikely]] {
+            // Same hazard as the market-data replay overload below: a declined
+            // execution leaves the resting order intact, so looping would re-match
+            // it. The aggressor has already been filled and reported by this point,
+            // so there is no unwinding it here - stop and leave the discrepancy
+            // loud rather than compounding it.
+            LOG_ERROR("{} book rejected execution of order {} for qty {} at price {} (seq_num={}); abandoning match",
+                order->symbol.view(), book_order_id, trade_qty, price, seq_num);
+            break;
+        }
 
         // A resting order the simulator does not own is phantom liquidity mirroring
         // the real market. Tracked separately so the exchange can tell how much of
@@ -350,7 +359,17 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
         // never saw its batch close. The order-driven overload above already does
         // it in this order.
         qty -= trad_qty;
-        book.executeOrder(book_order_id, trad_qty, event_time, seq_num, qty == 0);
+        if (!book.executeOrder(book_order_id, trad_qty, event_time, seq_num, qty == 0)) [[unlikely]] {
+            // Nothing traded, so the resting order still carries its full quantity
+            // and the next pass would match it again - and again, until this
+            // aggressor's quantity ran out, publishing a fill each time against
+            // liquidity that never moves. That is a live bug's signature, not a
+            // recoverable state: give the quantity back and stop rather than spin.
+            qty += trad_qty;
+            LOG_ERROR("{} book rejected execution of order {} for qty {} at price {} (seq_num={}); abandoning match with {} unfilled",
+                book.symbolName().view(), book_order_id, trad_qty, trade_price, seq_num, qty);
+            break;
+        }
 
         if (our_order) {
             engine.publishOrderExecution(our_order);

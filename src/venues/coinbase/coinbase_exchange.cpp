@@ -194,6 +194,20 @@ void CoinbaseExchange::handleMdUnsubscription(const Request &request)
     }
 }
 
+uint64_t CoinbaseExchange::nextBookSeqNum(Symbol *symbol, SymbolEventState &state)
+{
+    // OrderBookL3::clear() leaves its sequence where it was, so a reconnect
+    // snapshot inherits whatever the previous session reached. Catch up rather
+    // than regress - a mutation stamped below the book's last sequence is
+    // discarded without a word.
+    const auto book_seq = symbol->order_book_->getLastSeqNum();
+    if (state.next_book_seq_num < book_seq)
+    {
+        state.next_book_seq_num = book_seq;
+    }
+    return ++state.next_book_seq_num;
+}
+
 void CoinbaseExchange::processSequencedEvents(bool force)
 {
     const uint64_t now = utils::get_current_time_ns();
@@ -228,8 +242,11 @@ void CoinbaseExchange::processSequencedEvents(bool force)
                 Event event = top_event;
                 pending_events.pop();
 
-                // Dispatch the event
-                dispatchEvent(symbol, event, state);
+                // Dispatch the event. The book is stamped with dispatch order,
+                // never with event.seq_num - this loop pops by event_time, so the
+                // venue's arrival-order sequence regresses here routinely and the
+                // book's guard would drop the mutation. See next_book_seq_num.
+                dispatchEvent(symbol, event, state, nextBookSeqNum(symbol, state));
 
                 // if (!level_update_buffer_.empty()) {
                 //     publishLevelUpdate(
@@ -251,7 +268,8 @@ void CoinbaseExchange::processSequencedEvents(bool force)
     }
 }
 
-void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolEventState &state)
+void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolEventState &state,
+                                     uint64_t book_seq_num)
 {
     if (event.type == EventType::LEVEL_UPDATE)
     {
@@ -287,10 +305,10 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
             // this is a new level
             qty_t qty = event.qty;
             auto order_id = utils::nextOrderId();
-            auto trade_summaries = symbol->matching_engine_->match(event.side, order_id, event.price, qty, *book.get(), event.event_time, event.seq_num);
+            auto trade_summaries = symbol->matching_engine_->match(event.side, order_id, event.price, qty, *book.get(), event.event_time, book_seq_num);
             if (qty)
             {
-                symbol->order_book_->addOrder(order_id, book_side, event.price, qty, event.event_time, event.seq_num, event.flags & UpdateFlags::F_END_EVENT);
+                symbol->order_book_->addBookOrder(order_id, book_side, event.price, qty, event.event_time, book_seq_num, event.flags & UpdateFlags::F_END_EVENT);
                 action = MDUpdateAction::ACTION_NEW;
             }
 
@@ -318,7 +336,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
         {
             // existing level
             reconcilePhantomQty(symbol, event.side, event.price, event.qty, event.event_time,
-                                event.seq_num, event.flags & UpdateFlags::F_END_EVENT);
+                                book_seq_num, event.flags & UpdateFlags::F_END_EVENT);
         }
 
         symbol->order_book_->setLastUpdate(event.event_time, event.seq_num);
@@ -388,7 +406,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
 
         qty_t qty = event.qty;
         auto trade_summaries = symbol->matching_engine_->match(
-            event.side, order_id, event.price, qty, book, event.event_time, event.seq_num);
+            event.side, order_id, event.price, qty, book, event.event_time, book_seq_num);
 
         if (qty)
         {
@@ -396,8 +414,8 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
             // same as the new-level branch above, and with the same order id. It
             // cannot cross: a remainder exists precisely because nothing was
             // still crossable at this limit.
-            book.addOrder(order_id, book_side, event.price, qty, event.event_time, event.seq_num,
-                          event.flags & UpdateFlags::F_END_EVENT);
+            book.addBookOrder(order_id, book_side, event.price, qty, event.event_time, book_seq_num,
+                              event.flags & UpdateFlags::F_END_EVENT);
         }
 
         for (const auto &summary : trade_summaries)

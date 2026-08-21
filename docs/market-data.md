@@ -79,6 +79,7 @@ struct SymbolEventState {
     uint64_t last_seq_num        = 0;
     uint64_t next_sequence_id    = 0;   // monotonic tiebreaker
     uint64_t last_published_level_seq_num = 0;
+    uint64_t next_book_seq_num   = 0;   // what the book is stamped with
 };
 ```
 
@@ -102,11 +103,66 @@ Both land on chronological. "Fixing" the tie-break to match the `event_time` inv
 batches backwards — levels settle on a stale quantity, and trades match against the book and take
 their public trade ids in reverse.
 
+The same reversal decides where `F_END_EVENT` goes. Each loop enqueues in reverse *dispatch* order,
+so the element it visits **first** takes the lowest `sequence_id` and is dispatched **last** — and
+that is the one that closes the batch. Marking `std::prev(rend())` instead puts the marker on the
+element dispatched first, closing every batch on its opening update. `onLevel2Snapshot` is not the
+same shape: it applies its batch inline, with no queue to reverse it, so its final element really is
+the last applied.
+
 !!! note "Same-price, same-timestamp updates in one batch"
     The underlying `slick-orderbook` rejects a level mutation whose timestamp is not newer than that
     level's last update, so a second update to the *same* price at the *same* instant is silently
     dropped. Coinbase sends at most one entry per price per batch, so this does not arise in
     practice — but it does mean same-instant ordering at one price is unobservable in the book.
+
+### The book is stamped with dispatch order, never with the venue's `seq_num`
+
+Every `OrderBookL3` mutator — `addOrder`, `modifyOrder`, `deleteOrder`, `executeOrder` — rejects a
+call whose `seq_num` is below the last one it accepted, and reports it only through a `bool` return.
+That guard assumes the caller applies mutations in the venue's arrival order. This queue deliberately
+does not: it reorders into `event_time` order, which is a **different** order.
+
+Coinbase shares one `sequence_num` counter across both channels, but an `l2_data` message's
+`event_time` lags its own message timestamp by 100–200 ms while a trade's `time` is near-live. So a
+trade routinely arrives *after* an l2 batch and carries an *earlier* `event_time` — it dispatches
+first, stamps the book with its higher `seq_num`, and the whole l2 batch behind it is discarded,
+since every update in a batch shares one `seq_num`. On a recorded session that sank **38.6% of level
+updates** and 16.1% of trade replays. The visible symptoms were levels that never retired (a bid
+still resting 35 dollars above the market ten minutes after the venue removed it) and a matching loop
+re-filling the same phantom order dozens of times, because a rejected `executeOrder` leaves the
+resting quantity intact.
+
+`processSequencedEvents` therefore hands `dispatchEvent` a **dispatch-order counter**
+(`nextBookSeqNum`), monotonic by construction, and that is what reaches the book. `event.seq_num`
+stays the venue's number for everything client-facing — `MDLevel.seq_num`, `setLastUpdate`, and the
+`last_published_level_seq_num` batching. `onLevel2Snapshot` draws from the same counter, because it
+bypasses the queue and `OrderBookL3::clear()` does not reset the book's sequence.
+
+Do not pass an enqueue-time counter here instead. `sequence_id` regresses even harder — the tie-break
+above pops the *highest* one first, and 90% of events share an `(event_time, type)` with a sibling,
+so it measures at 96.4% rejected.
+
+!!! warning "`OrderBookL3::addOrder` takes `priority` as its sixth argument"
+    `addOrder(id, side, price, qty, timestamp, priority, seq_num, is_last_in_batch)` — a seven-argument
+    call meaning to pass a sequence lands it in `priority` and shifts everything after it along, so
+    the batch flag arrives as the sequence. Rest phantom liquidity through
+    `OrderBook::addBookOrder()`, which fills `priority` from `nextOrderPriority()` itself.
+
+### A snapshot empties the queue
+
+`onLevel2Snapshot` does not go through the queue — it rebuilds the book on the callback, so a
+subscriber is not made to wait a second for its first book. That makes it a **reset**, and a reset has
+to discard the events queued against the book it just cleared. `poll()` runs `processData()` — which
+fires the snapshot callback — before `processSequencedEvents()`, so anything still queued would be
+replayed onto the rebuilt book: a trade received before a reconnect would match against fresh
+liquidity, fabricate fills and remove quantity that is genuinely there. Nothing downstream catches it,
+because the `TRADE` branch of `dispatchEvent` has no stale-timestamp guard and the level branch's only
+compares against the book the snapshot just wrote.
+
+So `onLevel2Snapshot` empties `pending_events` for that symbol. Everything in it at that moment does
+predate the snapshot: every callback runs on the exchange thread in arrival order, so a message that
+arrives after the snapshot is enqueued after it is cleared.
 
 The callbacks (`onLevel2Updates`, `onMarketTrades`) only push into this queue — they never touch the
 book. They already run on the exchange thread, delivered by `processData()`, so this is buffering for
