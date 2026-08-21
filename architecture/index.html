@@ -1348,9 +1348,14 @@ linked against a handful of static libraries.</p>
 </thead>
 <tbody>
 <tr>
+<td><code>slick_sim_core</code></td>
+<td><code>src/</code></td>
+<td>INTERFACE target carrying the <code>src/</code> include root and the header-only dependencies; every other target links it</td>
+</tr>
+<tr>
 <td><code>exchange</code></td>
 <td><code>src/exchange/</code></td>
-<td>Per-venue orchestration (<code>Exchange</code>, <code>CoinbaseExchange</code>, <code>HyperliquidExchange</code>) and <code>Symbol</code>, which binds one instrument's book to a matching engine</td>
+<td>Orchestration base (<code>Exchange</code>), the venue registry, and <code>Symbol</code>, which binds one instrument's book to a matching engine</td>
 </tr>
 <tr>
 <td><code>matching_engine</code></td>
@@ -1360,49 +1365,58 @@ linked against a handful of static libraries.</p>
 <tr>
 <td><code>order_gateway</code></td>
 <td><code>src/order_gateway/</code></td>
-<td>Venue-native REST/WebSocket order entry, plus the unused generic TCP/FIX/SBE gateway</td>
+<td><code>OrderGateway</code>/<code>RestWsOrderGateway</code> bases, plus the unused generic TCP/FIX/SBE gateway (<code>SLICK_SIM_ENABLE_TCP_GATEWAY</code>)</td>
 </tr>
 <tr>
 <td><code>market_data_publisher</code></td>
 <td><code>src/market_data_publisher/</code></td>
-<td>Re-encodes internal market data into each venue's own WebSocket format</td>
+<td><code>WebsocketMarketDataPublisher</code> base and <code>SequencedMessage</code></td>
 </tr>
 <tr>
 <td><code>md_feed</code></td>
 <td><code>src/md_feed/</code></td>
-<td>Live market-data ingestion from the real venue</td>
+<td>The <code>MDFeed</code> interface — header-only INTERFACE target</td>
 </tr>
 <tr>
-<td><em>(header-only)</em></td>
-<td><code>src/common/</code>, <code>src/order_book/</code>, <code>src/utils/</code></td>
-<td>Shared types, the order book, and small helpers (ids, timestamps, prices, <code>fixed_string</code>) — no compiled target, included directly</td>
+<td><code>slick_sim_venue_&lt;venue&gt;</code></td>
+<td><code>src/venues/&lt;venue&gt;/</code></td>
+<td>One OBJECT library per venue: its exchange, feed, gateways, publisher and encoders. Optional, via <code>SLICK_SIM_ENABLE_&lt;VENUE&gt;</code></td>
 </tr>
 </tbody>
 </table>
+<p>None of the core targets contain venue code or link a venue SDK. The dependency direction is
+core ← venue: a venue target links <code>exchange</code>, and the executables link whichever venues are enabled.
+| <em>(header-only)</em> | <code>src/common/</code>, <code>src/order_book/</code>, <code>src/utils/</code> | Shared types, the order book, and small helpers (ids, timestamps, prices, <code>fixed_string</code>) — no compiled target, included directly |</p>
 <h2 id="threading-model">Threading model<a class="headerlink" href="#threading-model" title="Permanent link">&para;</a></h2>
 <p>This is the part most likely to trip you up, because it is not what the class structure suggests.</p>
 <h3 id="threads-per-exchange">Threads per exchange<a class="headerlink" href="#threads-per-exchange" title="Permanent link">&para;</a></h3>
-<p><strong>One exchange thread.</strong> Created in the concrete adapter's <code>start()</code>, it runs a tight spin loop that
-does all book mutation and all order processing:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// CoinbaseExchange::start()</span>
+<p><strong>One exchange thread.</strong> Created by <code>Exchange::start()</code> in the base class, it runs a tight spin loop
+that does all book mutation and all order processing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// Exchange::start()</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">thread_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">([</span><span class="k">this</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">run_</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">md_feed_</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">md_feeds_</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">            </span><span class="n">processData</span><span class="p">();</span><span class="w">            </span><span class="c1">// drain the WS stream multiplexer</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">        </span><span class="n">processSequencedEvents</span><span class="p">();</span><span class="w">     </span><span class="c1">// release time-ordered book events</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">        </span><span class="n">processRequest</span><span class="p">();</span><span class="w">             </span><span class="c1">// one order request per iteration</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">});</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">        </span><span class="n">poll</span><span class="p">();</span><span class="w">                       </span><span class="c1">// venue-specific pump, empty by default</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="n">processRequest</span><span class="p">();</span><span class="w">             </span><span class="c1">// one order request per iteration</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">});</span>
 </code></pre></div>
-<p><code>HyperliquidExchange</code> is the same shape with <code>drainEventQueue()</code> in place of the first two calls.
-Note there is no sleep and no condition variable — the thread spins at 100% of a core by design.</p>
-<div class="admonition warning">
-<p class="admonition-title">The base class does not loop</p>
-<p><code>Exchange::start()</code> calls <code>processRequest()</code> exactly once, with no loop. Only the two concrete
-adapters override it correctly, so a config key other than <code>coinbase</code> or <code>hyperliquid</code> yields an
-exchange that binds no ports and processes at most one request. See
-<a href="../known-gaps/#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing">Known gaps</a>.</p>
+<p>Note there is no sleep and no condition variable — the thread spins at 100% of a core by design.</p>
+<p>An adapter supplies only the per-tick body by overriding <code>poll()</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">CoinbaseExchange::poll</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">md_feed_</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">md_feeds_</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">        </span><span class="n">processData</span><span class="p">();</span><span class="w">                </span><span class="c1">// drain the WS stream multiplexer</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="n">processSequencedEvents</span><span class="p">();</span><span class="w">         </span><span class="c1">// release time-ordered book events</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="kt">void</span><span class="w"> </span><span class="nf">HyperliquidExchange::poll</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">drainEventQueue</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">The loop belongs to the base class</p>
+<p>It did not always. <code>Exchange::start()</code> used to call <code>processRequest()</code> exactly once with no loop,
+and each adapter re-implemented the whole of <code>start()</code> to add one — so an adapter that inherited
+it bound its ports and then went silent. The loop now lives in the base and <code>poll()</code> defaults to
+doing nothing, which is correct for a venue with no feed.</p>
 </div>
 <p><strong>One uWebSockets event-loop thread per gateway and per publisher.</strong> <code>RestWsOrderGateway::start()</code>
 and <code>WebsocketMarketDataPublisher::start()</code> each spawn a thread that builds a <code>uWS::App</code>, installs
@@ -1489,9 +1503,9 @@ the same pattern with a 200 ms timeout.</p>
 <h2 id="queue-topology">Queue topology<a class="headerlink" href="#queue-topology" title="Permanent link">&para;</a></h2>
 <p>Three <code>slick::queue</code> instances per exchange, constructed in the
 <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L17-L32"><code>Exchange</code> constructor</a>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">request_queue_</span><span class="w"> </span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">"request_queue_size"</span><span class="p">,</span><span class="w">  </span><span class="mi">1048576</span><span class="p">),</span><span class="w"> </span><span class="err">…</span><span class="p">)</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">response_queue_</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">"response_queue_size"</span><span class="p">,</span><span class="w"> </span><span class="mi">1048576</span><span class="p">),</span><span class="w"> </span><span class="err">…</span><span class="p">)</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">md_queue_</span><span class="w">      </span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">"md_queue_size"</span><span class="p">,</span><span class="w">   </span><span class="mi">16777216</span><span class="p">),</span><span class="w"> </span><span class="err">…</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">request_queue_</span><span class="w"> </span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">"request_queue_size"</span><span class="p">,</span><span class="w">  </span><span class="mi">1048576</span><span class="p">),</span><span class="w"> </span><span class="err">…</span><span class="p">)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">response_queue_</span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">"response_queue_size"</span><span class="p">,</span><span class="w"> </span><span class="mi">1048576</span><span class="p">),</span><span class="w"> </span><span class="err">…</span><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">md_queue_</span><span class="w">      </span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="s">"md_queue_size"</span><span class="p">,</span><span class="w">   </span><span class="mi">16777216</span><span class="p">),</span><span class="w"> </span><span class="err">…</span><span class="p">)</span>
 </code></pre></div>
 <table>
 <thead>
@@ -1532,9 +1546,9 @@ response queue with several gateways attached delivers every response to every g
 filters by <code>user_id</code>.</p>
 <h3 id="shared-memory-queues">Shared-memory queues<a class="headerlink" href="#shared-memory-queues" title="Permanent link">&para;</a></h3>
 <p>Each queue also accepts an optional shared-memory name:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">"request_queue_shm_name"</span><span class="p">:</span><span class="w">  </span><span class="s2">"slick_sim_coinbase_req"</span><span class="p">,</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">"response_queue_shm_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"slick_sim_coinbase_rsp"</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">"md_queue_shm_name"</span><span class="p">:</span><span class="w">       </span><span class="s2">"slick_sim_coinbase_md"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">"request_queue_shm_name"</span><span class="p">:</span><span class="w">  </span><span class="s2">"slick_sim_coinbase_req"</span><span class="p">,</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">"response_queue_shm_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"slick_sim_coinbase_rsp"</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nt">"md_queue_shm_name"</span><span class="p">:</span><span class="w">       </span><span class="s2">"slick_sim_coinbase_md"</span>
 </code></pre></div>
 <p>When present, <code>slick::queue</code> backs the ring with a named shared-memory segment instead of process
 memory, which would let an external process attach to the same queue. These keys are read by the
@@ -1542,8 +1556,8 @@ memory, which would let an external process attach to the same queue. These keys
 <h2 id="symbol-management">Symbol management<a class="headerlink" href="#symbol-management" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/symbol_manager.hpp"><code>SymbolManager</code></a>
 is a <strong>process-wide singleton</strong>, not per-exchange:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">exch</span><span class="o">::</span><span class="n">Symbol</span><span class="o">*</span><span class="w"> </span><span class="nf">getSymbol</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">sym</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">exch</span><span class="o">::</span><span class="n">Symbol</span><span class="o">*</span><span class="w"> </span><span class="nf">createSymbol</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">sym</span><span class="p">,</span><span class="w"> </span><span class="n">Venue</span><span class="w"> </span><span class="n">venue</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">exch</span><span class="o">::</span><span class="n">Symbol</span><span class="o">*</span><span class="w"> </span><span class="nf">getSymbol</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">sym</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">exch</span><span class="o">::</span><span class="n">Symbol</span><span class="o">*</span><span class="w"> </span><span class="nf">createSymbol</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">sym</span><span class="p">,</span><span class="w"> </span><span class="n">Venue</span><span class="w"> </span><span class="n">venue</span><span class="p">);</span>
 </code></pre></div>
 <p>Symbols are created lazily, on the first market-data subscription for that instrument, by the
 adapter's <code>addSymbol()</code>. Creation assigns a <code>symid_t</code>, attaches the shared <code>FifoMatchingEngine</code> for

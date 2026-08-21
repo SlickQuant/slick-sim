@@ -67,17 +67,17 @@ var sectionId = 'dynsection-0';
 <text text-anchor="start" x="94" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="107" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">~HyperliquidExchange()</text>
 <text text-anchor="start" x="94" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="107" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">start()</text>
+<text text-anchor="start" x="107" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">onL2BookUpdate()</text>
 <text text-anchor="start" x="94" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="107" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">onL2BookUpdate()</text>
+<text text-anchor="start" x="107" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">onTradesUpdate()</text>
 <text text-anchor="start" x="94" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="107" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">onTradesUpdate()</text>
-<text text-anchor="start" x="94" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="107" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">onHyperliquidDisconnected()</text>
+<text text-anchor="start" x="107" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">onHyperliquidDisconnected()</text>
+<text text-anchor="start" x="94" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text text-anchor="start" x="107" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdSubscription()</text>
 <text text-anchor="start" x="94" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="107" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdSubscription()</text>
+<text text-anchor="start" x="107" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdUnsubscription()</text>
 <text text-anchor="start" x="94" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="107" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdUnsubscription()</text>
+<text text-anchor="start" x="107" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00">poll()</text>
 <text text-anchor="start" x="94" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text text-anchor="start" x="107" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">drainEventQueue()</text>
 <polygon fill="#666666" stroke="#666666" points="90,-152 90,-152 253,-152 253,-152 90,-152"/>
@@ -103,16 +103,16 @@ var sectionId = 'dynsection-0';
 <text text-anchor="start" x="4" y="-583" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text text-anchor="start" x="17" y="-583" font-family="Helvetica,sans-Serif" font-size="10.00">md_feed_</text>
 <text text-anchor="start" x="4" y="-568" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-568" font-family="Helvetica,sans-Serif" font-size="10.00">thread_</text>
+<text text-anchor="start" x="17" y="-568" font-family="Helvetica,sans-Serif" font-size="10.00">md_feeds_</text>
 <text text-anchor="start" x="4" y="-553" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-553" font-family="Helvetica,sans-Serif" font-size="10.00">md_thread_</text>
+<text text-anchor="start" x="17" y="-553" font-family="Helvetica,sans-Serif" font-size="10.00">thread_</text>
 <text text-anchor="start" x="4" y="-538" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-538" font-family="Helvetica,sans-Serif" font-size="10.00">run_</text>
+<text text-anchor="start" x="17" y="-538" font-family="Helvetica,sans-Serif" font-size="10.00">md_thread_</text>
 <text text-anchor="start" x="4" y="-523" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-523" font-family="Helvetica,sans-Serif" font-size="10.00">order_request_cursor_</text>
+<text text-anchor="start" x="17" y="-523" font-family="Helvetica,sans-Serif" font-size="10.00">run_</text>
 <text text-anchor="start" x="4" y="-508" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-508" font-family="Helvetica,sans-Serif" font-size="10.00">matching_engines_</text>
-<text text-anchor="start" x="17" y="-493" font-family="Helvetica,sans-Serif" font-size="10.00">and 7 more...</text>
+<text text-anchor="start" x="17" y="-508" font-family="Helvetica,sans-Serif" font-size="10.00">order_request_cursor_</text>
+<text text-anchor="start" x="17" y="-493" font-family="Helvetica,sans-Serif" font-size="10.00">and 8 more...</text>
 <text text-anchor="start" x="4" y="-478" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="17" y="-478" font-family="Helvetica,sans-Serif" font-size="10.00">Exchange()</text>
 <text text-anchor="start" x="4" y="-463" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
@@ -147,7 +147,7 @@ var sectionId = 'dynsection-0';
 <text text-anchor="start" x="17" y="-253" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderNewPending()</text>
 <text text-anchor="start" x="4" y="-238" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text text-anchor="start" x="17" y="-238" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderReplacePending()</text>
-<text text-anchor="start" x="17" y="-223" font-family="Helvetica,sans-Serif" font-size="10.00">and 11 more...</text>
+<text text-anchor="start" x="17" y="-223" font-family="Helvetica,sans-Serif" font-size="10.00">and 12 more...</text>
 <polygon fill="#666666" stroke="#666666" points="0,-653 0,-653 162,-653 162,-653 0,-653"/>
 <polygon fill="#666666" stroke="#666666" points="0,-488 0,-488 15,-488 15,-488 0,-488"/>
 <polygon fill="#666666" stroke="#666666" points="15,-488 15,-488 162,-488 162,-488 15,-488"/>

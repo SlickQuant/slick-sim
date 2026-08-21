@@ -762,10 +762,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing" class="md-nav__link">
+  <a href="#an-unknown-venue-key-is-rejected-at-startup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        An enabled venue key with no adapter starts but does nothing
+        An unknown venue key is rejected at startup
       
     </span>
   </a>
@@ -995,10 +995,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing" class="md-nav__link">
+  <a href="#an-unknown-venue-key-is-rejected-at-startup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        An enabled venue key with no adapter starts but does nothing
+        An unknown venue key is rejected at startup
       
     </span>
   </a>
@@ -1176,31 +1176,32 @@ paragraph, and so you do not spend an afternoon debugging something that was nev
 <p>Each entry says what it is, where it lives, and what it means for you.</p>
 <h2 id="venues">Venues<a class="headerlink" href="#venues" title="Permanent link">&para;</a></h2>
 <h3 id="cme-eurex-and-ice-are-not-implemented">CME, Eurex and ICE are not implemented<a class="headerlink" href="#cme-eurex-and-ice-are-not-implemented" title="Permanent link">&para;</a></h3>
-<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exch_cme.hpp"><code>src/exchange/exch_cme.hpp</code></a>
-is a <strong>zero-byte file</strong>. There is no <code>CmeExchange</code>, no Eurex adapter, and no ICE adapter, despite
-<code>Venue::CME</code> and <code>Venue::ICE</code> existing in
+<p>There is no <code>CmeExchange</code>, no Eurex adapter, and no ICE adapter, despite <code>Venue::CME</code> and <code>Venue::ICE</code>
+existing in
 <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp"><code>types.hpp</code></a> and
-<code>README.md</code> describing exchange-adapter namespaces for all three.</p>
+<code>README.md</code> describing exchange-adapter namespaces for all three. A zero-byte <code>src/exchange/exch_cme.hpp</code>
+used to stand in for the first of these; it has been removed, since an empty header is not a plan.</p>
+<p>The <code>Venue</code> enumerators stay regardless — a <code>Venue</code> is an identity written into every market-data
+frame, not a claim that an adapter exists, so <code>to_venue("cme")</code> still resolves.</p>
 <p><strong>What it means:</strong> only <code>coinbase</code> and <code>hyperliquid</code> are usable venue keys in the config.</p>
-<h3 id="an-enabled-venue-key-with-no-adapter-starts-but-does-nothing">An enabled venue key with no adapter starts but does nothing<a class="headerlink" href="#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing" title="Permanent link">&para;</a></h3>
-<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/sim/main.cpp#L199-L218"><code>main.cpp</code></a>
-dispatches on the config key: <code>coinbase</code> builds a <code>CoinbaseExchange</code>, <code>hyperliquid</code> builds a
-<code>HyperliquidExchange</code>, and <strong>anything else</strong> constructs a plain <code>Exchange</code>. Only the two concrete
-adapters populate <code>md_publisher_</code> and <code>order_gateways_</code>; the base constructor does not.</p>
-<p><code>Exchange::start()</code> does nothing useful:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">thread_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">([</span><span class="k">this</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">processRequest</span><span class="p">();</span><span class="w"> </span><span class="p">});</span>
+<h3 id="an-unknown-venue-key-is-rejected-at-startup">An unknown venue key is rejected at startup<a class="headerlink" href="#an-unknown-venue-key-is-rejected-at-startup" title="Permanent link">&para;</a></h3>
+<p>This used to be a gap: <code>main.cpp</code> dispatched on the config key with an <code>if/else</code>, and <strong>anything
+else</strong> constructed a plain <code>Exchange</code> that bound no ports, populated no publisher, and — because the
+base <code>start()</code> had no loop — processed at most one request before its thread exited. Silently.</p>
+<p>Both halves are now closed. The loop lives in
+<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp"><code>Exchange::start()</code></a>,
+and keys resolve through the
+<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange_registry.hpp">venue registry</a>
+rather than a hard-coded chain, with no generic fallback. An enabled key with no registered adapter
+now fails immediately and names what the binary does carry:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[ERROR] No venue adapter for exchanges."kraken". This build has: coinbase, hyperliquid.
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        Check the spelling, or configure with -DSLICK_SIM_ENABLE_&lt;VENUE&gt;=ON.
 </code></pre></div>
-<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L68-L93"><code>Exchange::processRequest()</code></a>
-reads <strong>one</strong> request from the queue and returns. There is no loop. Both working adapters override
-<code>start()</code> with a real spin loop; the base class does not. So a generic exchange binds no ports,
-serves no clients, processes at most one queued request, and its thread exits.</p>
-<p>The committed sample config carries such a block — a <code>cme</code> entry — but it is <code>"enabled": false</code>, so
-it is constructed and then skipped with a warning:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[WARN] Exchange CME is disabled, skipping start
-</code></pre></div>
-<p><strong>What it means:</strong> leave the <code>cme</code> block disabled, or delete it. Enabling it gets you an inert
-exchange, not a working one. If you add a venue, populating <code>md_publisher_</code> <strong>and</strong> overriding
-<code>start()</code> with a loop are both mandatory — see <a href="../extending/">Adding an exchange</a>.</p>
+<p><code>"enabled": false</code> is checked <strong>before</strong> the lookup, so a disabled block needs no adapter — which is
+how the committed sample's <code>cme</code> entry keeps working.</p>
+<p><strong>What it means:</strong> a typo or a compiled-out venue is now a startup failure rather than an exchange
+that appears to run. Note that the same message appears if a venue adapter was built but failed to
+register itself, which is what the <code>ExchangeRegistryTest</code> suite guards against.</p>
 <h2 id="order-and-market-data-plumbing">Order and market-data plumbing<a class="headerlink" href="#order-and-market-data-plumbing" title="Permanent link">&para;</a></h2>
 <h3 id="rest-order-handlers-block-the-gateways-event-loop">REST order handlers block the gateway's event loop<a class="headerlink" href="#rest-order-handlers-block-the-gateways-event-loop" title="Permanent link">&para;</a></h3>
 <p>Every REST handler that needs a reply from the matching engine waits for it by polling
@@ -1208,9 +1209,9 @@ exchange, not a working one. If you add a venue, populating <code>md_publisher_<
 on the gateway's <strong>only</strong> uWebSockets event-loop thread, so while one request waits, no other
 client's request on that gateway is served at all - not even one that would answer instantly.</p>
 <p>The batch handlers are worse, because they poll once per entry rather than once per request:
-<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/coinbase_rest_order_gateway.cpp#L638"><code>handle_batch_cancel</code></a>
+<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/venues/coinbase/coinbase_rest_order_gateway.cpp#L638"><code>handle_batch_cancel</code></a>
 and Hyperliquid's
-<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/hyperliquid_rest_order_gateway.cpp#L263"><code>process_order_action</code></a>
+<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_rest_order_gateway.cpp#L263"><code>process_order_action</code></a>
 wait inside the loop over the batch, so a ten-order batch can hold the loop for ten separate
 timeouts.</p>
 <p><strong>What it means:</strong> REST throughput is one in-flight request per gateway, and a single order that the
@@ -1241,9 +1242,9 @@ is a <strong>zero-byte file</strong>.</p>
 <p><strong>What it means:</strong> every symbol on every venue uses <code>FifoMatchingEngine</code>.</p>
 <h3 id="the-historical-data-feed-does-not-exist">The historical-data feed does not exist<a class="headerlink" href="#the-historical-data-feed-does-not-exist" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/alpaca_historical_data_feed.hpp"><code>alpaca_historical_data_feed.hpp</code></a>
-is a <strong>zero-byte file</strong>, and <code>md_feed</code>'s
-<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/CMakeLists.txt"><code>CMakeLists.txt</code></a>
-compiles only <code>hyperliquid_live_ws_feed.cpp</code>.</p>
+is a <strong>zero-byte file</strong>. <code>src/md_feed/</code> now holds only the <code>MDFeed</code> interface — every implementation
+lives with its venue under <code>src/venues/</code> — so a replay feed would be a new venue-independent
+implementation of that same two-method interface.</p>
 <p><strong>What it means:</strong> historical replay is an intended
 <a href="../architecture/#historical-replay-planned">operating mode</a> — matching client orders against
 recorded market data — but no feed implements it. Live WebSocket feeds are the only source of market
@@ -1255,8 +1256,8 @@ mode, so a typo in <code>type</code> degrades quietly rather than erroring — w
 you expected live data and got an empty book.</p>
 <h3 id="exchangeprocessmddata-and-the-market-data-thread-are-commented-out"><code>Exchange::processMdData()</code> and the market-data thread are commented out<a class="headerlink" href="#exchangeprocessmddata-and-the-market-data-thread-are-commented-out" title="Permanent link">&para;</a></h3>
 <p><code>Exchange</code> declares <code>md_thread_</code> and <code>md_feed_</code>, and <code>start()</code> has a commented-out block that would
-launch a dedicated market-data thread. <code>stop()</code> still contains <code>if (md_feed_ &amp;&amp; md_thread_.joinable())
-md_thread_.join();</code> — dead code, since nothing ever starts that thread.</p>
+launch a dedicated market-data thread. <code>stop()</code> still joins <code>md_thread_</code> — dead code, since nothing
+ever starts that thread.</p>
 <p><strong>What it means:</strong> market data is processed on the same thread as order requests. See the threading
 model in <a href="../architecture/">Architecture</a>.</p>
 <h2 id="configuration-and-packaging">Configuration and packaging<a class="headerlink" href="#configuration-and-packaging" title="Permanent link">&para;</a></h2>
@@ -1275,8 +1276,11 @@ and the ~180 generated CME iLink3 SBE headers under <code>src/order_gateway/sbe/
 <code>order_gateway</code> target, but no exchange ever constructs a <code>TcpOrderGateway</code>. <code>main.cpp</code> still carries
 roughly 90 lines of commented-out scaffolding (<code>print_protocol_info</code>, per-client protocol selection)
 from when that path was live.</p>
-<p><strong>What it means:</strong> <code>find_package(quickfix CONFIG REQUIRED)</code> in the top-level <code>CMakeLists.txt</code> is a
-hard build dependency for code that never runs. You still need QuickFIX installed to build.</p>
+<p><strong>What it means:</strong> the code is still dead, but it is no longer a mandatory build cost. The whole
+cluster sits behind <code>SLICK_SIM_ENABLE_TCP_GATEWAY</code>, which defaults to <code>ON</code> so existing builds are
+unchanged. Configuring with <code>-DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF</code> drops those four sources, the <code>sbe/</code>
+include path, and the <code>find_package(quickfix CONFIG REQUIRED)</code> that made QuickFIX a hard dependency
+for code that never runs — so QuickFIX need not be installed at all.</p>
 <h3 id="the-doxygen-api-reference-deliberately-excludes-the-sbe-headers">The Doxygen API reference deliberately excludes the SBE headers<a class="headerlink" href="#the-doxygen-api-reference-deliberately-excludes-the-sbe-headers" title="Permanent link">&para;</a></h3>
 <p>Not a defect — a documentation decision worth knowing. <code>Doxyfile.in</code> sets
 <code>EXCLUDE = src/order_gateway/sbe</code>, because ~180 machine-generated classes would bury every

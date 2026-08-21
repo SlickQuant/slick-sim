@@ -8,5 +8,6 @@ var files_dup =
     [ "order_book", "dir_5ba74e505e529daada09d13d1c558363.html", "dir_5ba74e505e529daada09d13d1c558363" ],
     [ "order_gateway", "dir_38d08d237b1dbc9cf742efc830bd736c.html", "dir_38d08d237b1dbc9cf742efc830bd736c" ],
     [ "sim", "dir_4fedf3bc7458de691f44ea68a2cf9143.html", "dir_4fedf3bc7458de691f44ea68a2cf9143" ],
-    [ "utils", "dir_cbdb8362360e11eafe2fa3bc74cf0ffd.html", "dir_cbdb8362360e11eafe2fa3bc74cf0ffd" ]
+    [ "utils", "dir_cbdb8362360e11eafe2fa3bc74cf0ffd.html", "dir_cbdb8362360e11eafe2fa3bc74cf0ffd" ],
+    [ "venues", "dir_cfc02092a929cf7bfc7f38ef4fd5d30d.html", "dir_cfc02092a929cf7bfc7f38ef4fd5d30d" ]
 ];

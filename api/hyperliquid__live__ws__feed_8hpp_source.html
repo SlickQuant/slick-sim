@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Slick Sim: md_feed/hyperliquid_live_ws_feed.hpp Source File</title>
+<title>Slick Sim: venues/hyperliquid/hyperliquid_live_ws_feed.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.1.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.2.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('hyperliquid__live__ws__feed_8hpp_sourc
 <div class="contents">
 <a href="hyperliquid__live__ws__feed_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="md__feed_8hpp.html">md_feed.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="md__feed_8hpp.html">md_feed/md_feed.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;hyperliquid/info.hpp&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;hyperliquid/utils/l2_diff.hpp&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
@@ -207,7 +207,7 @@ $(document).ready(function(){initNavTree('hyperliquid__live__ws__feed_8hpp_sourc
 <div class="ttc" id="aclassslick_1_1sim_1_1md__feed_1_1MDFeed_html"><div class="ttname"><a href="classslick_1_1sim_1_1md__feed_1_1MDFeed.html">slick::sim::md_feed::MDFeed</a></div><div class="ttdef"><b>Definition</b> <a href="md__feed_8hpp_source.html#l00005">md_feed.hpp:6</a></div></div>
 <div class="ttc" id="amd__feed_8hpp_html"><div class="ttname"><a href="md__feed_8hpp.html">md_feed.hpp</a></div></div>
 <div class="ttc" id="anamespacehyperliquid_html"><div class="ttname"><a href="namespacehyperliquid.html">hyperliquid</a></div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__rest__order__gateway_8hpp_source.html#l00013">hyperliquid_rest_order_gateway.hpp:13</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_1_1md__feed_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__feed.html">slick::sim::md_feed</a></div><div class="ttdef"><b>Definition</b> <a href="coinbase__live__ws__feed_8hpp_source.html#l00008">coinbase_live_ws_feed.hpp:8</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_1_1md__feed_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__feed.html">slick::sim::md_feed</a></div><div class="ttdef"><b>Definition</b> <a href="md__feed_8hpp_source.html#l00003">md_feed.hpp:3</a></div></div>
 <div class="ttc" id="astructslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks_html"><div class="ttname"><a href="structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks.html">slick::sim::md_feed::HyperliquidFeedCallbacks</a></div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__live__ws__feed_8hpp_source.html#l00015">hyperliquid_live_ws_feed.hpp:15</a></div></div>
 <div class="ttc" id="astructslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks_html_a3ecd9069e80b533d231148035401ae1f"><div class="ttname"><a href="structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks.html#a3ecd9069e80b533d231148035401ae1f">slick::sim::md_feed::HyperliquidFeedCallbacks::onL2BookUpdate</a></div><div class="ttdeci">virtual void onL2BookUpdate(const nlohmann::json &amp;msg)=0</div></div>
 <div class="ttc" id="astructslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks_html_a9852cf045175313d41c4ff3735a09169"><div class="ttname"><a href="structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks.html#a9852cf045175313d41c4ff3735a09169">slick::sim::md_feed::HyperliquidFeedCallbacks::onHyperliquidDisconnected</a></div><div class="ttdeci">virtual void onHyperliquidDisconnected()=0</div></div>
@@ -218,7 +218,7 @@ $(document).ready(function(){initNavTree('hyperliquid__live__ws__feed_8hpp_sourc
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_0c8e671586eb2b32789c15dff3254e91.html">md_feed</a></li><li class="navelem"><a class="el" href="hyperliquid__live__ws__feed_8hpp.html">hyperliquid_live_ws_feed.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_cfc02092a929cf7bfc7f38ef4fd5d30d.html">venues</a></li><li class="navelem"><a class="el" href="dir_b50ec4ce2bec822537b54439a3f1b1fa.html">hyperliquid</a></li><li class="navelem"><a class="el" href="hyperliquid__live__ws__feed_8hpp.html">hyperliquid_live_ws_feed.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

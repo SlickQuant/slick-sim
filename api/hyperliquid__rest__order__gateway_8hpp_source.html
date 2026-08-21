@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Slick Sim: order_gateway/hyperliquid_rest_order_gateway.hpp Source File</title>
+<title>Slick Sim: venues/hyperliquid/hyperliquid_rest_order_gateway.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.1.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.2.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('hyperliquid__rest__order__gateway_8hpp
 <div class="contents">
 <a href="hyperliquid__rest__order__gateway_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="rest__ws__order__gateway_8hpp.html">rest_ws_order_gateway.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="rest__ws__order__gateway_8hpp.html">order_gateway/rest_ws_order_gateway.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
@@ -186,7 +186,7 @@ $(document).ready(function(){initNavTree('hyperliquid__rest__order__gateway_8hpp
 <div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway_html"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html">slick::sim::order_gateway::RestWsOrderGateway</a></div><div class="ttdef"><b>Definition</b> <a href="rest__ws__order__gateway_8hpp_source.html#l00013">rest_ws_order_gateway.hpp:13</a></div></div>
 <div class="ttc" id="acommon_2order_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="common_2order_8hpp_source.html#l00016">order.hpp:16</a></div></div>
 <div class="ttc" id="anamespacehyperliquid_html"><div class="ttname"><a href="namespacehyperliquid.html">hyperliquid</a></div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__rest__order__gateway_8hpp_source.html#l00013">hyperliquid_rest_order_gateway.hpp:13</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_1_1order__gateway_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1order__gateway.html">slick::sim::order_gateway</a></div><div class="ttdef"><b>Definition</b> <a href="coinbase__common_8hpp_source.html#l00009">coinbase_common.hpp:9</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_1_1order__gateway_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1order__gateway.html">slick::sim::order_gateway</a></div><div class="ttdef"><b>Definition</b> <a href="fix__parser_8cpp_source.html#l00008">fix_parser.cpp:8</a></div></div>
 <div class="ttc" id="arest__ws__order__gateway_8hpp_html"><div class="ttname"><a href="rest__ws__order__gateway_8hpp.html">rest_ws_order_gateway.hpp</a></div></div>
 <div class="ttc" id="astructslick_1_1sim_1_1order__gateway_1_1PostRequestData_html"><div class="ttname"><a href="structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html">slick::sim::order_gateway::PostRequestData</a></div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__rest__order__gateway_8hpp_source.html#l00017">hyperliquid_rest_order_gateway.hpp:17</a></div></div>
 <div class="ttc" id="astructslick_1_1sim_1_1order__gateway_1_1PostRequestData_html_a1a209c1949d794af4891add05d9a82a0"><div class="ttname"><a href="structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html#a1a209c1949d794af4891add05d9a82a0">slick::sim::order_gateway::PostRequestData::user_id</a></div><div class="ttdeci">std::string user_id</div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__rest__order__gateway_8hpp_source.html#l00019">hyperliquid_rest_order_gateway.hpp:19</a></div></div>
@@ -196,7 +196,7 @@ $(document).ready(function(){initNavTree('hyperliquid__rest__order__gateway_8hpp
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_38d08d237b1dbc9cf742efc830bd736c.html">order_gateway</a></li><li class="navelem"><a class="el" href="hyperliquid__rest__order__gateway_8hpp.html">hyperliquid_rest_order_gateway.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_cfc02092a929cf7bfc7f38ef4fd5d30d.html">venues</a></li><li class="navelem"><a class="el" href="dir_b50ec4ce2bec822537b54439a3f1b1fa.html">hyperliquid</a></li><li class="navelem"><a class="el" href="hyperliquid__rest__order__gateway_8hpp.html">hyperliquid_rest_order_gateway.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

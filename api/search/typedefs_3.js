@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['id_0',['Id',['../classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#aec7bcec7be860388520346b3af8ac953',1,'slick::sim::order_gateway::PendingResponses']]],
-  ['iorderbookobserver_1',['IOrderBookObserver',['../namespaceslick_1_1sim.html#a9c1f8072ea547439852c1b28bc7be062',1,'slick::sim']]],
-  ['is_5ftransparent_2',['is_transparent',['../structslick_1_1sim_1_1utils_1_1StringViewHash.html#a466ac93c44b00edfa15b265a39982f26',1,'slick::sim::utils::StringViewHash::is_transparent'],['../structslick_1_1sim_1_1utils_1_1StringViewEq.html#ac3cbbf72b393b542db262dd39b818fb4',1,'slick::sim::utils::StringViewEq::is_transparent']]]
+  ['http_0',['http',['../coinbase__rest__order__gateway_8cpp.html#aff84f6580ccfcf070c84243d429eec8c',1,'Http:&#160;coinbase_rest_order_gateway.cpp'],['../hyperliquid__rest__order__gateway_8cpp.html#aff84f6580ccfcf070c84243d429eec8c',1,'Http:&#160;hyperliquid_rest_order_gateway.cpp']]],
+  ['hyperliquidchannel_1',['HyperliquidChannel',['../namespaceslick_1_1sim_1_1md__publisher.html#adb469b15aebdbcd086f81cde707c217f',1,'slick::sim::md_publisher']]]
 ];

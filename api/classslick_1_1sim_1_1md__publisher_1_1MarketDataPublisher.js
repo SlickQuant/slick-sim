@@ -1,6 +1,6 @@
 var classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher =
 [
-    [ "MarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html#a907e7a1b5b813c872b0c53a0de6d6d0e", null ],
+    [ "MarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html#a830eea1f8925534d180705c82dcf262f", null ],
     [ "~MarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html#aad524060a1fe884667fdffeed4dbe771", null ],
     [ "start", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html#a4288b4a6a9f86f0f6681504012525be7", null ],
     [ "stop", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html#aaeadbbf9a856b1b8f204eaff82f55c21", null ],

@@ -43,17 +43,17 @@
 <text text-anchor="start" x="5" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="18" y="-112" font-family="Helvetica,sans-Serif" font-size="10.00">~HyperliquidExchange()</text>
 <text text-anchor="start" x="5" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="18" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">start()</text>
+<text text-anchor="start" x="18" y="-97" font-family="Helvetica,sans-Serif" font-size="10.00">onL2BookUpdate()</text>
 <text text-anchor="start" x="5" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="18" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">onL2BookUpdate()</text>
+<text text-anchor="start" x="18" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">onTradesUpdate()</text>
 <text text-anchor="start" x="5" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="18" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">onTradesUpdate()</text>
-<text text-anchor="start" x="5" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text text-anchor="start" x="18" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">onHyperliquidDisconnected()</text>
+<text text-anchor="start" x="18" y="-67" font-family="Helvetica,sans-Serif" font-size="10.00">onHyperliquidDisconnected()</text>
+<text text-anchor="start" x="5" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text text-anchor="start" x="18" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdSubscription()</text>
 <text text-anchor="start" x="5" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="18" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdSubscription()</text>
+<text text-anchor="start" x="18" y="-37" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdUnsubscription()</text>
 <text text-anchor="start" x="5" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="18" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdUnsubscription()</text>
+<text text-anchor="start" x="18" y="-22" font-family="Helvetica,sans-Serif" font-size="10.00">poll()</text>
 <text text-anchor="start" x="5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text text-anchor="start" x="18" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">drainEventQueue()</text>
 <polygon fill="#666666" stroke="#666666" points="1,-152 1,-152 164,-152 164,-152 1,-152"/>

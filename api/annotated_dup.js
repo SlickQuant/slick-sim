@@ -9,6 +9,7 @@ var annotated_dup =
         [ "exch", "namespaceslick_1_1sim_1_1exch.html", [
           [ "CoinbaseExchange", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange" ],
           [ "Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html", "classslick_1_1sim_1_1exch_1_1Exchange" ],
+          [ "ExchangeRegistry", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry.html", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry" ],
           [ "HyperliquidExchange", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange" ],
           [ "OrderBookObserver", "structslick_1_1sim_1_1exch_1_1OrderBookObserver.html", "structslick_1_1sim_1_1exch_1_1OrderBookObserver" ],
           [ "Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", "structslick_1_1sim_1_1exch_1_1Symbol" ],

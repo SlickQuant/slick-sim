@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Slick Sim: market_data_publisher/hyperliquid_publisher.hpp Source File</title>
+<title>Slick Sim: venues/hyperliquid/hyperliquid_publisher.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.1.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.2.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -100,9 +100,9 @@ $(document).ready(function(){initNavTree('hyperliquid__publisher_8hpp_source.htm
 <div class="contents">
 <a href="hyperliquid__publisher_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ws__md__publisher_8hpp.html">ws_md_publisher.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="ws__md__publisher_8hpp.html">market_data_publisher/ws_md_publisher.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="hyperliquid__l2__diff_8hpp.html">hyperliquid_l2_diff.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;<a class="code" href="exch__hyperliquid_8hpp.html">exchange/exch_hyperliquid.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="hyperliquid__channels_8hpp.html">hyperliquid_channels.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;uwebsockets/App.h&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;<a class="code" href="market__data_8hpp.html">common/market_data.hpp</a>&gt;</span></div>
@@ -151,7 +151,7 @@ $(document).ready(function(){initNavTree('hyperliquid__publisher_8hpp_source.htm
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">void</span> setup_routes(uWS::App &amp;app) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> publish_market_data_update(<a class="code hl_struct" href="structslick_1_1sim_1_1MarketDataUpdate.html">MarketDataUpdate</a>* update);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> publish_market_data_update(<a class="code hl_struct" href="structslick_1_1sim_1_1MarketDataUpdate.html">MarketDataUpdate</a>* update) <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">void</span> handle_message(wsT* ws, std::string_view message);</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> handle_info(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> publish_subscription_response(<a class="code hl_struct" href="structslick_1_1sim_1_1MarketDataUpdate.html">MarketDataUpdate</a>* update);</div>
@@ -164,39 +164,35 @@ $(document).ready(function(){initNavTree('hyperliquid__publisher_8hpp_source.htm
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> subscribe_channel(wsT* ws, <a class="code hl_enumeration" href="namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62f">HyperliquidChannel</a> channel, <span class="keyword">const</span> std::string&amp; coin);</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::thread ws_thread_;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    us_listen_socket_t* listen_socket_ = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    uWS::Loop* loop_ = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    us_timer_t* heartbeat_timer_ = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    uint32_t port_ = 5001;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::atomic&lt;bool&gt; running_{<span class="keyword">false</span>};</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    std::string upstream_base_url_;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    uint64_t data_cursor_ = 0;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::unordered_set&lt;wsT*&gt; clients_;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">// symbol -&gt; multimap&lt;channel, ws&gt;</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    std::unordered_map&lt;std::string, std::unordered_multimap&lt;uint8_t, wsT*&gt;&gt; symbol_channel_client_;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="comment">// channel -&gt; symbol -&gt; set&lt;ws&gt;</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    std::array&lt;std::unordered_map&lt;std::string, std::unordered_set&lt;wsT*&gt;&gt;,</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>               <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(HyperliquidChannel::__COUNT__)&gt; subscription_info_;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="comment">// coin -&gt; (bid, ask) — last book state broadcast to &quot;l2&quot; subscribers, used to compute the next diff</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    std::unordered_map&lt;std::string, std::pair&lt;L2Levels, L2Levels&gt;&gt; l2_diff_baseline_;</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">int</span> ping_interval_ms_{15000};</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    std::chrono::seconds pong_timeout_{60};</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="comment">// ws_thread_, listen_socket_, loop_, heartbeat_timer_, port_, running_,</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="comment">// data_cursor_, ping_interval_ms_ and pong_timeout_ all live in</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="comment">// WebsocketMarketDataPublisher. Redeclaring them here shadowed the base</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="comment">// copies - the ones the inherited start()/stop() actually drive - so</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="comment">// check_heartbeats() was reading a second, independent pong_timeout_ that</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="comment">// merely happened to share the default. CoinbasePublisher was already</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment">// cleaned up this way.</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::string upstream_base_url_;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::unordered_set&lt;wsT*&gt; clients_;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="comment">// symbol -&gt; multimap&lt;channel, ws&gt;</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    std::unordered_map&lt;std::string, std::unordered_multimap&lt;uint8_t, wsT*&gt;&gt; symbol_channel_client_;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="comment">// channel -&gt; symbol -&gt; set&lt;ws&gt;</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::array&lt;std::unordered_map&lt;std::string, std::unordered_set&lt;wsT*&gt;&gt;,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>               <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(HyperliquidChannel::__COUNT__)&gt; subscription_info_;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="comment">// coin -&gt; (bid, ask) — last book state broadcast to &quot;l2&quot; subscribers, used to compute the next diff</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::unordered_map&lt;std::string, std::pair&lt;L2Levels, L2Levels&gt;&gt; l2_diff_baseline_;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>};</div>
 </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}   <span class="comment">// end namespace slick::sim::md_publisher</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>}   <span class="comment">// end namespace slick::sim::md_publisher</span></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1md__publisher_1_1HyperliquidPublisher_html"><div class="ttname"><a href="classslick_1_1sim_1_1md__publisher_1_1HyperliquidPublisher.html">slick::sim::md_publisher::HyperliquidPublisher</a></div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__publisher_8hpp_source.html#l00039">hyperliquid_publisher.hpp:39</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher_html"><div class="ttname"><a href="classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html">slick::sim::md_publisher::WebsocketMarketDataPublisher</a></div><div class="ttdef"><b>Definition</b> <a href="ws__md__publisher_8hpp_source.html#l00014">ws_md_publisher.hpp:14</a></div></div>
 <div class="ttc" id="acommon_2order_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="common_2order_8hpp_source.html#l00016">order.hpp:16</a></div></div>
-<div class="ttc" id="aexch__hyperliquid_8hpp_html"><div class="ttname"><a href="exch__hyperliquid_8hpp.html">exch_hyperliquid.hpp</a></div></div>
+<div class="ttc" id="ahyperliquid__channels_8hpp_html"><div class="ttname"><a href="hyperliquid__channels_8hpp.html">hyperliquid_channels.hpp</a></div></div>
 <div class="ttc" id="ahyperliquid__l2__diff_8hpp_html"><div class="ttname"><a href="hyperliquid__l2__diff_8hpp.html">hyperliquid_l2_diff.hpp</a></div></div>
 <div class="ttc" id="amarket__data_8hpp_html"><div class="ttname"><a href="market__data_8hpp.html">market_data.hpp</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_1_1exch_html_ab42d1d93f5cc2134c5d3499b480ce62f"><div class="ttname"><a href="namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62f">slick::sim::exch::HyperliquidChannel</a></div><div class="ttdeci">HyperliquidChannel</div><div class="ttdef"><b>Definition</b> <a href="exch__hyperliquid_8hpp_source.html#l00016">exch_hyperliquid.hpp:16</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_1_1md__publisher_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__publisher.html">slick::sim::md_publisher</a></div><div class="ttdef"><b>Definition</b> <a href="coinbase__publisher_8hpp_source.html#l00018">coinbase_publisher.hpp:18</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_1_1exch_html_ab42d1d93f5cc2134c5d3499b480ce62f"><div class="ttname"><a href="namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62f">slick::sim::exch::HyperliquidChannel</a></div><div class="ttdeci">HyperliquidChannel</div><div class="ttdoc">The market-data channels the Hyperliquid adapter serves.</div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__channels_8hpp_source.html#l00014">hyperliquid_channels.hpp:14</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_1_1md__publisher_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__publisher.html">slick::sim::md_publisher</a></div><div class="ttdef"><b>Definition</b> <a href="market__data__publisher_8hpp_source.html#l00008">market_data_publisher.hpp:8</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_1_1md__publisher_html_a02b4e3df58198a5455aed08691e4b67e"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__publisher.html#a02b4e3df58198a5455aed08691e4b67e">slick::sim::md_publisher::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="coinbase__publisher_8hpp_source.html#l00020">coinbase_publisher.hpp:20</a></div></div>
 <div class="ttc" id="astructslick_1_1sim_1_1MarketDataUpdate_html"><div class="ttname"><a href="structslick_1_1sim_1_1MarketDataUpdate.html">slick::sim::MarketDataUpdate</a></div><div class="ttdef"><b>Definition</b> <a href="market__data_8hpp_source.html#l00083">market_data.hpp:83</a></div></div>
 <div class="ttc" id="astructslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData_1_1SubInfo_html"><div class="ttname"><a href="structslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData_1_1SubInfo.html">slick::sim::md_publisher::HyperliquidPerSocketData::SubInfo</a></div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__publisher_8hpp_source.html#l00031">hyperliquid_publisher.hpp:31</a></div></div>
@@ -215,7 +211,7 @@ $(document).ready(function(){initNavTree('hyperliquid__publisher_8hpp_source.htm
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_eebeb9c522d9fc362434c47f70ba57c9.html">market_data_publisher</a></li><li class="navelem"><a class="el" href="hyperliquid__publisher_8hpp.html">hyperliquid_publisher.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_cfc02092a929cf7bfc7f38ef4fd5d30d.html">venues</a></li><li class="navelem"><a class="el" href="dir_b50ec4ce2bec822537b54439a3f1b1fa.html">hyperliquid</a></li><li class="navelem"><a class="el" href="hyperliquid__publisher_8hpp.html">hyperliquid_publisher.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

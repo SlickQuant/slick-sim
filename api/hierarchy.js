@@ -13,6 +13,7 @@ var hierarchy =
       [ "slick::sim::exch::CoinbaseExchange", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html", null ],
       [ "slick::sim::exch::HyperliquidExchange", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html", null ]
     ] ],
+    [ "slick::sim::exch::ExchangeRegistry", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry.html", null ],
     [ "slick::sim::Fill", "structslick_1_1sim_1_1Fill.html", null ],
     [ "slick::sim::utils::fixed_string< N >", "classslick_1_1sim_1_1utils_1_1fixed__string.html", null ],
     [ "slick::sim::utils::fixed_string< 32 >", "classslick_1_1sim_1_1utils_1_1fixed__string.html", null ],

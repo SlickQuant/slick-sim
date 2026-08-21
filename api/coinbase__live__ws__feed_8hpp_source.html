@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Slick Sim: md_feed/coinbase_live_ws_feed.hpp Source File</title>
+<title>Slick Sim: venues/coinbase/coinbase_live_ws_feed.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.1.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.2.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -100,13 +100,12 @@ $(document).ready(function(){initNavTree('coinbase__live__ws__feed_8hpp_source.h
 <div class="contents">
 <a href="coinbase__live__ws__feed_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="md__feed_8hpp.html">md_feed.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="md__feed_8hpp.html">md_feed/md_feed.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;coinbase/websocket.hpp&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;slick/queue.h&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="namespaceslick_1_1sim_1_1md__feed.html">    8</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceslick_1_1sim_1_1md__feed.html">slick::sim::md_feed</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceslick_1_1sim_1_1md__feed.html">slick::sim::md_feed</a> {</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
 <div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html">   10</a></span><span class="keyword">class </span><a class="code hl_class" href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html">CoinbaseLiveWSFeed</a> : <span class="keyword">public</span> <a class="code hl_class" href="classslick_1_1sim_1_1md__feed_1_1MDFeed.html">MDFeed</a></div>
@@ -154,7 +153,6 @@ $(document).ready(function(){initNavTree('coinbase__live__ws__feed_8hpp_source.h
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}   <span class="comment">// end nanespace slick::sim::md_feed</span></div>
-</div>
 <div class="ttc" id="aclassslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed_html"><div class="ttname"><a href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html">slick::sim::md_feed::CoinbaseLiveWSFeed</a></div><div class="ttdef"><b>Definition</b> <a href="coinbase__live__ws__feed_8hpp_source.html#l00010">coinbase_live_ws_feed.hpp:11</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed_html_a0cb0a75ed498ad46097c80e1198694f1"><div class="ttname"><a href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#a0cb0a75ed498ad46097c80e1198694f1">slick::sim::md_feed::CoinbaseLiveWSFeed::~CoinbaseLiveWSFeed</a></div><div class="ttdeci">~CoinbaseLiveWSFeed() override=default</div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed_html_a550181c7716cfefe49a9cc6acd15540d"><div class="ttname"><a href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#a550181c7716cfefe49a9cc6acd15540d">slick::sim::md_feed::CoinbaseLiveWSFeed::start</a></div><div class="ttdeci">void start() override</div><div class="ttdef"><b>Definition</b> <a href="coinbase__live__ws__feed_8hpp_source.html#l00034">coinbase_live_ws_feed.hpp:34</a></div></div>
@@ -163,13 +161,13 @@ $(document).ready(function(){initNavTree('coinbase__live__ws__feed_8hpp_source.h
 <div class="ttc" id="aclassslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed_html_ac5907475081ed81417c2e401880ce1c6"><div class="ttname"><a href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#ac5907475081ed81417c2e401880ce1c6">slick::sim::md_feed::CoinbaseLiveWSFeed::CoinbaseLiveWSFeed</a></div><div class="ttdeci">CoinbaseLiveWSFeed(slick::stream_buffer_multiplexer &amp;mux, coinbase::UserThreadWebsocketCallbacks *callbacks, const std::vector&lt; std::string &gt; &amp;symbols={})</div><div class="ttdef"><b>Definition</b> <a href="coinbase__live__ws__feed_8hpp_source.html#l00016">coinbase_live_ws_feed.hpp:16</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1md__feed_1_1MDFeed_html"><div class="ttname"><a href="classslick_1_1sim_1_1md__feed_1_1MDFeed.html">slick::sim::md_feed::MDFeed</a></div><div class="ttdef"><b>Definition</b> <a href="md__feed_8hpp_source.html#l00005">md_feed.hpp:6</a></div></div>
 <div class="ttc" id="amd__feed_8hpp_html"><div class="ttname"><a href="md__feed_8hpp.html">md_feed.hpp</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_1_1md__feed_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__feed.html">slick::sim::md_feed</a></div><div class="ttdef"><b>Definition</b> <a href="coinbase__live__ws__feed_8hpp_source.html#l00008">coinbase_live_ws_feed.hpp:8</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_1_1md__feed_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__feed.html">slick::sim::md_feed</a></div><div class="ttdef"><b>Definition</b> <a href="md__feed_8hpp_source.html#l00003">md_feed.hpp:3</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_0c8e671586eb2b32789c15dff3254e91.html">md_feed</a></li><li class="navelem"><a class="el" href="coinbase__live__ws__feed_8hpp.html">coinbase_live_ws_feed.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_cfc02092a929cf7bfc7f38ef4fd5d30d.html">venues</a></li><li class="navelem"><a class="el" href="dir_0812b56bb40adcc91aa4b591c9d3d29e.html">coinbase</a></li><li class="navelem"><a class="el" href="coinbase__live__ws__feed_8hpp.html">coinbase_live_ws_feed.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Slick Sim: market_data_publisher/coinbase_publisher.cpp Source File</title>
+<title>Slick Sim: venues/coinbase/coinbase_publisher.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.1.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.2.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('coinbase__publisher_8cpp_source.html',
 <div class="contents">
 <a href="coinbase__publisher_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;slick/logger.hpp&gt;</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="coinbase__publisher_8hpp.html">coinbase_publisher.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="sequenced__message_8hpp.html">sequenced_message.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="sequenced__message_8hpp.html">market_data_publisher/sequenced_message.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="coinbase__trade__encoder_8hpp.html">coinbase_trade_encoder.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;<a class="code" href="symbol__manager_8hpp.html">common/symbol_manager.hpp</a>&gt;</span></div>
@@ -814,17 +814,17 @@ $(document).ready(function(){initNavTree('coinbase__publisher_8cpp_source.html',
 <div class="ttc" id="acoinbase__trade__encoder_8hpp_html"><div class="ttname"><a href="coinbase__trade__encoder_8hpp.html">coinbase_trade_encoder.hpp</a></div></div>
 <div class="ttc" id="acommon_2order_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="common_2order_8hpp_source.html#l00016">order.hpp:16</a></div></div>
 <div class="ttc" id="afixed__string_8hpp_html"><div class="ttname"><a href="fixed__string_8hpp.html">fixed_string.hpp</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_1_1md__publisher_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__publisher.html">slick::sim::md_publisher</a></div><div class="ttdef"><b>Definition</b> <a href="coinbase__publisher_8hpp_source.html#l00018">coinbase_publisher.hpp:18</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_1_1md__publisher_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__publisher.html">slick::sim::md_publisher</a></div><div class="ttdef"><b>Definition</b> <a href="market__data__publisher_8hpp_source.html#l00008">market_data_publisher.hpp:8</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_1_1md__publisher_html_a5074a4b7b80c260a0ffa0fb6d7cdd86c"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__publisher.html#a5074a4b7b80c260a0ffa0fb6d7cdd86c">slick::sim::md_publisher::encode_market_trade</a></div><div class="ttdeci">json encode_market_trade(const char *product_id, const TradeSummary &amp;summary)</div><div class="ttdoc">One executed trade, as a &quot;type&quot;:&quot;update&quot; event.</div><div class="ttdef"><b>Definition</b> <a href="coinbase__trade__encoder_8cpp_source.html#l00045">coinbase_trade_encoder.cpp:45</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_1_1md__publisher_html_adab8fd9efcac99e51df638d66d095f9f"><div class="ttname"><a href="namespaceslick_1_1sim_1_1md__publisher.html#adab8fd9efcac99e51df638d66d095f9f">slick::sim::md_publisher::encode_market_trades</a></div><div class="ttdeci">json encode_market_trades(const char *product_id, const char *event_type, const MDTrade *trades, uint32_t num_trades, bool newest_first)</div><div class="ttdoc">A run of trades as a single event of the given type.</div><div class="ttdef"><b>Definition</b> <a href="coinbase__trade__encoder_8cpp_source.html#l00053">coinbase_trade_encoder.cpp:53</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_1_1utils_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1utils.html">slick::sim::utils</a></div><div class="ttdef"><b>Definition</b> <a href="fixed__string_8hpp_source.html#l00011">fixed_string.hpp:11</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_1_1utils_html_a9a76746d0605ad46d7115204ce0d8bd9"><div class="ttname"><a href="namespaceslick_1_1sim_1_1utils.html#a9a76746d0605ad46d7115204ce0d8bd9">slick::sim::utils::copy_wire_field</a></div><div class="ttdeci">bool copy_wire_field(char(&amp;dst)[N], std::string_view src) noexcept</div><div class="ttdoc">Copies a name into a fixed-width wire field.</div><div class="ttdef"><b>Definition</b> <a href="fixed__string_8hpp_source.html#l00031">fixed_string.hpp:31</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_1_1utils_html_a9ac3e6fb1a7e4af2a1f51a467983d28d"><div class="ttname"><a href="namespaceslick_1_1sim_1_1utils.html#a9ac3e6fb1a7e4af2a1f51a467983d28d">slick::sim::utils::format_heatbeat_timestamp</a></div><div class="ttdeci">std::string format_heatbeat_timestamp()</div><div class="ttdef"><b>Definition</b> <a href="timestamp_8hpp_source.html#l00060">timestamp.hpp:60</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_1_1utils_html_ae347d68578e19574b640f4e42d8fe3ab"><div class="ttname"><a href="namespaceslick_1_1sim_1_1utils.html#ae347d68578e19574b640f4e42d8fe3ab">slick::sim::utils::format_timestamp_iso8601</a></div><div class="ttdeci">std::string format_timestamp_iso8601(const std::chrono::system_clock::time_point &amp;tp, int num_sebsecond_digits=3)</div><div class="ttdef"><b>Definition</b> <a href="timestamp_8hpp_source.html#l00009">timestamp.hpp:9</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_html"><div class="ttname"><a href="namespaceslick_1_1sim.html">slick::sim</a></div><div class="ttdef"><b>Definition</b> <a href="hyperliquid__info__proxy_8hpp_source.html#l00011">hyperliquid_info_proxy.hpp:11</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_html"><div class="ttname"><a href="namespaceslick_1_1sim.html">slick::sim</a></div><div class="ttdef"><b>Definition</b> <a href="market__data_8hpp_source.html#l00008">market_data.hpp:8</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_a0a9f0bd1a7d704fe4599a7420d34e1d3a85f539001467e885c9539c6d39233b4f"><div class="ttname"><a href="namespaceslick_1_1sim.html#a0a9f0bd1a7d704fe4599a7420d34e1d3a85f539001467e885c9539c6d39233b4f">slick::sim::NONE</a></div><div class="ttdeci">@ NONE</div><div class="ttdef"><b>Definition</b> <a href="market__data_8hpp_source.html#l00107">market_data.hpp:107</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_html_a2e99a148afa0fe8ce39517deb691df04"><div class="ttname"><a href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04">slick::sim::Venue</a></div><div class="ttdeci">Venue</div><div class="ttdef"><b>Definition</b> <a href="types_8hpp_source.html#l00095">types.hpp:95</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_html_a2e99a148afa0fe8ce39517deb691df04a57b6f0001946a1f2d9e066997dd40857"><div class="ttname"><a href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04a57b6f0001946a1f2d9e066997dd40857">slick::sim::COINBASE</a></div><div class="ttdeci">@ COINBASE</div><div class="ttdef"><b>Definition</b> <a href="types_8hpp_source.html#l00099">types.hpp:99</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_html_a2e99a148afa0fe8ce39517deb691df04"><div class="ttname"><a href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04">slick::sim::Venue</a></div><div class="ttdeci">Venue</div><div class="ttdef"><b>Definition</b> <a href="types_8hpp_source.html#l00140">types.hpp:140</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_html_a2e99a148afa0fe8ce39517deb691df04a57b6f0001946a1f2d9e066997dd40857"><div class="ttname"><a href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04a57b6f0001946a1f2d9e066997dd40857">slick::sim::COINBASE</a></div><div class="ttdeci">@ COINBASE</div><div class="ttdef"><b>Definition</b> <a href="types_8hpp_source.html#l00143">types.hpp:143</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_a77a6fca48956c6f98d257c78f08f1685adda7d6383ed7ec7cb331af01ab6fd553"><div class="ttname"><a href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685adda7d6383ed7ec7cb331af01ab6fd553">slick::sim::MessageType::MD_UNSUBSCRIPTION</a></div><div class="ttdeci">@ MD_UNSUBSCRIPTION</div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_a77a6fca48956c6f98d257c78f08f1685ae81626addcdb57640eb34d808e542dd8"><div class="ttname"><a href="namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685ae81626addcdb57640eb34d808e542dd8">slick::sim::MessageType::MD_SUBSCRIPTION</a></div><div class="ttdeci">@ MD_SUBSCRIPTION</div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_aa6e75f7b95b05d860ac06f0c66d44281"><div class="ttname"><a href="namespaceslick_1_1sim.html#aa6e75f7b95b05d860ac06f0c66d44281">slick::sim::to_string</a></div><div class="ttdeci">constexpr std::string_view to_string(MDSubscriptionRejectReason reason)</div><div class="ttdef"><b>Definition</b> <a href="market__data_8hpp_source.html#l00112">market_data.hpp:112</a></div></div>
@@ -856,7 +856,7 @@ $(document).ready(function(){initNavTree('coinbase__publisher_8cpp_source.html',
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_eebeb9c522d9fc362434c47f70ba57c9.html">market_data_publisher</a></li><li class="navelem"><a class="el" href="coinbase__publisher_8cpp.html">coinbase_publisher.cpp</a></li>
+    <li class="navelem"><a class="el" href="dir_cfc02092a929cf7bfc7f38ef4fd5d30d.html">venues</a></li><li class="navelem"><a class="el" href="dir_0812b56bb40adcc91aa4b591c9d3d29e.html">coinbase</a></li><li class="navelem"><a class="el" href="coinbase__publisher_8cpp.html">coinbase_publisher.cpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

@@ -1,5 +1,8 @@
 var namespaceslick_1_1sim =
 [
+    [ "detail", "namespaceslick_1_1sim_1_1detail.html", [
+      [ "iequals", "namespaceslick_1_1sim_1_1detail.html#a484703f311b6f7b35aa3dc63941a14ca", null ]
+    ] ],
     [ "engine", "namespaceslick_1_1sim_1_1engine.html", "namespaceslick_1_1sim_1_1engine" ],
     [ "exch", "namespaceslick_1_1sim_1_1exch.html", "namespaceslick_1_1sim_1_1exch" ],
     [ "md_feed", "namespaceslick_1_1sim_1_1md__feed.html", "namespaceslick_1_1sim_1_1md__feed" ],

@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.1.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.2.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -99,7 +99,7 @@ $(document).ready(function(){initNavTree('classslick_1_1sim_1_1exch_1_1Hyperliqu
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="exch__hyperliquid_8hpp_source.html">exchange/exch_hyperliquid.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="hyperliquid__exchange_8hpp_source.html">venues/hyperliquid/hyperliquid_exchange.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for slick::sim::exch::HyperliquidExchange:</div>
 <div class="dyncontent">
@@ -117,8 +117,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adf9abdde179194f7f468c04f7970c185"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5ee34e42b4ea0289ec5550d9cbf4461" id="r_aa5ee34e42b4ea0289ec5550d9cbf4461"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#aa5ee34e42b4ea0289ec5550d9cbf4461">~HyperliquidExchange</a> () override=default</td></tr>
 <tr class="separator:aa5ee34e42b4ea0289ec5550d9cbf4461"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7f90df9e22f5160e102def647756d70" id="r_ad7f90df9e22f5160e102def647756d70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#ad7f90df9e22f5160e102def647756d70">start</a> () override</td></tr>
-<tr class="separator:ad7f90df9e22f5160e102def647756d70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78658175deabaee9a340dd6109ec5560" id="r_a78658175deabaee9a340dd6109ec5560"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#a78658175deabaee9a340dd6109ec5560">onL2BookUpdate</a> (const nlohmann::json &amp;msg) override</td></tr>
 <tr class="separator:a78658175deabaee9a340dd6109ec5560"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a1f631c543ae22ae016ca66cd042190" id="r_a1a1f631c543ae22ae016ca66cd042190"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#a1a1f631c543ae22ae016ca66cd042190">onTradesUpdate</a> (const nlohmann::json &amp;msg) override</td></tr>
@@ -130,6 +128,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6e7f20119dc47d85605fd346d7b82501 inherit pub_methods_classslick_1_1sim_1_1exch_1_1Exchange"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3f0e1bd6582726fb3c2d682d39dec7d inherit pub_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_ab3f0e1bd6582726fb3c2d682d39dec7d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#ab3f0e1bd6582726fb3c2d682d39dec7d">~Exchange</a> ()</td></tr>
 <tr class="separator:ab3f0e1bd6582726fb3c2d682d39dec7d inherit pub_methods_classslick_1_1sim_1_1exch_1_1Exchange"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a450557643509b6c8281337444730dea3 inherit pub_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_a450557643509b6c8281337444730dea3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a450557643509b6c8281337444730dea3">start</a> ()</td></tr>
+<tr class="separator:a450557643509b6c8281337444730dea3 inherit pub_methods_classslick_1_1sim_1_1exch_1_1Exchange"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea60ed859dda12087429935f03d436ad inherit pub_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_aea60ed859dda12087429935f03d436ad"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#aea60ed859dda12087429935f03d436ad">stop</a> ()</td></tr>
 <tr class="separator:aea60ed859dda12087429935f03d436ad inherit pub_methods_classslick_1_1sim_1_1exch_1_1Exchange"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a556182ece61183677e691bbcab3ab093 inherit pub_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_a556182ece61183677e691bbcab3ab093"><td class="memItemLeft" align="right" valign="top">queue&lt; <a class="el" href="structslick_1_1sim_1_1Request.html">Request</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a556182ece61183677e691bbcab3ab093">request_queue</a> () noexcept</td></tr>
@@ -148,6 +148,9 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:acf1e901e67ae3ae29e665680d56d5aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb2d266ee4cf363a6f7c19b7925a0297" id="r_aeb2d266ee4cf363a6f7c19b7925a0297"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#aeb2d266ee4cf363a6f7c19b7925a0297">handleMdUnsubscription</a> (const <a class="el" href="structslick_1_1sim_1_1Request.html">Request</a> &amp;request) override</td></tr>
 <tr class="separator:aeb2d266ee4cf363a6f7c19b7925a0297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad87a42683279d2f56afdef33ff400a89" id="r_ad87a42683279d2f56afdef33ff400a89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#ad87a42683279d2f56afdef33ff400a89">poll</a> () override</td></tr>
+<tr class="memdesc:ad87a42683279d2f56afdef33ff400a89"><td class="mdescLeft">&#160;</td><td class="mdescRight">One iteration of the exchange thread's loop, called continuously between <code><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a450557643509b6c8281337444730dea3">start()</a></code> and <code><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#aea60ed859dda12087429935f03d436ad">stop()</a></code>.  <br /></td></tr>
+<tr class="separator:ad87a42683279d2f56afdef33ff400a89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1daaa52c58c16cc5821b694ccbba8cec" id="r_a1daaa52c58c16cc5821b694ccbba8cec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#a1daaa52c58c16cc5821b694ccbba8cec">drainEventQueue</a> ()</td></tr>
 <tr class="separator:a1daaa52c58c16cc5821b694ccbba8cec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classslick_1_1sim_1_1exch_1_1Exchange"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classslick_1_1sim_1_1exch_1_1Exchange')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html">slick::sim::exch::Exchange</a></td></tr>
@@ -208,6 +211,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a509ae7a7a2800758a35020681dd49f02 inherit pro_attribs_classslick_1_1sim_1_1exch_1_1Exchange"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cff3510e50e06387254abf3454147d2 inherit pro_attribs_classslick_1_1sim_1_1exch_1_1Exchange" id="r_a0cff3510e50e06387254abf3454147d2"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classslick_1_1sim_1_1md__feed_1_1MDFeed.html">md_feed::MDFeed</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a0cff3510e50e06387254abf3454147d2">md_feed_</a></td></tr>
 <tr class="separator:a0cff3510e50e06387254abf3454147d2 inherit pro_attribs_classslick_1_1sim_1_1exch_1_1Exchange"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6815334bf1d2796a43ce70436934f913 inherit pro_attribs_classslick_1_1sim_1_1exch_1_1Exchange" id="r_a6815334bf1d2796a43ce70436934f913"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classslick_1_1sim_1_1md__feed_1_1MDFeed.html">md_feed::MDFeed</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a6815334bf1d2796a43ce70436934f913">md_feeds_</a></td></tr>
+<tr class="memdesc:a6815334bf1d2796a43ce70436934f913 inherit pro_attribs_classslick_1_1sim_1_1exch_1_1Exchange"><td class="mdescLeft">&#160;</td><td class="mdescRight">Both adapters used to declare their own copy of this, which is why the base <code><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#aea60ed859dda12087429935f03d436ad">stop()</a></code> never stopped a feed.  <br /></td></tr>
+<tr class="separator:a6815334bf1d2796a43ce70436934f913 inherit pro_attribs_classslick_1_1sim_1_1exch_1_1Exchange"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add3ee859592a9f220da78ee2bca9852b inherit pro_attribs_classslick_1_1sim_1_1exch_1_1Exchange" id="r_add3ee859592a9f220da78ee2bca9852b"><td class="memItemLeft" align="right" valign="top">std::thread&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#add3ee859592a9f220da78ee2bca9852b">thread_</a></td></tr>
 <tr class="separator:add3ee859592a9f220da78ee2bca9852b inherit pro_attribs_classslick_1_1sim_1_1exch_1_1Exchange"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9e14233f34b64b711907649c4f84bea inherit pro_attribs_classslick_1_1sim_1_1exch_1_1Exchange" id="r_af9e14233f34b64b711907649c4f84bea"><td class="memItemLeft" align="right" valign="top">std::thread&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#af9e14233f34b64b711907649c4f84bea">md_thread_</a></td></tr>
@@ -237,7 +243,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="exch__hyperliquid_8hpp_source.html#l00023">23</a> of file <a class="el" href="exch__hyperliquid_8hpp_source.html">exch_hyperliquid.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__exchange_8hpp_source.html#l00017">17</a> of file <a class="el" href="hyperliquid__exchange_8hpp_source.html">hyperliquid_exchange.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="adf9abdde179194f7f468c04f7970c185" name="adf9abdde179194f7f468c04f7970c185"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adf9abdde179194f7f468c04f7970c185">&#9670;&#160;</a></span>HyperliquidExchange()</h2>
@@ -255,9 +261,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exch__hyperliquid_8cpp_source.html#l00024">24</a> of file <a class="el" href="exch__hyperliquid_8cpp_source.html">exch_hyperliquid.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00024">24</a> of file <a class="el" href="hyperliquid__exchange_8cpp_source.html">hyperliquid_exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00109">slick::sim::exch::Exchange::md_publisher_</a>, <a class="el" href="exchange_8hpp_source.html#l00101">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="exchange_8hpp_source.html#l00108">slick::sim::exch::Exchange::order_gateways_</a>, <a class="el" href="exchange_8hpp_source.html#l00099">slick::sim::exch::Exchange::request_queue_</a>, and <a class="el" href="exchange_8hpp_source.html#l00100">slick::sim::exch::Exchange::response_queue_</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00120">slick::sim::exch::Exchange::md_feeds_</a>, <a class="el" href="exchange_8hpp_source.html#l00127">slick::sim::exch::Exchange::md_publisher_</a>, <a class="el" href="exchange_8hpp_source.html#l00111">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="exchange_8hpp_source.html#l00126">slick::sim::exch::Exchange::order_gateways_</a>, <a class="el" href="exchange_8hpp_source.html#l00109">slick::sim::exch::Exchange::request_queue_</a>, and <a class="el" href="exchange_8hpp_source.html#l00110">slick::sim::exch::Exchange::response_queue_</a>.</p>
 
 </div>
 </div>
@@ -310,7 +316,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="exch__hyperliquid_8cpp_source.html#l00124">124</a> of file <a class="el" href="exch__hyperliquid_8cpp_source.html">exch_hyperliquid.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00099">99</a> of file <a class="el" href="hyperliquid__exchange_8cpp_source.html">hyperliquid_exchange.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00120">slick::sim::exch::Exchange::md_feeds_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00055">poll()</a>.</p>
 
 </div>
 </div>
@@ -340,9 +350,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#ae1253e2d79d882abf8ad92f9787f49d0">slick::sim::exch::Exchange</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="exch__hyperliquid_8cpp_source.html#l00426">426</a> of file <a class="el" href="exch__hyperliquid_8cpp_source.html">exch_hyperliquid.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00401">401</a> of file <a class="el" href="hyperliquid__exchange_8cpp_source.html">hyperliquid_exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00101">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="messages_8hpp_source.html#l00275">slick::sim::Request::md_subscription</a>, <a class="el" href="symbol_8hpp_source.html#l00051">slick::sim::exch::Symbol::num_subscriptions_</a>, <a class="el" href="symbol_8hpp_source.html#l00050">slick::sim::exch::Symbol::order_book_</a>, <a class="el" href="exchange_8cpp_source.html#l00482">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, <a class="el" href="messages_8hpp_source.html#l00269">slick::sim::Request::symbol</a>, and <a class="el" href="exchange_8hpp_source.html#l00098">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00120">slick::sim::exch::Exchange::md_feeds_</a>, <a class="el" href="exchange_8hpp_source.html#l00111">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="messages_8hpp_source.html#l00275">slick::sim::Request::md_subscription</a>, <a class="el" href="symbol_8hpp_source.html#l00051">slick::sim::exch::Symbol::num_subscriptions_</a>, <a class="el" href="symbol_8hpp_source.html#l00050">slick::sim::exch::Symbol::order_book_</a>, <a class="el" href="exchange_8cpp_source.html#l00522">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, <a class="el" href="messages_8hpp_source.html#l00269">slick::sim::Request::symbol</a>, and <a class="el" href="exchange_8hpp_source.html#l00108">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -372,9 +382,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a08416af82a06a1e18f2cc26dc36eb51d">slick::sim::exch::Exchange</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="exch__hyperliquid_8cpp_source.html#l00497">497</a> of file <a class="el" href="exch__hyperliquid_8cpp_source.html">exch_hyperliquid.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00472">472</a> of file <a class="el" href="hyperliquid__exchange_8cpp_source.html">hyperliquid_exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00051">slick::sim::exch::Symbol::num_subscriptions_</a>, <a class="el" href="messages_8hpp_source.html#l00269">slick::sim::Request::symbol</a>, and <a class="el" href="exchange_8hpp_source.html#l00098">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="symbol_8hpp_source.html#l00051">slick::sim::exch::Symbol::num_subscriptions_</a>, <a class="el" href="messages_8hpp_source.html#l00269">slick::sim::Request::symbol</a>, and <a class="el" href="exchange_8hpp_source.html#l00108">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -403,9 +413,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks.html#a9852cf045175313d41c4ff3735a09169">slick::sim::md_feed::HyperliquidFeedCallbacks</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="exch__hyperliquid_8cpp_source.html#l00110">110</a> of file <a class="el" href="exch__hyperliquid_8cpp_source.html">exch_hyperliquid.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00085">85</a> of file <a class="el" href="hyperliquid__exchange_8cpp_source.html">hyperliquid_exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00098">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00108">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -435,7 +445,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks.html#a3ecd9069e80b533d231148035401ae1f">slick::sim::md_feed::HyperliquidFeedCallbacks</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="exch__hyperliquid_8cpp_source.html#l00101">101</a> of file <a class="el" href="exch__hyperliquid_8cpp_source.html">exch_hyperliquid.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00076">76</a> of file <a class="el" href="hyperliquid__exchange_8cpp_source.html">hyperliquid_exchange.cpp</a>.</p>
 
 </div>
 </div>
@@ -465,12 +475,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks.html#af7230ee879c53cd44b7e82e4078509ef">slick::sim::md_feed::HyperliquidFeedCallbacks</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="exch__hyperliquid_8cpp_source.html#l00105">105</a> of file <a class="el" href="exch__hyperliquid_8cpp_source.html">exch_hyperliquid.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00080">80</a> of file <a class="el" href="hyperliquid__exchange_8cpp_source.html">hyperliquid_exchange.cpp</a>.</p>
 
 </div>
 </div>
-<a id="ad7f90df9e22f5160e102def647756d70" name="ad7f90df9e22f5160e102def647756d70"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad7f90df9e22f5160e102def647756d70">&#9670;&#160;</a></span>start()</h2>
+<a id="ad87a42683279d2f56afdef33ff400a89" name="ad87a42683279d2f56afdef33ff400a89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad87a42683279d2f56afdef33ff400a89">&#9670;&#160;</a></span>poll()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -479,7 +489,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void HyperliquidExchange::start </td>
+          <td class="memname">void HyperliquidExchange::poll </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -487,22 +497,26 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a450557643509b6c8281337444730dea3">slick::sim::exch::Exchange</a>.</p>
+<p>One iteration of the exchange thread's loop, called continuously between <code><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a450557643509b6c8281337444730dea3">start()</a></code> and <code><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#aea60ed859dda12087429935f03d436ad">stop()</a></code>. </p>
+<p>Override it to drain the venue SDK and release any feed events it queued; the base loop calls <code><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#af4c6b812544b7568e57df4be92013736">processRequest()</a></code> immediately after it on every tick, so an adapter never rewrites the loop itself.</p>
+<p>Runs on the exchange thread - the only thread that touches books - so an override may mutate them directly. An adapter with no feed leaves this alone and still serves clients matching against each other. </p>
 
-<p class="definition">Definition at line <a class="el" href="exch__hyperliquid_8cpp_source.html#l00055">55</a> of file <a class="el" href="exch__hyperliquid_8cpp_source.html">exch_hyperliquid.cpp</a>.</p>
+<p>Reimplemented from <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a43fe926cfdaf3b774d1f69fce4b36012">slick::sim::exch::Exchange</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00110">slick::sim::exch::Exchange::enabled_</a>, <a class="el" href="exchange_8hpp_source.html#l00102">slick::sim::exch::Exchange::md_feed_</a>, <a class="el" href="exchange_8hpp_source.html#l00109">slick::sim::exch::Exchange::md_publisher_</a>, <a class="el" href="exchange_8hpp_source.html#l00108">slick::sim::exch::Exchange::order_gateways_</a>, <a class="el" href="exchange_8hpp_source.html#l00105">slick::sim::exch::Exchange::run_</a>, <a class="el" href="exchange_8hpp_source.html#l00103">slick::sim::exch::Exchange::thread_</a>, <a class="el" href="market__data_8hpp_source.html#l00112">slick::sim::to_string()</a>, and <a class="el" href="exchange_8hpp_source.html#l00098">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00055">55</a> of file <a class="el" href="hyperliquid__exchange_8cpp_source.html">hyperliquid_exchange.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="hyperliquid__exchange_8cpp_source.html#l00099">drainEventQueue()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>exchange/<a class="el" href="exch__hyperliquid_8hpp_source.html">exch_hyperliquid.hpp</a></li>
-<li>exchange/<a class="el" href="exch__hyperliquid_8cpp_source.html">exch_hyperliquid.cpp</a></li>
+<li>venues/hyperliquid/<a class="el" href="hyperliquid__exchange_8hpp_source.html">hyperliquid_exchange.hpp</a></li>
+<li>venues/hyperliquid/<a class="el" href="hyperliquid__exchange_8cpp_source.html">hyperliquid_exchange.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

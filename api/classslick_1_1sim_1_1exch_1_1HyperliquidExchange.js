@@ -8,5 +8,5 @@ var classslick_1_1sim_1_1exch_1_1HyperliquidExchange =
     [ "onHyperliquidDisconnected", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#ad4a5a76a64167dd0607e3aa160930598", null ],
     [ "onL2BookUpdate", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#a78658175deabaee9a340dd6109ec5560", null ],
     [ "onTradesUpdate", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#a1a1f631c543ae22ae016ca66cd042190", null ],
-    [ "start", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#ad7f90df9e22f5160e102def647756d70", null ]
+    [ "poll", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#ad87a42683279d2f56afdef33ff400a89", null ]
 ];

@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.1.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.2.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -92,6 +92,7 @@ $(document).ready(function(){initNavTree('types_8hpp.html',''); initResizable();
 <div class="header">
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
@@ -123,6 +124,20 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceslick_1_1sim" id="r_namespaceslick_1_1sim"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html">slick::sim</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceslick_1_1sim_1_1detail" id="r_namespaceslick_1_1sim_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1detail.html">slick::sim::detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:afaf6b8516bf04d516effe80e6814e19c" id="r_afaf6b8516bf04d516effe80e6814e19c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="types_8hpp.html#afaf6b8516bf04d516effe80e6814e19c">SLICK_SIM_VENUE_LIST</a>(X)</td></tr>
+<tr class="memdesc:afaf6b8516bf04d516effe80e6814e19c"><td class="mdescLeft">&#160;</td><td class="mdescRight">One line per venue: the enumerator, then the canonical name <code>to_string</code> returns and <code>to_venue</code> accepts.  <br /></td></tr>
+<tr class="separator:afaf6b8516bf04d516effe80e6814e19c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a075972cb922264f0d055eb61bc69d69c" id="r_a075972cb922264f0d055eb61bc69d69c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="types_8hpp.html#a075972cb922264f0d055eb61bc69d69c">SLICK_SIM_VENUE_ENUMERATOR</a>(name,  text)&#160;&#160;&#160;name,</td></tr>
+<tr class="separator:a075972cb922264f0d055eb61bc69d69c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb48902001de9f6d78e17576c5c8831f" id="r_acb48902001de9f6d78e17576c5c8831f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="types_8hpp.html#acb48902001de9f6d78e17576c5c8831f">SLICK_SIM_VENUE_CASE</a>(name,  text)&#160;&#160;&#160;case Venue::name: return text;</td></tr>
+<tr class="separator:acb48902001de9f6d78e17576c5c8831f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a186d668f4a7fa80d4f10a2adc9d385f2" id="r_a186d668f4a7fa80d4f10a2adc9d385f2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="types_8hpp.html#a186d668f4a7fa80d4f10a2adc9d385f2">SLICK_SIM_VENUE_MATCH</a>(name,  text)&#160;&#160;&#160;    if (detail::iequals(exch, text)) { return Venue::name; }</td></tr>
+<tr class="separator:a186d668f4a7fa80d4f10a2adc9d385f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -170,9 +185,13 @@ Functions</h2></td></tr>
 <tr class="separator:ad3844198c585908c27fac6edc20383c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2c54f37191771de649b6e7e34dc4acc" id="r_ae2c54f37191771de649b6e7e34dc4acc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#ae2c54f37191771de649b6e7e34dc4acc">slick::sim::to_qty_string</a> (<a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> qty)</td></tr>
 <tr class="separator:ae2c54f37191771de649b6e7e34dc4acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a484703f311b6f7b35aa3dc63941a14ca" id="r_a484703f311b6f7b35aa3dc63941a14ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1detail.html#a484703f311b6f7b35aa3dc63941a14ca">slick::sim::detail::iequals</a> (std::string_view a, std::string_view b) noexcept</td></tr>
+<tr class="memdesc:a484703f311b6f7b35aa3dc63941a14ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">ASCII case-insensitive compare, used for every venue-name lookup.  <br /></td></tr>
+<tr class="separator:a484703f311b6f7b35aa3dc63941a14ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51b9e1564e639b0d549f3009d003645b" id="r_a51b9e1564e639b0d549f3009d003645b"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a51b9e1564e639b0d549f3009d003645b">slick::sim::to_string</a> (<a class="el" href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04">Venue</a> venue)</td></tr>
 <tr class="separator:a51b9e1564e639b0d549f3009d003645b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ffabc39614e251a835823f9db68d22e" id="r_a7ffabc39614e251a835823f9db68d22e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04">Venue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a7ffabc39614e251a835823f9db68d22e">slick::sim::to_venue</a> (std::string_view exch)</td></tr>
+<tr class="memdesc:a7ffabc39614e251a835823f9db68d22e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matches case-insensitively.  <br /></td></tr>
 <tr class="separator:a7ffabc39614e251a835823f9db68d22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
@@ -186,6 +205,123 @@ Variables</h2></td></tr>
 <tr class="memitem:af9c5c331bd08c59e4e58a21af566d1bf" id="r_af9c5c331bd08c59e4e58a21af566d1bf"><td class="memItemLeft" align="right" valign="top">constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#af9c5c331bd08c59e4e58a21af566d1bf">slick::sim::EPSILON</a> = 1e-8</td></tr>
 <tr class="separator:af9c5c331bd08c59e4e58a21af566d1bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="acb48902001de9f6d78e17576c5c8831f" name="acb48902001de9f6d78e17576c5c8831f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb48902001de9f6d78e17576c5c8831f">&#9670;&#160;</a></span>SLICK_SIM_VENUE_CASE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SLICK_SIM_VENUE_CASE</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">text&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;case Venue::name: return text;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a075972cb922264f0d055eb61bc69d69c" name="a075972cb922264f0d055eb61bc69d69c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a075972cb922264f0d055eb61bc69d69c">&#9670;&#160;</a></span>SLICK_SIM_VENUE_ENUMERATOR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SLICK_SIM_VENUE_ENUMERATOR</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">text&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;name,</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00142">142</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+
+</div>
+</div>
+<a id="afaf6b8516bf04d516effe80e6814e19c" name="afaf6b8516bf04d516effe80e6814e19c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaf6b8516bf04d516effe80e6814e19c">&#9670;&#160;</a></span>SLICK_SIM_VENUE_LIST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SLICK_SIM_VENUE_LIST</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">X</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">    X(CME,         <span class="stringliteral">&quot;CME&quot;</span>)         \</div>
+<div class="line">    X(ICE,         <span class="stringliteral">&quot;ICE&quot;</span>)         \</div>
+<div class="line">    X(COINBASE,    <span class="stringliteral">&quot;COINBASE&quot;</span>)    \</div>
+<div class="line">    X(HYPERLIQUID, <span class="stringliteral">&quot;HYPERLIQUID&quot;</span>) \</div>
+<div class="line">    X(STOCK,       <span class="stringliteral">&quot;STOCK&quot;</span>)</div>
+</div><!-- fragment -->
+<p>One line per venue: the enumerator, then the canonical name <code>to_string</code> returns and <code>to_venue</code> accepts. </p>
+<p>Adding a venue is this line and nothing else - the enum, <code>to_string</code> and <code>to_venue</code> are all generated from it.</p>
+<p>APPEND ONLY. <code>Venue</code> is written into every MarketDataUpdate frame and into the shared-memory md queue, so inserting in the middle renumbers the existing venues under any process already reading a queue or a capture file.</p>
+<p>This list is deliberately NOT conditional on the per-venue build options. A Venue is an identity written on the wire, not a claim that an adapter was compiled in: <code>to_venue("coinbase")</code> still yields COINBASE in a build with the Coinbase adapter switched off, which is what lets a capture recorded elsewhere still be read here. </p>
+
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00133">133</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a186d668f4a7fa80d4f10a2adc9d385f2" name="a186d668f4a7fa80d4f10a2adc9d385f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a186d668f4a7fa80d4f10a2adc9d385f2">&#9670;&#160;</a></span>SLICK_SIM_VENUE_MATCH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SLICK_SIM_VENUE_MATCH</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">text&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;    if (detail::iequals(exch, text)) { return Venue::name; }</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

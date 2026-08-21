@@ -24,6 +24,6 @@ var classslick_1_1sim_1_1exch_1_1CoinbaseExchange =
     [ "onUserDataError", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a1350978447b2067d1925a0df2b20fc3d", null ],
     [ "onUserDataGap", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#aaef3c078d72591790e773598bf618209", null ],
     [ "onUserDataSnapshot", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a0fc88ab8459ccb39ce179893d0f4b886", null ],
-    [ "processSequencedEvents", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ac7d9e6b4057409135cb1b0b5ec463265", null ],
-    [ "start", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ab5ecef9321022f61f40b4c1582fa9222", null ]
+    [ "poll", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a538442359bb3ea361c5dbd9fdce84e05", null ],
+    [ "processSequencedEvents", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#ac7d9e6b4057409135cb1b0b5ec463265", null ]
 ];

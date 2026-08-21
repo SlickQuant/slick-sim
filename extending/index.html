@@ -557,10 +557,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-register-the-venue" class="md-nav__link">
+  <a href="#1-add-the-venue-enumerator" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Register the venue
+        1. Add the Venue enumerator
       
     </span>
   </a>
@@ -591,10 +591,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#start-the-one-thing-you-must-not-get-wrong" class="md-nav__link">
+  <a href="#poll-the-per-tick-pump" class="md-nav__link">
     <span class="md-ellipsis">
       
-        start() — the one thing you must not get wrong
+        poll() — the per-tick pump
       
     </span>
   </a>
@@ -684,10 +684,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-wire-up-the-build" class="md-nav__link">
+  <a href="#6-register-the-venue" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Wire up the build
+        6. Register the venue
       
     </span>
   </a>
@@ -695,10 +695,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7-register-in-maincpp" class="md-nav__link">
+  <a href="#7-wire-up-the-build" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. Register in main.cpp
+        7. Wire up the build
       
     </span>
   </a>
@@ -710,6 +710,17 @@
     <span class="md-ellipsis">
       
         8. Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-check-it-builds-without-the-others" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Check it builds without the others
       
     </span>
   </a>
@@ -975,10 +986,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-register-the-venue" class="md-nav__link">
+  <a href="#1-add-the-venue-enumerator" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Register the venue
+        1. Add the Venue enumerator
       
     </span>
   </a>
@@ -1009,10 +1020,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#start-the-one-thing-you-must-not-get-wrong" class="md-nav__link">
+  <a href="#poll-the-per-tick-pump" class="md-nav__link">
     <span class="md-ellipsis">
       
-        start() — the one thing you must not get wrong
+        poll() — the per-tick pump
       
     </span>
   </a>
@@ -1102,10 +1113,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-wire-up-the-build" class="md-nav__link">
+  <a href="#6-register-the-venue" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Wire up the build
+        6. Register the venue
       
     </span>
   </a>
@@ -1113,10 +1124,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7-register-in-maincpp" class="md-nav__link">
+  <a href="#7-wire-up-the-build" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. Register in main.cpp
+        7. Wire up the build
       
     </span>
   </a>
@@ -1128,6 +1139,17 @@
     <span class="md-ellipsis">
       
         8. Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-check-it-builds-without-the-others" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Check it builds without the others
       
     </span>
   </a>
@@ -1174,27 +1196,38 @@
 <p>This is a checklist for implementing a new venue adapter, derived from the two that work. Read
 <a href="../architecture/">Architecture</a> first — the threading model determines most of the design.</p>
 <p>Concretely you need five pieces: a <code>Venue</code> enum entry, an <code>Exchange</code> subclass, an <code>MDFeed</code>, an
-<code>OrderGateway</code>, and a <code>MarketDataPublisher</code>. Plus CMake wiring, a <code>main.cpp</code> dispatch entry, and tests.</p>
-<h2 id="1-register-the-venue">1. Register the venue<a class="headerlink" href="#1-register-the-venue" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp"><code>src/common/types.hpp</code></a>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">enum</span><span class="w"> </span><span class="nc">Venue</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="n">UNKNOWN_VENUE</span><span class="p">,</span><span class="w"> </span><span class="n">CME</span><span class="p">,</span><span class="w"> </span><span class="n">ICE</span><span class="p">,</span><span class="w"> </span><span class="n">COINBASE</span><span class="p">,</span><span class="w"> </span><span class="n">HYPERLIQUID</span><span class="p">,</span><span class="w"> </span><span class="n">STOCK</span><span class="p">,</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="n">KRAKEN</span><span class="p">,</span><span class="w">        </span><span class="c1">// ← add before __COUNT__</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">__COUNT__</span><span class="p">,</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">};</span>
+<code>OrderGateway</code>, and a <code>MarketDataPublisher</code>. Everything venue-specific lives in <strong>one directory</strong>,
+<code>src/venues/&lt;name&gt;/</code>, built as one optional target — so beyond the enum line, the only wiring is that
+directory's own <code>CMakeLists.txt</code>.</p>
+<p>Nothing in the core, and no existing venue, has to be edited to add a new one.</p>
+<h2 id="1-add-the-venue-enumerator">1. Add the <code>Venue</code> enumerator<a class="headerlink" href="#1-add-the-venue-enumerator" title="Permanent link">&para;</a></h2>
+<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp"><code>src/common/types.hpp</code></a>
+generates the enum, <code>to_string</code> and <code>to_venue</code> from one X-macro list, so a venue is a single line:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="cp">#define SLICK_SIM_VENUE_LIST(X)   \</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="cp">    X(CME,         "CME")         \</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="cp">    X(ICE,         "ICE")         \</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="cp">    X(COINBASE,    "COINBASE")    \</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="cp">    X(HYPERLIQUID, "HYPERLIQUID") \</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="cp">    X(STOCK,       "STOCK")       \</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="cp">    X(KRAKEN,      "KRAKEN")      </span><span class="c1">// ← append here</span>
 </code></pre></div>
-<p>Add matching arms to <code>to_string(Venue)</code> and <code>to_venue(std::string_view)</code>. <code>to_venue</code> accepts both
-upper and lower case; the config key must match one of the strings it recognises.</p>
-<p>Insert <strong>before</strong> <code>__COUNT__</code> but be aware <code>Venue</code> is written into every <code>MarketDataUpdate</code> frame, so
-inserting in the middle renumbers the existing venues. If any shared-memory queue or capture file is
-being read by another process, append instead.</p>
+<p><code>to_venue</code> matches case-insensitively, so <code>kraken</code>, <code>KRAKEN</code> and <code>Kraken</code> all resolve.</p>
+<div class="admonition danger">
+<p class="admonition-title">Append only</p>
+<p><code>Venue</code> is written into every <code>MarketDataUpdate</code> frame and into the shared-memory md queue.
+Inserting in the middle renumbers every venue after the insertion point, which silently
+reinterprets any queue or capture file another process is reading.</p>
+</div>
+<p>This list is deliberately <strong>not</strong> conditional on the build options. A <code>Venue</code> is an identity on the
+wire, not a claim that an adapter was compiled in: <code>to_venue("kraken")</code> still resolves in a build with
+the Kraken adapter switched off, which is what lets a capture recorded elsewhere be read here.</p>
 <h2 id="2-subclass-exchange">2. Subclass <code>Exchange</code><a class="headerlink" href="#2-subclass-exchange" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">KrakenExchange</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Exchange</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">md_feed</span><span class="o">::</span><span class="n">KrakenFeedCallbacks</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">public</span><span class="o">:</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">KrakenExchange</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">nlohmann</span><span class="o">::</span><span class="n">json</span><span class="o">&amp;</span><span class="w"> </span><span class="n">config</span><span class="p">);</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">start</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">protected</span><span class="o">:</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">handleMdSubscription</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Request</span><span class="o">&amp;</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">protected</span><span class="o">:</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">poll</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span><span class="w">                                       </span><span class="c1">// the per-tick pump</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">handleMdSubscription</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Request</span><span class="o">&amp;</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">handleMdUnsubscription</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Request</span><span class="o">&amp;</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">private</span><span class="o">:</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="n">Symbol</span><span class="o">*</span><span class="w"> </span><span class="n">addSymbol</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">symbol</span><span class="p">);</span>
@@ -1215,31 +1248,21 @@ if <code>order_gateway</code> or <code>md_publisher</code> is missing. Then cons
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="p">}</span>
 </code></pre></div>
-<h3 id="start-the-one-thing-you-must-not-get-wrong"><code>start()</code> — the one thing you must not get wrong<a class="headerlink" href="#start-the-one-thing-you-must-not-get-wrong" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">KrakenExchange::start</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="n">run_</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span><span class="p">);</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">og</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">order_gateways_</span><span class="p">)</span><span class="w"> </span><span class="n">og</span><span class="o">-&gt;</span><span class="n">start</span><span class="p">();</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="n">md_publisher_</span><span class="o">-&gt;</span><span class="n">start</span><span class="p">();</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">feed</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">md_feeds_</span><span class="p">)</span><span class="w"> </span><span class="n">feed</span><span class="o">-&gt;</span><span class="n">start</span><span class="p">();</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="n">thread_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">([</span><span class="k">this</span><span class="p">]()</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">run_</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">   </span><span class="c1">// ← the loop is mandatory</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">            </span><span class="n">drainEventQueue</span><span class="p">();</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">            </span><span class="n">processRequest</span><span class="p">();</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="p">});</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="p">}</span>
+<h3 id="poll-the-per-tick-pump"><code>poll()</code> — the per-tick pump<a class="headerlink" href="#poll-the-per-tick-pump" title="Permanent link">&para;</a></h3>
+<p>Do <strong>not</strong> override <code>start()</code>. The base class owns the thread and the loop; you supply only what runs
+each iteration:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">KrakenExchange::poll</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="n">drainEventQueue</span><span class="p">();</span><span class="w">      </span><span class="c1">// release whatever the feed callbacks queued</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="p">}</span>
 </code></pre></div>
-<div class="admonition danger">
-<p class="admonition-title">Do not inherit the base <code>start()</code></p>
-<p><code>Exchange::start()</code> calls <code>processRequest()</code> <strong>once</strong>, with no loop. An adapter that forgets to
-override it will start its gateways, process a single order, and then go silent with no error.
-It also null-checks <code>md_publisher_</code> rather than requiring one, so forgetting to construct a
-publisher fails just as quietly. See
-<a href="../known-gaps/#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing">Known gaps</a>.</p>
-</div>
-<p>You do not need to override <code>stop()</code>; the base implementation stops gateways and publisher and joins
-the thread.</p>
+<p><code>Exchange::start()</code> starts the gateways, the publisher and every feed in <code>md_feeds_</code>, then spins
+<code>poll(); processRequest();</code> until <code>stop()</code>. <code>poll()</code> defaults to doing nothing, which is exactly right
+for a venue with no live feed.</p>
+<p>You do not need to override <code>stop()</code> either. The base stops the feeds, gateways and publisher and
+joins the exchange thread — in that order, joining the thread <strong>before</strong> touching <code>md_feeds_</code>, because
+<code>poll()</code> and <code>handleMdUnsubscription</code> both run on it. It is also idempotent: <code>main()</code> stops each
+exchange and <code>~Exchange()</code> stops it again, so the second pass returns immediately rather than
+unsubscribing a feed twice.</p>
 <h3 id="symbol-creation">Symbol creation<a class="headerlink" href="#symbol-creation" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">Symbol</span><span class="o">*</span><span class="w"> </span><span class="nf">KrakenExchange::addSymbol</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">symbol</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">sym</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SymbolManager</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">createSymbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span><span class="w"> </span><span class="n">Venue</span><span class="o">::</span><span class="n">KRAKEN</span><span class="p">);</span>
@@ -1403,21 +1426,102 @@ are replayed through the matching engine and reach you as fills.</p>
 </code></pre></div>
 <p>Track subscriptions in both directions — symbol → set of sockets (for fan-out) and per-socket
 pending/active sets (to know when to send the subscription confirmation).</p>
-<h2 id="6-wire-up-the-build">6. Wire up the build<a class="headerlink" href="#6-wire-up-the-build" title="Permanent link">&para;</a></h2>
-<p>Add sources to the relevant <code>src/*/CMakeLists.txt</code>. The dependency direction is
-<code>exchange → {md_feed, matching_engine, order_gateway, market_data_publisher}</code>, so a new venue
-typically touches all four plus <code>src/exchange/CMakeLists.txt</code>.</p>
-<h2 id="7-register-in-maincpp">7. Register in <code>main.cpp</code><a class="headerlink" href="#7-register-in-maincpp" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">key</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">"kraken"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">value</span><span class="p">().</span><span class="n">value</span><span class="p">(</span><span class="s">"enabled"</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">        </span><span class="n">exchanges</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">slick</span><span class="o">::</span><span class="n">sim</span><span class="o">::</span><span class="n">exch</span><span class="o">::</span><span class="n">KrakenExchange</span><span class="o">&gt;</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">value</span><span class="p">()));</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">        </span><span class="n">exchanges</span><span class="p">.</span><span class="n">back</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">start</span><span class="p">();</span>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="p">}</span>
+<h2 id="6-register-the-venue">6. Register the venue<a class="headerlink" href="#6-register-the-venue" title="Permanent link">&para;</a></h2>
+<p>One small translation unit in your venue directory, <code>src/venues/kraken/kraken_venue.cpp</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">"kraken_exchange.hpp"</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;exchange/exchange_registry.hpp&gt;</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;nlohmann/json.hpp&gt;</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">slick</span><span class="o">::</span><span class="nn">sim</span><span class="p">;</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">slick</span><span class="o">::</span><span class="nn">sim</span><span class="o">::</span><span class="nn">exch</span><span class="p">;</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="n">SLICK_SIM_REGISTER_VENUE</span><span class="p">(</span><span class="s">"kraken"</span><span class="p">,</span><span class="w"> </span><span class="n">Venue</span><span class="o">::</span><span class="n">KRAKEN</span><span class="p">,</span><span class="w"> </span><span class="n">KrakenExchange</span><span class="p">);</span>
 </code></pre></div>
-<p>Without this the key falls through to the generic <code>Exchange</code> branch and the resulting exchange is dead.</p>
+<p>The string is the config key under <code>exchanges</code>, matched case-insensitively. <code>main.cpp</code> names no venue
+and needs no edit; an enabled key with no registered adapter is a fatal startup error that lists what
+the binary does carry.</p>
+<h2 id="7-wire-up-the-build">7. Wire up the build<a class="headerlink" href="#7-wire-up-the-build" title="Permanent link">&para;</a></h2>
+<p>Create <code>src/venues/kraken/CMakeLists.txt</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nb">slick_sim_add_venue</span><span class="p">(</span><span class="s">kraken</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span><span class="s">SOURCES</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">        </span><span class="s">kraken_exchange.cpp</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">        </span><span class="s">kraken_live_ws_feed.cpp</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">        </span><span class="s">kraken_rest_order_gateway.cpp</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">        </span><span class="s">kraken_publisher.cpp</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">        </span><span class="s">kraken_venue.cpp</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">    </span><span class="s">DEPENDS</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">        </span><span class="s">kraken-sdk</span><span class="w">          </span><span class="c"># whatever your venue SDK's imported target is called</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">        </span><span class="s">slick::net</span><span class="w">          </span><span class="c"># your networking stack — see below</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">        </span><span class="s">slick_sim_rest_ws</span><span class="w">   </span><span class="c"># the uWebSockets bases, if you serve HTTP/WebSocket</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="p">)</span>
+</code></pre></div>
+<p><code>DEPENDS</code> is where the adapter names everything it links that the core does not, <strong>including its
+networking stack</strong>. Coinbase and Hyperliquid speak HTTP/WebSocket and name <code>slick::net</code>; an adapter for
+a binary session protocol — CME iLink, ICE — names <code>slick::socket</code> and must not name slick-net. No core
+target links either, and no venue inherits another's, so an adapter gets exactly what it declares.</p>
+<p>Resolve your dependencies in <strong>that same file</strong>, above the <code>slick_sim_add_venue()</code> call — not in the
+top-level <code>CMakeLists.txt</code>. The directory is added only when your option is on, so nothing here re-tests
+it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nb">find_package</span><span class="p">(</span><span class="s">kraken-sdk</span><span class="w"> </span><span class="s">CONFIG</span><span class="w"> </span><span class="s">QUIET</span><span class="w"> </span><span class="s">GLOBAL</span><span class="p">)</span><span class="w">      </span><span class="c"># or FetchContent</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">NOT</span><span class="w"> </span><span class="s">kraken-sdk_FOUND</span><span class="p">)</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="nb">FetchContent_Declare</span><span class="p">(</span><span class="s">kraken-sdk</span><span class="w"> </span><span class="s">GIT_REPOSITORY</span><span class="w"> </span><span class="s">...</span><span class="w"> </span><span class="s">GIT_TAG</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nb">FetchContent_MakeAvailable</span><span class="p">(</span><span class="s">kraken-sdk</span><span class="p">)</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="nb">endif</span><span class="p">()</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="c"># Your networking stack. A no-op if the SDK above already brought it in as a</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="c"># build-tree target, which find_package cannot see.</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="nb">slick_sim_find_venue_dependency</span><span class="p">(</span><span class="s">slick-net</span><span class="w"> </span><span class="s">slick::net</span><span class="p">)</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="c"># Only if your gateway derives from RestWsOrderGateway or your publisher from</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="c"># WebsocketMarketDataPublisher: creates the shared target that compiles them, and</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="c"># resolves uWebSockets. Nothing in the core does either, so a venue that serves a</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="c"># binary session protocol never pulls uWebSockets into the build.</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="nb">slick_sim_require_rest_ws</span><span class="p">()</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title"><code>find_package</code> in a venue directory needs <code>GLOBAL</code></p>
+<p>An imported target is visible only in the directory that created it and below, while <code>slick-sim</code>
+(<code>src/</code>) and <code>slick_sim_tests</code> (<code>tests/</code>) link your object library from sibling scopes and have to
+resolve every name in its interface. Without <code>GLOBAL</code>, generate fails with <em>"links to target
+<code>kraken-sdk</code> but the target was not found"</em>. <code>slick_sim_find_venue_dependency()</code> passes it for you;
+a <code>find_package</code> you write yourself must pass it too. Targets created by <code>FetchContent</code> are real,
+not imported, so they need nothing.</p>
+</div>
+<p>Two lines then remain outside your directory — the option, in the top-level <code>CMakeLists.txt</code>, and the
+subdirectory, in <code>src/venues/CMakeLists.txt</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nb">option</span><span class="p">(</span><span class="s">SLICK_SIM_ENABLE_KRAKEN</span><span class="w"> </span><span class="s2">"Build the Kraken venue adapter"</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nb">if</span><span class="p">(</span><span class="s">SLICK_SIM_ENABLE_KRAKEN</span><span class="p">)</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">    </span><span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">kraken</span><span class="p">)</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="nb">endif</span><span class="p">()</span>
+</code></pre></div>
+<p>That is the whole build change. <code>slick_sim_add_venue</code> links your target against <code>exchange</code> (which
+carries every core header transitively), defines <code>SLICK_SIM_HAS_KRAKEN</code> for consumers, and adds the
+venue to the list that <code>slick_sim_link_venues()</code> feeds to both <code>slick-sim</code> and <code>slick_sim_tests</code>.
+Because <code>DEPENDS</code> is linked <code>PUBLIC</code>, your SDK and your networking stack reach the executable and the
+test binary without either of them naming a venue library.</p>
+<p>If your stack is <code>slick::net</code>, <code>main.cpp</code>'s bridge from its log output into slick-logger switches on by
+itself: <code>slick_sim_link_venues()</code> defines <code>SLICK_SIM_HAS_SLICK_NET</code> when any enabled venue's <code>DEPENDS</code>
+names it. A different stack with its own log handler gets its own flag the same way — one <code>if</code> in
+<code>slick_sim_link_venues()</code> keyed on the library, never on "a venue is enabled".</p>
+<div class="admonition danger">
+<p class="admonition-title">Venue targets must be OBJECT libraries</p>
+<p><code>slick_sim_add_venue</code> declares one, deliberately. <code>SLICK_SIM_REGISTER_VENUE</code> registers from a
+namespace-scope initialiser that nothing in the core ever references by name — out of a <em>static</em>
+library the linker discards the whole object as unreferenced, and the venue vanishes from the
+registry with no build error at all. <code>ExchangeRegistryTest.EnabledVenuesAreRegistered</code> exists to
+catch exactly that regression.</p>
+</div>
 <h2 id="8-tests">8. Tests<a class="headerlink" href="#8-tests" title="Permanent link">&para;</a></h2>
-<p>Add to <code>tests/CMakeLists.txt</code> and mirror the existing suites:</p>
+<p>Put the suites in <code>tests/unit/venues/kraken/</code> and add a gated block to <code>tests/CMakeLists.txt</code> — keyed
+on the <strong>target</strong>, so the suite disappears with the venue:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nb">if</span><span class="p">(</span><span class="s">TARGET</span><span class="w"> </span><span class="s">slick_sim_venue_kraken</span><span class="p">)</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">    </span><span class="nb">list</span><span class="p">(</span><span class="s">APPEND</span><span class="w"> </span><span class="s">SLICK_SIM_TEST_SOURCES</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">        </span><span class="s">unit/venues/kraken/test_kraken_exchange.cpp</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="nb">endif</span><span class="p">()</span>
+</code></pre></div>
+<p>Mirror the existing suites:</p>
 <table>
 <thead>
 <tr>
@@ -1427,35 +1531,47 @@ typically touches all four plus <code>src/exchange/CMakeLists.txt</code>.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>tests/unit/exchange/test_coinbase_exchange.cpp</code></td>
+<td><code>tests/unit/venues/coinbase/test_coinbase_exchange.cpp</code></td>
 <td>Adapter-level: subscription handling, snapshot application, phantom-level deltas</td>
 </tr>
 <tr>
-<td><code>tests/unit/matching_engine/test_coinbase_market_data_matching.cpp</code></td>
-<td>Feed liquidity crossing a resting simulator order</td>
+<td><code>tests/unit/matching_engine/test_feed_liquidity_matching.cpp</code></td>
+<td>Feed liquidity crossing a resting simulator order (venue-agnostic)</td>
 </tr>
 <tr>
-<td><code>tests/unit/common/test_hyperliquid_info_proxy.cpp</code></td>
+<td><code>tests/unit/venues/hyperliquid/test_hyperliquid_info_proxy.cpp</code></td>
 <td>Pure request/response translation, tested without a network</td>
 </tr>
 </tbody>
 </table>
-<p><code>tests/unit/test_helpers.hpp</code> has the shared fixtures. The project convention (from <code>CLAUDE.md</code>) is
-that every bug fix gets a regression test.</p>
+<p><code>tests/unit/test_helpers.hpp</code> has the shared fixtures — from a venue directory that is
+<code>#include "../../test_helpers.hpp"</code>. The project convention (from <code>CLAUDE.md</code>) is that every bug fix
+gets a regression test.</p>
+<h2 id="9-check-it-builds-without-the-others">9. Check it builds without the others<a class="headerlink" href="#9-check-it-builds-without-the-others" title="Permanent link">&para;</a></h2>
+<p>The point of the split is that venues are independent. Verify that:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-kraken<span class="w"> </span>-DSLICK_SIM_ENABLE_COINBASE<span class="o">=</span>OFF<span class="w"> </span>-DSLICK_SIM_ENABLE_HYPERLIQUID<span class="o">=</span>OFF
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build-kraken
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build-kraken
+</code></pre></div>
+<p>Configuring with every venue off must still build and link the core — that is the configuration that
+catches a core target having quietly picked up a dependency through a venue SDK.</p>
 <h2 id="checklist">Checklist<a class="headerlink" href="#checklist" title="Permanent link">&para;</a></h2>
 <ul>
-<li>[ ] <code>Venue</code> entry plus <code>to_string</code> / <code>to_venue</code> arms</li>
-<li>[ ] <code>Exchange</code> subclass with an <strong>overridden <code>start()</code> containing a loop</strong></li>
+<li>[ ] One line appended to <code>SLICK_SIM_VENUE_LIST</code> in <code>types.hpp</code></li>
+<li>[ ] Everything venue-specific under <code>src/venues/&lt;name&gt;/</code> — nothing in the core directories</li>
+<li>[ ] <code>Exchange</code> subclass overriding <strong><code>poll()</code>, not <code>start()</code></strong></li>
 <li>[ ] <code>addSymbol()</code> creating an <code>L2</code> book and attaching the shared FIFO engine</li>
 <li>[ ] <code>handleMdSubscription</code> / <code>handleMdUnsubscription</code> with per-channel pending tracking</li>
 <li>[ ] Feed callbacks that enqueue only — no book mutation off the exchange thread</li>
 <li>[ ] <code>MDFeed</code> implementation (optional — omit for a self-contained venue)</li>
 <li>[ ] <code>OrderGateway</code> (<code>RestWsOrderGateway</code> subclass) with <code>setup_routes</code></li>
-<li>[ ] <code>MarketDataPublisher</code> (<code>WebsocketMarketDataPublisher</code> subclass) handling <code>SUB_RESPONSE</code>, <code>BOOK_SNAPSHOT</code>, <code>TRADE</code></li>
-<li>[ ] CMake sources</li>
-<li>[ ] <code>main.cpp</code> dispatch entry</li>
+<li>[ ] <code>MarketDataPublisher</code> (<code>WebsocketMarketDataPublisher</code> subclass) handling <code>SUB_RESPONSE</code>, <code>BOOK_SNAPSHOT</code>, <code>TRADE_SUMMARY</code></li>
+<li>[ ] <code>SLICK_SIM_REGISTER_VENUE</code> in a <code>&lt;name&gt;_venue.cpp</code></li>
+<li>[ ] <code>slick_sim_add_venue()</code> CMakeLists naming your networking stack in <code>DEPENDS</code>, your SDK lookup in
+      the same file (with <code>GLOBAL</code>), and the <code>SLICK_SIM_ENABLE_&lt;VENUE&gt;</code> option</li>
 <li>[ ] Config block documented in <a href="../configuration/">Configuration</a></li>
-<li>[ ] Unit tests</li>
+<li>[ ] Unit tests under <code>tests/unit/venues/&lt;name&gt;/</code>, gated on <code>if(TARGET slick_sim_venue_&lt;name&gt;)</code></li>
+<li>[ ] Builds and tests pass with every <em>other</em> venue disabled</li>
 </ul>
 
 

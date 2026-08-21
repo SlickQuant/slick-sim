@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['tcpserverconfig_0',['tcpserverconfig',['../tcp__order__gateway_8cpp.html#a77d46d83b4a4cda54aec3f4b1c8c2412',1,'TCPServerConfig:&#160;tcp_order_gateway.cpp'],['../namespaceslick_1_1sim_1_1order__gateway.html#a597aacc023a656c03797dab1ff888e20',1,'slick::sim::order_gateway::TCPServerConfig']]],
-  ['time_5ft_1',['time_t',['../namespaceslick_1_1sim.html#a4e2c44f2b0c7bd4a4933ac1a5ef128ad',1,'slick::sim']]],
-  ['timestamp_2',['Timestamp',['../namespaceslick_1_1sim.html#a2f8148fe6607206264401336d10d98e4',1,'slick::sim']]],
-  ['topofbook_3',['TopOfBook',['../namespaceslick_1_1sim.html#a1cc92a914194da155b330e9fae07a375',1,'slick::sim']]]
+  ['stringvieweq_0',['StringViewEq',['../classslick_1_1sim_1_1OrderBook.html#a13222c8c9bd173fb9f7f61c696f10c05',1,'slick::sim::OrderBook']]],
+  ['stringviewhash_1',['StringViewHash',['../classslick_1_1sim_1_1OrderBook.html#a91c26e474a18c1896b2d4446a50aa6b7',1,'slick::sim::OrderBook']]],
+  ['symbol_5fname_5ft_2',['symbol_name_t',['../namespaceslick_1_1sim.html#aba246b15a6539e278c6d139bd140e888',1,'slick::sim']]],
+  ['symbolid_3',['SymbolId',['../namespaceslick_1_1sim.html#adcf46d79325ff3703148317b29b6d520',1,'slick::sim']]],
+  ['symid_5ft_4',['symid_t',['../namespaceslick_1_1sim.html#a694d0d358f849cd394e768c19c51c32c',1,'slick::sim']]]
 ];

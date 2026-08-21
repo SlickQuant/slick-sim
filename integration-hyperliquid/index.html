@@ -1212,7 +1212,7 @@ returned synchronously in the <code>/exchange</code> HTTP reply, or not at all.<
 <h2 id="the-info-proxy">The <code>/info</code> proxy<a class="headerlink" href="#the-info-proxy" title="Permanent link">&para;</a></h2>
 <p>Both ports serve <code>POST /info</code>, and neither answers it locally. Requests are relayed <strong>verbatim</strong> to
 the real Hyperliquid API and the response is passed straight back
-(<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/hyperliquid_info_proxy.hpp"><code>hyperliquid_info_proxy.hpp</code></a>).</p>
+(<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_info_proxy.hpp"><code>hyperliquid_info_proxy.hpp</code></a>).</p>
 <p>This exists so a <code>hyperliquid-cpp</code> client can point its <code>base_url</code> at either simulator port and still
 have <code>load_meta()</code> and <code>canonical_coin()</code> return real production metadata — asset universe, tick
 sizes, decimals. Without it, every client would have to be special-cased for the simulator.</p>

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['orderbookl3_0',['OrderBookL3',['../namespaceslick_1_1sim.html#af006c2339d3b3d364d9f154eaf479bac',1,'slick::sim']]],
-  ['ordercallback_1',['OrderCallback',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a866e468708edc506e89b8eebd95c6b21',1,'slick::sim::order_gateway::TcpOrderGateway']]],
-  ['orderupdate_2',['OrderUpdate',['../namespaceslick_1_1sim.html#a09bac05b4071391ef4bda98f0a1ca8ca',1,'slick::sim']]]
+  ['l2levels_0',['L2Levels',['../namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5',1,'slick::sim::md_publisher']]],
+  ['logger_1',['Logger',['../namespaceslick_1_1sim_1_1engine.html#a97c0500a3ce4907a65cd26dbccffb61b',1,'slick::sim::engine']]]
 ];

@@ -1215,10 +1215,13 @@ listed here is ignored.</p>
 erroring.</p>
 <p><code>exchanges</code> maps a venue key to that venue's configuration. A missing <code>exchanges</code> object makes the
 process print <code>Missing exchanges config</code> and exit with <code>EXIT_FAILURE</code>.</p>
-<p>Recognised venue keys are <strong><code>coinbase</code></strong> and <strong><code>hyperliquid</code></strong>. Any other key builds a generic
-<code>Exchange</code>, which binds no ports and
-<a href="../known-gaps/#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing">does nothing useful</a> —
-keep such a block <code>"enabled": false</code>, as the committed sample's <code>cme</code> entry is.</p>
+<p>Recognised venue keys are <strong><code>coinbase</code></strong> and <strong><code>hyperliquid</code></strong>, matched case-insensitively. A key is
+resolved through the <a href="../extending/#6-register-the-venue">venue registry</a>, so it is recognised only if
+that adapter was compiled in — see the <code>SLICK_SIM_ENABLE_*</code> options in
+<a href="../extending/#7-wire-up-the-build">Adding an exchange</a>.</p>
+<p>An <strong>enabled</strong> key with no matching adapter is a fatal startup error naming the adapters the binary
+does carry. A block that is <code>"enabled": false</code> is skipped before the lookup, so it needs no adapter —
+which is why the committed sample's disabled <code>cme</code> entry still works.</p>
 <h2 id="per-exchange-keys">Per-exchange keys<a class="headerlink" href="#per-exchange-keys" title="Permanent link">&para;</a></h2>
 <p>Read by the <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L17-L32"><code>Exchange</code> base constructor</a>
 and <code>main.cpp</code>, so they apply to every venue.</p>
@@ -1565,8 +1568,8 @@ fail validation with <code>INVALID_PRODUCT_ID</code>.</p>
 <code>base_url</code> under <code>md_publisher</code> has no effect.</p>
 </div>
 <h2 id="complete-annotated-sample">Complete annotated sample<a class="headerlink" href="#complete-annotated-sample" title="Permanent link">&para;</a></h2>
-<p>The committed sample with every optional key spelled out. It also carries a disabled <code>cme</code> block,
-omitted here — see <a href="../known-gaps/#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing">Known gaps</a>.</p>
+<p>The committed sample with every optional key spelled out. It also carries a <code>cme</code> block, omitted here:
+it is <code>"enabled": false</code>, which is what lets it sit in the config with no adapter behind it.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="nt">"log_level"</span><span class="p">:</span><span class="w"> </span><span class="s2">"debug"</span><span class="p">,</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>

@@ -55,7 +55,8 @@ var NAVTREE =
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
-        [ "Typedefs", "globals_type.html", null ]
+        [ "Typedefs", "globals_type.html", null ],
+        [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
   ] ]
@@ -63,15 +64,15 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"alpaca__historical__data__feed_8hpp.html",
-"classslick_1_1sim_1_1exch_1_1Exchange.html#a1504ddfbf4ab78fb07ed44f68b898113",
-"classslick_1_1sim_1_1order__gateway_1_1JsonParser.html",
-"classslick_1_1sim_1_1utils_1_1fixed__string.html#a84e909a1a01cbb9df67a566d9c303939",
-"functions_vars_o.html",
-"namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04ac2540f13f68427266e864d05c7cbd217",
-"order__gateway_8hpp.html",
-"structslick_1_1sim_1_1Order.html#aa646b437cff4a1afb0e15deb5a84f9da",
-"structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks.html#a3ecd9069e80b533d231148035401ae1f"
+"annotated.html",
+"classslick_1_1sim_1_1exch_1_1Exchange.html#a21d9d0718b643b607b92da55a57caa7d",
+"classslick_1_1sim_1_1order__gateway_1_1FixParser.html#ac6ef2e07dab8664cbc86ff920e18f2e6",
+"classslick_1_1sim_1_1utils_1_1fixed__string.html#a12e6d95927ffeedbca5bb2259da753cc",
+"functions_v.html",
+"namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a38afd7ae34bd5e3e6fc170d8b09178a3",
+"namespaceslick_1_1sim_1_1utils.html#a08df62ee1b9aa57cabe4abef53023a0f",
+"structslick_1_1sim_1_1Order.html#a43fe52822f3e3c56a820612b0ad6f8d7",
+"structslick_1_1sim_1_1exch_1_1Symbol.html#a8ae3a2bd3ba8cf94b862bb3e946cfc7f"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

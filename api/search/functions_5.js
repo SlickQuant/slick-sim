@@ -1,7 +1,7 @@
 var searchData=
 [
   ['fifomatchingengine_0',['FifoMatchingEngine',['../classslick_1_1sim_1_1engine_1_1FifoMatchingEngine.html#a3c616c37c9fce9b3f465e823d0a39bab',1,'slick::sim::engine::FifoMatchingEngine']]],
-  ['find_1',['find',['../classslick_1_1sim_1_1order__gateway_1_1OrderStore.html#a803d82b085845fdd49d7792ff16fd73f',1,'slick::sim::order_gateway::OrderStore']]],
+  ['find_1',['find',['../classslick_1_1sim_1_1exch_1_1ExchangeRegistry.html#a00068e72fef5eb4bc871aa258f0af42f',1,'slick::sim::exch::ExchangeRegistry::find()'],['../classslick_1_1sim_1_1order__gateway_1_1OrderStore.html#a803d82b085845fdd49d7792ff16fd73f',1,'slick::sim::order_gateway::OrderStore::find()']]],
   ['findorder_2',['findorder',['../structslick_1_1sim_1_1exch_1_1Symbol.html#af11c86eb1aecc6a223c9f10b03494842',1,'slick::sim::exch::Symbol::findOrder()'],['../classslick_1_1sim_1_1OrderBook.html#a22b8bb0d36dd78226ba8d51b568bf6b0',1,'slick::sim::OrderBook::findOrder()']]],
   ['findorderbyclientorderid_3',['findorderbyclientorderid',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a6683a88846db6011970c0ff910d5d95e',1,'slick::sim::exch::Symbol::findOrderByClientOrderId()'],['../classslick_1_1sim_1_1OrderBook.html#a1024c82b73a309f41f5e5887d96a9cb6',1,'slick::sim::OrderBook::findOrderByClientOrderId()']]],
   ['findorderbyorderid_4',['findorderbyorderid',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a42451abd773ab72139019e0f23594dbd',1,'slick::sim::exch::Symbol::findOrderByOrderId()'],['../classslick_1_1sim_1_1OrderBook.html#a871261ef793ea9a7928da90747abf554',1,'slick::sim::OrderBook::findOrderByOrderId()']]],

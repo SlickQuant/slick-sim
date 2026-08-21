@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Slick Sim: order_gateway/coinbase_ws_order_gateway.hpp Source File</title>
+<title>Slick Sim: venues/coinbase/coinbase_ws_order_gateway.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.1.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.2.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -98,8 +98,8 @@ $(document).ready(function(){initNavTree('coinbase__ws__order__gateway_8hpp_sour
   <div class="headertitle"><div class="title">coinbase_ws_order_gateway.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="coinbase__ws__order__gateway_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="rest__ws__order__gateway_8hpp.html">rest_ws_order_gateway.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="order__store_8hpp.html">order_store.hpp</a>&quot;</span></div>
+<a href="coinbase__ws__order__gateway_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;<a class="code" href="rest__ws__order__gateway_8hpp.html">order_gateway/rest_ws_order_gateway.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;<a class="code" href="order__store_8hpp.html">order_gateway/order_store.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// #define JWT_DISABLE_PICOJSON</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;jwt-cpp/jwt.h&gt;</span></div>
@@ -321,7 +321,7 @@ $(document).ready(function(){initNavTree('coinbase__ws__order__gateway_8hpp_sour
 <div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway_html_a1b30cf60efa900b595e2f3979997d617"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a1b30cf60efa900b595e2f3979997d617">slick::sim::order_gateway::RestWsOrderGateway::start</a></div><div class="ttdeci">void start() override</div><div class="ttdef"><b>Definition</b> <a href="rest__ws__order__gateway_8cpp_source.html#l00006">rest_ws_order_gateway.cpp:6</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway_html_a6485a1e8df7e8dd9f7da9d88c2990151"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a6485a1e8df7e8dd9f7da9d88c2990151">slick::sim::order_gateway::RestWsOrderGateway::loop_</a></div><div class="ttdeci">uWS::Loop * loop_</div><div class="ttdef"><b>Definition</b> <a href="rest__ws__order__gateway_8hpp_source.html#l00018">rest_ws_order_gateway.hpp:18</a></div></div>
 <div class="ttc" id="acommon_2order_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="common_2order_8hpp_source.html#l00016">order.hpp:16</a></div></div>
-<div class="ttc" id="anamespaceslick_1_1sim_1_1order__gateway_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1order__gateway.html">slick::sim::order_gateway</a></div><div class="ttdef"><b>Definition</b> <a href="coinbase__common_8hpp_source.html#l00009">coinbase_common.hpp:9</a></div></div>
+<div class="ttc" id="anamespaceslick_1_1sim_1_1order__gateway_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1order__gateway.html">slick::sim::order_gateway</a></div><div class="ttdef"><b>Definition</b> <a href="fix__parser_8cpp_source.html#l00008">fix_parser.cpp:8</a></div></div>
 <div class="ttc" id="aorder__store_8hpp_html"><div class="ttname"><a href="order__store_8hpp.html">order_store.hpp</a></div></div>
 <div class="ttc" id="arest__ws__order__gateway_8hpp_html"><div class="ttname"><a href="rest__ws__order__gateway_8hpp.html">rest_ws_order_gateway.hpp</a></div></div>
 <div class="ttc" id="astructslick_1_1sim_1_1order__gateway_1_1PerSocketData_html"><div class="ttname"><a href="structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html">slick::sim::order_gateway::PerSocketData</a></div><div class="ttdef"><b>Definition</b> <a href="coinbase__ws__order__gateway_8hpp_source.html#l00021">coinbase_ws_order_gateway.hpp:21</a></div></div>
@@ -337,7 +337,7 @@ $(document).ready(function(){initNavTree('coinbase__ws__order__gateway_8hpp_sour
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_38d08d237b1dbc9cf742efc830bd736c.html">order_gateway</a></li><li class="navelem"><a class="el" href="coinbase__ws__order__gateway_8hpp.html">coinbase_ws_order_gateway.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_cfc02092a929cf7bfc7f38ef4fd5d30d.html">venues</a></li><li class="navelem"><a class="el" href="dir_0812b56bb40adcc91aa4b591c9d3d29e.html">coinbase</a></li><li class="navelem"><a class="el" href="coinbase__ws__order__gateway_8hpp.html">coinbase_ws_order_gateway.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

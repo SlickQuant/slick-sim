@@ -1,7 +1,7 @@
 var searchData=
 [
   ['l_0',['l',['../structslick_1_1sim_1_1md__publisher_1_1L2Diff.html#a0b1b6ef59c7ff32780dd91ad8a625761',1,'slick::sim::md_publisher::L2Diff']]],
-  ['l2_1',['l2',['../namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62fa7e6aa2d53f6ee2b1a34b017fa403cb76',1,'slick::sim::exch::L2'],['../namespaceslick_1_1sim.html#a86368e1b2521bcca08b07a124195b85da7e6aa2d53f6ee2b1a34b017fa403cb76',1,'slick::sim::L2']]],
+  ['l2_1',['l2',['../namespaceslick_1_1sim.html#a86368e1b2521bcca08b07a124195b85da7e6aa2d53f6ee2b1a34b017fa403cb76',1,'slick::sim::L2'],['../namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62fa7e6aa2d53f6ee2b1a34b017fa403cb76',1,'slick::sim::exch::L2']]],
   ['l2_5fbook_2',['L2_BOOK',['../namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62fa48a58bd73f3779cb14e1a4fa214639bc',1,'slick::sim::exch']]],
   ['l2diff_3',['L2Diff',['../structslick_1_1sim_1_1md__publisher_1_1L2Diff.html',1,'slick::sim::md_publisher']]],
   ['l2levels_4',['L2Levels',['../namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5',1,'slick::sim::md_publisher']]],
@@ -12,7 +12,7 @@ var searchData=
   ['last_5ffill_5fqty_5fdouble_9',['last_fill_qty_double',['../structslick_1_1sim_1_1Order.html#a4b602474ac3cd99e7c3a7c6ae711fa0a',1,'slick::sim::Order']]],
   ['last_5ffill_5ftime_10',['last_fill_time',['../structslick_1_1sim_1_1Order.html#a277f4bda2fc2d3f58b6c8d60e6adda70',1,'slick::sim::Order']]],
   ['last_5forder_5fupdate_5f_11',['last_order_update_',['../classslick_1_1sim_1_1OrderBook.html#a6cbc57c98d161b616d4f88b8debd5384',1,'slick::sim::OrderBook']]],
-  ['last_5fpong_12',['last_pong',['../structslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData.html#a1a587d3a7dd217b7874d58afb6ab34de',1,'slick::sim::md_publisher::HyperliquidPerSocketData::last_pong'],['../structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a17be6ece881e8a9b97eb584854d8699d',1,'slick::sim::order_gateway::PerSocketData::last_pong'],['../structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html#a8db83b2774d5ac2fad4f977b7ba6a0fa',1,'slick::sim::md_publisher::PerSocketData::last_pong']]],
+  ['last_5fpong_12',['last_pong',['../structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a17be6ece881e8a9b97eb584854d8699d',1,'slick::sim::order_gateway::PerSocketData::last_pong'],['../structslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData.html#a1a587d3a7dd217b7874d58afb6ab34de',1,'slick::sim::md_publisher::HyperliquidPerSocketData::last_pong'],['../structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html#a8db83b2774d5ac2fad4f977b7ba6a0fa',1,'slick::sim::md_publisher::PerSocketData::last_pong']]],
   ['last_5fqty_13',['last_qty',['../structslick_1_1sim_1_1OrderResponse.html#a28d938e7bcfba3d293756f31e6129e80',1,'slick::sim::OrderResponse']]],
   ['last_5fseq_5fnum_5f_14',['last_seq_num_',['../classslick_1_1sim_1_1OrderBook.html#a9be4a6c2422f7a2a5aa3f416e850ab81',1,'slick::sim::OrderBook']]],
   ['last_5fupdate_5ftime_15',['last_update_time',['../structslick_1_1sim_1_1Order.html#a5817cf309f2b602d9d7510c07c812989',1,'slick::sim::Order']]],
