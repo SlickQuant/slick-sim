@@ -111,8 +111,8 @@ Collaboration diagram for slick::sim::md_feed::CoinbaseLiveWSFeed:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac5907475081ed81417c2e401880ce1c6" id="r_ac5907475081ed81417c2e401880ce1c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#ac5907475081ed81417c2e401880ce1c6">CoinbaseLiveWSFeed</a> (slick::stream_buffer_multiplexer &amp;mux, coinbase::UserThreadWebsocketCallbacks *callbacks, const std::vector&lt; std::string &gt; &amp;symbols={})</td></tr>
-<tr class="separator:ac5907475081ed81417c2e401880ce1c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a36181343102d802b6d851b8447c4f7" id="r_a3a36181343102d802b6d851b8447c4f7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#a3a36181343102d802b6d851b8447c4f7">CoinbaseLiveWSFeed</a> (slick::stream_buffer_multiplexer &amp;mux, coinbase::UserThreadWebsocketCallbacks *callbacks, const std::vector&lt; std::string &gt; &amp;symbols={}, uint32_t producer_offset=0)</td></tr>
+<tr class="separator:a3a36181343102d802b6d851b8447c4f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cb0a75ed498ad46097c80e1198694f1" id="r_a0cb0a75ed498ad46097c80e1198694f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#a0cb0a75ed498ad46097c80e1198694f1">~CoinbaseLiveWSFeed</a> () override=default</td></tr>
 <tr class="separator:a0cb0a75ed498ad46097c80e1198694f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a550181c7716cfefe49a9cc6acd15540d" id="r_a550181c7716cfefe49a9cc6acd15540d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#a550181c7716cfefe49a9cc6acd15540d">start</a> () override</td></tr>
@@ -129,8 +129,8 @@ Public Member Functions</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="coinbase__live__ws__feed_8hpp_source.html#l00010">10</a> of file <a class="el" href="coinbase__live__ws__feed_8hpp_source.html">coinbase_live_ws_feed.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ac5907475081ed81417c2e401880ce1c6" name="ac5907475081ed81417c2e401880ce1c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5907475081ed81417c2e401880ce1c6">&#9670;&#160;</a></span>CoinbaseLiveWSFeed()</h2>
+<a id="a3a36181343102d802b6d851b8447c4f7" name="a3a36181343102d802b6d851b8447c4f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a36181343102d802b6d851b8447c4f7">&#9670;&#160;</a></span>CoinbaseLiveWSFeed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -154,7 +154,13 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
-          <td class="paramname"><em>symbols</em> = <code>{}</code>&#160;</td>
+          <td class="paramname"><em>symbols</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>producer_offset</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -222,7 +228,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="coinbase__live__ws__feed_8hpp_source.html#l00030">30</a> of file <a class="el" href="coinbase__live__ws__feed_8hpp_source.html">coinbase_live_ws_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="coinbase__live__ws__feed_8hpp_source.html#l00038">38</a> of file <a class="el" href="coinbase__live__ws__feed_8hpp_source.html">coinbase_live_ws_feed.hpp</a>.</p>
 
 </div>
 </div>
@@ -251,7 +257,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="classslick_1_1sim_1_1md__feed_1_1MDFeed.html#aa8dcb80243a0fe18a775438f869e9a9c">slick::sim::md_feed::MDFeed</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="coinbase__live__ws__feed_8hpp_source.html#l00034">34</a> of file <a class="el" href="coinbase__live__ws__feed_8hpp_source.html">coinbase_live_ws_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="coinbase__live__ws__feed_8hpp_source.html#l00042">42</a> of file <a class="el" href="coinbase__live__ws__feed_8hpp_source.html">coinbase_live_ws_feed.hpp</a>.</p>
 
 </div>
 </div>
@@ -280,7 +286,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="classslick_1_1sim_1_1md__feed_1_1MDFeed.html#abed8173927c5afd791dd41c043731509">slick::sim::md_feed::MDFeed</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="coinbase__live__ws__feed_8hpp_source.html#l00040">40</a> of file <a class="el" href="coinbase__live__ws__feed_8hpp_source.html">coinbase_live_ws_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="coinbase__live__ws__feed_8hpp_source.html#l00048">48</a> of file <a class="el" href="coinbase__live__ws__feed_8hpp_source.html">coinbase_live_ws_feed.hpp</a>.</p>
 
 </div>
 </div>

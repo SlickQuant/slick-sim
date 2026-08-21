@@ -11,7 +11,7 @@ var searchData=
   ['cleartradehistory_8',['clearTradeHistory',['../structslick_1_1sim_1_1exch_1_1Symbol.html#aa8fe4eb57fcc8b6109a38a43b27fb03a',1,'slick::sim::exch::Symbol']]],
   ['clientidfor_9',['clientIdFor',['../classslick_1_1sim_1_1exch_1_1Exchange.html#aa8c35237fb44e488777b7756a7214d0b',1,'slick::sim::exch::Exchange']]],
   ['coinbaseexchange_10',['CoinbaseExchange',['../classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#acf07610e31493d2c0b5f8e0009e6d88b',1,'slick::sim::exch::CoinbaseExchange']]],
-  ['coinbaselivewsfeed_11',['CoinbaseLiveWSFeed',['../classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#ac5907475081ed81417c2e401880ce1c6',1,'slick::sim::md_feed::CoinbaseLiveWSFeed']]],
+  ['coinbaselivewsfeed_11',['CoinbaseLiveWSFeed',['../classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#a3a36181343102d802b6d851b8447c4f7',1,'slick::sim::md_feed::CoinbaseLiveWSFeed']]],
   ['coinbasepublisher_12',['CoinbasePublisher',['../classslick_1_1sim_1_1md__publisher_1_1CoinbasePublisher.html#aa3781b1dfd3c939ea41e856cd0dce746',1,'slick::sim::md_publisher::CoinbasePublisher']]],
   ['coinbaserestordergateway_13',['CoinbaseRestOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a',1,'slick::sim::order_gateway::CoinbaseRestOrderGateway']]],
   ['coinbasewebsocketordergateway_14',['CoinbaseWebsocketOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway.html#aeb1ef34395b100524bafb4d93ee1309d',1,'slick::sim::order_gateway::CoinbaseWebsocketOrderGateway']]],
