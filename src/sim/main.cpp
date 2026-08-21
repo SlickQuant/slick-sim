@@ -8,11 +8,18 @@
 // #include <slick/socket/tcp_server.h>
 // #include <order_gateway/order_gateway.hpp>
 // #include <order_gateway/message_parser.hpp>
-#include <exchange/exch_coinbase.hpp>
-#include <exchange/exch_hyperliquid.hpp>
+#include <exchange/exchange.hpp>
+#include <exchange/exchange_registry.hpp>
 #include <common/messages.hpp>
 // #include <market_data_publisher/market_data_publisher.hpp>
+#ifdef SLICK_SIM_HAS_SLICK_NET
+// slick::net belongs to the venue adapters that speak HTTP/WebSocket, not to the
+// simulator: it arrives only because such an adapter declared it, so the log bridge
+// below is compiled in only then. A core-only build has no networking to bridge,
+// and neither would a venue on a different stack - a CME or ICE adapter over
+// slick::socket. main.cpp still names no venue: the flag is set from the link list.
 #include <slick/net/logging.hpp>
+#endif
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -51,6 +58,7 @@ int main(int argc, char *argv[])
     logger.add_file_sink("logs/slick-sim.log");
     logger.init(65535, 16777216);
 
+#ifdef SLICK_SIM_HAS_SLICK_NET
     slick::net::set_log_handler(
         [&logger](slick::net::LogLevel level, const char *format_text, std::format_args args)
         {
@@ -60,6 +68,7 @@ int main(int argc, char *argv[])
         {
             return static_cast<slick::net::LogLevel>(logger.get_level());
         });
+#endif
 
     std::string config_file = "slick-sim.json";
     if (argc > 1)
@@ -100,33 +109,50 @@ int main(int argc, char *argv[])
 
     logger.set_level(slick::logger::to_log_level(config.value("log_level", "info")));
 
+    auto &registry = slick::sim::exch::ExchangeRegistry::instance();
+
+    // A venue that was compiled out otherwise looks exactly like a typo in the
+    // config, so say up front which adapters this binary actually carries.
+    std::string built_in;
+    for (const auto &key : registry.keys())
+    {
+        if (!built_in.empty())
+        {
+            built_in += ", ";
+        }
+        built_in += key;
+    }
+    LOG_INFO("Venue adapters built in: {}", built_in.empty() ? "(none)" : built_in);
+
     auto &exch_coinfig = config["exchanges"];
     std::vector<std::unique_ptr<Exchange>> exchanges;
     for (auto it = exch_coinfig.begin(); it != exch_coinfig.end(); ++it)
     {
-        if (it.key() == "coinbase")
+        // Checked BEFORE the registry lookup, deliberately: the committed sample
+        // config carries a "cme" block with "enabled": false, and a disabled venue
+        // must not require an adapter to exist.
+        if (!it.value().value("enabled", true))
         {
-            auto enabled = it.value().value("enabled", true);
-            if (enabled)
-            {
-                exchanges.emplace_back(std::make_unique<slick::sim::exch::CoinbaseExchange>(it.value()));
-                exchanges.back()->start();
-            }
+            LOG_INFO("Exchange {} is disabled, skipping", it.key());
+            continue;
         }
-        else if (it.key() == "hyperliquid")
+
+        auto factory = registry.find(it.key());
+        if (!factory)
         {
-            auto enabled = it.value().value("enabled", true);
-            if (enabled)
-            {
-                exchanges.emplace_back(std::make_unique<slick::sim::exch::HyperliquidExchange>(it.value()));
-                exchanges.back()->start();
-            }
+            // This used to fall through to a bare Exchange, which bound no ports and
+            // processed at most one request before going quiet. Failing loudly is
+            // also what turns a venue whose registration the linker dropped into an
+            // obvious error rather than a mystery.
+            std::cerr << "No venue adapter for exchanges.\"" << it.key() << "\"\n";
+            LOG_ERROR("No venue adapter for exchanges.\"{}\". This build has: {}. "
+                      "Check the spelling, or configure with -DSLICK_SIM_ENABLE_<VENUE>=ON.",
+                      it.key(), built_in.empty() ? "(none)" : built_in);
+            return EXIT_FAILURE;
         }
-        else
-        {
-            exchanges.emplace_back(std::make_unique<Exchange>(to_venue(it.key()), it.value()));
-            exchanges.back()->start();
-        }
+
+        exchanges.emplace_back(factory(it.value()));
+        exchanges.back()->start();
     }
 
     // Wait for user input to stop

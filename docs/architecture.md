@@ -144,11 +144,16 @@ linked against a handful of static libraries.
 
 | Target | Directory | Responsibility |
 | --- | --- | --- |
-| `exchange` | `src/exchange/` | Per-venue orchestration (`Exchange`, `CoinbaseExchange`, `HyperliquidExchange`) and `Symbol`, which binds one instrument's book to a matching engine |
+| `slick_sim_core` | `src/` | INTERFACE target carrying the `src/` include root and the header-only dependencies; every other target links it |
+| `exchange` | `src/exchange/` | Orchestration base (`Exchange`), the venue registry, and `Symbol`, which binds one instrument's book to a matching engine |
 | `matching_engine` | `src/matching_engine/` | `MatchingEngine` interface, `FifoMatchingEngine`, and the four order-lifecycle publish helpers |
-| `order_gateway` | `src/order_gateway/` | Venue-native REST/WebSocket order entry, plus the unused generic TCP/FIX/SBE gateway |
-| `market_data_publisher` | `src/market_data_publisher/` | Re-encodes internal market data into each venue's own WebSocket format |
-| `md_feed` | `src/md_feed/` | Live market-data ingestion from the real venue |
+| `order_gateway` | `src/order_gateway/` | `OrderGateway`/`RestWsOrderGateway` bases, plus the unused generic TCP/FIX/SBE gateway (`SLICK_SIM_ENABLE_TCP_GATEWAY`) |
+| `market_data_publisher` | `src/market_data_publisher/` | `WebsocketMarketDataPublisher` base and `SequencedMessage` |
+| `md_feed` | `src/md_feed/` | The `MDFeed` interface — header-only INTERFACE target |
+| `slick_sim_venue_<venue>` | `src/venues/<venue>/` | One OBJECT library per venue: its exchange, feed, gateways, publisher and encoders. Optional, via `SLICK_SIM_ENABLE_<VENUE>` |
+
+None of the core targets contain venue code or link a venue SDK. The dependency direction is
+core ← venue: a venue target links `exchange`, and the executables link whichever venues are enabled.
 | *(header-only)* | `src/common/`, `src/order_book/`, `src/utils/` | Shared types, the order book, and small helpers (ids, timestamps, prices, `fixed_string`) — no compiled target, included directly |
 
 ## Threading model
@@ -157,30 +162,39 @@ This is the part most likely to trip you up, because it is not what the class st
 
 ### Threads per exchange
 
-**One exchange thread.** Created in the concrete adapter's `start()`, it runs a tight spin loop that
-does all book mutation and all order processing:
+**One exchange thread.** Created by `Exchange::start()` in the base class, it runs a tight spin loop
+that does all book mutation and all order processing:
 
 ```cpp
-// CoinbaseExchange::start()
+// Exchange::start()
 thread_ = std::thread([this]() {
     while (run_.load(std::memory_order_relaxed)) {
-        if (md_feed_ || !md_feeds_.empty()) {
-            processData();            // drain the WS stream multiplexer
-        }
-        processSequencedEvents();     // release time-ordered book events
+        poll();                       // venue-specific pump, empty by default
         processRequest();             // one order request per iteration
     }
 });
 ```
 
-`HyperliquidExchange` is the same shape with `drainEventQueue()` in place of the first two calls.
 Note there is no sleep and no condition variable — the thread spins at 100% of a core by design.
 
-!!! warning "The base class does not loop"
-    `Exchange::start()` calls `processRequest()` exactly once, with no loop. Only the two concrete
-    adapters override it correctly, so a config key other than `coinbase` or `hyperliquid` yields an
-    exchange that binds no ports and processes at most one request. See
-    [Known gaps](known-gaps.md#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing).
+An adapter supplies only the per-tick body by overriding `poll()`:
+
+```cpp
+void CoinbaseExchange::poll() {
+    if (md_feed_ || !md_feeds_.empty()) {
+        processData();                // drain the WS stream multiplexer
+    }
+    processSequencedEvents();         // release time-ordered book events
+}
+
+void HyperliquidExchange::poll() { drainEventQueue(); }
+```
+
+!!! note "The loop belongs to the base class"
+    It did not always. `Exchange::start()` used to call `processRequest()` exactly once with no loop,
+    and each adapter re-implemented the whole of `start()` to add one — so an adapter that inherited
+    it bound its ports and then went silent. The loop now lives in the base and `poll()` defaults to
+    doing nothing, which is correct for a venue with no feed.
 
 **One uWebSockets event-loop thread per gateway and per publisher.** `RestWsOrderGateway::start()`
 and `WebsocketMarketDataPublisher::start()` each spawn a thread that builds a `uWS::App`, installs

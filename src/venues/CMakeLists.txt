@@ -1,0 +1,13 @@
+if(SLICK_SIM_ENABLE_COINBASE)
+    add_subdirectory(coinbase)
+endif()
+if(SLICK_SIM_ENABLE_HYPERLIQUID)
+    add_subdirectory(hyperliquid)
+endif()
+
+get_property(_slick_sim_venues GLOBAL PROPERTY SLICK_SIM_ENABLED_VENUES)
+if(_slick_sim_venues)
+    message(STATUS "slick-sim venues: ${_slick_sim_venues}")
+else()
+    message(STATUS "slick-sim venues: none (core only - slick-sim will start no exchanges)")
+endif()

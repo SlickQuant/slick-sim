@@ -11,42 +11,41 @@ Each entry says what it is, where it lives, and what it means for you.
 
 ### CME, Eurex and ICE are not implemented
 
-[`src/exchange/exch_cme.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exch_cme.hpp)
-is a **zero-byte file**. There is no `CmeExchange`, no Eurex adapter, and no ICE adapter, despite
-`Venue::CME` and `Venue::ICE` existing in
+There is no `CmeExchange`, no Eurex adapter, and no ICE adapter, despite `Venue::CME` and `Venue::ICE`
+existing in
 [`types.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp) and
-`README.md` describing exchange-adapter namespaces for all three.
+`README.md` describing exchange-adapter namespaces for all three. A zero-byte `src/exchange/exch_cme.hpp`
+used to stand in for the first of these; it has been removed, since an empty header is not a plan.
+
+The `Venue` enumerators stay regardless — a `Venue` is an identity written into every market-data
+frame, not a claim that an adapter exists, so `to_venue("cme")` still resolves.
 
 **What it means:** only `coinbase` and `hyperliquid` are usable venue keys in the config.
 
-### An enabled venue key with no adapter starts but does nothing
+### An unknown venue key is rejected at startup
 
-[`main.cpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/sim/main.cpp#L199-L218)
-dispatches on the config key: `coinbase` builds a `CoinbaseExchange`, `hyperliquid` builds a
-`HyperliquidExchange`, and **anything else** constructs a plain `Exchange`. Only the two concrete
-adapters populate `md_publisher_` and `order_gateways_`; the base constructor does not.
+This used to be a gap: `main.cpp` dispatched on the config key with an `if/else`, and **anything
+else** constructed a plain `Exchange` that bound no ports, populated no publisher, and — because the
+base `start()` had no loop — processed at most one request before its thread exited. Silently.
 
-`Exchange::start()` does nothing useful:
-
-```cpp
-thread_ = std::thread([this]() { processRequest(); });
-```
-
-[`Exchange::processRequest()`](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L68-L93)
-reads **one** request from the queue and returns. There is no loop. Both working adapters override
-`start()` with a real spin loop; the base class does not. So a generic exchange binds no ports,
-serves no clients, processes at most one queued request, and its thread exits.
-
-The committed sample config carries such a block — a `cme` entry — but it is `"enabled": false`, so
-it is constructed and then skipped with a warning:
+Both halves are now closed. The loop lives in
+[`Exchange::start()`](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp),
+and keys resolve through the
+[venue registry](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange_registry.hpp)
+rather than a hard-coded chain, with no generic fallback. An enabled key with no registered adapter
+now fails immediately and names what the binary does carry:
 
 ```text
-[WARN] Exchange CME is disabled, skipping start
+[ERROR] No venue adapter for exchanges."kraken". This build has: coinbase, hyperliquid.
+        Check the spelling, or configure with -DSLICK_SIM_ENABLE_<VENUE>=ON.
 ```
 
-**What it means:** leave the `cme` block disabled, or delete it. Enabling it gets you an inert
-exchange, not a working one. If you add a venue, populating `md_publisher_` **and** overriding
-`start()` with a loop are both mandatory — see [Adding an exchange](extending.md).
+`"enabled": false` is checked **before** the lookup, so a disabled block needs no adapter — which is
+how the committed sample's `cme` entry keeps working.
+
+**What it means:** a typo or a compiled-out venue is now a startup failure rather than an exchange
+that appears to run. Note that the same message appears if a venue adapter was built but failed to
+register itself, which is what the `ExchangeRegistryTest` suite guards against.
 
 ## Order and market-data plumbing
 
@@ -58,9 +57,9 @@ on the gateway's **only** uWebSockets event-loop thread, so while one request wa
 client's request on that gateway is served at all - not even one that would answer instantly.
 
 The batch handlers are worse, because they poll once per entry rather than once per request:
-[`handle_batch_cancel`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/coinbase_rest_order_gateway.cpp#L638)
+[`handle_batch_cancel`](https://github.com/SlickQuant/slick-sim/blob/main/src/venues/coinbase/coinbase_rest_order_gateway.cpp#L638)
 and Hyperliquid's
-[`process_order_action`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/hyperliquid_rest_order_gateway.cpp#L263)
+[`process_order_action`](https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_rest_order_gateway.cpp#L263)
 wait inside the loop over the batch, so a ten-order batch can hold the loop for ten separate
 timeouts.
 
@@ -104,9 +103,9 @@ is a **zero-byte file**.
 ### The historical-data feed does not exist
 
 [`alpaca_historical_data_feed.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/alpaca_historical_data_feed.hpp)
-is a **zero-byte file**, and `md_feed`'s
-[`CMakeLists.txt`](https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/CMakeLists.txt)
-compiles only `hyperliquid_live_ws_feed.cpp`.
+is a **zero-byte file**. `src/md_feed/` now holds only the `MDFeed` interface — every implementation
+lives with its venue under `src/venues/` — so a replay feed would be a new venue-independent
+implementation of that same two-method interface.
 
 **What it means:** historical replay is an intended
 [operating mode](architecture.md#historical-replay-planned) — matching client orders against
@@ -122,8 +121,8 @@ you expected live data and got an empty book.
 ### `Exchange::processMdData()` and the market-data thread are commented out
 
 `Exchange` declares `md_thread_` and `md_feed_`, and `start()` has a commented-out block that would
-launch a dedicated market-data thread. `stop()` still contains `if (md_feed_ && md_thread_.joinable())
-md_thread_.join();` — dead code, since nothing ever starts that thread.
+launch a dedicated market-data thread. `stop()` still joins `md_thread_` — dead code, since nothing
+ever starts that thread.
 
 **What it means:** market data is processed on the same thread as order requests. See the threading
 model in [Architecture](architecture.md).
@@ -150,8 +149,11 @@ and the ~180 generated CME iLink3 SBE headers under `src/order_gateway/sbe/` all
 roughly 90 lines of commented-out scaffolding (`print_protocol_info`, per-client protocol selection)
 from when that path was live.
 
-**What it means:** `find_package(quickfix CONFIG REQUIRED)` in the top-level `CMakeLists.txt` is a
-hard build dependency for code that never runs. You still need QuickFIX installed to build.
+**What it means:** the code is still dead, but it is no longer a mandatory build cost. The whole
+cluster sits behind `SLICK_SIM_ENABLE_TCP_GATEWAY`, which defaults to `ON` so existing builds are
+unchanged. Configuring with `-DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF` drops those four sources, the `sbe/`
+include path, and the `find_package(quickfix CONFIG REQUIRED)` that made QuickFIX a hard dependency
+for code that never runs — so QuickFIX need not be installed at all.
 
 ### The Doxygen API reference deliberately excludes the SBE headers
 

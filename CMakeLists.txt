@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(ExchangeSimulator VERSION 0.1.1 LANGUAGES CXX)
+project(ExchangeSimulator VERSION 0.2.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,6 +8,18 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
+
+# Venue adapters. Each lives entirely under src/venues/<name>/ and is built into
+# its own target; switching one off drops its sources, its unit tests and its
+# vendor SDK from the build. Both default ON, so an unqualified build is
+# unchanged.
+option(SLICK_SIM_ENABLE_COINBASE    "Build the Coinbase venue adapter"    ON)
+option(SLICK_SIM_ENABLE_HYPERLIQUID "Build the Hyperliquid venue adapter" ON)
+
+# The TCP/FIX/SBE order gateway is built but never constructed at runtime, and it
+# is the sole reason QuickFIX is a required dependency. Default ON to preserve the
+# existing build; turn it off for a materially lighter one.
+option(SLICK_SIM_ENABLE_TCP_GATEWAY "Build the (unused) TCP/FIX/SBE order gateway" ON)
 
 # -march=native bakes the build machine's instruction set into the binary.
 #
@@ -70,23 +82,6 @@ else()
     message(STATUS "Found slick-logger ${slick-logger_VERSION}: ${slick-logger_DIR}")
 endif()
 
-find_package(slick-socket 1.0.6 CONFIG QUIET)
-if (NOT slick-socket_FOUND)
-    message(STATUS "Fetching slick-socket...")
-    # Disable slick-socket example, and tests
-    set(BUILD_SLICK_SOCKET_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(BUILD_SLICK_SOCKET_TESTING OFF CACHE BOOL "" FORCE)
-    set(BUILD_SLICK_SOCKET_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-    FetchContent_Declare(
-        slick-socket
-        GIT_REPOSITORY https://github.com/SlickQuant/slick-socket.git
-        GIT_TAG v1.0.6
-    )
-    FetchContent_MakeAvailable(slick-socket)
-else()
-    message(STATUS "Found slick-socket ${slick-socket_VERSION}: ${slick-socket_DIR}")
-endif()
-
 find_package(slick-object-pool 0.1.3 CONFIG QUIET)
 if (NOT slick-object-pool_FOUND)
     message(STATUS "Fetching slick-object-pool...")
@@ -101,42 +96,20 @@ else()
     message(STATUS "Found slick-object-pool ${slick-object-pool_VERSION}: ${slick-object-pool_DIR}")
 endif()
 
-find_package(coinbase-advanced-cpp 1.0.0 CONFIG QUIET)
-if (NOT coinbase-advanced-cpp_FOUND)
-    message(STATUS "Fetching coinbase-advanced-cpp...")
-    FetchContent_Declare(
-        coinbase-advanced-cpp
-        GIT_REPOSITORY https://github.com/SlickQuant/coinbase-advanced-cpp.git
-        GIT_TAG main
-    )
-    FetchContent_MakeAvailable(coinbase-advanced-cpp)
-else()
-    message(STATUS "Found coinbase-advanced-cpp ${coinbase-advanced-cpp_VERSION}: ${coinbase-advanced-cpp_DIR}")
-endif()
-
-find_package(hyperliquid 0.3.0 CONFIG QUIET)
-if (NOT hyperliquid_FOUND)
-    message(STATUS "Fetching hyperliquid-cpp...")
-    FetchContent_Declare(
-        hyperliquid-cpp
-        GIT_REPOSITORY https://github.com/SlickQuant/hyperliquid-cpp.git
-        GIT_TAG v0.3.0
-    )
-    FetchContent_MakeAvailable(hyperliquid-cpp)
-else()
-    message(STATUS "Found hyperliquid ${hyperliquid_VERSION}: ${hyperliquid_DIR}")
-endif()
-
-# slick-net should be fetched after coinbase-advanced-cpp/hyperliquid-cpp since it depends on it, and we want to avoid fetching the dependency twice if it's already available
-find_package(slick-net CONFIG QUIET)
-if (slick-net_FOUND)
-    message(STATUS "Found slick-net ${slick-net_VERSION}: ${slick-net_VERSION}")
-endif()
+# Declares slick_sim_add_venue()/slick_sim_find_venue_dependency() for the venue
+# directories and slick_sim_link_venues() for src/ and tests/.
+#
+# Note what is NOT here: no venue SDK and no venue networking library. Each adapter
+# resolves its own in src/venues/<name>/CMakeLists.txt, which is added only when
+# that venue's option is on - so the option is tested in one place and adding a
+# venue edits no shared file. A build with a venue off neither fetches nor links a
+# line of what that venue needs, which is the point of the split: a third or fourth
+# venue must not make the minimal build heavier.
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/SlickSimVenue.cmake)
 
 find_package(slick-orderbook 1.0.5 CONFIG QUIET)
 if (NOT slick-orderbook_FOUND)
     message(STATUS "Fetching slick-orderbook...")
-    set(BUILD_COINBASE_ADVANCED_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-orderbook
         GIT_REPOSITORY https://github.com/SlickQuant/slick-orderbook.git
@@ -147,12 +120,39 @@ else()
     message(STATUS "Found slick-orderbook ${slick-orderbook_VERSION}: ${slick-orderbook_DIR}")
 endif()
 
-# Add QuickFIX dependency (prefer vcpkg installation)
-find_package(quickfix CONFIG REQUIRED)
-find_package(unofficial-uwebsockets CONFIG REQUIRED)
+# QuickFIX is needed only by the TCP/FIX/SBE gateway (prefer vcpkg installation).
+if(SLICK_SIM_ENABLE_TCP_GATEWAY)
+    # slick-socket is the TCP gateway's server, and the TCP gateway is its only user in
+    # the project - so it follows that option rather than being resolved for every build.
+    # A future venue on a binary session protocol (CME iLink, ICE) would speak it too, and
+    # would resolve it from its own directory the way the HTTP/WS venues resolve slick-net.
+    if(SLICK_SIM_ENABLE_TCP_GATEWAY)
+        find_package(slick-socket 1.0.6 CONFIG QUIET)
+        if (NOT slick-socket_FOUND)
+            message(STATUS "Fetching slick-socket...")
+            # Disable slick-socket example, and tests
+            set(BUILD_SLICK_SOCKET_EXAMPLES OFF CACHE BOOL "" FORCE)
+            set(BUILD_SLICK_SOCKET_TESTING OFF CACHE BOOL "" FORCE)
+            set(BUILD_SLICK_SOCKET_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+            FetchContent_Declare(
+                slick-socket
+                GIT_REPOSITORY https://github.com/SlickQuant/slick-socket.git
+                GIT_TAG v1.0.6
+            )
+            FetchContent_MakeAvailable(slick-socket)
+        else()
+            message(STATUS "Found slick-socket ${slick-socket_VERSION}: ${slick-socket_DIR}")
+        endif()
+    endif()
+
+    find_package(quickfix CONFIG REQUIRED)
+endif()
+# What is NOT here, again: uWebSockets and jwt-cpp. Both are venue-driven -
+# uWebSockets through slick_sim_require_rest_ws() for a venue that serves HTTP/WS,
+# jwt-cpp in src/venues/coinbase/ for the two gateways that sign with it - so a
+# core-only build needs neither installed.
 find_package(nlohmann_json CONFIG REQUIRED)
-find_package(jwt-cpp CONFIG REQUIRED)
-find_package(foonathan_memory CONFIG REQUIRED)
+#find_package(foonathan_memory CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED COMPONENTS uuid multiprecision)
 
 if(MSVC)
@@ -248,3 +248,5 @@ if(DOXYGEN_FOUND)
 else()
     message(STATUS "Doxygen not found - `docs` target unavailable")
 endif()
+
+message(STATUS "slick-sim: ${PROJECT_VERSION}")

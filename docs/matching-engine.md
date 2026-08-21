@@ -314,4 +314,4 @@ The engine is the best-covered part of the codebase:
 | `tests/unit/matching_engine/test_fifo_matching_engine.cpp` | Core price/time priority, partial fills |
 | `tests/unit/matching_engine/test_matching_engine_tif.cpp` | DAY/GTC resting, IOC remainder cancel, FOK pre-check |
 | `tests/unit/matching_engine/test_matching_engine_smp.cpp` | All three SMP modes, including the FOK interaction |
-| `tests/unit/matching_engine/test_coinbase_market_data_matching.cpp` | The overload-2 market-data path |
+| `tests/unit/matching_engine/test_feed_liquidity_matching.cpp` | The overload-2 market-data path |

@@ -4,26 +4,37 @@ This is a checklist for implementing a new venue adapter, derived from the two t
 [Architecture](architecture.md) first — the threading model determines most of the design.
 
 Concretely you need five pieces: a `Venue` enum entry, an `Exchange` subclass, an `MDFeed`, an
-`OrderGateway`, and a `MarketDataPublisher`. Plus CMake wiring, a `main.cpp` dispatch entry, and tests.
+`OrderGateway`, and a `MarketDataPublisher`. Everything venue-specific lives in **one directory**,
+`src/venues/<name>/`, built as one optional target — so beyond the enum line, the only wiring is that
+directory's own `CMakeLists.txt`.
 
-## 1. Register the venue
+Nothing in the core, and no existing venue, has to be edited to add a new one.
 
-[`src/common/types.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp):
+## 1. Add the `Venue` enumerator
+
+[`src/common/types.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp)
+generates the enum, `to_string` and `to_venue` from one X-macro list, so a venue is a single line:
 
 ```cpp
-enum Venue : uint8_t {
-    UNKNOWN_VENUE, CME, ICE, COINBASE, HYPERLIQUID, STOCK,
-    KRAKEN,        // ← add before __COUNT__
-    __COUNT__,
-};
+#define SLICK_SIM_VENUE_LIST(X)   \
+    X(CME,         "CME")         \
+    X(ICE,         "ICE")         \
+    X(COINBASE,    "COINBASE")    \
+    X(HYPERLIQUID, "HYPERLIQUID") \
+    X(STOCK,       "STOCK")       \
+    X(KRAKEN,      "KRAKEN")      // ← append here
 ```
 
-Add matching arms to `to_string(Venue)` and `to_venue(std::string_view)`. `to_venue` accepts both
-upper and lower case; the config key must match one of the strings it recognises.
+`to_venue` matches case-insensitively, so `kraken`, `KRAKEN` and `Kraken` all resolve.
 
-Insert **before** `__COUNT__` but be aware `Venue` is written into every `MarketDataUpdate` frame, so
-inserting in the middle renumbers the existing venues. If any shared-memory queue or capture file is
-being read by another process, append instead.
+!!! danger "Append only"
+    `Venue` is written into every `MarketDataUpdate` frame and into the shared-memory md queue.
+    Inserting in the middle renumbers every venue after the insertion point, which silently
+    reinterprets any queue or capture file another process is reading.
+
+This list is deliberately **not** conditional on the build options. A `Venue` is an identity on the
+wire, not a claim that an adapter was compiled in: `to_venue("kraken")` still resolves in a build with
+the Kraken adapter switched off, which is what lets a capture recorded elsewhere be read here.
 
 ## 2. Subclass `Exchange`
 
@@ -31,8 +42,8 @@ being read by another process, append instead.
 class KrakenExchange : public Exchange, public md_feed::KrakenFeedCallbacks {
 public:
     explicit KrakenExchange(const nlohmann::json& config);
-    void start() override;
 protected:
+    void poll() override;                                       // the per-tick pump
     void handleMdSubscription(const Request& request) override;
     void handleMdUnsubscription(const Request& request) override;
 private:
@@ -59,33 +70,26 @@ KrakenExchange::KrakenExchange(const nlohmann::json& config)
 }
 ```
 
-### `start()` — the one thing you must not get wrong
+### `poll()` — the per-tick pump
+
+Do **not** override `start()`. The base class owns the thread and the loop; you supply only what runs
+each iteration:
 
 ```cpp
-void KrakenExchange::start() {
-    run_.store(true, std::memory_order_release);
-    for (auto& og : order_gateways_) og->start();
-    md_publisher_->start();
-    for (auto& feed : md_feeds_) feed->start();
-
-    thread_ = std::thread([this]() {
-        while (run_.load(std::memory_order_relaxed)) {   // ← the loop is mandatory
-            drainEventQueue();
-            processRequest();
-        }
-    });
+void KrakenExchange::poll() {
+    drainEventQueue();      // release whatever the feed callbacks queued
 }
 ```
 
-!!! danger "Do not inherit the base `start()`"
-    `Exchange::start()` calls `processRequest()` **once**, with no loop. An adapter that forgets to
-    override it will start its gateways, process a single order, and then go silent with no error.
-    It also null-checks `md_publisher_` rather than requiring one, so forgetting to construct a
-    publisher fails just as quietly. See
-    [Known gaps](known-gaps.md#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing).
+`Exchange::start()` starts the gateways, the publisher and every feed in `md_feeds_`, then spins
+`poll(); processRequest();` until `stop()`. `poll()` defaults to doing nothing, which is exactly right
+for a venue with no live feed.
 
-You do not need to override `stop()`; the base implementation stops gateways and publisher and joins
-the thread.
+You do not need to override `stop()` either. The base stops the feeds, gateways and publisher and
+joins the exchange thread — in that order, joining the thread **before** touching `md_feeds_`, because
+`poll()` and `handleMdUnsubscription` both run on it. It is also idempotent: `main()` stops each
+exchange and `~Exchange()` stops it again, so the second pass returns immediately rather than
+unsubscribing a feed twice.
 
 ### Symbol creation
 
@@ -278,49 +282,162 @@ request_queue_.publish(index);
 Track subscriptions in both directions — symbol → set of sockets (for fan-out) and per-socket
 pending/active sets (to know when to send the subscription confirmation).
 
-## 6. Wire up the build
+## 6. Register the venue
 
-Add sources to the relevant `src/*/CMakeLists.txt`. The dependency direction is
-`exchange → {md_feed, matching_engine, order_gateway, market_data_publisher}`, so a new venue
-typically touches all four plus `src/exchange/CMakeLists.txt`.
-
-## 7. Register in `main.cpp`
+One small translation unit in your venue directory, `src/venues/kraken/kraken_venue.cpp`:
 
 ```cpp
-else if (it.key() == "kraken") {
-    if (it.value().value("enabled", true)) {
-        exchanges.emplace_back(std::make_unique<slick::sim::exch::KrakenExchange>(it.value()));
-        exchanges.back()->start();
-    }
-}
+#include "kraken_exchange.hpp"
+#include <exchange/exchange_registry.hpp>
+#include <nlohmann/json.hpp>
+
+using namespace slick::sim;
+using namespace slick::sim::exch;
+
+SLICK_SIM_REGISTER_VENUE("kraken", Venue::KRAKEN, KrakenExchange);
 ```
 
-Without this the key falls through to the generic `Exchange` branch and the resulting exchange is dead.
+The string is the config key under `exchanges`, matched case-insensitively. `main.cpp` names no venue
+and needs no edit; an enabled key with no registered adapter is a fatal startup error that lists what
+the binary does carry.
+
+## 7. Wire up the build
+
+Create `src/venues/kraken/CMakeLists.txt`:
+
+```cmake
+slick_sim_add_venue(kraken
+    SOURCES
+        kraken_exchange.cpp
+        kraken_live_ws_feed.cpp
+        kraken_rest_order_gateway.cpp
+        kraken_publisher.cpp
+        kraken_venue.cpp
+    DEPENDS
+        kraken-sdk          # whatever your venue SDK's imported target is called
+        slick::net          # your networking stack — see below
+        slick_sim_rest_ws   # the uWebSockets bases, if you serve HTTP/WebSocket
+)
+```
+
+`DEPENDS` is where the adapter names everything it links that the core does not, **including its
+networking stack**. Coinbase and Hyperliquid speak HTTP/WebSocket and name `slick::net`; an adapter for
+a binary session protocol — CME iLink, ICE — names `slick::socket` and must not name slick-net. No core
+target links either, and no venue inherits another's, so an adapter gets exactly what it declares.
+
+Resolve your dependencies in **that same file**, above the `slick_sim_add_venue()` call — not in the
+top-level `CMakeLists.txt`. The directory is added only when your option is on, so nothing here re-tests
+it:
+
+```cmake
+find_package(kraken-sdk CONFIG QUIET GLOBAL)      # or FetchContent
+if (NOT kraken-sdk_FOUND)
+    FetchContent_Declare(kraken-sdk GIT_REPOSITORY ... GIT_TAG ...)
+    FetchContent_MakeAvailable(kraken-sdk)
+endif()
+
+# Your networking stack. A no-op if the SDK above already brought it in as a
+# build-tree target, which find_package cannot see.
+slick_sim_find_venue_dependency(slick-net slick::net)
+
+# Only if your gateway derives from RestWsOrderGateway or your publisher from
+# WebsocketMarketDataPublisher: creates the shared target that compiles them, and
+# resolves uWebSockets. Nothing in the core does either, so a venue that serves a
+# binary session protocol never pulls uWebSockets into the build.
+slick_sim_require_rest_ws()
+```
+
+!!! warning "`find_package` in a venue directory needs `GLOBAL`"
+    An imported target is visible only in the directory that created it and below, while `slick-sim`
+    (`src/`) and `slick_sim_tests` (`tests/`) link your object library from sibling scopes and have to
+    resolve every name in its interface. Without `GLOBAL`, generate fails with *"links to target
+    `kraken-sdk` but the target was not found"*. `slick_sim_find_venue_dependency()` passes it for you;
+    a `find_package` you write yourself must pass it too. Targets created by `FetchContent` are real,
+    not imported, so they need nothing.
+
+Two lines then remain outside your directory — the option, in the top-level `CMakeLists.txt`, and the
+subdirectory, in `src/venues/CMakeLists.txt`:
+
+```cmake
+option(SLICK_SIM_ENABLE_KRAKEN "Build the Kraken venue adapter" ON)
+```
+
+```cmake
+if(SLICK_SIM_ENABLE_KRAKEN)
+    add_subdirectory(kraken)
+endif()
+```
+
+That is the whole build change. `slick_sim_add_venue` links your target against `exchange` (which
+carries every core header transitively), defines `SLICK_SIM_HAS_KRAKEN` for consumers, and adds the
+venue to the list that `slick_sim_link_venues()` feeds to both `slick-sim` and `slick_sim_tests`.
+Because `DEPENDS` is linked `PUBLIC`, your SDK and your networking stack reach the executable and the
+test binary without either of them naming a venue library.
+
+If your stack is `slick::net`, `main.cpp`'s bridge from its log output into slick-logger switches on by
+itself: `slick_sim_link_venues()` defines `SLICK_SIM_HAS_SLICK_NET` when any enabled venue's `DEPENDS`
+names it. A different stack with its own log handler gets its own flag the same way — one `if` in
+`slick_sim_link_venues()` keyed on the library, never on "a venue is enabled".
+
+!!! danger "Venue targets must be OBJECT libraries"
+    `slick_sim_add_venue` declares one, deliberately. `SLICK_SIM_REGISTER_VENUE` registers from a
+    namespace-scope initialiser that nothing in the core ever references by name — out of a *static*
+    library the linker discards the whole object as unreferenced, and the venue vanishes from the
+    registry with no build error at all. `ExchangeRegistryTest.EnabledVenuesAreRegistered` exists to
+    catch exactly that regression.
 
 ## 8. Tests
 
-Add to `tests/CMakeLists.txt` and mirror the existing suites:
+Put the suites in `tests/unit/venues/kraken/` and add a gated block to `tests/CMakeLists.txt` — keyed
+on the **target**, so the suite disappears with the venue:
+
+```cmake
+if(TARGET slick_sim_venue_kraken)
+    list(APPEND SLICK_SIM_TEST_SOURCES
+        unit/venues/kraken/test_kraken_exchange.cpp
+    )
+endif()
+```
+
+Mirror the existing suites:
 
 | Reference | What to copy |
 | --- | --- |
-| `tests/unit/exchange/test_coinbase_exchange.cpp` | Adapter-level: subscription handling, snapshot application, phantom-level deltas |
-| `tests/unit/matching_engine/test_coinbase_market_data_matching.cpp` | Feed liquidity crossing a resting simulator order |
-| `tests/unit/common/test_hyperliquid_info_proxy.cpp` | Pure request/response translation, tested without a network |
+| `tests/unit/venues/coinbase/test_coinbase_exchange.cpp` | Adapter-level: subscription handling, snapshot application, phantom-level deltas |
+| `tests/unit/matching_engine/test_feed_liquidity_matching.cpp` | Feed liquidity crossing a resting simulator order (venue-agnostic) |
+| `tests/unit/venues/hyperliquid/test_hyperliquid_info_proxy.cpp` | Pure request/response translation, tested without a network |
 
-`tests/unit/test_helpers.hpp` has the shared fixtures. The project convention (from `CLAUDE.md`) is
-that every bug fix gets a regression test.
+`tests/unit/test_helpers.hpp` has the shared fixtures — from a venue directory that is
+`#include "../../test_helpers.hpp"`. The project convention (from `CLAUDE.md`) is that every bug fix
+gets a regression test.
+
+## 9. Check it builds without the others
+
+The point of the split is that venues are independent. Verify that:
+
+```bash
+cmake -S . -B build-kraken -DSLICK_SIM_ENABLE_COINBASE=OFF -DSLICK_SIM_ENABLE_HYPERLIQUID=OFF
+cmake --build build-kraken
+ctest --test-dir build-kraken
+```
+
+Configuring with every venue off must still build and link the core — that is the configuration that
+catches a core target having quietly picked up a dependency through a venue SDK.
 
 ## Checklist
 
-- [ ] `Venue` entry plus `to_string` / `to_venue` arms
-- [ ] `Exchange` subclass with an **overridden `start()` containing a loop**
+- [ ] One line appended to `SLICK_SIM_VENUE_LIST` in `types.hpp`
+- [ ] Everything venue-specific under `src/venues/<name>/` — nothing in the core directories
+- [ ] `Exchange` subclass overriding **`poll()`, not `start()`**
 - [ ] `addSymbol()` creating an `L2` book and attaching the shared FIFO engine
 - [ ] `handleMdSubscription` / `handleMdUnsubscription` with per-channel pending tracking
 - [ ] Feed callbacks that enqueue only — no book mutation off the exchange thread
 - [ ] `MDFeed` implementation (optional — omit for a self-contained venue)
 - [ ] `OrderGateway` (`RestWsOrderGateway` subclass) with `setup_routes`
-- [ ] `MarketDataPublisher` (`WebsocketMarketDataPublisher` subclass) handling `SUB_RESPONSE`, `BOOK_SNAPSHOT`, `TRADE`
-- [ ] CMake sources
-- [ ] `main.cpp` dispatch entry
+- [ ] `MarketDataPublisher` (`WebsocketMarketDataPublisher` subclass) handling `SUB_RESPONSE`, `BOOK_SNAPSHOT`, `TRADE_SUMMARY`
+- [ ] `SLICK_SIM_REGISTER_VENUE` in a `<name>_venue.cpp`
+- [ ] `slick_sim_add_venue()` CMakeLists naming your networking stack in `DEPENDS`, your SDK lookup in
+      the same file (with `GLOBAL`), and the `SLICK_SIM_ENABLE_<VENUE>` option
 - [ ] Config block documented in [Configuration](configuration.md)
-- [ ] Unit tests
+- [ ] Unit tests under `tests/unit/venues/<name>/`, gated on `if(TARGET slick_sim_venue_<name>)`
+- [ ] Builds and tests pass with every *other* venue disabled

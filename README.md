@@ -83,14 +83,15 @@ Library targets:
 - A C++23 compiler: MSVC 2022 (17.7+ if you want AddressSanitizer), GCC, or Clang
 - No `vcpkg.json` manifest is committed, so the following must already be resolvable via `CMAKE_PREFIX_PATH` or a vcpkg toolchain file:
   - [QuickFIX](https://github.com/quickfix/quickfix)
-  - uWebSockets (`unofficial-uwebsockets`)
+  - uWebSockets (`unofficial-uwebsockets`) — only with a venue adapter that serves HTTP/WebSocket
   - [nlohmann_json](https://github.com/nlohmann/json)
-  - [jwt-cpp](https://github.com/Thalhammer/jwt-cpp)
+  - [jwt-cpp](https://github.com/Thalhammer/jwt-cpp) — only with the Coinbase adapter enabled
   - [foonathan_memory](https://github.com/foonathan/memory)
   - Boost (`uuid` component)
   - GoogleTest (only needed if building tests, which is on by default)
+  - [slick-net](https://github.com/SlickQuant/slick-net) — only for venue adapters that speak HTTP/WebSocket (Coinbase, Hyperliquid); not needed if both are switched off
 
-Everything else — `slick-logger`, `slick-socket`, `slick-object-pool`, `slick-orderbook`, `coinbase-advanced-cpp`, `hyperliquid-cpp`, `slick-net` — is fetched automatically via CMake `FetchContent` if not already installed locally.
+Everything else — `slick-logger`, `slick-socket`, `slick-object-pool`, `slick-orderbook`, `coinbase-advanced-cpp`, `hyperliquid-cpp` — is fetched automatically via CMake `FetchContent` if not already installed locally. `slick-socket` is looked up only with the TCP gateway enabled, and the two venue SDKs only with their adapter enabled.
 
 ## Building
 
@@ -114,6 +115,29 @@ cmake -S . -B build -DENABLE_ASAN=ON                     # AddressSanitizer (MSV
 cmake -S . -B build -DBUILD_EXCH_SIMULATOR_TESTING=OFF    # skip building unit tests (default: ON)
 cmake -S . -B build -DENABLE_NATIVE_ARCH=ON               # -march=native in Release (default: OFF)
 ```
+
+### Choosing which venues to build
+
+Each venue adapter lives entirely in `src/venues/<venue>/` and builds as its own target. Switching one
+off drops its sources, its unit tests **and** its vendor SDK — so you do not need the Coinbase SDK
+installed to build a Hyperliquid-only simulator.
+
+An adapter also declares its own networking stack: Coinbase and Hyperliquid speak HTTP/WebSocket and
+name `slick-net`, plus the uWebSockets-based gateway and publisher bases. A future venue on a binary
+session protocol (CME iLink, ICE) would name `slick-socket` instead — no venue inherits another's
+dependencies. With every venue and the TCP gateway off, `slick-net`, `jwt-cpp`, `uWebSockets` and
+`QuickFIX` are all unnecessary: nothing in the core links a wire protocol.
+
+```bash
+cmake -S . -B build -DSLICK_SIM_ENABLE_HYPERLIQUID=OFF    # Coinbase only
+cmake -S . -B build -DSLICK_SIM_ENABLE_COINBASE=OFF       # Hyperliquid only
+cmake -S . -B build -DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF    # drop the unused TCP/FIX/SBE gateway and QuickFIX
+```
+
+All venue options default to `ON`, so an unqualified build is unchanged. A config key naming a venue
+that was not compiled in is a fatal startup error listing the adapters the binary does carry, rather
+than an exchange that silently does nothing. See
+[Adding an exchange](https://slickquant.github.io/slick-sim/extending/).
 
 `ENABLE_NATIVE_ARCH` is off by default because CI's Release binaries are what `release.yml` attaches to GitHub Releases — a binary built with `-march=native` on a runner with AVX-512 crashes with `SIGILL` on any older CPU. Turn it on for local or self-hosted production builds, where the target CPU is the build CPU and the extra vectorisation is worth having.
 

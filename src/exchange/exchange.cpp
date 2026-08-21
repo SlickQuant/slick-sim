@@ -66,32 +66,72 @@ void Exchange::start()
         md_publisher_->start();
     }
 
+    if (md_feed_)
+    {
+        md_feed_->start();
+    }
+    for (auto &feed : md_feeds_)
+    {
+        feed->start();
+    }
+
     // start MD thread
     // if (md_feed_)
     // {
     //     md_thread_ = std::thread([this]() { processMdData(); });
     // }
 
-    thread_ = std::thread([this]() { processRequest(); });
+    // The loop lives here now. It used to be absent from the base and duplicated
+    // verbatim in each adapter, so a subclass that inherited start() spun once and
+    // then went silent. Adapters override poll() instead.
+    thread_ = std::thread([this]()
+                          {
+        while (run_.load(std::memory_order_relaxed)) {
+            poll();
+            processRequest();
+        } });
 }
 
 void Exchange::stop()
 {
-    run_.store(false, std::memory_order_release);
-    if (md_feed_ && md_thread_.joinable())
+    // main() stops every exchange explicitly and then ~Exchange() stops it again.
+    // That was harmless while every step here was individually guarded, but
+    // stopping the feeds below is not idempotent - CoinbaseLiveWSFeed::stop()
+    // unsubscribes upstream.
+    if (!run_.exchange(false, std::memory_order_acq_rel))
+    {
+        return;
+    }
+
+    if (md_thread_.joinable())
     {
         md_thread_.join();
+    }
+
+    // Joined BEFORE the feeds are touched: poll() reads md_feeds_ on the exchange
+    // thread, and CoinbaseExchange::handleMdUnsubscription erases from that same
+    // vector there.
+    if (thread_.joinable())
+    {
+        thread_.join();
+    }
+
+    for (auto &feed : md_feeds_)
+    {
+        feed->stop();
+    }
+    if (md_feed_)
+    {
+        md_feed_->stop();
     }
 
     for (auto &og : order_gateways_)
     {
         og->stop();
     }
-    md_publisher_->stop();
-
-    if (thread_.joinable())
+    if (md_publisher_)
     {
-        thread_.join();
+        md_publisher_->stop();
     }
 }
 

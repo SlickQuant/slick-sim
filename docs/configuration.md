@@ -29,10 +29,14 @@ erroring.
 `exchanges` maps a venue key to that venue's configuration. A missing `exchanges` object makes the
 process print `Missing exchanges config` and exit with `EXIT_FAILURE`.
 
-Recognised venue keys are **`coinbase`** and **`hyperliquid`**. Any other key builds a generic
-`Exchange`, which binds no ports and
-[does nothing useful](known-gaps.md#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing) —
-keep such a block `"enabled": false`, as the committed sample's `cme` entry is.
+Recognised venue keys are **`coinbase`** and **`hyperliquid`**, matched case-insensitively. A key is
+resolved through the [venue registry](extending.md#6-register-the-venue), so it is recognised only if
+that adapter was compiled in — see the `SLICK_SIM_ENABLE_*` options in
+[Adding an exchange](extending.md#7-wire-up-the-build).
+
+An **enabled** key with no matching adapter is a fatal startup error naming the adapters the binary
+does carry. A block that is `"enabled": false` is skipped before the lookup, so it needs no adapter —
+which is why the committed sample's disabled `cme` entry still works.
 
 ## Per-exchange keys
 
@@ -197,8 +201,8 @@ A single object — no `rest`/`ws` split.
 
 ## Complete annotated sample
 
-The committed sample with every optional key spelled out. It also carries a disabled `cme` block,
-omitted here — see [Known gaps](known-gaps.md#an-enabled-venue-key-with-no-adapter-starts-but-does-nothing).
+The committed sample with every optional key spelled out. It also carries a `cme` block, omitted here:
+it is `"enabled": false`, which is what lets it sit in the config with no adapter behind it.
 
 ```json
 {

@@ -73,6 +73,43 @@ TEST_F(TypesTest, VenueConversion_FromString_Unknown) {
     EXPECT_EQ(to_venue("invalid"), Venue::UNKNOWN_VENUE);
 }
 
+// The hand-written chain this replaced compared against the exact all-upper and
+// exact all-lower spelling only, so a mixed-case config key silently resolved to
+// UNKNOWN_VENUE - and an unknown venue is not diagnosed anywhere near the config.
+TEST_F(TypesTest, VenueConversion_FromString_IsCaseInsensitive) {
+    EXPECT_EQ(to_venue("CoinBase"), Venue::COINBASE);
+    EXPECT_EQ(to_venue("HyperLiquid"), Venue::HYPERLIQUID);
+    EXPECT_EQ(to_venue("Cme"), Venue::CME);
+}
+
+// A prefix or a suffix must not match: iequals compares lengths first, but that
+// is exactly the kind of thing a later "optimisation" drops.
+TEST_F(TypesTest, VenueConversion_FromString_RejectsPartialMatches) {
+    EXPECT_EQ(to_venue("coinbaseX"), Venue::UNKNOWN_VENUE);
+    EXPECT_EQ(to_venue("coinbas"), Venue::UNKNOWN_VENUE);
+    EXPECT_EQ(to_venue(""), Venue::UNKNOWN_VENUE);
+}
+
+TEST_F(TypesTest, VenueConversion_HyperliquidRoundTrips) {
+    EXPECT_EQ(to_venue("HYPERLIQUID"), Venue::HYPERLIQUID);
+    EXPECT_EQ(to_venue("hyperliquid"), Venue::HYPERLIQUID);
+    EXPECT_STREQ(to_string(Venue::HYPERLIQUID), "HYPERLIQUID");
+}
+
+// Venue is a wire field: it is written into every MarketDataUpdate frame and into
+// the shared-memory md queue, so these numbers are a compatibility contract with
+// any process reading a queue or a capture file. The X-macro list must be
+// append-only - reordering it renumbers every venue after the insertion point.
+TEST_F(TypesTest, VenueEnumeratorsAreStable) {
+    EXPECT_EQ(static_cast<uint8_t>(Venue::UNKNOWN_VENUE), 0);
+    EXPECT_EQ(static_cast<uint8_t>(Venue::CME), 1);
+    EXPECT_EQ(static_cast<uint8_t>(Venue::ICE), 2);
+    EXPECT_EQ(static_cast<uint8_t>(Venue::COINBASE), 3);
+    EXPECT_EQ(static_cast<uint8_t>(Venue::HYPERLIQUID), 4);
+    EXPECT_EQ(static_cast<uint8_t>(Venue::STOCK), 5);
+    EXPECT_EQ(static_cast<uint8_t>(Venue::__COUNT__), 6);
+}
+
 TEST_F(TypesTest, VenueConversion_ToString_AllVenues) {
     EXPECT_STREQ(to_string(Venue::COINBASE), "COINBASE");
     EXPECT_STREQ(to_string(Venue::CME), "CME");
