@@ -590,6 +590,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#the-book-is-stamped-with-dispatch-order-never-with-the-venues-seq_num" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The book is stamped with dispatch order, never with the venue's seq_num
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-snapshot-empties-the-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A snapshot empties the queue
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1082,6 +1104,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#the-book-is-stamped-with-dispatch-order-never-with-the-venues-seq_num" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The book is stamped with dispatch order, never with the venue's seq_num
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-snapshot-empties-the-queue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A snapshot empties the queue
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1319,7 +1363,8 @@ order would corrupt the book. <code>CoinbaseExchange</code> therefore buffers an
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_seq_num</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">next_sequence_id</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">   </span><span class="c1">// monotonic tiebreaker</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">last_published_level_seq_num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">};</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">next_book_seq_num</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">   </span><span class="c1">// what the book is stamped with</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">};</span>
 </code></pre></div>
 <p><code>EventCompare</code> orders by <code>event_time</code> ascending, then puts a <code>TRADE</code> ahead of a <code>LEVEL_UPDATE</code> at the
 same instant — the two arrive on independent channels, and applying the trade first is what lets the
@@ -1356,6 +1401,12 @@ two enqueue loops walk their batch in opposite directions to suit each channel's
 <p>Both land on chronological. "Fixing" the tie-break to match the <code>event_time</code> inversion replays both
 batches backwards — levels settle on a stale quantity, and trades match against the book and take
 their public trade ids in reverse.</p>
+<p>The same reversal decides where <code>F_END_EVENT</code> goes. Each loop enqueues in reverse <em>dispatch</em> order,
+so the element it visits <strong>first</strong> takes the lowest <code>sequence_id</code> and is dispatched <strong>last</strong> — and
+that is the one that closes the batch. Marking <code>std::prev(rend())</code> instead puts the marker on the
+element dispatched first, closing every batch on its opening update. <code>onLevel2Snapshot</code> is not the
+same shape: it applies its batch inline, with no queue to reverse it, so its final element really is
+the last applied.</p>
 <div class="admonition note">
 <p class="admonition-title">Same-price, same-timestamp updates in one batch</p>
 <p>The underlying <code>slick-orderbook</code> rejects a level mutation whose timestamp is not newer than that
@@ -1363,6 +1414,47 @@ level's last update, so a second update to the <em>same</em> price at the <em>sa
 dropped. Coinbase sends at most one entry per price per batch, so this does not arise in
 practice — but it does mean same-instant ordering at one price is unobservable in the book.</p>
 </div>
+<h3 id="the-book-is-stamped-with-dispatch-order-never-with-the-venues-seq_num">The book is stamped with dispatch order, never with the venue's <code>seq_num</code><a class="headerlink" href="#the-book-is-stamped-with-dispatch-order-never-with-the-venues-seq_num" title="Permanent link">&para;</a></h3>
+<p>Every <code>OrderBookL3</code> mutator — <code>addOrder</code>, <code>modifyOrder</code>, <code>deleteOrder</code>, <code>executeOrder</code> — rejects a
+call whose <code>seq_num</code> is below the last one it accepted, and reports it only through a <code>bool</code> return.
+That guard assumes the caller applies mutations in the venue's arrival order. This queue deliberately
+does not: it reorders into <code>event_time</code> order, which is a <strong>different</strong> order.</p>
+<p>Coinbase shares one <code>sequence_num</code> counter across both channels, but an <code>l2_data</code> message's
+<code>event_time</code> lags its own message timestamp by 100–200 ms while a trade's <code>time</code> is near-live. So a
+trade routinely arrives <em>after</em> an l2 batch and carries an <em>earlier</em> <code>event_time</code> — it dispatches
+first, stamps the book with its higher <code>seq_num</code>, and the whole l2 batch behind it is discarded,
+since every update in a batch shares one <code>seq_num</code>. On a recorded session that sank <strong>38.6% of level
+updates</strong> and 16.1% of trade replays. The visible symptoms were levels that never retired (a bid
+still resting 35 dollars above the market ten minutes after the venue removed it) and a matching loop
+re-filling the same phantom order dozens of times, because a rejected <code>executeOrder</code> leaves the
+resting quantity intact.</p>
+<p><code>processSequencedEvents</code> therefore hands <code>dispatchEvent</code> a <strong>dispatch-order counter</strong>
+(<code>nextBookSeqNum</code>), monotonic by construction, and that is what reaches the book. <code>event.seq_num</code>
+stays the venue's number for everything client-facing — <code>MDLevel.seq_num</code>, <code>setLastUpdate</code>, and the
+<code>last_published_level_seq_num</code> batching. <code>onLevel2Snapshot</code> draws from the same counter, because it
+bypasses the queue and <code>OrderBookL3::clear()</code> does not reset the book's sequence.</p>
+<p>Do not pass an enqueue-time counter here instead. <code>sequence_id</code> regresses even harder — the tie-break
+above pops the <em>highest</em> one first, and 90% of events share an <code>(event_time, type)</code> with a sibling,
+so it measures at 96.4% rejected.</p>
+<div class="admonition warning">
+<p class="admonition-title"><code>OrderBookL3::addOrder</code> takes <code>priority</code> as its sixth argument</p>
+<p><code>addOrder(id, side, price, qty, timestamp, priority, seq_num, is_last_in_batch)</code> — a seven-argument
+call meaning to pass a sequence lands it in <code>priority</code> and shifts everything after it along, so
+the batch flag arrives as the sequence. Rest phantom liquidity through
+<code>OrderBook::addBookOrder()</code>, which fills <code>priority</code> from <code>nextOrderPriority()</code> itself.</p>
+</div>
+<h3 id="a-snapshot-empties-the-queue">A snapshot empties the queue<a class="headerlink" href="#a-snapshot-empties-the-queue" title="Permanent link">&para;</a></h3>
+<p><code>onLevel2Snapshot</code> does not go through the queue — it rebuilds the book on the callback, so a
+subscriber is not made to wait a second for its first book. That makes it a <strong>reset</strong>, and a reset has
+to discard the events queued against the book it just cleared. <code>poll()</code> runs <code>processData()</code> — which
+fires the snapshot callback — before <code>processSequencedEvents()</code>, so anything still queued would be
+replayed onto the rebuilt book: a trade received before a reconnect would match against fresh
+liquidity, fabricate fills and remove quantity that is genuinely there. Nothing downstream catches it,
+because the <code>TRADE</code> branch of <code>dispatchEvent</code> has no stale-timestamp guard and the level branch's only
+compares against the book the snapshot just wrote.</p>
+<p>So <code>onLevel2Snapshot</code> empties <code>pending_events</code> for that symbol. Everything in it at that moment does
+predate the snapshot: every callback runs on the exchange thread in arrival order, so a message that
+arrives after the snapshot is enqueued after it is cleared.</p>
 <p>The callbacks (<code>onLevel2Updates</code>, <code>onMarketTrades</code>) only push into this queue — they never touch the
 book. They already run on the exchange thread, delivered by <code>processData()</code>, so this is buffering for
 <strong>ordering</strong>, not for thread safety. Release happens later in the same loop iteration, in

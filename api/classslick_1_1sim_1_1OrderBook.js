@@ -4,7 +4,7 @@ var classslick_1_1sim_1_1OrderBook =
     [ "StringViewHash", "classslick_1_1sim_1_1OrderBook.html#a91c26e474a18c1896b2d4446a50aa6b7", null ],
     [ "OrderBook", "classslick_1_1sim_1_1OrderBook.html#ab09d218f62c4e9db31cbf7f3be176126", null ],
     [ "~OrderBook", "classslick_1_1sim_1_1OrderBook.html#a3c29057ab9d52000cf9e31465ffa2258", null ],
-    [ "addBookOrder", "classslick_1_1sim_1_1OrderBook.html#a50248c0f052f19783f95b6950fd8e7c2", null ],
+    [ "addBookOrder", "classslick_1_1sim_1_1OrderBook.html#ac35030c304f02e47ccc6b53a6e8fbb5c", null ],
     [ "addOrder", "classslick_1_1sim_1_1OrderBook.html#afa725e6f1d2d5cbbbcef399572542520", null ],
     [ "allocateOrder", "classslick_1_1sim_1_1OrderBook.html#ae5f7981d61f1bb821cb8a3c82f8ebbe7", null ],
     [ "clearMDOrders", "classslick_1_1sim_1_1OrderBook.html#a278c6fc41358cbf90e827ebc976c7cc3", null ],

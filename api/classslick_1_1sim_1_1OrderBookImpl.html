@@ -115,8 +115,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ade9826f5f15b828e009f9b190d2cbb3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad923102f1a62cab39903c66584a92a09" id="r_ad923102f1a62cab39903c66584a92a09"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBookImpl.html#ad923102f1a62cab39903c66584a92a09">~OrderBookImpl</a> () override=default</td></tr>
 <tr class="separator:ad923102f1a62cab39903c66584a92a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a752c0340d7e77df51dd127babb570c9a" id="r_a752c0340d7e77df51dd127babb570c9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBookImpl.html#a752c0340d7e77df51dd127babb570c9a">addBookOrder</a> (uint64_t order_id, slick::orderbook::Side book_side, <a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> price, <a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> qty, uint64_t timestamp, uint64_t seq_num) override</td></tr>
-<tr class="separator:a752c0340d7e77df51dd127babb570c9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa7a364e3d9d1b5cc1e11e20f6ac1d12" id="r_afa7a364e3d9d1b5cc1e11e20f6ac1d12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBookImpl.html#afa7a364e3d9d1b5cc1e11e20f6ac1d12">addBookOrder</a> (uint64_t order_id, slick::orderbook::Side book_side, <a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> price, <a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> qty, uint64_t timestamp, uint64_t seq_num, bool is_last_in_batch=true) override</td></tr>
+<tr class="memdesc:afa7a364e3d9d1b5cc1e11e20f6ac1d12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rest phantom (market-data) liquidity.  <br /></td></tr>
+<tr class="separator:afa7a364e3d9d1b5cc1e11e20f6ac1d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba170655f292944a7d74456915257627" id="r_aba170655f292944a7d74456915257627"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBookImpl.html#aba170655f292944a7d74456915257627">populateMDBookUpdate</a> (<a class="el" href="structslick_1_1sim_1_1MDBookUpdate.html">MDBookUpdate</a> &amp;book_update) override</td></tr>
 <tr class="separator:aba170655f292944a7d74456915257627"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace8d4c9ffd783a467086d345eeae65a6" id="r_ace8d4c9ffd783a467086d345eeae65a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBookImpl.html#ace8d4c9ffd783a467086d345eeae65a6">populateL2SubscriptionResponse</a> (slick::queue&lt; uint8_t &gt; &amp;md_update_queue, uint8_t channel) override</td></tr>
@@ -222,7 +223,7 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b07a124195b85d">OrderBookType</a> BookType&gt;<br />
 class slick::sim::OrderBookImpl&lt; BookType &gt;</div>
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00253">253</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00269">269</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ade9826f5f15b828e009f9b190d2cbb3b" name="ade9826f5f15b828e009f9b190d2cbb3b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ade9826f5f15b828e009f9b190d2cbb3b">&#9670;&#160;</a></span>OrderBookImpl()</h2>
@@ -272,7 +273,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00255">255</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00271">271</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -304,8 +305,8 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a752c0340d7e77df51dd127babb570c9a" name="a752c0340d7e77df51dd127babb570c9a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a752c0340d7e77df51dd127babb570c9a">&#9670;&#160;</a></span>addBookOrder()</h2>
+<a id="afa7a364e3d9d1b5cc1e11e20f6ac1d12" name="afa7a364e3d9d1b5cc1e11e20f6ac1d12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa7a364e3d9d1b5cc1e11e20f6ac1d12">&#9670;&#160;</a></span>addBookOrder()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -349,7 +350,13 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>seq_num</em>&#160;</td>
+          <td class="paramname"><em>seq_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_last_in_batch</em> = <code>true</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -364,9 +371,12 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 </table>
 </div><div class="memdoc">
 
-<p>Implements <a class="el" href="classslick_1_1sim_1_1OrderBook.html#a50248c0f052f19783f95b6950fd8e7c2">slick::sim::OrderBook</a>.</p>
+<p>Rest phantom (market-data) liquidity. </p>
+<p>Prefer this over the inherited OrderBookL3::addOrder - that one takes <code>priority</code> as its sixth argument, so a call that means to pass a sequence there silently lands it in <code>priority</code> and shifts the sequence and batch flag one place along. </p>
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00368">368</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p>Implements <a class="el" href="classslick_1_1sim_1_1OrderBook.html#ac35030c304f02e47ccc6b53a6e8fbb5c">slick::sim::OrderBook</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00384">384</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -396,7 +406,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p>Implements <a class="el" href="classslick_1_1sim_1_1OrderBook.html#af84ba5a93fa9403affcebe7021e0d3ee">slick::sim::OrderBook</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00459">459</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00476">476</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00023">slick::sim::BOOK_SNAPSHOT</a>, <a class="el" href="market__data_8hpp_source.html#l00131">slick::sim::BookSnapshot::num_bid</a>, and <a class="el" href="market__data_8hpp_source.html#l00048">slick::sim::MDLevel::price</a>.</p>
 
@@ -428,7 +438,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p>Implements <a class="el" href="classslick_1_1sim_1_1OrderBook.html#af84ba5a93fa9403affcebe7021e0d3ee">slick::sim::OrderBook</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00504">504</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00521">521</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -498,7 +508,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p>Implements <a class="el" href="classslick_1_1sim_1_1OrderBook.html#a62533fffc6bbbf6387bc5b25adb7329c">slick::sim::OrderBook</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00423">423</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00440">440</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00125">slick::sim::MDSubscriptionResponse::channel</a>, <a class="el" href="market__data_8hpp_source.html#l00107">slick::sim::NONE</a>, <a class="el" href="market__data_8hpp_source.html#l00131">slick::sim::BookSnapshot::num_bid</a>, <a class="el" href="market__data_8hpp_source.html#l00048">slick::sim::MDLevel::price</a>, and <a class="el" href="market__data_8hpp_source.html#l00025">slick::sim::SUB_RESPONSE</a>.</p>
 
@@ -540,7 +550,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p>Implements <a class="el" href="classslick_1_1sim_1_1OrderBook.html#a62533fffc6bbbf6387bc5b25adb7329c">slick::sim::OrderBook</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00492">492</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00509">509</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -610,7 +620,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p>Implements <a class="el" href="classslick_1_1sim_1_1OrderBook.html#abf00ae9f7ae85d37f4dc222161d40f3b">slick::sim::OrderBook</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00403">403</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00420">420</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00059">slick::sim::MDBookUpdate::buy</a>, <a class="el" href="market__data_8hpp_source.html#l00048">slick::sim::MDLevel::price</a>, and <a class="el" href="market__data_8hpp_source.html#l00058">slick::sim::MDBookUpdate::sell</a>.</p>
 
@@ -642,7 +652,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p>Implements <a class="el" href="classslick_1_1sim_1_1OrderBook.html#abf00ae9f7ae85d37f4dc222161d40f3b">slick::sim::OrderBook</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00498">498</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00515">515</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -703,7 +713,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a86368e1b2521bcca08b0
 
 <p>Implements <a class="el" href="classslick_1_1sim_1_1OrderBook.html#a3c89d0503873efa65e37f572270eda06">slick::sim::OrderBook</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00379">379</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00396">396</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="types_8hpp_source.html#l00036">slick::sim::to_price_double()</a>, and <a class="el" href="types_8hpp_source.html#l00044">slick::sim::to_qty_double()</a>.</p>
 

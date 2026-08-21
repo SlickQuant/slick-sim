@@ -149,8 +149,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abf00ae9f7ae85d37f4dc222161d40f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa725e6f1d2d5cbbbcef399572542520" id="r_afa725e6f1d2d5cbbbcef399572542520"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBook.html#afa725e6f1d2d5cbbbcef399572542520">addOrder</a> (<a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *order, uint64_t timestamp, uint64_t seq_num=0, bool is_last_in_batch=true)</td></tr>
 <tr class="separator:afa725e6f1d2d5cbbbcef399572542520"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50248c0f052f19783f95b6950fd8e7c2" id="r_a50248c0f052f19783f95b6950fd8e7c2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBook.html#a50248c0f052f19783f95b6950fd8e7c2">addBookOrder</a> (uint64_t order_id, slick::orderbook::Side book_side, <a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> price, <a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> qty, uint64_t timestamp, uint64_t seq_num)=0</td></tr>
-<tr class="separator:a50248c0f052f19783f95b6950fd8e7c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac35030c304f02e47ccc6b53a6e8fbb5c" id="r_ac35030c304f02e47ccc6b53a6e8fbb5c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBook.html#ac35030c304f02e47ccc6b53a6e8fbb5c">addBookOrder</a> (uint64_t order_id, slick::orderbook::Side book_side, <a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> price, <a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> qty, uint64_t timestamp, uint64_t seq_num, bool is_last_in_batch=true)=0</td></tr>
+<tr class="memdesc:ac35030c304f02e47ccc6b53a6e8fbb5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rest phantom (market-data) liquidity.  <br /></td></tr>
+<tr class="separator:ac35030c304f02e47ccc6b53a6e8fbb5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb39267c415946175b2c0212b62af84f" id="r_acb39267c415946175b2c0212b62af84f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBook.html#acb39267c415946175b2c0212b62af84f">deleteOrder</a> (<a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *order, uint64_t timestamp, uint64_t seq_num=0, bool is_last_in_batch=true)</td></tr>
 <tr class="separator:acb39267c415946175b2c0212b62af84f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2dc1636bef9bfe8aea3caf95100c9f3" id="r_af2dc1636bef9bfe8aea3caf95100c9f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1OrderBook.html#af2dc1636bef9bfe8aea3caf95100c9f3">deleteOrder</a> (<a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *order)</td></tr>
@@ -241,7 +242,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00230">230</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00246">246</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -265,7 +266,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00229">229</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00245">245</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -318,7 +319,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00043">43</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00233">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00239">orders_by_client_order_id_</a>, and <a class="el" href="order__book_8hpp_source.html#l00240">orders_by_order_id_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00249">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00255">orders_by_client_order_id_</a>, and <a class="el" href="order__book_8hpp_source.html#l00256">orders_by_order_id_</a>.</p>
 
 </div>
 </div>
@@ -348,8 +349,8 @@ Friends</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a50248c0f052f19783f95b6950fd8e7c2" name="a50248c0f052f19783f95b6950fd8e7c2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50248c0f052f19783f95b6950fd8e7c2">&#9670;&#160;</a></span>addBookOrder()</h2>
+<a id="ac35030c304f02e47ccc6b53a6e8fbb5c" name="ac35030c304f02e47ccc6b53a6e8fbb5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac35030c304f02e47ccc6b53a6e8fbb5c">&#9670;&#160;</a></span>addBookOrder()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -391,7 +392,13 @@ Friends</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint64_t&#160;</td>
-          <td class="paramname"><em>seq_num</em>&#160;</td>
+          <td class="paramname"><em>seq_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>is_last_in_batch</em> = <code>true</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -406,7 +413,10 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classslick_1_1sim_1_1OrderBookImpl.html#a752c0340d7e77df51dd127babb570c9a">slick::sim::OrderBookImpl&lt; BookType &gt;</a>.</p>
+<p>Rest phantom (market-data) liquidity. </p>
+<p>Prefer this over the inherited OrderBookL3::addOrder - that one takes <code>priority</code> as its sixth argument, so a call that means to pass a sequence there silently lands it in <code>priority</code> and shifts the sequence and batch flag one place along. </p>
+
+<p>Implemented in <a class="el" href="classslick_1_1sim_1_1OrderBookImpl.html#afa7a364e3d9d1b5cc1e11e20f6ac1d12">slick::sim::OrderBookImpl&lt; BookType &gt;</a>.</p>
 
 </div>
 </div>
@@ -458,7 +468,7 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00087">87</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="fixed__string_8hpp_source.html#l00088">slick::sim::utils::fixed_string&lt; N &gt;::empty()</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::id</a>, <a class="el" href="common_2order_8hpp_source.html#l00321">slick::sim::Order::leaves_quantity</a>, <a class="el" href="order__book_8hpp_source.html#l00217">nextOrderPriority()</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00233">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00239">orders_by_client_order_id_</a>, <a class="el" href="order__book_8hpp_source.html#l00240">orders_by_order_id_</a>, <a class="el" href="common_2order_8hpp_source.html#l00319">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00309">slick::sim::Order::priority</a>, <a class="el" href="common_2order_8hpp_source.html#l00310">slick::sim::Order::side</a>, and <a class="el" href="order__book_8hpp_source.html#l00035">slick::sim::to_book_side()</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="fixed__string_8hpp_source.html#l00088">slick::sim::utils::fixed_string&lt; N &gt;::empty()</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::id</a>, <a class="el" href="common_2order_8hpp_source.html#l00321">slick::sim::Order::leaves_quantity</a>, <a class="el" href="order__book_8hpp_source.html#l00233">nextOrderPriority()</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00249">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00255">orders_by_client_order_id_</a>, <a class="el" href="order__book_8hpp_source.html#l00256">orders_by_order_id_</a>, <a class="el" href="common_2order_8hpp_source.html#l00319">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00309">slick::sim::Order::priority</a>, <a class="el" href="common_2order_8hpp_source.html#l00310">slick::sim::Order::side</a>, and <a class="el" href="order__book_8hpp_source.html#l00035">slick::sim::to_book_side()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>.</p>
 
@@ -487,9 +497,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00277">277</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00293">293</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="timestamp_8hpp_source.html#l00091">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="utils_2order_8hpp_source.html#l00010">slick::sim::utils::nextOrderId()</a>, <a class="el" href="order__book_8hpp_source.html#l00232">order_buffer_</a>, and <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>.</p>
+<p class="reference">References <a class="el" href="timestamp_8hpp_source.html#l00091">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="utils_2order_8hpp_source.html#l00010">slick::sim::utils::nextOrderId()</a>, <a class="el" href="order__book_8hpp_source.html#l00248">order_buffer_</a>, and <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>.</p>
 
 </div>
 </div>
@@ -516,9 +526,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00167">167</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00171">171</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00242">feed_md_level_quantity_</a>, <a class="el" href="order__book_8hpp_source.html#l00233">orders_</a>, and <a class="el" href="order__book_8hpp_source.html#l00035">slick::sim::to_book_side()</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00258">feed_md_level_quantity_</a>, <a class="el" href="order__book_8hpp_source.html#l00249">orders_</a>, and <a class="el" href="order__book_8hpp_source.html#l00035">slick::sim::to_book_side()</a>.</p>
 
 </div>
 </div>
@@ -546,9 +556,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00116">116</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00120">120</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="fixed__string_8hpp_source.html#l00088">slick::sim::utils::fixed_string&lt; N &gt;::empty()</a>, <a class="el" href="order__book_8hpp_source.html#l00056">freeOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::id</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00233">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00239">orders_by_client_order_id_</a>, and <a class="el" href="order__book_8hpp_source.html#l00240">orders_by_order_id_</a>.</p>
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="fixed__string_8hpp_source.html#l00088">slick::sim::utils::fixed_string&lt; N &gt;::empty()</a>, <a class="el" href="order__book_8hpp_source.html#l00056">freeOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::id</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00249">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00255">orders_by_client_order_id_</a>, and <a class="el" href="order__book_8hpp_source.html#l00256">orders_by_order_id_</a>.</p>
 
 </div>
 </div>
@@ -598,11 +608,11 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00102">102</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00106">106</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00102">deleteOrder()</a>, <a class="el" href="fixed__string_8hpp_source.html#l00088">slick::sim::utils::fixed_string&lt; N &gt;::empty()</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::id</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00233">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00239">orders_by_client_order_id_</a>, and <a class="el" href="order__book_8hpp_source.html#l00240">orders_by_order_id_</a>.</p>
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00106">deleteOrder()</a>, <a class="el" href="fixed__string_8hpp_source.html#l00088">slick::sim::utils::fixed_string&lt; N &gt;::empty()</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::id</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00249">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00255">orders_by_client_order_id_</a>, and <a class="el" href="order__book_8hpp_source.html#l00256">orders_by_order_id_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00102">deleteOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00318">match()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00106">deleteOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00327">match()</a>.</p>
 
 </div>
 </div>
@@ -658,11 +668,11 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00183">183</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00187">187</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="utils_2order_8hpp_source.html#l00015">slick::sim::utils::executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00361">findOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00233">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00239">orders_by_client_order_id_</a>, and <a class="el" href="order__book_8hpp_source.html#l00240">orders_by_order_id_</a>.</p>
+<p class="reference">References <a class="el" href="utils_2order_8hpp_source.html#l00015">slick::sim::utils::executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00377">findOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00249">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00255">orders_by_client_order_id_</a>, and <a class="el" href="order__book_8hpp_source.html#l00256">orders_by_order_id_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00318">match()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00327">match()</a>.</p>
 
 </div>
 </div>
@@ -690,11 +700,11 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00361">361</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00377">377</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00233">orders_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00249">orders_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">canFillCompletely()</a>, <a class="el" href="order__book_8hpp_source.html#l00183">executeOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00318">match()</a>, <a class="el" href="order__book_8hpp_source.html#l00319">onOrderUpdate()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00074">wouldSelfMatch()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">canFillCompletely()</a>, <a class="el" href="order__book_8hpp_source.html#l00187">executeOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00327">match()</a>, <a class="el" href="order__book_8hpp_source.html#l00335">onOrderUpdate()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00074">wouldSelfMatch()</a>.</p>
 
 </div>
 </div>
@@ -722,9 +732,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00351">351</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00367">367</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00239">orders_by_client_order_id_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00255">orders_by_client_order_id_</a>.</p>
 
 </div>
 </div>
@@ -752,9 +762,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00356">356</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00372">372</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00240">orders_by_order_id_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00256">orders_by_order_id_</a>.</p>
 
 </div>
 </div>
@@ -784,9 +794,9 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00056">56</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00232">order_buffer_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00248">order_buffer_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00116">deleteOrder()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00120">deleteOrder()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>.</p>
 
 </div>
 </div>
@@ -814,9 +824,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00303">303</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00319">319</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00242">feed_md_level_quantity_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00258">feed_md_level_quantity_</a>.</p>
 
 </div>
 </div>
@@ -843,9 +853,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00205">205</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00221">221</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00225">last_seq_num_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00241">last_seq_num_</a>.</p>
 
 </div>
 </div>
@@ -872,9 +882,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00201">201</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00217">217</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00224">last_update_time_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00240">last_update_time_</a>.</p>
 
 </div>
 </div>
@@ -936,11 +946,11 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00130">130</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00134">134</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="fixed__string_8hpp_source.html#l00088">slick::sim::utils::fixed_string&lt; N &gt;::empty()</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::id</a>, <a class="el" href="common_2order_8hpp_source.html#l00321">slick::sim::Order::leaves_quantity</a>, <a class="el" href="order__book_8hpp_source.html#l00130">modifyOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00217">nextOrderPriority()</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00233">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00239">orders_by_client_order_id_</a>, <a class="el" href="order__book_8hpp_source.html#l00240">orders_by_order_id_</a>, <a class="el" href="common_2order_8hpp_source.html#l00319">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00309">slick::sim::Order::priority</a>, and <a class="el" href="common_2order_8hpp_source.html#l00320">slick::sim::Order::quantity</a>.</p>
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="fixed__string_8hpp_source.html#l00088">slick::sim::utils::fixed_string&lt; N &gt;::empty()</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::id</a>, <a class="el" href="common_2order_8hpp_source.html#l00321">slick::sim::Order::leaves_quantity</a>, <a class="el" href="order__book_8hpp_source.html#l00134">modifyOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00233">nextOrderPriority()</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="order__book_8hpp_source.html#l00249">orders_</a>, <a class="el" href="order__book_8hpp_source.html#l00255">orders_by_client_order_id_</a>, <a class="el" href="order__book_8hpp_source.html#l00256">orders_by_order_id_</a>, <a class="el" href="common_2order_8hpp_source.html#l00319">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00309">slick::sim::Order::priority</a>, and <a class="el" href="common_2order_8hpp_source.html#l00320">slick::sim::Order::quantity</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00130">modifyOrder()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00134">modifyOrder()</a>.</p>
 
 </div>
 </div>
@@ -967,11 +977,11 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00217">217</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00233">233</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00223">next_priority_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00239">next_priority_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, and <a class="el" href="order__book_8hpp_source.html#l00130">modifyOrder()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, and <a class="el" href="order__book_8hpp_source.html#l00134">modifyOrder()</a>.</p>
 
 </div>
 </div>
@@ -999,9 +1009,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00319">319</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00335">335</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00242">feed_md_level_quantity_</a>, and <a class="el" href="order__book_8hpp_source.html#l00361">findOrder()</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00258">feed_md_level_quantity_</a>, and <a class="el" href="order__book_8hpp_source.html#l00377">findOrder()</a>.</p>
 
 </div>
 </div>
@@ -1029,9 +1039,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00312">312</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00328">328</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00242">feed_md_level_quantity_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00258">feed_md_level_quantity_</a>.</p>
 
 </div>
 </div>
@@ -1165,9 +1175,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00209">209</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00225">225</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00225">last_seq_num_</a>, and <a class="el" href="order__book_8hpp_source.html#l00224">last_update_time_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00241">last_seq_num_</a>, and <a class="el" href="order__book_8hpp_source.html#l00240">last_update_time_</a>.</p>
 
 </div>
 </div>
@@ -1225,9 +1235,9 @@ Friends</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00065">65</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00228">symbol_</a>.</p>
+<p class="reference">References <a class="el" href="order__book_8hpp_source.html#l00244">symbol_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00440">slick::sim::exch::Exchange::publishMDBookUpdate()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00327">match()</a>, and <a class="el" href="exchange_8cpp_source.html#l00440">slick::sim::exch::Exchange::publishMDBookUpdate()</a>.</p>
 
 </div>
 </div>
@@ -1279,7 +1289,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00222">222</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00238">238</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -1304,9 +1314,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00242">242</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00258">258</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00167">clearMDOrders()</a>, <a class="el" href="order__book_8hpp_source.html#l00303">getMDLevelQty()</a>, <a class="el" href="order__book_8hpp_source.html#l00319">onOrderUpdate()</a>, and <a class="el" href="order__book_8hpp_source.html#l00312">onPriceLevelUpdate()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00171">clearMDOrders()</a>, <a class="el" href="order__book_8hpp_source.html#l00319">getMDLevelQty()</a>, <a class="el" href="order__book_8hpp_source.html#l00335">onOrderUpdate()</a>, and <a class="el" href="order__book_8hpp_source.html#l00328">onPriceLevelUpdate()</a>.</p>
 
 </div>
 </div>
@@ -1330,7 +1340,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00241">241</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00257">257</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -1354,9 +1364,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00225">225</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00241">241</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00205">lastSeqNum()</a>, and <a class="el" href="order__book_8hpp_source.html#l00209">setLastUpdate()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00221">lastSeqNum()</a>, and <a class="el" href="order__book_8hpp_source.html#l00225">setLastUpdate()</a>.</p>
 
 </div>
 </div>
@@ -1380,9 +1390,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00224">224</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00240">240</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00201">lastUpdateTime()</a>, and <a class="el" href="order__book_8hpp_source.html#l00209">setLastUpdate()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00217">lastUpdateTime()</a>, and <a class="el" href="order__book_8hpp_source.html#l00225">setLastUpdate()</a>.</p>
 
 </div>
 </div>
@@ -1406,9 +1416,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00223">223</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00239">239</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00217">nextOrderPriority()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00233">nextOrderPriority()</a>.</p>
 
 </div>
 </div>
@@ -1432,9 +1442,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00232">232</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00248">248</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00277">allocateOrder()</a>, and <a class="el" href="order__book_8hpp_source.html#l00056">freeOrder()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00293">allocateOrder()</a>, and <a class="el" href="order__book_8hpp_source.html#l00056">freeOrder()</a>.</p>
 
 </div>
 </div>
@@ -1458,9 +1468,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00233">233</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00249">249</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00043">OrderBook()</a>, <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00167">clearMDOrders()</a>, <a class="el" href="order__book_8hpp_source.html#l00116">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00102">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00183">executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00361">findOrder()</a>, and <a class="el" href="order__book_8hpp_source.html#l00130">modifyOrder()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00043">OrderBook()</a>, <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00171">clearMDOrders()</a>, <a class="el" href="order__book_8hpp_source.html#l00120">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00106">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00187">executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00377">findOrder()</a>, and <a class="el" href="order__book_8hpp_source.html#l00134">modifyOrder()</a>.</p>
 
 </div>
 </div>
@@ -1484,9 +1494,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00239">239</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00255">255</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00043">OrderBook()</a>, <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00116">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00102">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00183">executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00351">findOrderByClientOrderId()</a>, and <a class="el" href="order__book_8hpp_source.html#l00130">modifyOrder()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00043">OrderBook()</a>, <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00120">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00106">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00187">executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00367">findOrderByClientOrderId()</a>, and <a class="el" href="order__book_8hpp_source.html#l00134">modifyOrder()</a>.</p>
 
 </div>
 </div>
@@ -1510,9 +1520,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00240">240</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00256">256</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00043">OrderBook()</a>, <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00116">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00102">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00183">executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00356">findOrderByOrderId()</a>, and <a class="el" href="order__book_8hpp_source.html#l00130">modifyOrder()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00043">OrderBook()</a>, <a class="el" href="order__book_8hpp_source.html#l00087">addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00120">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00106">deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00187">executeOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00372">findOrderByOrderId()</a>, and <a class="el" href="order__book_8hpp_source.html#l00134">modifyOrder()</a>.</p>
 
 </div>
 </div>
@@ -1536,7 +1546,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00226">226</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00242">242</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>
@@ -1560,7 +1570,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00228">228</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00244">244</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00065">symbolName()</a>.</p>
 
@@ -1586,7 +1596,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00227">227</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00243">243</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
 </div>
 </div>

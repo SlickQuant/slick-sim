@@ -2,7 +2,7 @@ var classslick_1_1sim_1_1OrderBookImpl =
 [
     [ "OrderBookImpl", "classslick_1_1sim_1_1OrderBookImpl.html#ade9826f5f15b828e009f9b190d2cbb3b", null ],
     [ "~OrderBookImpl", "classslick_1_1sim_1_1OrderBookImpl.html#ad923102f1a62cab39903c66584a92a09", null ],
-    [ "addBookOrder", "classslick_1_1sim_1_1OrderBookImpl.html#a752c0340d7e77df51dd127babb570c9a", null ],
+    [ "addBookOrder", "classslick_1_1sim_1_1OrderBookImpl.html#afa7a364e3d9d1b5cc1e11e20f6ac1d12", null ],
     [ "populateL2Snapshot", "classslick_1_1sim_1_1OrderBookImpl.html#a26957bb2fd15ab29156ad328e9b1bbb5", null ],
     [ "populateL2Snapshot", "classslick_1_1sim_1_1OrderBookImpl.html#ad8f595252762e4fc0a01c91d7ca8ed8d", null ],
     [ "populateL2Snapshot", "classslick_1_1sim_1_1OrderBookImpl.html#a65e225bfea69222325b5132c04b2ad95", null ],
