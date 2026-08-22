@@ -626,9 +626,19 @@ void Exchange::reconcilePhantomQty(Symbol *symbol, Side side, price_t price, qty
     }
     else if (target_qty < md_level_qty)
     {
-        // Level qty decreased. Always assume the worst case, that the quantity decreased at the back
+        // Level qty decreased. Always assume the worst case, that the quantity decreased at the back.
+        //
+        // Choose every reduction before applying any of them. `modifyOrder(..., 0)`
+        // delegates to deleteOrder, which unlinks the order from the intrusive list
+        // `level->orders` exposes - so advancing the iterator past the order just
+        // removed is undefined, and in practice the walk ended there. Everything
+        // ahead of it was stranded: a level the venue had retired outright kept
+        // whatever its earlier phantom orders held, and no later update could clear
+        // it, because reconcile measured a level quantity that by then agreed with
+        // the venue's. That is a stale level resting at a price the market has left.
         auto diff = md_level_qty - target_qty;
-        for (auto it = level->orders.rbegin(); it != level->orders.rend(); ++it)
+        phantom_reductions_.clear();
+        for (auto it = level->orders.rbegin(); it != level->orders.rend() && diff > 0; ++it)
         {
             auto &order = *it;
             if (symbol->findOrder(order.order_id))
@@ -638,12 +648,19 @@ void Exchange::reconcilePhantomQty(Symbol *symbol, Side side, price_t price, qty
             }
 
             auto to_reduce = std::min<qty_t>(diff, order.quantity);
-            book.modifyOrder(order.order_id, price, order.quantity - to_reduce, event_time, order.priority, seq_num, end_event && (diff == to_reduce));
+            phantom_reductions_.emplace_back(PhantomReduction{
+                .order_id = order.order_id,
+                .new_qty = order.quantity - to_reduce,
+                .priority = order.priority});
             diff -= to_reduce;
-            if (diff == 0 || book.getMDLevelQty(price) == 0)
-            {
-                break;
-            }
+        }
+
+        for (std::size_t i = 0; i < phantom_reductions_.size(); ++i)
+        {
+            const auto &reduction = phantom_reductions_[i];
+            book.modifyOrder(reduction.order_id, price, reduction.new_qty, event_time,
+                             reduction.priority, seq_num,
+                             end_event && (i + 1 == phantom_reductions_.size()));
         }
     }
 }
