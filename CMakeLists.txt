@@ -110,6 +110,8 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/SlickSimVenue.cmake)
 find_package(slick-orderbook 1.0.5 CONFIG QUIET)
 if (NOT slick-orderbook_FOUND)
     message(STATUS "Fetching slick-orderbook...")
+    set(SLICK_ORDERBOOK_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(SLICK_ORDERBOOK_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-orderbook
         GIT_REPOSITORY https://github.com/SlickQuant/slick-orderbook.git
