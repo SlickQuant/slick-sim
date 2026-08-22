@@ -1318,3 +1318,62 @@ TEST_F(CoinbaseExchangeTest, SnapshotRebuild_ClearsPhantomTrackingAndKeepsSimula
     EXPECT_EQ(ask->total_quantity, kQty10);
     EXPECT_EQ(sym->order_book_->findOrder(sim_sell->id), sim_sell);
 }
+
+// A snapshot resets the book, so the level-update batch in flight has to go with it.
+// level_update_buffer_ is only flushed downstream when a later event carries a
+// different sequence, so rows buffered before the snapshot were published *after* the
+// snapshot frame as an ordinary incremental update - telling a client to restore
+// liquidity the reset had just removed. The snapshot's own levels are not buffered
+// either: populateL2Snapshot() already publishes the rebuilt book in full.
+TEST_F(CoinbaseExchangeTest, SnapshotDiscardsTheLevelBatchInFlight) {
+    auto* sym = registerSymbol("TEST-BUF-1");
+
+    // A level update lands and is buffered - nothing flushes it, because no later
+    // event with a different sequence has arrived yet.
+    exchange_->onLevel2Updates(nullptr, 1, makeBatch("TEST-BUF-1", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 100)
+    }));
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), kQty10);
+
+    // The snapshot rebuilds the book somewhere else entirely: 101 is gone.
+    exchange_->onLevel2Snapshot(nullptr, 2, makeBatch("TEST-BUF-1", {
+        makeL2Update(coinbase::Side::SELL, 102.0, 4.0, 200)
+    }));
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice101), 0);
+    // Advance the cursor past everything published so far - reset() rewinds it to
+    // zero, which would re-read the pre-snapshot frames this test is asking about.
+    md_collector_->collect();
+
+    // Two further events, so the second forces the buffer to flush.
+    exchange_->onLevel2Updates(nullptr, 3, makeBatch("TEST-BUF-1", {
+        makeL2Update(coinbase::Side::BUY, 99.0, 1.0, 300)
+    }));
+    drainEvents();
+    exchange_->onLevel2Updates(nullptr, 4, makeBatch("TEST-BUF-1", {
+        makeL2Update(coinbase::Side::BUY, 98.0, 1.0, 400)
+    }));
+    drainEvents();
+
+    // Nothing from before the snapshot, and no snapshot level, may appear in an
+    // incremental frame published after it.
+    bool saw_post_snapshot_level = false;
+    for (auto* update : md_collector_->collect(MDUpdateType::LEVEL)) {
+        if (std::string_view(update->symbol) != "TEST-BUF-1") {
+            continue;
+        }
+        auto* level_update = reinterpret_cast<MDLevelUpdate*>(update->data);
+        for (uint32_t i = 0; i < level_update->num_level_update; ++i) {
+            const auto& level = level_update->levels[i];
+            if (level.price == kPrice99 || level.price == kPrice98) {
+                saw_post_snapshot_level = true;
+            }
+            EXPECT_NE(level.price, kPrice101)
+                << "a level buffered before the snapshot was published after it";
+            EXPECT_NE(level.price, kPrice102)
+                << "a snapshot level was republished as an incremental update";
+        }
+    }
+    EXPECT_TRUE(saw_post_snapshot_level)
+        << "no post-snapshot level was published at all - the test proves nothing";
+}

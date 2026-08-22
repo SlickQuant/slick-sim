@@ -234,6 +234,15 @@
   `flags & F_END_EVENT` — 0 or 2 — as the sequence, which pinned the book's sequence at 2 and gave
   every phantom order a priority from the venue's counter instead of `nextOrderPriority()`.
   `addBookOrder` now takes `is_last_in_batch` so the end-of-event flag survives the move.
+- A Coinbase l2 snapshot discards the level-update batch in flight. `level_update_buffer_` is only
+  flushed downstream when a later event carries a different sequence, so rows buffered before a
+  snapshot were published *after* the snapshot frame as an ordinary incremental update, telling a
+  client to restore liquidity the reset had removed. The snapshot's own levels are no longer buffered
+  either: `populateL2Snapshot()` already publishes the rebuilt book in full, so those rows only
+  duplicated it, arrived whenever the next event happened to change sequence, and carried a
+  `level_index` read while the rebuild was still in progress. The publish boundary
+  (`last_published_level_seq_num`) is re-primed so the first event after a snapshot starts a batch as
+  it would on a fresh subscription.
 - A Coinbase l2 snapshot rebuilds through `OrderBook::clearMDOrders()` rather than
   `OrderBookL3::clear()` — the contract that method documents, and what Hyperliquid's snapshot path
   already called. `clear()` unlinks orders without notifying observers, so `feed_md_level_quantity_`

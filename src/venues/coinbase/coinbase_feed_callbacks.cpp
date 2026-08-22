@@ -125,6 +125,15 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
     auto &state = symbol_event_state_[symbol];
     state.pending_events = {};
 
+    // The level-update batch in flight describes the book that was just discarded.
+    // It is only flushed downstream when a later event carries a different sequence,
+    // so leaving it here published pre-reset levels *after* the snapshot frame, as an
+    // ordinary incremental update - rebuilding liquidity the reset had removed. The
+    // publish boundary is re-primed too, so the first event after the snapshot starts
+    // a batch the way it would on a fresh subscription.
+    level_update_buffer_.clear();
+    state.last_published_level_seq_num = 0;
+
     // One stamp for the whole snapshot: every update in it shares a sequence, and
     // equal sequences pass the book's guard. It comes from the same counter the
     // dispatch loop uses - this path bypasses the event queue entirely, and the two
@@ -156,21 +165,11 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
             }
         }
 
-        if (it == pending_l2_subscriptions.end())
-        {
-            auto [level, index] = symbol->order_book_->getLevel(book_side, price);
-            level_update_buffer_.emplace_back(MDLevel{
-                .event_time = update.event_time,
-                .seq_num = seq_num,
-                .price = price,
-                .qty = qty,
-                .num_orders = 1,
-                .level_index = index,
-                .update_action = MDUpdateAction::ACTION_NEW,
-                .flags = static_cast<UpdateFlags>(UpdateFlags::F_IS_SNAPSHOT | (it_update == it_last ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE)),
-                .side = side
-            });
-        }
+        // No incremental row is buffered for a snapshot level. populateL2Snapshot()
+        // below already publishes the rebuilt book in full, so these only duplicated
+        // it - arriving later, whenever the next event happened to change sequence,
+        // and carrying a level_index read while the rebuild was still in progress and
+        // therefore wrong by the time the level settled.
 
         if (update.event_time > symbol->order_book_->lastUpdateTime())
         {
