@@ -1247,3 +1247,74 @@ TEST_F(CoinbaseExchangeTest, MultiUpdateBatch_EndOfEventMarksTheLastDispatchedUp
     EXPECT_TRUE(seen_100) << "no update published for the first level";
     EXPECT_TRUE(seen_99) << "no update published for the second level";
 }
+
+// A level built from more than one phantom order has to retire completely when the
+// venue retires it. reconcilePhantomQty walks `level->orders` in reverse and reduces
+// as it goes, but reducing an order to zero delegates to deleteOrder, which unlinks
+// it from the intrusive list being walked - so advancing past it was undefined and in
+// practice ended the walk. Only the last order was ever removed; everything ahead of
+// it stayed resting, and no later update could clear it, because reconcile then
+// measured a level quantity that already agreed with the venue's. The level sat at a
+// price the market had left, crossing the other side as it moved away.
+TEST_F(CoinbaseExchangeTest, MultiOrderLevel_VenueRetirement_RemovesEveryPhantomOrder) {
+    auto* sym = registerSymbol("TEST-MULTI-1");
+
+    // A new level, then an increase - which rests a *second* phantom order behind
+    // the first rather than growing it.
+    auto seed = makeBatch("TEST-MULTI-1", { makeL2Update(coinbase::Side::BUY, 100.0, 5.0, 100) });
+    exchange_->onLevel2Updates(nullptr, 1, seed);
+    drainEvents();
+    auto grow = makeBatch("TEST-MULTI-1", { makeL2Update(coinbase::Side::BUY, 100.0, 8.0, 200) });
+    exchange_->onLevel2Updates(nullptr, 2, grow);
+    drainEvents();
+
+    auto [built, built_idx] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    ASSERT_NE(built, nullptr);
+    ASSERT_EQ(built->orders.size(), 2u) << "the level must hold two phantom orders for this to bite";
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice100), 800000000);
+
+    // The venue retires the level outright.
+    auto retire = makeBatch("TEST-MULTI-1", { makeL2Update(coinbase::Side::BUY, 100.0, 0.0, 300) });
+    exchange_->onLevel2Updates(nullptr, 3, retire);
+    drainEvents();
+
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice100), 0);
+    auto [level, idx] = sym->order_book_->getLevel(to_book_side(Side::BUY), kPrice100);
+    EXPECT_EQ(level, nullptr) << "phantom liquidity survived the venue retiring the level";
+}
+
+// A snapshot rebuild has to go through clearMDOrders(). OrderBookL3::clear() unlinks
+// orders without notifying observers, so feed_md_level_quantity_ kept every
+// pre-snapshot price - and the rebuild then added the snapshot's own quantities on
+// top, leaving reconcilePhantomQty measuring every later update against a level
+// quantity the book never held. clear() also wiped the simulator's own resting orders
+// out of the L3 book while orders_ went on holding them, so after a reconnect a
+// client's live order was absent from the book - unable to fill or be swept by a
+// trade - yet still reported as resting.
+TEST_F(CoinbaseExchangeTest, SnapshotRebuild_ClearsPhantomTrackingAndKeepsSimulatorOrders) {
+    auto* sym = registerSymbol("TEST-SNAPCLR-1");
+
+    // A resting simulator order, well clear of the snapshot's prices.
+    auto* sim_sell = addSimOrder(sym, Side::SELL, kPrice102, kQty10);
+
+    // Phantom liquidity at a price the coming snapshot will not mention.
+    auto seed = makeBatch("TEST-SNAPCLR-1", { makeL2Update(coinbase::Side::BUY, 99.0, 5.0, 100) });
+    exchange_->onLevel2Updates(nullptr, 1, seed);
+    drainEvents();
+    ASSERT_EQ(sym->order_book_->getMDLevelQty(kPrice99), kQty5);
+
+    // The reconnect snapshot rebuilds the book at a different price entirely.
+    auto snapshot = makeBatch("TEST-SNAPCLR-1", { makeL2Update(coinbase::Side::BUY, 100.0, 4.0, 500) });
+    exchange_->onLevel2Snapshot(nullptr, 0, snapshot);
+
+    // The vanished price is no longer tracked, and the new one is tracked once.
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice99), 0)
+        << "phantom tracking survived a snapshot that dropped the level";
+    EXPECT_EQ(sym->order_book_->getMDLevelQty(kPrice100), 400000000);
+
+    // And the simulator's order is still resting where it was.
+    auto [ask, ask_idx] = sym->order_book_->getLevel(to_book_side(Side::SELL), kPrice102);
+    ASSERT_NE(ask, nullptr) << "the snapshot wiped the simulator's own resting order";
+    EXPECT_EQ(ask->total_quantity, kQty10);
+    EXPECT_EQ(sym->order_book_->findOrder(sim_sell->id), sim_sell);
+}

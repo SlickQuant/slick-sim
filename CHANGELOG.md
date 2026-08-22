@@ -234,6 +234,22 @@
   `flags & F_END_EVENT` — 0 or 2 — as the sequence, which pinned the book's sequence at 2 and gave
   every phantom order a priority from the venue's counter instead of `nextOrderPriority()`.
   `addBookOrder` now takes `is_last_in_batch` so the end-of-event flag survives the move.
+- A Coinbase l2 snapshot rebuilds through `OrderBook::clearMDOrders()` rather than
+  `OrderBookL3::clear()` — the contract that method documents, and what Hyperliquid's snapshot path
+  already called. `clear()` unlinks orders without notifying observers, so `feed_md_level_quantity_`
+  kept every pre-snapshot price and the rebuild added the snapshot's quantities on top of stale ones,
+  leaving `reconcilePhantomQty` measuring every later update against a level quantity the book never
+  held. It also wiped the simulator's own resting orders out of the L3 book while `orders_` went on
+  holding them, so after a reconnect a client's live order was absent from the book — unable to fill
+  or be swept by a trade — yet still reported as resting.
+- `Exchange::reconcilePhantomQty` chooses every reduction before applying any of them. It walked
+  `level->orders` in reverse and reduced as it went, but `modifyOrder(..., 0)` delegates to
+  `deleteOrder`, which unlinks the order from the very intrusive list being walked — so advancing past
+  it was undefined, and in practice the walk ended there. Only the level's last phantom order was ever
+  removed; everything ahead of it stayed resting, and no later update could clear it, because
+  reconcile then measured a level quantity that already agreed with the venue's. A level the venue had
+  retired outright kept whatever its earlier orders held and sat at a price the market had left,
+  crossing the other side as it moved away. Affects Hyperliquid equally — the helper is shared.
 - A dropped Coinbase market-data connection restarts the feed it had rather than building a
   replacement. `WebSocketClient` registers its producers on the shared multiplexer from its
   constructor and `stream_buffer_multiplexer` cannot unregister them, so the replacement threw

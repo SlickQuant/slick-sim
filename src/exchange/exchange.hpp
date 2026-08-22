@@ -128,6 +128,17 @@ protected:
     bool enabled_ = true;
     uint64_t next_trade_id_{1};
 
+    /// Scratch for reconcilePhantomQty, reused so the reduction path allocates
+    /// nothing. Reducing a phantom order to zero deletes it out of the intrusive
+    /// list the level exposes, so the reductions have to be chosen before any of
+    /// them is applied. Single-threaded: only the exchange thread reconciles.
+    struct PhantomReduction {
+        uint64_t order_id;
+        qty_t new_qty;
+        uint64_t priority;
+    };
+    std::vector<PhantomReduction> phantom_reductions_;
+
     /// Self-match prevention mode applied to every symbol on this venue, from the
     /// `self_match_prevention` config key. Stamped onto each Symbol as it is created.
     SelfMatchPreventionMode smp_mode_ = SelfMatchPreventionMode::NONE;

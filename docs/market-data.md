@@ -149,6 +149,26 @@ so it measures at 96.4% rejected.
     the batch flag arrives as the sequence. Rest phantom liquidity through
     `OrderBook::addBookOrder()`, which fills `priority` from `nextOrderPriority()` itself.
 
+### A snapshot rebuild goes through `clearMDOrders()`
+
+`OrderBookL3::clear()` unlinks orders without notifying observers, so it leaves
+`feed_md_level_quantity_` — which is maintained *from* those notifications — holding every price the
+old book had. `OrderBook::clearMDOrders()` is the method for this: it clears that map explicitly and
+re-inserts the simulator's own active orders afterwards. Both snapshot paths call it. Using plain
+`clear()` left later updates reconciling against a level quantity the book never held, and dropped the
+simulator's resting orders out of the book while the lookup maps went on holding them.
+
+### Reducing a level chooses its reductions first
+
+`Exchange::reconcilePhantomQty` reduces a level from the back, skipping the simulator's own orders.
+It must decide **all** of the reductions before applying any of them: `modifyOrder(..., 0)` delegates
+to `deleteOrder`, which unlinks the order from the intrusive list `level->orders` exposes, so
+advancing an iterator past the order just removed is undefined. Reducing in place ended the walk at
+the first order taken to zero and stranded everything ahead of it, so a level the venue retired
+outright kept whatever its earlier phantom orders held — and no later update could clear it, because
+reconcile then measured a level quantity that already agreed with the venue's. The level stayed at a
+price the market had left, crossing the other side as it moved away.
+
 ### A snapshot empties the queue
 
 `onLevel2Snapshot` does not go through the queue — it rebuilds the book on the callback, so a

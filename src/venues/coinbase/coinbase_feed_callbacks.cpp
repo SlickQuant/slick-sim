@@ -102,7 +102,16 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
 
     auto &pending_l2_subscriptions = pending_md_subscription_[coinbase::WebSocketChannel::LEVEL2];
     auto it = pending_l2_subscriptions.find(symbol);
-    symbol->order_book_->clear();
+    // clearMDOrders(), not clear() - the contract this rebuild has to honour, and
+    // what Hyperliquid's snapshot path already calls. OrderBookL3::clear() unlinks
+    // orders without notifying observers, so feed_md_level_quantity_ kept every
+    // pre-snapshot price and the rebuild below added the snapshot's quantities on
+    // top of stale ones, leaving reconcilePhantomQty measuring against a level
+    // quantity the book never held. It also wiped the simulator's own resting orders
+    // out of the L3 book while orders_ went on holding them - so after a reconnect a
+    // client's live order was gone from the book, unable to fill or be swept, but
+    // still reported as resting.
+    symbol->order_book_->clearMDOrders();
 
     // Everything still queued describes the book that clear() just discarded, so it
     // must not be replayed onto the rebuilt one. poll() drains the callbacks that
