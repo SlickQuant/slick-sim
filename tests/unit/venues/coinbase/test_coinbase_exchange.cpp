@@ -1377,3 +1377,58 @@ TEST_F(CoinbaseExchangeTest, SnapshotDiscardsTheLevelBatchInFlight) {
     EXPECT_TRUE(saw_post_snapshot_level)
         << "no post-snapshot level was published at all - the test proves nothing";
 }
+
+// level_update_buffer_ belongs to a symbol, not to the exchange. It is flushed only
+// when a later event carries a different sequence, so a shared buffer still held one
+// symbol's rows when processSequencedEvents moved on to the next symbol's queue - and
+// the flush publishes under whichever symbol is dispatching. Those rows went out under
+// the wrong instrument, quoting prices that belong to another one, while the symbol
+// that produced them never published them at all.
+TEST_F(CoinbaseExchangeTest, TwoSymbols_LevelBatchesDoNotCrossOver) {
+    auto* sym_a = registerSymbol("TEST-XSYM-A");
+    auto* sym_b = registerSymbol("TEST-XSYM-B");
+
+    // A quotes 101 and leaves the row sitting in its batch, unflushed.
+    exchange_->onLevel2Updates(nullptr, 1, makeBatch("TEST-XSYM-A", {
+        makeL2Update(coinbase::Side::SELL, 101.0, 10.0, 100)
+    }));
+    drainEvents();
+    ASSERT_EQ(sym_a->order_book_->getMDLevelQty(kPrice101), kQty10);
+
+    // B then quotes 102, and a second B event forces B's batch to flush.
+    exchange_->onLevel2Updates(nullptr, 2, makeBatch("TEST-XSYM-B", {
+        makeL2Update(coinbase::Side::SELL, 102.0, 10.0, 200)
+    }));
+    drainEvents();
+    exchange_->onLevel2Updates(nullptr, 3, makeBatch("TEST-XSYM-B", {
+        makeL2Update(coinbase::Side::BUY, 98.0, 1.0, 300)
+    }));
+    drainEvents();
+
+    // And a second A event forces A's batch to flush.
+    exchange_->onLevel2Updates(nullptr, 4, makeBatch("TEST-XSYM-A", {
+        makeL2Update(coinbase::Side::BUY, 99.0, 1.0, 400)
+    }));
+    drainEvents();
+    ASSERT_EQ(sym_b->order_book_->getMDLevelQty(kPrice102), kQty10);
+
+    bool saw_a = false, saw_b = false;
+    for (auto* update : md_collector_->collect(MDUpdateType::LEVEL)) {
+        const std::string_view name(update->symbol);
+        auto* level_update = reinterpret_cast<MDLevelUpdate*>(update->data);
+        for (uint32_t i = 0; i < level_update->num_level_update; ++i) {
+            const auto price = level_update->levels[i].price;
+            if (name == "TEST-XSYM-A") {
+                saw_a = true;
+                EXPECT_TRUE(price == kPrice101 || price == kPrice99)
+                    << "a level belonging to another symbol was published as TEST-XSYM-A";
+            } else if (name == "TEST-XSYM-B") {
+                saw_b = true;
+                EXPECT_TRUE(price == kPrice102 || price == kPrice98)
+                    << "a level belonging to another symbol was published as TEST-XSYM-B";
+            }
+        }
+    }
+    EXPECT_TRUE(saw_a) << "no level published for TEST-XSYM-A";
+    EXPECT_TRUE(saw_b) << "no level published for TEST-XSYM-B";
+}

@@ -234,6 +234,12 @@
   `flags & F_END_EVENT` — 0 or 2 — as the sequence, which pinned the book's sequence at 2 and gave
   every phantom order a priority from the venue's counter instead of `nextOrderPriority()`.
   `addBookOrder` now takes `is_last_in_batch` so the end-of-event flag survives the move.
+- Coinbase's `level_update_buffer_` moved into `SymbolEventState`, one per symbol. It is flushed only
+  when a later event carries a different sequence, so a single shared buffer still held one symbol's
+  rows when `processSequencedEvents` moved on to the next symbol's queue — and the flush publishes
+  under whichever symbol is dispatching. Rows went out under the wrong instrument, quoting prices
+  belonging to another one, while the symbol that produced them never published them at all. It
+  contaminated both directions and needed only two subscribed symbols.
 - A Coinbase l2 snapshot discards the level-update batch in flight. `level_update_buffer_` is only
   flushed downstream when a later event carries a different sequence, so rows buffered before a
   snapshot were published *after* the snapshot frame as an ordinary incremental update, telling a

@@ -149,6 +149,14 @@ so it measures at 96.4% rejected.
     the batch flag arrives as the sequence. Rest phantom liquidity through
     `OrderBook::addBookOrder()`, which fills `priority` from `nextOrderPriority()` itself.
 
+### One level batch per symbol
+
+`level_update_buffer_` lives in `SymbolEventState`, not on the exchange. It is flushed only when a
+later event carries a different sequence, and `processSequencedEvents` drains one symbol's queue
+before starting the next — so a shared buffer still held the previous symbol's rows when the next
+symbol began dispatching, and the flush publishes under whichever symbol is dispatching. A per-symbol
+buffer is what keeps a batch attached to the instrument that produced it.
+
 ### A snapshot also discards the batch in flight
 
 `level_update_buffer_` accumulates level rows and flushes only when a later event carries a different

@@ -131,7 +131,7 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
     // ordinary incremental update - rebuilding liquidity the reset had removed. The
     // publish boundary is re-primed too, so the first event after the snapshot starts
     // a batch the way it would on a fresh subscription.
-    level_update_buffer_.clear();
+    state.level_update_buffer_.clear();
     state.last_published_level_seq_num = 0;
 
     // One stamp for the whole snapshot: every update in it shares a sequence, and

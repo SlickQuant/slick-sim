@@ -346,14 +346,14 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
             state.last_published_level_seq_num = event.seq_num;
         }
 
-        if (!level_update_buffer_.empty() &&
+        if (!state.level_update_buffer_.empty() &&
             event.seq_num != state.last_published_level_seq_num)
         {
             publishLevelUpdate(
                 symbol->symbol_,
-                level_update_buffer_);
-            state.last_published_level_seq_num = level_update_buffer_.back().seq_num;
-            level_update_buffer_.clear();
+                state.level_update_buffer_);
+            state.last_published_level_seq_num = state.level_update_buffer_.back().seq_num;
+            state.level_update_buffer_.clear();
         }
 
         auto [new_level, new_index] = symbol->order_book_->getLevel(book_side, event.price);
@@ -383,7 +383,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
         auto published_qty = new_level ? new_level->total_quantity : qty_t{0};
         auto published_orders = new_level ? static_cast<uint32_t>(new_level->orderCount()) : 0u;
 
-        level_update_buffer_.emplace_back(MDLevel{
+        state.level_update_buffer_.emplace_back(MDLevel{
             .event_time = event.event_time,
             .seq_num = event.seq_num,
             .price = event.price,
