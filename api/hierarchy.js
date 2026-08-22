@@ -86,6 +86,7 @@ var hierarchy =
     [ "slick::sim::order_gateway::PendingResponses", "classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html", null ],
     [ "slick::sim::md_publisher::PerSocketData", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html", null ],
     [ "slick::sim::order_gateway::PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", null ],
+    [ "slick::sim::exch::Exchange::PhantomReduction", "structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html", null ],
     [ "slick::sim::order_gateway::PostRequestData", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html", null ],
     [ "slick::sim::ProxiedHttpResponse", "structslick_1_1sim_1_1ProxiedHttpResponse.html", null ],
     [ "slick::sim::Request", "structslick_1_1sim_1_1Request.html", null ],

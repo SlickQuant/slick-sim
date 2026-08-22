@@ -1,5 +1,7 @@
 var NAVTREEINDEX5 =
 {
+"namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a0b9710bd14da215c94a5cac5c2cb3bc4":[0,0,2,1,52,6],
+"namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a24d459a81449d7210c8f9a86c2913034":[0,0,2,1,52,0],
 "namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a38afd7ae34bd5e3e6fc170d8b09178a3":[0,0,2,1,52,5],
 "namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a3a5373f7c1598b9e251273833f5bca21":[0,0,2,1,52,7],
 "namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a51c4098970752e0185a5540f3d3f1e8e":[0,0,2,1,52,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX5 =
 "namespaceslick_1_1sim_1_1order__gateway.html#a21eaf560f68e2e781d35e64080dc0615a98ad0e8750ae10ad556ed7a62affb452":[0,0,2,1,5,19,3],
 "namespaceslick_1_1sim_1_1order__gateway.html#a597aacc023a656c03797dab1ff888e20":[0,0,2,1,5,18],
 "namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html":[0,0,2,1,5,0],
-"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a3f5338485bd169e5dcb3821f4b854e65":[0,0,2,1,5,0,0],
-"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#ad52e6c536bbdde31370c540c4853dfff":[0,0,2,1,5,0,1],
-"namespaceslick_1_1sim_1_1utils.html":[0,0,2,1,6]
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a3f5338485bd169e5dcb3821f4b854e65":[0,0,2,1,5,0,0]
 };

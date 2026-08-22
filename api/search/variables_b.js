@@ -2,7 +2,7 @@ var searchData=
 [
   ['name_0',['name',['../structslick_1_1sim_1_1SymbolKey.html#a390108ceca6a909c06c71d6e02a98cb0',1,'slick::sim::SymbolKey']]],
   ['new_5fprice_1',['new_price',['../structslick_1_1sim_1_1ModifyOrderMessage.html#a9077f26ad662bd715b30819fbf15488c',1,'slick::sim::ModifyOrderMessage']]],
-  ['new_5fqty_2',['new_qty',['../structslick_1_1sim_1_1ModifyOrderMessage.html#aeb4cbad63cbfa53343a11817cfb52f1a',1,'slick::sim::ModifyOrderMessage']]],
+  ['new_5fqty_2',['new_qty',['../structslick_1_1sim_1_1ModifyOrderMessage.html#aeb4cbad63cbfa53343a11817cfb52f1a',1,'slick::sim::ModifyOrderMessage::new_qty'],['../structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#ae6101ea9e137a3996b894e0b029d00b7',1,'slick::sim::exch::Exchange::PhantomReduction::new_qty']]],
   ['next_5fclient_5fid_5f_3',['next_client_id_',['../classslick_1_1sim_1_1exch_1_1Exchange.html#abcc534278a082a1d0001d2f2c34f7080',1,'slick::sim::exch::Exchange']]],
   ['next_5fpriority_5f_4',['next_priority_',['../classslick_1_1sim_1_1OrderBook.html#a1a42cc3cf2d73f19d20526fb8730e859',1,'slick::sim::OrderBook']]],
   ['next_5ftrade_5fid_5f_5',['next_trade_id_',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a27c85902255c30adfbc03da3e4451c87',1,'slick::sim::exch::Exchange::next_trade_id_'],['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a339801bbc04fdc50e883839a3e653f87',1,'slick::sim::engine::MatchingEngine::next_trade_id_']]],

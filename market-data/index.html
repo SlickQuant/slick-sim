@@ -602,6 +602,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#a-snapshot-rebuild-goes-through-clearmdorders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A snapshot rebuild goes through clearMDOrders()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reducing-a-level-chooses-its-reductions-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reducing a level chooses its reductions first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-snapshot-empties-the-queue" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1116,6 +1138,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#a-snapshot-rebuild-goes-through-clearmdorders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A snapshot rebuild goes through clearMDOrders()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reducing-a-level-chooses-its-reductions-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reducing a level chooses its reductions first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-snapshot-empties-the-queue" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1443,6 +1487,22 @@ call meaning to pass a sequence lands it in <code>priority</code> and shifts eve
 the batch flag arrives as the sequence. Rest phantom liquidity through
 <code>OrderBook::addBookOrder()</code>, which fills <code>priority</code> from <code>nextOrderPriority()</code> itself.</p>
 </div>
+<h3 id="a-snapshot-rebuild-goes-through-clearmdorders">A snapshot rebuild goes through <code>clearMDOrders()</code><a class="headerlink" href="#a-snapshot-rebuild-goes-through-clearmdorders" title="Permanent link">&para;</a></h3>
+<p><code>OrderBookL3::clear()</code> unlinks orders without notifying observers, so it leaves
+<code>feed_md_level_quantity_</code> — which is maintained <em>from</em> those notifications — holding every price the
+old book had. <code>OrderBook::clearMDOrders()</code> is the method for this: it clears that map explicitly and
+re-inserts the simulator's own active orders afterwards. Both snapshot paths call it. Using plain
+<code>clear()</code> left later updates reconciling against a level quantity the book never held, and dropped the
+simulator's resting orders out of the book while the lookup maps went on holding them.</p>
+<h3 id="reducing-a-level-chooses-its-reductions-first">Reducing a level chooses its reductions first<a class="headerlink" href="#reducing-a-level-chooses-its-reductions-first" title="Permanent link">&para;</a></h3>
+<p><code>Exchange::reconcilePhantomQty</code> reduces a level from the back, skipping the simulator's own orders.
+It must decide <strong>all</strong> of the reductions before applying any of them: <code>modifyOrder(..., 0)</code> delegates
+to <code>deleteOrder</code>, which unlinks the order from the intrusive list <code>level-&gt;orders</code> exposes, so
+advancing an iterator past the order just removed is undefined. Reducing in place ended the walk at
+the first order taken to zero and stranded everything ahead of it, so a level the venue retired
+outright kept whatever its earlier phantom orders held — and no later update could clear it, because
+reconcile then measured a level quantity that already agreed with the venue's. The level stayed at a
+price the market had left, crossing the other side as it moved away.</p>
 <h3 id="a-snapshot-empties-the-queue">A snapshot empties the queue<a class="headerlink" href="#a-snapshot-empties-the-queue" title="Permanent link">&para;</a></h3>
 <p><code>onLevel2Snapshot</code> does not go through the queue — it rebuilds the book on the callback, so a
 subscriber is not made to wait a second for its first book. That makes it a <strong>reset</strong>, and a reset has

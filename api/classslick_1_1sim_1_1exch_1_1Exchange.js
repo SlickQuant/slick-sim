@@ -1,5 +1,6 @@
 var classslick_1_1sim_1_1exch_1_1Exchange =
 [
+    [ "PhantomReduction", "structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html", "structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction" ],
     [ "Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html#a6e7f20119dc47d85605fd346d7b82501", null ],
     [ "~Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html#ab3f0e1bd6582726fb3c2d682d39dec7d", null ],
     [ "clientIdFor", "classslick_1_1sim_1_1exch_1_1Exchange.html#aa8c35237fb44e488777b7756a7214d0b", null ],
@@ -41,6 +42,7 @@ var classslick_1_1sim_1_1exch_1_1Exchange =
     [ "next_trade_id_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a27c85902255c30adfbc03da3e4451c87", null ],
     [ "order_gateways_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a54db6b62a48a436945aad49277c6cee1", null ],
     [ "order_request_cursor_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a4a11fa016f8ec3a28230f78601775097", null ],
+    [ "phantom_reductions_", "classslick_1_1sim_1_1exch_1_1Exchange.html#afd8f65ba30d89cb5e14f8a3626e111e1", null ],
     [ "request_queue_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a0318912f68846160b7e15c58f6b0579a", null ],
     [ "response_queue_", "classslick_1_1sim_1_1exch_1_1Exchange.html#ae99f7743f1b98b9cbb28000baee0b34b", null ],
     [ "run_", "classslick_1_1sim_1_1exch_1_1Exchange.html#af3d98cb02c38978ab17e6a9a4ee65162", null ],

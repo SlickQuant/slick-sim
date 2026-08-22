@@ -66,13 +66,13 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "classslick_1_1sim_1_1exch_1_1Exchange.html#a21d9d0718b643b607b92da55a57caa7d",
-"classslick_1_1sim_1_1order__gateway_1_1FixParser.html#ac6ef2e07dab8664cbc86ff920e18f2e6",
-"classslick_1_1sim_1_1utils_1_1fixed__string.html#a12e6d95927ffeedbca5bb2259da753cc",
-"functions_v.html",
-"namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a38afd7ae34bd5e3e6fc170d8b09178a3",
-"namespaceslick_1_1sim_1_1utils.html#a08df62ee1b9aa57cabe4abef53023a0f",
-"structslick_1_1sim_1_1Order.html#a43fe52822f3e3c56a820612b0ad6f8d7",
-"structslick_1_1sim_1_1exch_1_1Symbol.html#a8ae3a2bd3ba8cf94b862bb3e946cfc7f"
+"classslick_1_1sim_1_1order__gateway_1_1FixParser.html#a6ae084e8ac48198646b59de9b49c84f4",
+"classslick_1_1sim_1_1utils_1_1fixed__string.html",
+"functions_type.html",
+"namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a0b9710bd14da215c94a5cac5c2cb3bc4",
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#ad52e6c536bbdde31370c540c4853dfff",
+"structslick_1_1sim_1_1Order.html#a36fe148f7cf6eff25dfaa81e2535f889",
+"structslick_1_1sim_1_1exch_1_1Symbol.html#a6683a88846db6011970c0ff910d5d95e"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

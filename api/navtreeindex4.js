@@ -1,8 +1,10 @@
 var NAVTREEINDEX4 =
 {
+"functions_type.html":[1,3,3],
+"functions_u.html":[1,3,0,21],
 "functions_v.html":[1,3,0,22],
-"functions_vars.html":[1,3,2],
 "functions_vars.html":[1,3,2,0],
+"functions_vars.html":[1,3,2],
 "functions_vars_b.html":[1,3,2,1],
 "functions_vars_c.html":[1,3,2,2],
 "functions_vars_d.html":[1,3,2,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX4 =
 "namespaceslick_1_1sim.html#a0a9f0bd1a7d704fe4599a7420d34e1d3ade0badcb96ee438931a41e35e6bfbd0b":[0,0,2,1,54,2],
 "namespaceslick_1_1sim.html#a0aeee9634a28148bf8b2f622a670c0c0":[0,0,2,1,70],
 "namespaceslick_1_1sim.html#a0d6fd8d8b2c0422ead99084f2b051f73":[0,0,2,1,100],
-"namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086":[0,0,2,1,52],
-"namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a0b9710bd14da215c94a5cac5c2cb3bc4":[0,0,2,1,52,6],
-"namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a24d459a81449d7210c8f9a86c2913034":[0,0,2,1,52,0]
+"namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086":[0,0,2,1,52]
 };
