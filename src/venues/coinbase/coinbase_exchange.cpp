@@ -44,6 +44,11 @@ CoinbaseExchange::CoinbaseExchange(const nlohmann::json &config)
         for (const auto &md_feed_config : config["md_feeds"])
         {
             std::string type = md_feed_config.value("type", "");
+            if (!md_feed_config.value("enabled", true))
+            {
+                LOG_INFO("Coinbase skipping disabled md_feed type {}", type);
+                continue;
+            }
             if (type == "coinbase_live_ws")
             {
                 use_live_feed_ = true;

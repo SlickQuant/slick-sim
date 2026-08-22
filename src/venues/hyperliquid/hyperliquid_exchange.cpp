@@ -36,6 +36,10 @@ HyperliquidExchange::HyperliquidExchange(const nlohmann::json &config)
 
     for (const auto &feed_cfg : config["md_feeds"]) {
         std::string type = feed_cfg.value("type", "");
+        if (!feed_cfg.value("enabled", true)) {
+            LOG_INFO("Hyperliquid skipping disabled md_feed type {}", type);
+            continue;
+        }
         if (type == "hyperliquid_live_ws") {
             use_live_feed_ = true;
             live_ws_base_url_ = feed_cfg.value("base_url", live_ws_base_url_);
