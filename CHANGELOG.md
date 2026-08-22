@@ -51,6 +51,7 @@
   gateway touches it only from its own event loop. A store constructed with a queue drains it on
   demand (the REST gateway, which has no continuous reader); a default-constructed one is fed through
   `apply()` by an owner already reading the stream (the WebSocket gateway).
+- MD feed enable/disable config support.
 
 ## Fixed
 
