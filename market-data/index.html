@@ -602,6 +602,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#one-level-batch-per-symbol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One level batch per symbol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-snapshot-also-discards-the-batch-in-flight" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1149,6 +1160,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#one-level-batch-per-symbol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One level batch per symbol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-snapshot-also-discards-the-batch-in-flight" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1509,6 +1531,12 @@ call meaning to pass a sequence lands it in <code>priority</code> and shifts eve
 the batch flag arrives as the sequence. Rest phantom liquidity through
 <code>OrderBook::addBookOrder()</code>, which fills <code>priority</code> from <code>nextOrderPriority()</code> itself.</p>
 </div>
+<h3 id="one-level-batch-per-symbol">One level batch per symbol<a class="headerlink" href="#one-level-batch-per-symbol" title="Permanent link">&para;</a></h3>
+<p><code>level_update_buffer_</code> lives in <code>SymbolEventState</code>, not on the exchange. It is flushed only when a
+later event carries a different sequence, and <code>processSequencedEvents</code> drains one symbol's queue
+before starting the next — so a shared buffer still held the previous symbol's rows when the next
+symbol began dispatching, and the flush publishes under whichever symbol is dispatching. A per-symbol
+buffer is what keeps a batch attached to the instrument that produced it.</p>
 <h3 id="a-snapshot-also-discards-the-batch-in-flight">A snapshot also discards the batch in flight<a class="headerlink" href="#a-snapshot-also-discards-the-batch-in-flight" title="Permanent link">&para;</a></h3>
 <p><code>level_update_buffer_</code> accumulates level rows and flushes only when a later event carries a different
 sequence, so a snapshot has to clear it as part of the reset — otherwise rows describing the discarded

@@ -240,7 +240,7 @@ $(document).ready(function(){initNavTree('coinbase__feed__callbacks_8cpp_source.
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="comment">// ordinary incremental update - rebuilding liquidity the reset had removed. The</span></div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="comment">// publish boundary is re-primed too, so the first event after the snapshot starts</span></div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="comment">// a batch the way it would on a fresh subscription.</span></div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    level_update_buffer_.clear();</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    state.level_update_buffer_.clear();</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    state.last_published_level_seq_num = 0;</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="comment">// One stamp for the whole snapshot: every update in it shares a sequence, and</span></div>
