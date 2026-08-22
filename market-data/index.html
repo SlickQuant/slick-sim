@@ -602,6 +602,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#a-snapshot-also-discards-the-batch-in-flight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A snapshot also discards the batch in flight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-snapshot-rebuild-goes-through-clearmdorders" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1138,6 +1149,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#a-snapshot-also-discards-the-batch-in-flight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A snapshot also discards the batch in flight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#a-snapshot-rebuild-goes-through-clearmdorders" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1487,6 +1509,12 @@ call meaning to pass a sequence lands it in <code>priority</code> and shifts eve
 the batch flag arrives as the sequence. Rest phantom liquidity through
 <code>OrderBook::addBookOrder()</code>, which fills <code>priority</code> from <code>nextOrderPriority()</code> itself.</p>
 </div>
+<h3 id="a-snapshot-also-discards-the-batch-in-flight">A snapshot also discards the batch in flight<a class="headerlink" href="#a-snapshot-also-discards-the-batch-in-flight" title="Permanent link">&para;</a></h3>
+<p><code>level_update_buffer_</code> accumulates level rows and flushes only when a later event carries a different
+sequence, so a snapshot has to clear it as part of the reset — otherwise rows describing the discarded
+book are published <em>after</em> the snapshot frame, as an ordinary incremental update. The snapshot's own
+levels are not buffered at all: <code>populateL2Snapshot()</code> publishes the rebuilt book in full, and an
+incremental copy of it would only arrive later carrying a <code>level_index</code> read mid-rebuild.</p>
 <h3 id="a-snapshot-rebuild-goes-through-clearmdorders">A snapshot rebuild goes through <code>clearMDOrders()</code><a class="headerlink" href="#a-snapshot-rebuild-goes-through-clearmdorders" title="Permanent link">&para;</a></h3>
 <p><code>OrderBookL3::clear()</code> unlinks orders without notifying observers, so it leaves
 <code>feed_md_level_quantity_</code> — which is maintained <em>from</em> those notifications — holding every price the
