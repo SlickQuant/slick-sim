@@ -149,6 +149,14 @@ so it measures at 96.4% rejected.
     the batch flag arrives as the sequence. Rest phantom liquidity through
     `OrderBook::addBookOrder()`, which fills `priority` from `nextOrderPriority()` itself.
 
+### A snapshot also discards the batch in flight
+
+`level_update_buffer_` accumulates level rows and flushes only when a later event carries a different
+sequence, so a snapshot has to clear it as part of the reset — otherwise rows describing the discarded
+book are published *after* the snapshot frame, as an ordinary incremental update. The snapshot's own
+levels are not buffered at all: `populateL2Snapshot()` publishes the rebuilt book in full, and an
+incremental copy of it would only arrive later carrying a `level_index` read mid-rebuild.
+
 ### A snapshot rebuild goes through `clearMDOrders()`
 
 `OrderBookL3::clear()` unlinks orders without notifying observers, so it leaves
