@@ -110,6 +110,13 @@ private:
         uint64_t last_seq_num = 0;
         uint64_t next_sequence_id = 0;
         uint64_t last_published_level_seq_num = 0;
+        /// Per symbol, not per exchange. It is flushed only when a later event
+        /// carries a different sequence, so one shared buffer still held a symbol's
+        /// rows when processSequencedEvents moved on to the next symbol's queue - and
+        /// the flush publishes under whichever symbol is dispatching, so those rows
+        /// went out under the wrong instrument, at prices belonging to another one,
+        /// while the symbol that produced them never saw them.
+        std::vector<MDLevel> level_update_buffer_;
         // Stamped onto every book mutation in place of the venue's seq_num. The
         // book silently discards a mutation whose sequence regresses, and both
         // venue-side counters regress here by construction: this queue reorders
@@ -138,7 +145,6 @@ private:
     bool use_live_feed_ = false;
 
     std::unordered_map<Symbol*, SymbolEventState> symbol_event_state_;
-    std::vector<MDLevel> level_update_buffer_;
 };
 
 }   // end namespace slick::sim::exch
