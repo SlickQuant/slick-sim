@@ -14,5 +14,6 @@ var dir_b50ec4ce2bec822537b54439a3f1b1fa =
     [ "hyperliquid_rest_order_gateway.hpp", "hyperliquid__rest__order__gateway_8hpp.html", "hyperliquid__rest__order__gateway_8hpp" ],
     [ "hyperliquid_trade_encoder.cpp", "hyperliquid__trade__encoder_8cpp.html", "hyperliquid__trade__encoder_8cpp" ],
     [ "hyperliquid_trade_encoder.hpp", "hyperliquid__trade__encoder_8hpp.html", "hyperliquid__trade__encoder_8hpp" ],
-    [ "hyperliquid_venue.cpp", "hyperliquid__venue_8cpp.html", null ]
+    [ "hyperliquid_venue.cpp", "hyperliquid__venue_8cpp.html", null ],
+    [ "hyperliquid_wire_format.hpp", "hyperliquid__wire__format_8hpp.html", "hyperliquid__wire__format_8hpp" ]
 ];

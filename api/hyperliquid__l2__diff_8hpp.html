@@ -94,11 +94,13 @@ $(document).ready(function(){initNavTree('hyperliquid__l2__diff_8hpp.html',''); 
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">hyperliquid_l2_diff.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="types_8hpp_source.html">common/types.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="market__data_8hpp_source.html">common/market_data.hpp</a>&gt;</code><br />
 <code>#include &lt;nlohmann/json.hpp&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
@@ -106,7 +108,7 @@ $(document).ready(function(){initNavTree('hyperliquid__l2__diff_8hpp.html',''); 
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for hyperliquid_l2_diff.hpp:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="hyperliquid__l2__diff_8hpp__incl.svg" width="100%" height="459"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="hyperliquid__l2__diff_8hpp__incl.svg" width="100%" height="569"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -137,10 +139,17 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a1e42a976146c6654aa40ecb106979781" id="r_a1e42a976146c6654aa40ecb106979781"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a1e42a976146c6654aa40ecb106979781">slick::sim::md_publisher::split_book_snapshot</a> (const <a class="el" href="structslick_1_1sim_1_1MDLevel.html">MDLevel</a> *levels, uint32_t num_bid, uint32_t num_ask, nlohmann::json::array_t &amp;bids, nlohmann::json::array_t &amp;asks, <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;curr_bid, <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;curr_ask)</td></tr>
+<tr class="separator:a1e42a976146c6654aa40ecb106979781"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2064c7329f8e8b126c07a4119b6c200" id="r_ac2064c7329f8e8b126c07a4119b6c200"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structslick_1_1sim_1_1md__publisher_1_1L2Diff.html">L2Diff</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#ac2064c7329f8e8b126c07a4119b6c200">slick::sim::md_publisher::compute_l2_diff</a> (const <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;prev_bid, const <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;prev_ask, const <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;curr_bid, const <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;curr_ask)</td></tr>
 <tr class="separator:ac2064c7329f8e8b126c07a4119b6c200"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bbbf4e9cde2be4f4f1b6d3075f6fe3d" id="r_a1bbbf4e9cde2be4f4f1b6d3075f6fe3d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a1bbbf4e9cde2be4f4f1b6d3075f6fe3d">slick::sim::md_publisher::encode_l2_diff</a> (const nlohmann::json &amp;payload)</td></tr>
 <tr class="separator:a1bbbf4e9cde2be4f4f1b6d3075f6fe3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a2c8228666a1d3d9c1573aec49cb55c98" id="r_a2c8228666a1d3d9c1573aec49cb55c98"><td class="memItemLeft" align="right" valign="top">constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a2c8228666a1d3d9c1573aec49cb55c98">slick::sim::md_publisher::L2_PUBLISH_DEPTH</a> = 20</td></tr>
+<tr class="separator:a2c8228666a1d3d9c1573aec49cb55c98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

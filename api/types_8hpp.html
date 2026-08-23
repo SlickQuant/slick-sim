@@ -178,9 +178,9 @@ Functions</h2></td></tr>
 <tr class="separator:ae7c6270f5b2c86ea08ee204453208c2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7eb343b14332f99fb29ac1deadaf468" id="r_af7eb343b14332f99fb29ac1deadaf468"><td class="memItemLeft" align="right" valign="top">constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#af7eb343b14332f99fb29ac1deadaf468">slick::sim::to_qty_double</a> (<a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> qty)</td></tr>
 <tr class="separator:af7eb343b14332f99fb29ac1deadaf468"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a726a954c44bb07aa064e107eef7d0ebe" id="r_a726a954c44bb07aa064e107eef7d0ebe"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a726a954c44bb07aa064e107eef7d0ebe">slick::sim::to_fixed_string</a> (int_fast64_t value)</td></tr>
-<tr class="memdesc:a726a954c44bb07aa064e107eef7d0ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders a fixed-point value as an exact decimal string.  <br /></td></tr>
-<tr class="separator:a726a954c44bb07aa064e107eef7d0ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0abb560e3d6cc846b8cfa3aaafb11f9d" id="r_a0abb560e3d6cc846b8cfa3aaafb11f9d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#a0abb560e3d6cc846b8cfa3aaafb11f9d">slick::sim::to_fixed_string</a> (int_fast64_t value, unsigned min_frac_digits=0)</td></tr>
+<tr class="memdesc:a0abb560e3d6cc846b8cfa3aaafb11f9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders a fixed-point value as an exact decimal string.  <br /></td></tr>
+<tr class="separator:a0abb560e3d6cc846b8cfa3aaafb11f9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3844198c585908c27fac6edc20383c5" id="r_ad3844198c585908c27fac6edc20383c5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#ad3844198c585908c27fac6edc20383c5">slick::sim::to_price_string</a> (<a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> price)</td></tr>
 <tr class="separator:ad3844198c585908c27fac6edc20383c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2c54f37191771de649b6e7e34dc4acc" id="r_ae2c54f37191771de649b6e7e34dc4acc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html#ae2c54f37191771de649b6e7e34dc4acc">slick::sim::to_qty_string</a> (<a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> qty)</td></tr>
@@ -260,7 +260,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00142">142</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00147">147</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -290,7 +290,7 @@ Variables</h2></td></tr>
 <p>APPEND ONLY. <code>Venue</code> is written into every MarketDataUpdate frame and into the shared-memory md queue, so inserting in the middle renumbers the existing venues under any process already reading a queue or a capture file.</p>
 <p>This list is deliberately NOT conditional on the per-venue build options. A Venue is an identity written on the wire, not a claim that an adapter was compiled in: <code>to_venue("coinbase")</code> still yields COINBASE in a build with the Coinbase adapter switched off, which is what lets a capture recorded elsewhere still be read here. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00133">133</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00138">138</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>

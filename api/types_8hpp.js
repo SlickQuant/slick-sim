@@ -19,7 +19,7 @@ var types_8hpp =
       [ "__COUNT__", "types_8hpp.html#a2e99a148afa0fe8ce39517deb691df04a8a593195a5b868135def50740adfd9c1", null ]
     ] ],
     [ "iequals", "types_8hpp.html#a484703f311b6f7b35aa3dc63941a14ca", null ],
-    [ "to_fixed_string", "types_8hpp.html#a726a954c44bb07aa064e107eef7d0ebe", null ],
+    [ "to_fixed_string", "types_8hpp.html#a0abb560e3d6cc846b8cfa3aaafb11f9d", null ],
     [ "to_price_double", "types_8hpp.html#a519d12d39dbb18824aa7b211cc2400fc", null ],
     [ "to_price_string", "types_8hpp.html#ad3844198c585908c27fac6edc20383c5", null ],
     [ "to_price_t", "types_8hpp.html#aa876c66c9ff46e555cfef22c9870553c", null ],

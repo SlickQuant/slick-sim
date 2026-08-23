@@ -93,7 +93,8 @@ $(document).ready(function(){initNavTree('namespaceslick_1_1sim_1_1md__publisher
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">slick::sim::md_publisher Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -135,6 +136,8 @@ Functions</h2></td></tr>
 <tr class="memitem:adab8fd9efcac99e51df638d66d095f9f" id="r_adab8fd9efcac99e51df638d66d095f9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a02b4e3df58198a5455aed08691e4b67e">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#adab8fd9efcac99e51df638d66d095f9f">encode_market_trades</a> (const char *product_id, const char *event_type, const <a class="el" href="structslick_1_1sim_1_1MDTrade.html">MDTrade</a> *trades, uint32_t num_trades, bool newest_first)</td></tr>
 <tr class="memdesc:adab8fd9efcac99e51df638d66d095f9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A run of trades as a single event of the given type.  <br /></td></tr>
 <tr class="separator:adab8fd9efcac99e51df638d66d095f9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e42a976146c6654aa40ecb106979781" id="r_a1e42a976146c6654aa40ecb106979781"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a1e42a976146c6654aa40ecb106979781">split_book_snapshot</a> (const <a class="el" href="structslick_1_1sim_1_1MDLevel.html">MDLevel</a> *levels, uint32_t num_bid, uint32_t num_ask, nlohmann::json::array_t &amp;bids, nlohmann::json::array_t &amp;asks, <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;curr_bid, <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;curr_ask)</td></tr>
+<tr class="separator:a1e42a976146c6654aa40ecb106979781"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2064c7329f8e8b126c07a4119b6c200" id="r_ac2064c7329f8e8b126c07a4119b6c200"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structslick_1_1sim_1_1md__publisher_1_1L2Diff.html">L2Diff</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#ac2064c7329f8e8b126c07a4119b6c200">compute_l2_diff</a> (const <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;prev_bid, const <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;prev_ask, const <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;curr_bid, const <a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;curr_ask)</td></tr>
 <tr class="separator:ac2064c7329f8e8b126c07a4119b6c200"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bbbf4e9cde2be4f4f1b6d3075f6fe3d" id="r_a1bbbf4e9cde2be4f4f1b6d3075f6fe3d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a1bbbf4e9cde2be4f4f1b6d3075f6fe3d">encode_l2_diff</a> (const nlohmann::json &amp;payload)</td></tr>
@@ -145,6 +148,14 @@ Functions</h2></td></tr>
 <tr class="memitem:a4dfc455026fcf7bce0e437d7c2cfa28c" id="r_a4dfc455026fcf7bce0e437d7c2cfa28c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a02b4e3df58198a5455aed08691e4b67e">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a4dfc455026fcf7bce0e437d7c2cfa28c">encode_trade_message</a> (const char *coin, const <a class="el" href="structslick_1_1sim_1_1MDTrade.html">MDTrade</a> *trades, uint32_t num_trades)</td></tr>
 <tr class="memdesc:a4dfc455026fcf7bce0e437d7c2cfa28c"><td class="mdescLeft">&#160;</td><td class="mdescRight">A run of trades in the order given.  <br /></td></tr>
 <tr class="separator:a4dfc455026fcf7bce0e437d7c2cfa28c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f512f7d971b8ddc7acacb625f2d464d" id="r_a6f512f7d971b8ddc7acacb625f2d464d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a6f512f7d971b8ddc7acacb625f2d464d">to_hyperliquid_number</a> (int_fast64_t value)</td></tr>
+<tr class="memdesc:a6f512f7d971b8ddc7acacb625f2d464d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders a fixed-point price or size the way Hyperliquid puts one on the wire.  <br /></td></tr>
+<tr class="separator:a6f512f7d971b8ddc7acacb625f2d464d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a2c8228666a1d3d9c1573aec49cb55c98" id="r_a2c8228666a1d3d9c1573aec49cb55c98"><td class="memItemLeft" align="right" valign="top">constexpr uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a2c8228666a1d3d9c1573aec49cb55c98">L2_PUBLISH_DEPTH</a> = 20</td></tr>
+<tr class="separator:a2c8228666a1d3d9c1573aec49cb55c98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="adb469b15aebdbcd086f81cde707c217f" name="adb469b15aebdbcd086f81cde707c217f"></a>
@@ -191,7 +202,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00013">13</a> of file <a class="el" href="hyperliquid__l2__diff_8hpp_source.html">hyperliquid_l2_diff.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00014">14</a> of file <a class="el" href="hyperliquid__l2__diff_8hpp_source.html">hyperliquid_l2_diff.hpp</a>.</p>
 
 </div>
 </div>
@@ -234,9 +245,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00069">69</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00126">126</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00016">slick::sim::md_publisher::L2Diff::l</a>, and <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00017">slick::sim::md_publisher::L2Diff::r</a>.</p>
+<p class="reference">References <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00034">slick::sim::md_publisher::L2Diff::l</a>, and <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00035">slick::sim::md_publisher::L2Diff::r</a>.</p>
 
 </div>
 </div>
@@ -256,7 +267,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00081">81</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00138">138</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
 
 </div>
 </div>
@@ -380,7 +391,7 @@ Functions</h2></td></tr>
 <p>A run of trades in the order given. </p>
 <p>Emits an empty <code>data</code> array when <code>num_trades</code> is zero. </p>
 
-<p class="definition">Definition at line <a class="el" href="hyperliquid__trade__encoder_8cpp_source.html#l00041">41</a> of file <a class="el" href="hyperliquid__trade__encoder_8cpp_source.html">hyperliquid_trade_encoder.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__trade__encoder_8cpp_source.html#l00042">42</a> of file <a class="el" href="hyperliquid__trade__encoder_8cpp_source.html">hyperliquid_trade_encoder.cpp</a>.</p>
 
 </div>
 </div>
@@ -412,9 +423,133 @@ Functions</h2></td></tr>
 
 <p>One executed trade. </p>
 
-<p class="definition">Definition at line <a class="el" href="hyperliquid__trade__encoder_8cpp_source.html#l00033">33</a> of file <a class="el" href="hyperliquid__trade__encoder_8cpp_source.html">hyperliquid_trade_encoder.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__trade__encoder_8cpp_source.html#l00034">34</a> of file <a class="el" href="hyperliquid__trade__encoder_8cpp_source.html">hyperliquid_trade_encoder.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="messages_8hpp_source.html#l00319">slick::sim::TradeSummary::aggressor_side</a>, <a class="el" href="messages_8hpp_source.html#l00320">slick::sim::TradeSummary::price</a>, <a class="el" href="messages_8hpp_source.html#l00321">slick::sim::TradeSummary::qty</a>, <a class="el" href="messages_8hpp_source.html#l00316">slick::sim::TradeSummary::timestamp</a>, and <a class="el" href="messages_8hpp_source.html#l00317">slick::sim::TradeSummary::trade_id</a>.</p>
+
+</div>
+</div>
+<a id="a1e42a976146c6654aa40ecb106979781" name="a1e42a976146c6654aa40ecb106979781"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e42a976146c6654aa40ecb106979781">&#9670;&#160;</a></span>split_book_snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void slick::sim::md_publisher::split_book_snapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structslick_1_1sim_1_1MDLevel.html">MDLevel</a> *&#160;</td>
+          <td class="paramname"><em>levels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_bid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_ask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">nlohmann::json::array_t &amp;&#160;</td>
+          <td class="paramname"><em>bids</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">nlohmann::json::array_t &amp;&#160;</td>
+          <td class="paramname"><em>asks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;&#160;</td>
+          <td class="paramname"><em>curr_bid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a3a1f706798a29b7ea2fee5b5f6f64ab5">L2Levels</a> &amp;&#160;</td>
+          <td class="paramname"><em>curr_ask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00092">92</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00020">L2_PUBLISH_DEPTH</a>, <a class="el" href="market__data_8hpp_source.html#l00050">slick::sim::MDLevel::num_orders</a>, <a class="el" href="market__data_8hpp_source.html#l00048">slick::sim::MDLevel::price</a>, and <a class="el" href="market__data_8hpp_source.html#l00049">slick::sim::MDLevel::qty</a>.</p>
+
+</div>
+</div>
+<a id="a6f512f7d971b8ddc7acacb625f2d464d" name="a6f512f7d971b8ddc7acacb625f2d464d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f512f7d971b8ddc7acacb625f2d464d">&#9670;&#160;</a></span>to_hyperliquid_number()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string slick::sim::md_publisher::to_hyperliquid_number </td>
+          <td>(</td>
+          <td class="paramtype">int_fast64_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Renders a fixed-point price or size the way Hyperliquid puts one on the wire. </p>
+<p>The venue serialises both as shortest-round-trip floats, which always leave a fractional digit behind: 77052 goes out as "77052.0". Nothing is padded past that - 0.73245 stays "0.73245" and 1.915 stays "1.915" - so this is exactly <code>to_fixed_string</code> with a one-digit floor, not a fixed-decimal format. A session capture bears that out: all 201 distinct prices ended in ".0", and not one of the 8807 distinct sizes carried a trailing zero.</p>
+<p>Worth reproducing because a client may key levels by the price string it received rather than by a parsed number, and against the venue those keys carry the ".0".</p>
+<p>Hyperliquid's only, deliberately: Coinbase renders the same values with <code>to_price_string</code>/<code>to_qty_string</code>, which trim a whole number down to "99". </p>
+
+<p class="definition">Definition at line <a class="el" href="hyperliquid__wire__format_8hpp_source.html#l00023">23</a> of file <a class="el" href="hyperliquid__wire__format_8hpp_source.html">hyperliquid_wire_format.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="types_8hpp_source.html#l00062">slick::sim::to_fixed_string()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a2c8228666a1d3d9c1573aec49cb55c98" name="a2c8228666a1d3d9c1573aec49cb55c98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c8228666a1d3d9c1573aec49cb55c98">&#9670;&#160;</a></span>L2_PUBLISH_DEPTH</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint32_t slick::sim::md_publisher::L2_PUBLISH_DEPTH = 20</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00020">20</a> of file <a class="el" href="hyperliquid__l2__diff_8hpp_source.html">hyperliquid_l2_diff.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00092">split_book_snapshot()</a>.</p>
 
 </div>
 </div>

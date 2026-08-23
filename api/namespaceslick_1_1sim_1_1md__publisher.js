@@ -16,5 +16,8 @@ var namespaceslick_1_1sim_1_1md__publisher =
     [ "encode_market_trade", "namespaceslick_1_1sim_1_1md__publisher.html#a5074a4b7b80c260a0ffa0fb6d7cdd86c", null ],
     [ "encode_market_trades", "namespaceslick_1_1sim_1_1md__publisher.html#adab8fd9efcac99e51df638d66d095f9f", null ],
     [ "encode_trade_message", "namespaceslick_1_1sim_1_1md__publisher.html#a4dfc455026fcf7bce0e437d7c2cfa28c", null ],
-    [ "encode_trade_message", "namespaceslick_1_1sim_1_1md__publisher.html#a7bed2c0cbe11a3e2699db1cce486903d", null ]
+    [ "encode_trade_message", "namespaceslick_1_1sim_1_1md__publisher.html#a7bed2c0cbe11a3e2699db1cce486903d", null ],
+    [ "split_book_snapshot", "namespaceslick_1_1sim_1_1md__publisher.html#a1e42a976146c6654aa40ecb106979781", null ],
+    [ "to_hyperliquid_number", "namespaceslick_1_1sim_1_1md__publisher.html#a6f512f7d971b8ddc7acacb625f2d464d", null ],
+    [ "L2_PUBLISH_DEPTH", "namespaceslick_1_1sim_1_1md__publisher.html#a2c8228666a1d3d9c1573aec49cb55c98", null ]
 ];

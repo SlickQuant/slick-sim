@@ -670,6 +670,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Hyperliquid: L2 diffs and index resolution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#publishing-diffs-back-out-r-ordering-is-part-of-the-wire-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publishing diffs back out: r ordering is part of the wire format
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1228,6 +1245,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Hyperliquid: L2 diffs and index resolution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#publishing-diffs-back-out-r-ordering-is-part-of-the-wire-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publishing diffs back out: r ordering is part of the wire format
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1621,9 +1655,10 @@ correct because a snapshot is authoritative and supersedes anything still queued
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">"t"</span><span class="p">:</span><span class="w"> </span><span class="mi">1723300000000</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
 <ul>
-<li><code>l</code> — changed or added levels as <strong>absolute</strong> new quantities, <code>[bids, asks]</code>.</li>
+<li><code>l</code> — changed or added levels as <strong>absolute</strong> new quantities, <code>[bids, asks]</code>, in book order
+  (best price first).</li>
 <li><code>r</code> — levels removed entirely, given as <strong>indices into the previous per-side ordered price array</strong>,
-  not as prices.</li>
+  not as prices, in ascending <strong>price</strong> order — so bid indices descend and ask indices ascend.</li>
 <li><code>t</code> — event time in milliseconds.</li>
 </ul>
 <p>Those indices are the problem: to turn index 2 back into a price, you need the exact ordered price
@@ -1650,6 +1685,26 @@ which sets phantom liquidity at one price to exactly <code>target_qty</code>:</p
 <p>A removal is simply <code>target_qty = 0</code>.</p>
 <p>Snapshots (<code>processL2Snapshot</code>) call <code>clearMDOrders()</code> — preserving resting simulator orders — then
 rebuild every level and reset the mirror.</p>
+<h3 id="publishing-diffs-back-out-r-ordering-is-part-of-the-wire-format">Publishing diffs back out: <code>r</code> ordering is part of the wire format<a class="headerlink" href="#publishing-diffs-back-out-r-ordering-is-part-of-the-wire-format" title="Permanent link">&para;</a></h3>
+<p><code>compute_l2_diff</code> (<a href="https://github.com/kzhdev/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_l2_diff.cpp"><code>hyperliquid_l2_diff.cpp</code></a>)
+runs the same shape in reverse for subscribers of the simulator's own <code>l2</code> channel, and it has to
+reproduce the venue's ordering, not just its contents.</p>
+<p>Both publish paths first run the outgoing frame through <code>split_book_snapshot()</code>, which cuts it to
+<code>L2_PUBLISH_DEPTH</code> — the 20 levels a side Hyperliquid publishes. The simulator's book has no such
+limit, so without it the sim served a deeper book than the venue ever does. The same call produces
+the JSON and the diff baseline together, on purpose: <code>r</code> addresses positions in the array the
+subscriber last received, so a baseline cut differently from the wire would number levels the client
+never saw. <code>r</code> goes out in ascending price order — which
+is <strong>descending index on the bid side</strong>, whose array runs from the highest price down, and ascending
+index on the ask side.</p>
+<p>That is not cosmetic. A client walking the list and splicing each index off as it reads it is correct
+exactly while the indices descend, because then no deletion moves an entry a later index still refers
+to. Hyperliquid sends bid removals that way, so such a client works against the venue. Emitting them
+ascending here desynced it on the first multi-index bid removal: the level it failed to drop stayed
+resting <strong>above the best ask</strong>, and every later index-based removal on that side landed one slot off.</p>
+<p>The ask side is ascending because that is what the venue sends, and splicing one at a time is <em>not</em>
+sound there — a consumer must resolve every index against the pre-update array before removing any,
+which is what <code>processL2Diff</code> does on the way in.</p>
 <h2 id="venue-trade-prints-are-matched-not-relayed">Venue trade prints are matched, not relayed<a class="headerlink" href="#venue-trade-prints-are-matched-not-relayed" title="Permanent link">&para;</a></h2>
 <p>A trade message from the venue is never forwarded to clients as-is. It is replayed into the book as
 an incoming aggressor order — same side as the real taker, the print price as its limit — so it takes
