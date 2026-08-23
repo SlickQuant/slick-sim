@@ -55,6 +55,32 @@
 
 ## Fixed
 
+- Hyperliquid prices and sizes go out with the venue's trailing fractional digit: a whole `77052`
+  renders as `"77052.0"`, not `"77052"`. The shared `to_fixed_string` trims a whole number down to
+  the integer, which is right for Coinbase but not for Hyperliquid, whose serialiser always leaves
+  one digit behind — across a session capture all 201 distinct prices ended in `".0"`, and not one
+  of 8807 distinct sizes carried a trailing zero. Nothing is padded past that floor. Only a client
+  keying levels by the received price string rather than a parsed number can tell, and that client
+  broke on it. `to_fixed_string` gained a `min_frac_digits` floor, defaulting to the old behaviour;
+  `to_hyperliquid_number()` applies it for that venue's `l2Book`, `l2` and `trades` encoders.
+
+- The Hyperliquid publisher truncates `l2Book` and `l2` to the 20 levels a side the live venue
+  publishes. It served the simulator's whole book instead, which is not depth-limited — it holds
+  every level the feed ever named plus anything a trade print left resting — so subscribers saw a
+  deeper book than Hyperliquid ever sends. `split_book_snapshot()` now builds the wire JSON and the
+  `l2` diff baseline from the same truncation, so removal indices keep addressing the array the
+  subscriber actually holds.
+
+- The Hyperliquid publisher emits `l2` removal indices (`r`) in the live venue's own order:
+  ascending price, so bid indices descend and ask indices ascend. They went out in ascending index
+  order on both sides. A client that splices each index off as it reads it — correct against the
+  venue, because Hyperliquid's bid removals descend and no deletion then moves an entry a later index
+  still refers to — desynced on the first multi-index bid removal, dropping the wrong level and
+  keeping one the venue had retired. The kept level went on resting **above the best ask**, and every
+  later index-based removal on that side landed one slot off. `processL2Diff` was already correct on
+  the way in, resolving all indices against the pre-mutation array; only the outbound encoder was
+  wrong.
+
 - Self-match prevention under `CANCEL_NEWEST` is decided before the order is acked, mutated or
   reported on, so a rejected order leaves no trace. The check ran inside the matching loop, after a
   new order was acked and after an amendment had written its new price and quantity onto the stored

@@ -262,9 +262,10 @@ Hyperliquid's undocumented `l2` channel sends compressed incremental diffs:
   "t": 1723300000000 }
 ```
 
-- `l` — changed or added levels as **absolute** new quantities, `[bids, asks]`.
+- `l` — changed or added levels as **absolute** new quantities, `[bids, asks]`, in book order
+  (best price first).
 - `r` — levels removed entirely, given as **indices into the previous per-side ordered price array**,
-  not as prices.
+  not as prices, in ascending **price** order — so bid indices descend and ask indices ascend.
 - `t` — event time in milliseconds.
 
 Those indices are the problem: to turn index 2 back into a price, you need the exact ordered price
@@ -298,6 +299,31 @@ A removal is simply `target_qty = 0`.
 
 Snapshots (`processL2Snapshot`) call `clearMDOrders()` — preserving resting simulator orders — then
 rebuild every level and reset the mirror.
+
+### Publishing diffs back out: `r` ordering is part of the wire format
+
+`compute_l2_diff` ([`hyperliquid_l2_diff.cpp`](https://github.com/kzhdev/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_l2_diff.cpp))
+runs the same shape in reverse for subscribers of the simulator's own `l2` channel, and it has to
+reproduce the venue's ordering, not just its contents.
+
+Both publish paths first run the outgoing frame through `split_book_snapshot()`, which cuts it to
+`L2_PUBLISH_DEPTH` — the 20 levels a side Hyperliquid publishes. The simulator's book has no such
+limit, so without it the sim served a deeper book than the venue ever does. The same call produces
+the JSON and the diff baseline together, on purpose: `r` addresses positions in the array the
+subscriber last received, so a baseline cut differently from the wire would number levels the client
+never saw. `r` goes out in ascending price order — which
+is **descending index on the bid side**, whose array runs from the highest price down, and ascending
+index on the ask side.
+
+That is not cosmetic. A client walking the list and splicing each index off as it reads it is correct
+exactly while the indices descend, because then no deletion moves an entry a later index still refers
+to. Hyperliquid sends bid removals that way, so such a client works against the venue. Emitting them
+ascending here desynced it on the first multi-index bid removal: the level it failed to drop stayed
+resting **above the best ask**, and every later index-based removal on that side landed one slot off.
+
+The ask side is ascending because that is what the venue sends, and splicing one at a time is *not*
+sound there — a consumer must resolve every index against the pre-update array before removing any,
+which is what `processL2Diff` does on the way in.
 
 ## Venue trade prints are matched, not relayed
 

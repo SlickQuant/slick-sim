@@ -1,4 +1,5 @@
 #include "hyperliquid_trade_encoder.hpp"
+#include "hyperliquid_wire_format.hpp"
 
 #include <common/order.hpp>
 #include <common/types.hpp>
@@ -16,8 +17,8 @@ json encode_trade(const char* coin, uint64_t trade_id, uint64_t event_time,
     return {
         {"coin", coin},
         {"side", aggressor_side == Side::BUY ? "B" : "A"},
-        {"px",   to_price_string(price)},
-        {"sz",   to_qty_string(qty)},
+        {"px",   to_hyperliquid_number(price)},
+        {"sz",   to_hyperliquid_number(qty)},
         {"time", event_time / utils::ONE_MILLISECOND_NS},
         {"hash", "0x0"},
         {"tid",  trade_id}

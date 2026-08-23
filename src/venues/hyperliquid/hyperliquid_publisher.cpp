@@ -279,24 +279,8 @@ void HyperliquidPublisher::publish_subscription_response(MarketDataUpdate* updat
 
         json::array_t bids, asks;
         L2Levels curr_bid, curr_ask;
-        curr_bid.reserve(snapshot->num_bid);
-        curr_ask.reserve(snapshot->num_ask);
-        for (uint32_t i = 0; i < snapshot->num_bid; ++i) {
-            bids.push_back({
-                {"px", to_price_string(levels[i].price)},
-                {"sz", to_qty_string(levels[i].qty)},
-                {"n",  levels[i].num_orders}
-            });
-            curr_bid.emplace_back(levels[i].price, levels[i].qty);
-        }
-        for (uint32_t i = snapshot->num_bid; i < snapshot->num_bid + snapshot->num_ask; ++i) {
-            asks.push_back({
-                {"px", to_price_string(levels[i].price)},
-                {"sz", to_qty_string(levels[i].qty)},
-                {"n",  levels[i].num_orders}
-            });
-            curr_ask.emplace_back(levels[i].price, levels[i].qty);
-        }
+        split_book_snapshot(levels, snapshot->num_bid, snapshot->num_ask,
+                            bids, asks, curr_bid, curr_ask);
 
         if (channel == HyperliquidChannel::L2_BOOK) {
             snapshot_msg = {
@@ -377,24 +361,8 @@ void HyperliquidPublisher::publish_book_snapshot(MarketDataUpdate* update) {
 
     json::array_t bids, asks;
     L2Levels curr_bid, curr_ask;
-    curr_bid.reserve(snapshot->num_bid);
-    curr_ask.reserve(snapshot->num_ask);
-    for (uint32_t i = 0; i < snapshot->num_bid; ++i) {
-        bids.push_back({
-            {"px", to_price_string(levels[i].price)},
-            {"sz", to_qty_string(levels[i].qty)},
-            {"n",  levels[i].num_orders}
-        });
-        curr_bid.emplace_back(levels[i].price, levels[i].qty);
-    }
-    for (uint32_t i = snapshot->num_bid; i < snapshot->num_bid + snapshot->num_ask; ++i) {
-        asks.push_back({
-            {"px", to_price_string(levels[i].price)},
-            {"sz", to_qty_string(levels[i].qty)},
-            {"n",  levels[i].num_orders}
-        });
-        curr_ask.emplace_back(levels[i].price, levels[i].qty);
-    }
+    split_book_snapshot(levels, snapshot->num_bid, snapshot->num_ask,
+                        bids, asks, curr_bid, curr_ask);
     uint64_t time_ms = get_current_time_ns() / ONE_MILLISECOND_NS;
 
     if (has_l2book) {

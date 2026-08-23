@@ -54,7 +54,12 @@ inline constexpr double to_qty_double(qty_t qty) {
 ///
 /// Trailing fractional zeros are trimmed, and the point is omitted entirely for a
 /// whole number, so 8.2 renders as "8.2" rather than "8.20000000".
-inline std::string to_fixed_string(int_fast64_t value) {
+///
+/// `min_frac_digits` sets a floor on how far that trimming goes, for a venue whose
+/// own serialiser always leaves a fractional digit behind: at 1, a whole 77052
+/// renders as "77052.0" instead of "77052". It never pads past the scale's eight
+/// digits, and 0 - the default - is the trim-everything behaviour above.
+inline std::string to_fixed_string(int_fast64_t value, unsigned min_frac_digits = 0) {
     const bool negative = value < 0;
     // Negated through the unsigned domain so the most negative value cannot overflow.
     const uint64_t magnitude = negative
@@ -70,7 +75,7 @@ inline std::string to_fixed_string(int_fast64_t value) {
     }
     out += std::to_string(magnitude / scale);
 
-    if (fraction == 0) {
+    if (fraction == 0 && min_frac_digits == 0) {
         return out;
     }
 
@@ -80,7 +85,7 @@ inline std::string to_fixed_string(int_fast64_t value) {
         fraction /= 10;
     }
     std::string_view significant(digits, 8);
-    while (!significant.empty() && significant.back() == '0') {
+    while (significant.size() > min_frac_digits && significant.back() == '0') {
         significant.remove_suffix(1);
     }
 

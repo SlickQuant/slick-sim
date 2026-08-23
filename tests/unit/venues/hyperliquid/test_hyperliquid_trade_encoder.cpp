@@ -77,6 +77,18 @@ TEST(HyperliquidTradeEncoder, PriceAndSizeAreStrings_TidIsNumeric) {
     EXPECT_EQ(trade["hash"], "0x0");
 }
 
+// The venue's serialiser leaves a fractional digit on a whole number, and a
+// client that keys off the string it received rather than a parsed number sees
+// the difference.
+TEST(HyperliquidTradeEncoder, WholeNumbersKeepTheVenuesTrailingZero) {
+    SummaryBuffer summary(7, 77052.0, 2.0, Side::SELL);
+
+    auto trade = encode_trade_message("BTC", summary.get())["data"][0];
+
+    EXPECT_EQ(trade["px"], "77052.0");
+    EXPECT_EQ(trade["sz"], "2.0");
+}
+
 TEST(HyperliquidTradeEncoder, SideIsAggressorAsSingleLetter) {
     SummaryBuffer buy(1, 100.0, 1.0, Side::BUY);
     SummaryBuffer sell(2, 100.0, 1.0, Side::SELL);

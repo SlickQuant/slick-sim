@@ -245,8 +245,8 @@ First message after subscribing, and every routine update thereafter:
     "coin": "ETH",
     "time": 1723300000123,
     "levels": [
-      [ {"px": "3000.500000", "sz": "12.000000", "n": 3} ],
-      [ {"px": "3001.000000", "sz": "8.500000",  "n": 2} ]
+      [ {"px": "3000.5", "sz": "12.0", "n": 3} ],
+      [ {"px": "3001.0", "sz": "8.5",  "n": 2} ]
     ]
   }}
 ```
@@ -254,8 +254,15 @@ First message after subscribing, and every routine update thereafter:
 `levels[0]` is bids, `levels[1]` is asks, both best-first. `time` is milliseconds. `n` is the order
 count at that level, which includes any of your own resting orders.
 
-Prices and sizes are formatted with `std::to_string`, giving fixed six-decimal output
-(`"3000.500000"`) rather than Hyperliquid's variable precision.
+**At most 20 levels a side**, as on the live venue. The simulator's own book is not depth-limited —
+it keeps every level the feed ever named, plus anything a trade print left resting — so the publish
+path truncates from the top of book down. The `l2` snapshot and diffs below are cut at the same
+depth, which is what makes their removal indices addressable.
+
+Prices and sizes carry a fractional digit even when whole — `3001` goes out as `"3001.0"`, matching
+the venue's own serialiser — and are never padded beyond that, so `12.5` stays `"12.5"`. Only a
+client keying levels by the received string rather than a parsed number can tell, but that client
+would break on the difference. The same rule applies to `l2` and `trades` below.
 
 ### `l2` (compressed diffs)
 
@@ -266,7 +273,8 @@ Subscribing is acknowledged immediately, before any data:
   "data": { "method": "subscribe", "subscription": { "type": "l2", "c": "ETH" } } }
 ```
 
-The first delivery is an uncompressed snapshot under key `s`:
+The first delivery is an uncompressed snapshot under key `s`, in the same shape and to the same
+20-level depth as `l2Book`:
 
 ```json
 { "channel": "l2", "data": { "s": { "coin": "ETH", "time": …, "levels": [ [...], [...] ] } } }
@@ -287,13 +295,19 @@ Decoding gives:
   "t": 1723300000123 }
 ```
 
-- `l` — changed or added levels with **absolute** new sizes, `[bids, asks]`.
-- `r` — removed levels as **indices into the previous per-side ordered price array**.
+- `l` — changed or added levels with **absolute** new sizes, `[bids, asks]`, in book order.
+- `r` — removed levels as **indices into the previous per-side ordered price array**, in ascending
+  price order: bid indices descend, ask indices ascend — matching the live venue.
 - `t` — event time in milliseconds.
 
 Decode with raw inflate (`-MAX_WBITS`, no zlib header) after base64. The diff baseline is per-symbol
 and seeded from the snapshot, so a client must process the `s` message before any `c` message to stay
 in sync.
+
+Resolve every `r` index against the array as it stood **before** the update, then remove them
+together. Removing them one at a time shifts the entries behind each deletion, which silently drops
+the wrong level on the ask side — see
+[Market data](market-data.md#publishing-diffs-back-out-r-ordering-is-part-of-the-wire-format).
 
 ### `trades`
 
@@ -302,7 +316,7 @@ none yet):
 
 ```json
 { "channel": "trades",
-  "data": [ { "coin": "ETH", "side": "B", "px": "3000.500000", "sz": "0.250000",
+  "data": [ { "coin": "ETH", "side": "B", "px": "3000.5", "sz": "0.25",
               "time": 1723300000123, "hash": "0x0", "tid": 7 } ] }
 ```
 

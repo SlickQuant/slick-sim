@@ -158,6 +158,21 @@ TEST(FixedPointTest, RenderingTrimsTrailingZerosAndWholeNumbers) {
     EXPECT_EQ(to_price_string(0), "0");
 }
 
+// A venue whose serialiser always leaves a fractional digit behind - Hyperliquid
+// renders 77052 as "77052.0" - asks for a floor on the trimming, not a fixed
+// number of decimals: everything past that floor is still trimmed away.
+TEST(FixedPointTest, RenderingHonoursAMinimumFractionalDigitCount) {
+    EXPECT_EQ(to_fixed_string(to_price_t(77052.0), 1), "77052.0");
+    EXPECT_EQ(to_fixed_string(0, 1), "0.0");
+    EXPECT_EQ(to_fixed_string(to_price_t(-8.0), 1), "-8.0");
+    // Nothing is padded out to the floor that was not already there.
+    EXPECT_EQ(to_fixed_string(to_qty_t(0.73245), 1), "0.73245");
+    EXPECT_EQ(to_fixed_string(to_price_t(3000.5), 1), "3000.5");
+    EXPECT_EQ(to_fixed_string(1, 1), "0.00000001");
+    // The default is unchanged, which is what Coinbase's encoders still get.
+    EXPECT_EQ(to_fixed_string(to_price_t(99.0)), "99");
+}
+
 TEST(FixedPointTest, RenderingHandlesNegativesAndTheDomainEdge) {
     EXPECT_EQ(to_price_string(to_price_t(-8.2)), "-8.2");
     EXPECT_EQ(to_price_string(-1), "-0.00000001");
