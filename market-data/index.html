@@ -1686,7 +1686,7 @@ which sets phantom liquidity at one price to exactly <code>target_qty</code>:</p
 <p>Snapshots (<code>processL2Snapshot</code>) call <code>clearMDOrders()</code> — preserving resting simulator orders — then
 rebuild every level and reset the mirror.</p>
 <h3 id="publishing-diffs-back-out-r-ordering-is-part-of-the-wire-format">Publishing diffs back out: <code>r</code> ordering is part of the wire format<a class="headerlink" href="#publishing-diffs-back-out-r-ordering-is-part-of-the-wire-format" title="Permanent link">&para;</a></h3>
-<p><code>compute_l2_diff</code> (<a href="https://github.com/kzhdev/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_l2_diff.cpp"><code>hyperliquid_l2_diff.cpp</code></a>)
+<p><code>compute_l2_diff</code> (<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_l2_diff.cpp"><code>hyperliquid_l2_diff.cpp</code></a>)
 runs the same shape in reverse for subscribers of the simulator's own <code>l2</code> channel, and it has to
 reproduce the venue's ordering, not just its contents.</p>
 <p>Both publish paths first run the outgoing frame through <code>split_book_snapshot()</code>, which cuts it to
