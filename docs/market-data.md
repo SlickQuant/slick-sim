@@ -302,7 +302,7 @@ rebuild every level and reset the mirror.
 
 ### Publishing diffs back out: `r` ordering is part of the wire format
 
-`compute_l2_diff` ([`hyperliquid_l2_diff.cpp`](https://github.com/kzhdev/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_l2_diff.cpp))
+`compute_l2_diff` ([`hyperliquid_l2_diff.cpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_l2_diff.cpp))
 runs the same shape in reverse for subscribers of the simulator's own `l2` channel, and it has to
 reproduce the venue's ordering, not just its contents.
 
