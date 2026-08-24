@@ -55,6 +55,13 @@ protected:
     void sendOrderNewPending(const Order *order, time_t request_time);
     void sendOrderReplacePending(const Order *order, time_t request_time);
     void sendOrderCancelPending(const Order *order, time_t request_time);
+    /// Publish and clear whatever market data the book produced while handling a
+    /// request. Every path that can change the book has to end in this call --
+    /// the caches are drained nowhere else, so an update left behind is not
+    /// published late, it is published only when some *later* request happens to
+    /// flush it, or never at all if none follows.
+    void flushMarketDataCaches(Symbol *symbol);
+
     void publishMDBookUpdate(symid_t sid, OrderBook &order_book, const std::array<uint8_t, 2> &indices);
     void publishLevelUpdate(const symbol_name_t &symbol, const std::vector<MDLevel> &level_updates);
     void publishMDOrderUpdate(const symbol_name_t &symbol, const std::vector<MDOrder> &order_updates);

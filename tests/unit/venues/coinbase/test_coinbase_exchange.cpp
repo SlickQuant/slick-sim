@@ -1432,3 +1432,86 @@ TEST_F(CoinbaseExchangeTest, TwoSymbols_LevelBatchesDoNotCrossOver) {
     EXPECT_TRUE(saw_a) << "no level published for TEST-XSYM-A";
     EXPECT_TRUE(saw_b) << "no level published for TEST-XSYM-B";
 }
+
+// ===========================================================================
+// Cancel requests must publish the level update they produce
+// ===========================================================================
+
+// Removing an order shrinks a book level, and Symbol::cancelOrder parks that
+// change in md_level_update_cache_ like every other book mutation. The caches are
+// drained only at the end of a request handler, and handleCancelOrderRequest was
+// the one handler that did not drain them -- so a cancel's level delta went out
+// only if some later add or modify happened to flush it, and not at all when the
+// cancel was the last request. Withdrawing a quote is exactly that shape: every
+// subscriber's incrementally-maintained book kept showing quantity at a price
+// where nothing rested any more, indefinitely.
+TEST_F(CoinbaseExchangeTest, CancelPublishesItsLevelUpdate) {
+    auto* sym = registerSymbol("TEST-CXL-MD-1");
+
+    auto enqueueNewOrder = [&](std::string_view cid, Side side, price_t px, qty_t q) {
+        auto& queue = exchange_->request_queue();
+        auto index = queue.reserve();
+        auto* request = queue[index];
+        *request = Request{};
+        utils::copy_wire_field(request->symbol, std::string_view("TEST-CXL-MD-1"));
+        request->msg_type   = MessageType::NEW_ORDER_SINGLE;
+        request->time_stamp = 1000;
+        utils::copy_wire_field(request->add_order.user_id, std::string_view("test-user"));
+        utils::copy_wire_field(request->add_order.client_order_id, cid);
+        request->add_order.side          = side;
+        request->add_order.type          = OrderType::LIMIT;
+        request->add_order.time_in_force = TimeInForce::GOOD_TILL_CANCEL;
+        request->add_order.price         = px;
+        request->add_order.qty           = q;
+        queue.publish(index);
+        exchange_->drainOneRequest();
+    };
+
+    auto enqueueCancel = [&](std::string_view cid) {
+        auto& queue = exchange_->request_queue();
+        auto index = queue.reserve();
+        auto* request = queue[index];
+        *request = Request{};
+        utils::copy_wire_field(request->symbol, std::string_view("TEST-CXL-MD-1"));
+        request->msg_type   = MessageType::ORDER_CANCEL_REQUEST;
+        request->time_stamp = 1000;
+        utils::copy_wire_field(request->cancel_order.user_id, std::string_view("test-user"));
+        utils::copy_wire_field(request->cancel_order.client_order_id, cid);
+        queue.publish(index);
+        exchange_->drainOneRequest();
+    };
+
+    // Every LEVEL frame published for our price since the last call, oldest
+    // first. collect() advances the collector's cursor, so each call reports
+    // only what the step in between produced.
+    auto publishedQtysAt = [&](price_t px) {
+        std::vector<qty_t> out;
+        for (auto* update : md_collector_->collect(MDUpdateType::LEVEL)) {
+            if (std::string_view(update->symbol) != "TEST-CXL-MD-1") continue;
+            const auto* lvl = reinterpret_cast<const MDLevelUpdate*>(update->data);
+            for (uint32_t i = 0; i < lvl->num_level_update; ++i) {
+                if (lvl->levels[i].price == px) out.push_back(lvl->levels[i].qty);
+            }
+        }
+        return out;
+    };
+
+    // Two resting sell orders at the same price, so the cancels walk the level
+    // down in two steps rather than deleting it outright.
+    enqueueNewOrder("cxl-md-a", Side::SELL, kPrice101, kQty2);
+    enqueueNewOrder("cxl-md-b", Side::SELL, kPrice101, kQty3);
+    publishedQtysAt(kPrice101);   // discard what building the level published
+
+    enqueueCancel("cxl-md-a");
+    EXPECT_EQ(publishedQtysAt(kPrice101), (std::vector<qty_t>{kQty3}))
+        << "the first cancel left the level at kQty3 and must say so";
+
+    // Nothing follows this one -- which is the case that used to strand the delta
+    // forever, and the reason a withdrawn ladder rung stayed on the book.
+    enqueueCancel("cxl-md-b");
+    EXPECT_EQ(publishedQtysAt(kPrice101), (std::vector<qty_t>{qty_t{0}}))
+        << "the last cancel emptied the level and must publish the zero";
+
+    auto [level, index] = sym->order_book_->getLevel(to_book_side(Side::SELL), kPrice101);
+    EXPECT_EQ(level, nullptr) << "the book itself should be empty at that price";
+}

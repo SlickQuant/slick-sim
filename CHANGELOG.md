@@ -1,4 +1,4 @@
-# Unreleased
+# v0.2.0 - 08-23-2026
 
 ## Added
 
@@ -54,6 +54,16 @@
 - MD feed enable/disable config support.
 
 ## Fixed
+
+- A cancel publishes the level update it produces. `Symbol::cancelOrder` parks the shrunk level in
+  `md_level_update_cache_` like every other book mutation, and the caches are drained only at the end
+  of a request handler — but `handleCancelOrderRequest` was the one handler that never drained them.
+  A cancel's delta therefore went out only if a later add or modify happened to flush it, and not at
+  all when the cancel was the last request, leaving every subscriber's incrementally-maintained book
+  showing quantity at a price where nothing rested any more. Withdrawing a resting quote is exactly
+  that shape, so a market maker pulling the tail of its ladder left phantom levels on every client's
+  book indefinitely. The drain is now `Exchange::flushMarketDataCaches()`, called from all three order
+  handlers and from the Coinbase feed paths that had the block copy-pasted.
 
 - `split_book_snapshot()` no longer binds references to underaligned `MDLevel` members. `MDLevel`
   is byte-packed (41 bytes), so only the first level of a frame is naturally aligned; passing

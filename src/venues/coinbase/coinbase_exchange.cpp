@@ -325,17 +325,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
                 }
             }
 
-            if (!symbol->md_level_update_cache_.empty())
-            {
-                publishLevelUpdate(symbol->symbol_, symbol->md_level_update_cache_);
-                symbol->md_level_update_cache_.clear();
-            }
-
-            if (!symbol->md_order_update_cache_.empty())
-            {
-                // TODO: publish MD order update
-                symbol->md_order_update_cache_.clear();
-            }
+            flushMarketDataCaches(symbol);
         }
         else
         {
@@ -432,17 +422,7 @@ void CoinbaseExchange::dispatchEvent(Symbol *symbol, const Event &event, SymbolE
             publishTradeSummary(symbol, summary);
         }
 
-        if (!symbol->md_level_update_cache_.empty())
-        {
-            publishLevelUpdate(symbol->symbol_, symbol->md_level_update_cache_);
-            symbol->md_level_update_cache_.clear();
-        }
-
-        if (!symbol->md_order_update_cache_.empty())
-        {
-            // TODO: publish MD order update
-            symbol->md_order_update_cache_.clear();
-        }
+        flushMarketDataCaches(symbol);
     }
 }
 

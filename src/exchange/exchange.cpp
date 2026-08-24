@@ -248,17 +248,7 @@ void Exchange::handleNewOrderRequest(const Request &request)
             rejectNewOrderRequest(request, reject_reason);
         }
 
-        if (!symbol->md_level_update_cache_.empty())
-        {
-            publishLevelUpdate(symbol->symbol_, symbol->md_level_update_cache_);
-            symbol->md_level_update_cache_.clear();
-        }
-
-        if (!symbol->md_order_update_cache_.empty())
-        {
-            // TODO: publish MD order update
-            symbol->md_order_update_cache_.clear();
-        }
+        flushMarketDataCaches(symbol);
     }
 }
 
@@ -305,17 +295,7 @@ void Exchange::handleModifyOrderRequest(const Request &request)
             rejectModifyOrderRequest(request, reject_reason);
         }
 
-        if (!symbol->md_level_update_cache_.empty())
-        {
-            publishLevelUpdate(symbol->symbol_, symbol->md_level_update_cache_);
-            symbol->md_level_update_cache_.clear();
-        }
-
-        if (!symbol->md_order_update_cache_.empty())
-        {
-            // TODO: publish MD order update
-            symbol->md_order_update_cache_.clear();
-        }
+        flushMarketDataCaches(symbol);
     }
 }
 
@@ -347,6 +327,12 @@ void Exchange::handleCancelOrderRequest(const Request &request)
         order->status = OrderStatus::PENDING_CANCEL;
         sendOrderCancelPending(order, request.time_stamp);
         symbol->cancelOrder(order, request.time_stamp);
+        // Removing the order shrank a book level, and that level update is sitting
+        // in the symbol's cache. Without this the delta is stranded until the next
+        // add or modify flushes it, so a cancelled level keeps its old quantity on
+        // every subscriber's book -- indefinitely when the cancel is the last
+        // request, which is exactly what withdrawing a quote looks like.
+        flushMarketDataCaches(symbol);
     }
 }
 
@@ -450,6 +436,21 @@ void Exchange::publishMDBookUpdate([[maybe_unused]] symid_t sid, OrderBook &orde
     book_update->update_index[1] = indices[1];
     order_book.populateMDBookUpdate(*book_update);
     md_queue_.publish(index, sz);
+}
+
+void Exchange::flushMarketDataCaches(Symbol *symbol)
+{
+    if (!symbol->md_level_update_cache_.empty())
+    {
+        publishLevelUpdate(symbol->symbol_, symbol->md_level_update_cache_);
+        symbol->md_level_update_cache_.clear();
+    }
+
+    if (!symbol->md_order_update_cache_.empty())
+    {
+        // TODO: publish MD order update
+        symbol->md_order_update_cache_.clear();
+    }
 }
 
 void Exchange::publishLevelUpdate(const symbol_name_t &symbol, const std::vector<MDLevel> &level_updates)
