@@ -4,6 +4,7 @@ var classslick_1_1sim_1_1exch_1_1Exchange =
     [ "Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html#a6e7f20119dc47d85605fd346d7b82501", null ],
     [ "~Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html#ab3f0e1bd6582726fb3c2d682d39dec7d", null ],
     [ "clientIdFor", "classslick_1_1sim_1_1exch_1_1Exchange.html#aa8c35237fb44e488777b7756a7214d0b", null ],
+    [ "flushMarketDataCaches", "classslick_1_1sim_1_1exch_1_1Exchange.html#a24a008adaa4f3b989857fd5a03b92a72", null ],
     [ "handleCancelOrderRequest", "classslick_1_1sim_1_1exch_1_1Exchange.html#aa6f1915b9c5f3edfaf6b22693e7b9223", null ],
     [ "handleMdSubscription", "classslick_1_1sim_1_1exch_1_1Exchange.html#ae1253e2d79d882abf8ad92f9787f49d0", null ],
     [ "handleMdUnsubscription", "classslick_1_1sim_1_1exch_1_1Exchange.html#a08416af82a06a1e18f2cc26dc36eb51d", null ],
