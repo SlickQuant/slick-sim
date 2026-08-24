@@ -104,13 +104,21 @@ void split_book_snapshot(const MDLevel* levels, uint32_t num_bid, uint32_t num_a
     curr_bid.reserve(bid_count);
     curr_ask.reserve(ask_count);
 
+    // MDLevel is declared under `#pragma pack(1)`, so every level past the first
+    // starts at an odd offset and its members are underaligned. Load them into
+    // locals before handing them on: json's converting constructor and
+    // emplace_back both bind `const T&`, and a reference to an underaligned
+    // member is UB - UBSan's alignment check fails the build on it.
     auto emit = [](const MDLevel& level, nlohmann::json::array_t& out, L2Levels& baseline) {
+        const price_t price = level.price;
+        const qty_t qty = level.qty;
+        const uint32_t num_orders = level.num_orders;
         out.push_back({
-            {"px", format_price(level.price)},
-            {"sz", format_qty(level.qty)},
-            {"n",  level.num_orders}
+            {"px", format_price(price)},
+            {"sz", format_qty(qty)},
+            {"n",  num_orders}
         });
-        baseline.emplace_back(level.price, level.qty);
+        baseline.emplace_back(price, qty);
     };
 
     for (uint32_t i = 0; i < bid_count; ++i) {

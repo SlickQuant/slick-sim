@@ -7,6 +7,13 @@
 
 namespace slick::sim {
 
+// Everything below is byte-packed: these structs are the md_queue's on-the-wire
+// layout, and MDLevel's 41 bytes are read back out of a flat frame. The cost is
+// that only the first element of a level array is naturally aligned - take
+// members *by value*, never bind a reference or pointer to one. `const T&`
+// promises an alignment a packed member does not have, so binding one is UB and
+// the UBSan job fails on it (json's converting constructor and
+// vector::emplace_back both bind, which is how it slipped in once already).
 #pragma pack(push, 1)
 
 enum MDUpdateType : uint8_t {

@@ -55,6 +55,14 @@
 
 ## Fixed
 
+- `split_book_snapshot()` no longer binds references to underaligned `MDLevel` members. `MDLevel`
+  is byte-packed (41 bytes), so only the first level of a frame is naturally aligned; passing
+  `level.num_orders` into nlohmann's converting constructor and `level.price`/`level.qty` into
+  `emplace_back` bound `const T&` to members at odd offsets, which is UB and failed the
+  UBSan CI job on every snapshot carrying more than one level. The members are loaded into locals
+  first — reading a packed member by value is well-defined. The packing hazard is now documented at
+  the `#pragma pack` in `market_data.hpp`.
+
 - Hyperliquid prices and sizes go out with the venue's trailing fractional digit: a whole `77052`
   renders as `"77052.0"`, not `"77052"`. The shared `to_fixed_string` trims a whole number down to
   the integer, which is right for Coinbase but not for Hyperliquid, whose serialiser always leaves
