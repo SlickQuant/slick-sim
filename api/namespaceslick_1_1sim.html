@@ -669,7 +669,7 @@ Variables</h2></td></tr>
 <p>Symbol and <a class="el" href="classslick_1_1sim_1_1OrderBook.html">OrderBook</a> hold their name in this type, so publishing one is a fixed-size copy of the whole field rather than <code>memcpy(update-&gt;symbol, name.c_str(), sizeof(update-&gt;symbol))</code>, which reads past the end of any name shorter than the field - which is all of them.</p>
 <p>Deliberately derived from the wire field rather than spelled out: widening <code><a class="el" href="structslick_1_1sim_1_1MarketDataUpdate.html#a27ce47ea82b4e225305c992f6ad66ccb">MarketDataUpdate::symbol</a></code> widens the storage with it, instead of silently reintroducing the over-read at every publish site. </p>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00102">102</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00109">109</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -928,7 +928,7 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="a0a9f0bd1a7d704fe4599a7420d34e1d3ade0badcb96ee438931a41e35e6bfbd0b" name="a0a9f0bd1a7d704fe4599a7420d34e1d3ade0badcb96ee438931a41e35e6bfbd0b"></a>MARKET_CLOSED&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00106">106</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00113">113</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -949,7 +949,7 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="ab1e934b8e03a21e64365d200420af2b7a2316531a3eeebfd896e6d881c5fd195a" name="ab1e934b8e03a21e64365d200420af2b7a2316531a3eeebfd896e6d881c5fd195a"></a>ACTION_DELETE&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00039">39</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00046">46</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -979,7 +979,7 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="ad1b99a9a1b8e271f9197953c4b44ae11ad4156d48a454a77a4455687c9fb77cae" name="ad1b99a9a1b8e271f9197953c4b44ae11ad4156d48a454a77a4455687c9fb77cae"></a>SUB_RESPONSE&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00012">12</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00019">19</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -1338,7 +1338,7 @@ Variables</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00028">28</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00035">35</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
 </div>
 </div>
@@ -1963,9 +1963,9 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00112">112</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="market__data_8hpp_source.html#l00119">119</a> of file <a class="el" href="market__data_8hpp_source.html">market_data.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00109">MARKET_CLOSED</a>, <a class="el" href="market__data_8hpp_source.html#l00107">NONE</a>, and <a class="el" href="market__data_8hpp_source.html#l00108">UNKNOWN_CONTRACT</a>.</p>
+<p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00116">MARKET_CLOSED</a>, <a class="el" href="market__data_8hpp_source.html#l00114">NONE</a>, and <a class="el" href="market__data_8hpp_source.html#l00115">UNKNOWN_CONTRACT</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00018">slick::sim::exch::Exchange::Exchange()</a>, <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="exchange_8cpp_source.html#l00049">slick::sim::exch::Exchange::start()</a>, <a class="el" href="ws__md__publisher_8cpp_source.html#l00018">slick::sim::md_publisher::WebsocketMarketDataPublisher::start()</a>, <a class="el" href="rest__ws__order__gateway_8cpp_source.html#l00006">slick::sim::order_gateway::RestWsOrderGateway::start()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
 
