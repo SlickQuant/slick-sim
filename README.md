@@ -140,6 +140,10 @@ that was not compiled in is a fatal startup error listing the adapters the binar
 than an exchange that silently does nothing. See
 [Adding an exchange](https://slickquant.github.io/slick-sim/extending/).
 
+A venue kept in its own repository is built in the same way, by pointing the configure step at its
+directory: `-DSLICK_SIM_EXTERNAL_VENUES=/path/to/venue` (`;`-separated for several). See
+[Out-of-tree venues](https://slickquant.github.io/slick-sim/extending/#out-of-tree-venues).
+
 `ENABLE_NATIVE_ARCH` is off by default because CI's Release binaries are what `release.yml` attaches to GitHub Releases — a binary built with `-march=native` on a runner with AVX-512 crashes with `SIGILL` on any older CPU. Turn it on for local or self-hosted production builds, where the target CPU is the build CPU and the extra vectorisation is worth having.
 
 ## Configuration

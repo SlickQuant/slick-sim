@@ -6,7 +6,7 @@ using namespace slick::sim::exch;
 
 // These guard the one thing about the venue split that would otherwise fail
 // silently. Each adapter registers itself from a namespace-scope initialiser, and
-// nothing in the core ever names that symbol - so if cmake/SlickSimVenue.cmake
+// nothing in the core ever names that symbol - so if cmake/slick_sim_venue.cmake
 // ever stops declaring venue targets as OBJECT libraries, the linker drops the
 // registration as unreferenced and every configured exchange is rejected at
 // startup with no build error anywhere. This turns that into a red test.

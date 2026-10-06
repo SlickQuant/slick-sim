@@ -4,7 +4,7 @@
 #
 # GLOBAL because slick-sim and slick_sim_tests link this venue's object library from
 # other directory scopes, and an imported target is otherwise visible only here and
-# below - see slick_sim_find_venue_dependency() in cmake/SlickSimVenue.cmake.
+# below - see slick_sim_find_venue_dependency() in cmake/slick_sim_venue.cmake.
 find_package(coinbase-advanced-cpp 2.0.0 CONFIG QUIET GLOBAL)
 if (NOT coinbase-advanced-cpp_FOUND)
     message(STATUS "Fetching coinbase-advanced-cpp...")

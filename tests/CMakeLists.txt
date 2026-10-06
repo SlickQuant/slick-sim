@@ -68,6 +68,11 @@ if(TARGET slick_sim_venue_hyperliquid)
     )
 endif()
 
+# Suites a venue declared through slick_sim_add_venue(... TESTS ...), chiefly
+# out-of-tree venues. They include the shared fixtures as "unit/test_helpers.hpp".
+get_property(_slick_sim_venue_tests GLOBAL PROPERTY SLICK_SIM_VENUE_TESTS)
+list(APPEND SLICK_SIM_TEST_SOURCES ${_slick_sim_venue_tests})
+
 add_executable(slick_sim_tests ${SLICK_SIM_TEST_SOURCES})
 
 # slick::logger, slick::queue, slick::object-pool, slick::orderbook,

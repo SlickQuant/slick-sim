@@ -108,7 +108,7 @@ endif()
 # venue edits no shared file. A build with a venue off neither fetches nor links a
 # line of what that venue needs, which is the point of the split: a third or fourth
 # venue must not make the minimal build heavier.
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/SlickSimVenue.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/slick_sim_venue.cmake)
 
 find_package(slick-orderbook 1.0.5 CONFIG QUIET)
 if (NOT slick-orderbook_FOUND)

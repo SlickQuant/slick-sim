@@ -90,8 +90,14 @@ endfunction()
 # handed to the linker individually, so the initialiser survives, and it survives
 # identically for slick-sim and slick_sim_tests with no per-consumer link flag for
 # anyone to forget.
+#
+# TESTS lists the venue's GoogleTest sources. They are compiled into
+# slick_sim_tests, so a venue's suite travels with the venue - which is what lets
+# an out-of-tree venue (SLICK_SIM_EXTERNAL_VENUES) bring its tests along without
+# editing tests/CMakeLists.txt. Relative paths resolve against the calling
+# directory.
 function(slick_sim_add_venue name)
-    cmake_parse_arguments(SSV "" "" "SOURCES;DEPENDS" ${ARGN})
+    cmake_parse_arguments(SSV "" "" "SOURCES;DEPENDS;TESTS" ${ARGN})
     set(target slick_sim_venue_${name})
 
     add_library(${target} OBJECT ${SSV_SOURCES})
@@ -112,6 +118,11 @@ function(slick_sim_add_venue name)
     # tell which networking libraries are actually in the binary. Keeping that fact
     # in DEPENDS alone means a venue declares its stack once.
     set_property(GLOBAL APPEND PROPERTY SLICK_SIM_VENUE_DEPENDS ${SSV_DEPENDS})
+
+    foreach(test_source IN LISTS SSV_TESTS)
+        cmake_path(ABSOLUTE_PATH test_source BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+        set_property(GLOBAL APPEND PROPERTY SLICK_SIM_VENUE_TESTS "${test_source}")
+    endforeach()
 endfunction()
 
 # Links every enabled venue into `target`. A function rather than two open-coded

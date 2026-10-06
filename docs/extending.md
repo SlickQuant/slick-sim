@@ -406,6 +406,30 @@ itself: `slick_sim_link_venues()` defines `SLICK_SIM_HAS_SLICK_NET` when any ena
 names it. A different stack with its own log handler gets its own flag the same way — one `if` in
 `slick_sim_link_venues()` keyed on the library, never on "a venue is enabled".
 
+### Out-of-tree venues
+
+A venue can also live in its own repository. Its directory holds the same `CMakeLists.txt` as an
+in-tree one, with its suites passed as `TESTS`:
+
+```cmake
+slick_sim_add_venue(kraken
+    SOURCES kraken_exchange.cpp kraken_venue.cpp ...
+    DEPENDS slick::socket
+    TESTS   tests/test_kraken_exchange.cpp
+)
+```
+
+Point slick-sim at it when configuring. No file in slick-sim changes:
+
+```bash
+cmake -S . -B build -DSLICK_SIM_EXTERNAL_VENUES=/path/to/slick-sim-kraken
+```
+
+Several directories are separated by `;`. Keep the setting in a `CMakeUserPresets.json`, which
+`.gitignore` excludes, so a local path never reaches the repository. An external venue's tests are
+compiled into `slick_sim_tests` and include the shared fixtures as `"unit/test_helpers.hpp"`. It has
+no `SLICK_SIM_ENABLE_*` option: leaving the directory out of the list is what disables it.
+
 !!! danger "Venue targets must be OBJECT libraries"
     `slick_sim_add_venue` declares one, deliberately. `SLICK_SIM_REGISTER_VENUE` registers from a
     namespace-scope initialiser that nothing in the core ever references by name — out of a *static*

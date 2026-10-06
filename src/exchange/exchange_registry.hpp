@@ -89,7 +89,7 @@ std::vector<std::unique_ptr<Exchange>> make_exchanges(const nlohmann::json &conf
 ///
 /// in which case that decides how many instances the entry describes.
 ///
-/// That TU must live in an OBJECT library - see cmake/SlickSimVenue.cmake for why
+/// That TU must live in an OBJECT library - see cmake/slick_sim_venue.cmake for why
 /// a static library would let the linker drop this registration entirely.
 #define SLICK_SIM_REGISTER_VENUE(key, venue_enum, ExchangeType)                  \
     namespace {                                                                  \
