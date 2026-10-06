@@ -720,6 +720,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="7. Wire up the build">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#out-of-tree-venues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out-of-tree venues
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1166,6 +1183,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="7. Wire up the build">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#out-of-tree-venues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out-of-tree venues
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1558,6 +1592,22 @@ test binary without either of them naming a venue library.</p>
 itself: <code>slick_sim_link_venues()</code> defines <code>SLICK_SIM_HAS_SLICK_NET</code> when any enabled venue's <code>DEPENDS</code>
 names it. A different stack with its own log handler gets its own flag the same way — one <code>if</code> in
 <code>slick_sim_link_venues()</code> keyed on the library, never on "a venue is enabled".</p>
+<h3 id="out-of-tree-venues">Out-of-tree venues<a class="headerlink" href="#out-of-tree-venues" title="Permanent link">&para;</a></h3>
+<p>A venue can also live in its own repository. Its directory holds the same <code>CMakeLists.txt</code> as an
+in-tree one, with its suites passed as <code>TESTS</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nb">slick_sim_add_venue</span><span class="p">(</span><span class="s">kraken</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">    </span><span class="s">SOURCES</span><span class="w"> </span><span class="s">kraken_exchange.cpp</span><span class="w"> </span><span class="s">kraken_venue.cpp</span><span class="w"> </span><span class="s">...</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">    </span><span class="s">DEPENDS</span><span class="w"> </span><span class="s">slick::socket</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">    </span><span class="s">TESTS</span><span class="w">   </span><span class="s">tests/test_kraken_exchange.cpp</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="p">)</span>
+</code></pre></div>
+<p>Point slick-sim at it when configuring. No file in slick-sim changes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DSLICK_SIM_EXTERNAL_VENUES<span class="o">=</span>/path/to/slick-sim-kraken
+</code></pre></div>
+<p>Several directories are separated by <code>;</code>. Keep the setting in a <code>CMakeUserPresets.json</code>, which
+<code>.gitignore</code> excludes, so a local path never reaches the repository. An external venue's tests are
+compiled into <code>slick_sim_tests</code> and include the shared fixtures as <code>"unit/test_helpers.hpp"</code>. It has
+no <code>SLICK_SIM_ENABLE_*</code> option: leaving the directory out of the list is what disables it.</p>
 <div class="admonition danger">
 <p class="admonition-title">Venue targets must be OBJECT libraries</p>
 <p><code>slick_sim_add_venue</code> declares one, deliberately. <code>SLICK_SIM_REGISTER_VENUE</code> registers from a
@@ -1569,11 +1619,11 @@ catch exactly that regression.</p>
 <h2 id="8-tests">8. Tests<a class="headerlink" href="#8-tests" title="Permanent link">&para;</a></h2>
 <p>Put the suites in <code>tests/unit/venues/kraken/</code> and add a gated block to <code>tests/CMakeLists.txt</code> — keyed
 on the <strong>target</strong>, so the suite disappears with the venue:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nb">if</span><span class="p">(</span><span class="s">TARGET</span><span class="w"> </span><span class="s">slick_sim_venue_kraken</span><span class="p">)</span>
-<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">    </span><span class="nb">list</span><span class="p">(</span><span class="s">APPEND</span><span class="w"> </span><span class="s">SLICK_SIM_TEST_SOURCES</span>
-<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">        </span><span class="s">unit/venues/kraken/test_kraken_exchange.cpp</span>
-<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">    </span><span class="p">)</span>
-<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="nb">endif</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nb">if</span><span class="p">(</span><span class="s">TARGET</span><span class="w"> </span><span class="s">slick_sim_venue_kraken</span><span class="p">)</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">    </span><span class="nb">list</span><span class="p">(</span><span class="s">APPEND</span><span class="w"> </span><span class="s">SLICK_SIM_TEST_SOURCES</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">        </span><span class="s">unit/venues/kraken/test_kraken_exchange.cpp</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="nb">endif</span><span class="p">()</span>
 </code></pre></div>
 <p>Mirror the existing suites:</p>
 <table>
@@ -1603,9 +1653,9 @@ on the <strong>target</strong>, so the suite disappears with the venue:</p>
 gets a regression test.</p>
 <h2 id="9-check-it-builds-without-the-others">9. Check it builds without the others<a class="headerlink" href="#9-check-it-builds-without-the-others" title="Permanent link">&para;</a></h2>
 <p>The point of the split is that venues are independent. Verify that:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-kraken<span class="w"> </span>-DSLICK_SIM_ENABLE_COINBASE<span class="o">=</span>OFF<span class="w"> </span>-DSLICK_SIM_ENABLE_HYPERLIQUID<span class="o">=</span>OFF
-<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build-kraken
-<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build-kraken
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-kraken<span class="w"> </span>-DSLICK_SIM_ENABLE_COINBASE<span class="o">=</span>OFF<span class="w"> </span>-DSLICK_SIM_ENABLE_HYPERLIQUID<span class="o">=</span>OFF
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build-kraken
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build-kraken
 </code></pre></div>
 <p>Configuring with every venue off must still build and link the core — that is the configuration that
 catches a core target having quietly picked up a dependency through a venue SDK.</p>

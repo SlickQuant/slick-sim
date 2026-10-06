@@ -199,7 +199,7 @@ Functions</h2></td></tr>
 <p>Place at namespace scope in exactly one translation unit of the venue library: </p><pre class="fragment">SLICK_SIM_REGISTER_VENUE("coinbase", Venue::COINBASE, CoinbaseExchange);
 </pre><p> The factory builds one ExchangeType from the venue's config entry, unless ExchangeType declares </p><pre class="fragment">static std::vector&lt;std::unique_ptr&lt;Exchange&gt;&gt; create_instances(const nlohmann::json &amp;);
 </pre><p> in which case that decides how many instances the entry describes.</p>
-<p>That TU must live in an OBJECT library - see cmake/SlickSimVenue.cmake for why a static library would let the linker drop this registration entirely. </p>
+<p>That TU must live in an OBJECT library - see cmake/slick_sim_venue.cmake for why a static library would let the linker drop this registration entirely. </p>
 
 <p class="definition">Definition at line <a class="el" href="exchange__registry_8hpp_source.html#l00094">94</a> of file <a class="el" href="exchange__registry_8hpp_source.html">exchange_registry.hpp</a>.</p>
 
