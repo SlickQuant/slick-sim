@@ -1,7 +1,7 @@
 var searchData=
 [
   ['taketradedqty_0',['takeTradedQty',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a8cbde529365f961d355c99b772a05250',1,'slick::sim::exch::Symbol']]],
-  ['tcpordergateway_1',['TcpOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a7e9a789442a9c45f16691ed278fe4fe0',1,'slick::sim::order_gateway::TcpOrderGateway']]],
+  ['tcpordergateway_1',['TcpOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a8ffa1734a3dcb46583806b47fe716ae6',1,'slick::sim::order_gateway::TcpOrderGateway']]],
   ['to_5fbook_5fside_2',['to_book_side',['../namespaceslick_1_1sim.html#acf56cf07ed2451a0603d362e63f983e2',1,'slick::sim']]],
   ['to_5fcoinbase_5fstring_3',['to_coinbase_string',['../namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a3f5338485bd169e5dcb3821f4b854e65',1,'slick::sim::order_gateway::coinbase']]],
   ['to_5ffixed_5fstring_4',['to_fixed_string',['../namespaceslick_1_1sim.html#a0abb560e3d6cc846b8cfa3aaafb11f9d',1,'slick::sim']]],

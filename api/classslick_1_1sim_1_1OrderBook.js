@@ -34,7 +34,7 @@ var classslick_1_1sim_1_1OrderBook =
     [ "last_order_update_", "classslick_1_1sim_1_1OrderBook.html#a6cbc57c98d161b616d4f88b8debd5384", null ],
     [ "last_seq_num_", "classslick_1_1sim_1_1OrderBook.html#a9be4a6c2422f7a2a5aa3f416e850ab81", null ],
     [ "last_update_time_", "classslick_1_1sim_1_1OrderBook.html#acd37588283957237600ef8b82980b5ff", null ],
-    [ "next_priority_", "classslick_1_1sim_1_1OrderBook.html#a1a42cc3cf2d73f19d20526fb8730e859", null ],
+    [ "next_priority_", "classslick_1_1sim_1_1OrderBook.html#ad01ad903dbf5be1532c07e8f879f4bcb", null ],
     [ "order_buffer_", "classslick_1_1sim_1_1OrderBook.html#a7d5c00f412eb166f5beab896193bb5cf", null ],
     [ "orders_", "classslick_1_1sim_1_1OrderBook.html#afd698b84ea9aba8111c98a897ed5ff73", null ],
     [ "orders_by_client_order_id_", "classslick_1_1sim_1_1OrderBook.html#a9043e41d1af6bb1f9261448e682ee294", null ],

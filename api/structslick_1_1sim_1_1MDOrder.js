@@ -5,5 +5,6 @@ var structslick_1_1sim_1_1MDOrder =
     [ "price", "structslick_1_1sim_1_1MDOrder.html#aea23936822a9cd2f35efb1a38d80dab4", null ],
     [ "priority", "structslick_1_1sim_1_1MDOrder.html#ad3b963a01efc6426a4681fe102aefb03", null ],
     [ "qty", "structslick_1_1sim_1_1MDOrder.html#a1fc2d82c939977aae9241edbaa84044f", null ],
-    [ "side", "structslick_1_1sim_1_1MDOrder.html#a161e58513048f9a68c9a1e64ac6e5f42", null ]
+    [ "side", "structslick_1_1sim_1_1MDOrder.html#a161e58513048f9a68c9a1e64ac6e5f42", null ],
+    [ "update_action", "structslick_1_1sim_1_1MDOrder.html#aceca08d1f79b944e7aab5e8bce7d8fcd", null ]
 ];

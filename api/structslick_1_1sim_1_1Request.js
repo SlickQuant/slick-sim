@@ -7,6 +7,7 @@ var structslick_1_1sim_1_1Request =
     [ "md_subscription", "structslick_1_1sim_1_1Request.html#abec22e7528dd1a981e183f9da0690932", null ],
     [ "modify_order", "structslick_1_1sim_1_1Request.html#aa4d769e356d01c4c194b1c5def80c56e", null ],
     [ "msg_type", "structslick_1_1sim_1_1Request.html#abf926edf2263ab522fcef7a4d7d9e419", null ],
+    [ "request_tag", "structslick_1_1sim_1_1Request.html#a6bfcf25e2c02753688df8adc76d2dcd4", null ],
     [ "symbol", "structslick_1_1sim_1_1Request.html#a049e3374542fd4f20feb81cd1dee83b8", null ],
     [ "time_stamp", "structslick_1_1sim_1_1Request.html#a85363fc6c9d8b51b973bab8f4aaa893c", null ]
 ];

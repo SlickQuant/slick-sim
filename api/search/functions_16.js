@@ -22,8 +22,7 @@ var searchData=
   ['_7erequest_19',['~Request',['../structslick_1_1sim_1_1Request.html#a1d856be119fea66d0b8e8657aa964d0d',1,'slick::sim::Request']]],
   ['_7erestwsordergateway_20',['~RestWsOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a65d1300541f0df053a26fbcf4eb698ad',1,'slick::sim::order_gateway::RestWsOrderGateway']]],
   ['_7eringbuffer_21',['~RingBuffer',['../classslick_1_1sim_1_1utils_1_1RingBuffer.html#ae7a781625f9419493094712c695c588f',1,'slick::sim::utils::RingBuffer']]],
-  ['_7esbeparser_22',['~SbeParser',['../classslick_1_1sim_1_1order__gateway_1_1SbeParser.html#a58954a86b3eb2ee2725d87b4a56e27ea',1,'slick::sim::order_gateway::SbeParser']]],
-  ['_7esymbol_23',['~Symbol',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a4990f99d616a0d9e966dcaebd02aad55',1,'slick::sim::exch::Symbol']]],
-  ['_7etcpordergateway_24',['~TcpOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a87eb7529a12c6314cd5a8054872e9e92',1,'slick::sim::order_gateway::TcpOrderGateway']]],
-  ['_7ewebsocketmarketdatapublisher_25',['~WebsocketMarketDataPublisher',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]]
+  ['_7esymbol_22',['~Symbol',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a4990f99d616a0d9e966dcaebd02aad55',1,'slick::sim::exch::Symbol']]],
+  ['_7etcpordergateway_23',['~TcpOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a87eb7529a12c6314cd5a8054872e9e92',1,'slick::sim::order_gateway::TcpOrderGateway']]],
+  ['_7ewebsocketmarketdatapublisher_24',['~WebsocketMarketDataPublisher',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]]
 ];

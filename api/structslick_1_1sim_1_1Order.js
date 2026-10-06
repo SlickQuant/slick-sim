@@ -33,6 +33,7 @@ var structslick_1_1sim_1_1Order =
     [ "product_type", "structslick_1_1sim_1_1Order.html#aeed2d40a57561d42009c038712b8fc39", null ],
     [ "quantity", "structslick_1_1sim_1_1Order.html#aa646b437cff4a1afb0e15deb5a84f9da", null ],
     [ "reject_message", "structslick_1_1sim_1_1Order.html#a1096850a222884e3a1497ade2a1d66cc", null ],
+    [ "request_tag", "structslick_1_1sim_1_1Order.html#a9e86a04569bc6baddc99eec633e1ba78", null ],
     [ "side", "structslick_1_1sim_1_1Order.html#a715b579c2287f783368b8d1b82eb273d", null ],
     [ "size_in_quote", "structslick_1_1sim_1_1Order.html#a86865e8e34583d114773574f30e559b3", null ],
     [ "status", "structslick_1_1sim_1_1Order.html#a5ea7a6ec13d91272687effcf71f76a15", null ],

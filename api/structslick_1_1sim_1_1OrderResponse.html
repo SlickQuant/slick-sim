@@ -152,11 +152,39 @@ Public Attributes</h2></td></tr>
 <tr class="separator:afe916713dd7d5275b3210598a3798be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a5fd7713ad0b6393942e14ed65b5321" id="r_a4a5fd7713ad0b6393942e14ed65b5321"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1OrderResponse.html#a4a5fd7713ad0b6393942e14ed65b5321">post_only</a> = false</td></tr>
 <tr class="separator:a4a5fd7713ad0b6393942e14ed65b5321"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32378fb0eb833e49cb20c65019f88030" id="r_a32378fb0eb833e49cb20c65019f88030"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1OrderResponse.html#a32378fb0eb833e49cb20c65019f88030">order_num</a> = 0</td></tr>
+<tr class="memdesc:a32378fb0eb833e49cb20c65019f88030"><td class="mdescLeft">&#160;</td><td class="mdescRight">The order's numeric exchange id, <code><a class="el" href="structslick_1_1sim_1_1Order.html#ab8475e7611721df58d5a9b5ef44913a2">Order::id</a></code> - the same number the order carries in order-by-order market data, so a client can find its own orders in that feed.  <br /></td></tr>
+<tr class="separator:a32378fb0eb833e49cb20c65019f88030"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3d43dab1d0f955729fd86f8e2635b4a" id="r_af3d43dab1d0f955729fd86f8e2635b4a"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1OrderResponse.html#af3d43dab1d0f955729fd86f8e2635b4a">request_tag</a> = 0</td></tr>
+<tr class="memdesc:af3d43dab1d0f955729fd86f8e2635b4a"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>request_tag</code> of the request this response answers, or for a response no request triggered (a passive fill) the last one the order accepted.  <br /></td></tr>
+<tr class="separator:af3d43dab1d0f955729fd86f8e2635b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff4d6c867fa6229382bcb602d27ed094" id="r_aff4d6c867fa6229382bcb602d27ed094"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1OrderResponse.html#aff4d6c867fa6229382bcb602d27ed094">aggressor</a> = false</td></tr>
+<tr class="memdesc:aff4d6c867fa6229382bcb602d27ed094"><td class="mdescLeft">&#160;</td><td class="mdescRight">On a fill (<a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a3a5373f7c1598b9e251273833f5bca21">ExecType::TRADE</a>): whether this order was the aggressor - the one that crossed the spread - rather than the resting side.  <br /></td></tr>
+<tr class="separator:aff4d6c867fa6229382bcb602d27ed094"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00284">284</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00290">290</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="aff4d6c867fa6229382bcb602d27ed094" name="aff4d6c867fa6229382bcb602d27ed094"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff4d6c867fa6229382bcb602d27ed094">&#9670;&#160;</a></span>aggressor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool slick::sim::OrderResponse::aggressor = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>On a fill (<a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a3a5373f7c1598b9e251273833f5bca21">ExecType::TRADE</a>): whether this order was the aggressor - the one that crossed the spread - rather than the resting side. </p>
+<p>False otherwise. </p>
+
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00323">323</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a7c2a7af521027d3e0b09905018b68c90" name="a7c2a7af521027d3e0b09905018b68c90"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7c2a7af521027d3e0b09905018b68c90">&#9670;&#160;</a></span>avg_fill_price</h2>
 
@@ -169,7 +197,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00297">297</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00303">303</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -187,7 +215,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00287">287</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00293">293</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -205,7 +233,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00303">303</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00309">309</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -223,7 +251,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00300">300</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00306">306</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -241,7 +269,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00289">289</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00295">295</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -259,7 +287,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00291">291</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00297">297</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -277,7 +305,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00296">296</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00302">302</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -295,7 +323,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00299">299</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00305">305</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -313,7 +341,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00301">301</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00307">307</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -331,9 +359,28 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00288">288</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00294">294</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a32378fb0eb833e49cb20c65019f88030" name="a32378fb0eb833e49cb20c65019f88030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32378fb0eb833e49cb20c65019f88030">&#9670;&#160;</a></span>order_num</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t slick::sim::OrderResponse::order_num = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The order's numeric exchange id, <code><a class="el" href="structslick_1_1sim_1_1Order.html#ab8475e7611721df58d5a9b5ef44913a2">Order::id</a></code> - the same number the order carries in order-by-order market data, so a client can find its own orders in that feed. </p>
+<p>0 when no order exists (a reject of a new order). </p>
+
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00317">317</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 </div>
 </div>
@@ -349,7 +396,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00292">292</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00298">298</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -367,7 +414,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00293">293</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00299">299</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -385,7 +432,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00307">307</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00313">313</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -403,7 +450,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00295">295</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00301">301</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -421,7 +468,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00298">298</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00304">304</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -439,7 +486,25 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00302">302</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00308">308</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+
+</div>
+</div>
+<a id="af3d43dab1d0f955729fd86f8e2635b4a" name="af3d43dab1d0f955729fd86f8e2635b4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3d43dab1d0f955729fd86f8e2635b4a">&#9670;&#160;</a></span>request_tag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t slick::sim::OrderResponse::request_tag = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><code>request_tag</code> of the request this response answers, or for a response no request triggered (a passive fill) the last one the order accepted. </p>
+
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00320">320</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 </div>
 </div>
@@ -455,7 +520,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00304">304</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00310">310</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 </div>
 </div>
@@ -471,7 +536,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00290">290</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00296">296</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 </div>
 </div>
@@ -487,7 +552,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00306">306</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00312">312</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -505,7 +570,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00285">285</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00291">291</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -523,7 +588,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00294">294</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00300">300</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -541,7 +606,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00305">305</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00311">311</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 
@@ -559,7 +624,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00286">286</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00292">292</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>.</p>
 

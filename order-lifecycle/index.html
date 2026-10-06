@@ -1626,7 +1626,8 @@ gateway (<code>validate_order</code>) and return HTTP 400 with Coinbase's own er
 <code>OrdRejectReason</code>.</p>
 <h3 id="cxlrejectreason-businessrejectreason-sessionrejectreason"><code>CxlRejectReason</code>, <code>BusinessRejectReason</code>, <code>SessionRejectReason</code><a class="headerlink" href="#cxlrejectreason-businessrejectreason-sessionrejectreason" title="Permanent link">&para;</a></h3>
 <p>Declared in <code>messages.hpp</code> with <code>to_string</code> helpers. Nothing in the current code produces any of
-them — <code>OrderResponse</code> has no field of these types. They belong to the unused FIX/TCP gateway.</p>
+them — <code>OrderResponse</code> has no field of these types. A venue gateway that needs them builds them
+itself, from the request it is answering.</p>
 <h3 id="selfmatchpreventionmode"><code>SelfMatchPreventionMode</code><a class="headerlink" href="#selfmatchpreventionmode" title="Permanent link">&para;</a></h3>
 <p><code>NONE</code> (0), <code>CANCEL_RESTING</code> (1), <code>CANCEL_NEWEST</code> (2). Stored per-<code>Symbol</code> in <code>smp_mode_</code>, which is
 initialised to <code>NONE</code> and never assigned outside tests. See

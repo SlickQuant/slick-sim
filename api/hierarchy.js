@@ -61,8 +61,7 @@ var hierarchy =
     ] ],
     [ "slick::sim::order_gateway::MessageParser", "classslick_1_1sim_1_1order__gateway_1_1MessageParser.html", [
       [ "slick::sim::order_gateway::FixParser", "classslick_1_1sim_1_1order__gateway_1_1FixParser.html", null ],
-      [ "slick::sim::order_gateway::JsonParser", "classslick_1_1sim_1_1order__gateway_1_1JsonParser.html", null ],
-      [ "slick::sim::order_gateway::SbeParser", "classslick_1_1sim_1_1order__gateway_1_1SbeParser.html", null ]
+      [ "slick::sim::order_gateway::JsonParser", "classslick_1_1sim_1_1order__gateway_1_1JsonParser.html", null ]
     ] ],
     [ "slick::sim::order_gateway::MessageParserFactory", "classslick_1_1sim_1_1order__gateway_1_1MessageParserFactory.html", null ],
     [ "slick::sim::ModifyOrderMessage", "structslick_1_1sim_1_1ModifyOrderMessage.html", null ],
@@ -101,7 +100,6 @@ var hierarchy =
     [ "slick::sim::SymbolKey", "structslick_1_1sim_1_1SymbolKey.html", null ],
     [ "slick::sim::SymbolKeyHash", "structslick_1_1sim_1_1SymbolKeyHash.html", null ],
     [ "slick::sim::SymbolManager", "classslick_1_1sim_1_1SymbolManager.html", null ],
-    [ "slick::sim::order_gateway::TcpOrderGatewayClientInfo", "structslick_1_1sim_1_1order__gateway_1_1TcpOrderGatewayClientInfo.html", null ],
     [ "slick::socket::TCPServerBase", null, [
       [ "slick::sim::order_gateway::TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html", null ]
     ] ],

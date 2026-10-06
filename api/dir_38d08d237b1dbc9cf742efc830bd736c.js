@@ -11,8 +11,6 @@ var dir_38d08d237b1dbc9cf742efc830bd736c =
     [ "pending_responses.hpp", "pending__responses_8hpp.html", "pending__responses_8hpp" ],
     [ "rest_ws_order_gateway.cpp", "rest__ws__order__gateway_8cpp.html", null ],
     [ "rest_ws_order_gateway.hpp", "rest__ws__order__gateway_8hpp.html", "rest__ws__order__gateway_8hpp" ],
-    [ "sbe_parser.cpp", "sbe__parser_8cpp.html", null ],
-    [ "sbe_parser.hpp", "sbe__parser_8hpp.html", "sbe__parser_8hpp" ],
-    [ "tcp_order_gateway.cpp", "tcp__order__gateway_8cpp.html", "tcp__order__gateway_8cpp" ],
+    [ "tcp_order_gateway.cpp", "tcp__order__gateway_8cpp.html", null ],
     [ "tcp_order_gateway.hpp", "tcp__order__gateway_8hpp.html", "tcp__order__gateway_8hpp" ]
 ];

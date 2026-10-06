@@ -93,7 +93,9 @@ $(document).ready(function(){initNavTree('exchange__registry_8hpp.html',''); ini
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#concepts">Concepts</a> &#124;
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">exchange_registry.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -131,11 +133,24 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespaceslick_1_1sim_1_1exch" id="r_namespaceslick_1_1sim_1_1exch"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html">slick::sim::exch</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptslick_1_1sim_1_1exch_1_1MultiInstanceVenue.html">slick::sim::exch::MultiInstanceVenue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A venue whose one config entry can describe several exchanges. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:ad0083bd8c50907cf6e611a9ca6fd4515" id="r_ad0083bd8c50907cf6e611a9ca6fd4515"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="exchange__registry_8hpp.html#ad0083bd8c50907cf6e611a9ca6fd4515">SLICK_SIM_REGISTER_VENUE</a>(key,  venue_enum,  ExchangeType)</td></tr>
 <tr class="memdesc:ad0083bd8c50907cf6e611a9ca6fd4515"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines a venue's factory and registers it.  <br /></td></tr>
 <tr class="separator:ad0083bd8c50907cf6e611a9ca6fd4515"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a185f556a1dfe975cdb97a3892ec46031" id="r_a185f556a1dfe975cdb97a3892ec46031"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a185f556a1dfe975cdb97a3892ec46031"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html">Exchange</a> &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#a185f556a1dfe975cdb97a3892ec46031">slick::sim::exch::make_exchanges</a> (const nlohmann::json &amp;config)</td></tr>
+<tr class="memdesc:a185f556a1dfe975cdb97a3892ec46031"><td class="mdescLeft">&#160;</td><td class="mdescRight">The factory body SLICK_SIM_REGISTER_VENUE registers.  <br /></td></tr>
+<tr class="separator:a185f556a1dfe975cdb97a3892ec46031"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ad0083bd8c50907cf6e611a9ca6fd4515" name="ad0083bd8c50907cf6e611a9ca6fd4515"></a>
@@ -170,9 +185,9 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">namespace </span>{                                                                  \</div>
-<div class="line">    ::std::unique_ptr&lt;::slick::sim::exch::Exchange&gt;                              \</div>
+<div class="line">    ::std::vector&lt;::std::unique_ptr&lt;::slick::sim::exch::Exchange&gt;&gt;               \</div>
 <div class="line">    slick_sim_make_##ExchangeType(const ::nlohmann::json &amp;config) {              \</div>
-<div class="line">        return ::std::make_unique&lt;ExchangeType&gt;(config);                         \</div>
+<div class="line">        return ::slick::sim::exch::make_exchanges&lt;ExchangeType&gt;(config);         \</div>
 <div class="line">    }                                                                            \</div>
 <div class="line">    [[maybe_unused]] <span class="keyword">const</span> <span class="keywordtype">bool</span> slick_sim_registered_##ExchangeType =            \</div>
 <div class="line">        ::slick::sim::exch::ExchangeRegistry::instance().add(                    \</div>
@@ -182,9 +197,11 @@ Macros</h2></td></tr>
 </div><!-- fragment -->
 <p>Defines a venue's factory and registers it. </p>
 <p>Place at namespace scope in exactly one translation unit of the venue library: </p><pre class="fragment">SLICK_SIM_REGISTER_VENUE("coinbase", Venue::COINBASE, CoinbaseExchange);
-</pre><p> That TU must live in an OBJECT library - see cmake/SlickSimVenue.cmake for why a static library would let the linker drop this registration entirely. </p>
+</pre><p> The factory builds one ExchangeType from the venue's config entry, unless ExchangeType declares </p><pre class="fragment">static std::vector&lt;std::unique_ptr&lt;Exchange&gt;&gt; create_instances(const nlohmann::json &amp;);
+</pre><p> in which case that decides how many instances the entry describes.</p>
+<p>That TU must live in an OBJECT library - see cmake/SlickSimVenue.cmake for why a static library would let the linker drop this registration entirely. </p>
 
-<p class="definition">Definition at line <a class="el" href="exchange__registry_8hpp_source.html#l00064">64</a> of file <a class="el" href="exchange__registry_8hpp_source.html">exchange_registry.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange__registry_8hpp_source.html#l00094">94</a> of file <a class="el" href="exchange__registry_8hpp_source.html">exchange_registry.hpp</a>.</p>
 
 </div>
 </div>

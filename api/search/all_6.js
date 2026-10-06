@@ -4,7 +4,7 @@ var searchData=
   ['f_5fis_5fsnapshot_1',['F_IS_SNAPSHOT',['../namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a055745fd9f8024eff945e804f71ebab7',1,'slick::sim']]],
   ['f_5fnone_2',['F_NONE',['../namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a5312d89052881b198755a298d6f09f10',1,'slick::sim']]],
   ['f_5fnot_5fin_5fbook_3',['F_NOT_IN_BOOK',['../namespaceslick_1_1sim.html#abd546ae4b297b0e3dc896f1b130d6167a19b7cfba7906dc0dd07f6bd7224b3dc0',1,'slick::sim']]],
-  ['factory_4',['Factory',['../classslick_1_1sim_1_1exch_1_1ExchangeRegistry.html#aec1148ff1d31692318e130341a5f026e',1,'slick::sim::exch::ExchangeRegistry']]],
+  ['factory_4',['Factory',['../classslick_1_1sim_1_1exch_1_1ExchangeRegistry.html#ad53b58ff355e37d69b026c5d6f4b56cc',1,'slick::sim::exch::ExchangeRegistry']]],
   ['fak_5fmust_5fbe_5flimit_5',['FAK_MUST_BE_LIMIT',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337acbc98c8c29b4fd69677afc7939e2b2b4',1,'slick::sim']]],
   ['fee_6',['fee',['../structslick_1_1sim_1_1Order.html#ae3d60238456def22035d71a0affefe7b',1,'slick::sim::Order']]],
   ['feed_5fmd_5flevel_5fquantity_5f_7',['feed_md_level_quantity_',['../classslick_1_1sim_1_1OrderBook.html#ae74daac9219085e56937559b6857779c',1,'slick::sim::OrderBook']]],

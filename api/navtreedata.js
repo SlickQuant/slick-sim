@@ -36,6 +36,7 @@ var NAVTREE =
         [ "Enumerator", "namespacemembers_eval.html", null ]
       ] ]
     ] ],
+    [ "Concepts", "concepts.html", "concepts" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -66,13 +67,13 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "classslick_1_1sim_1_1exch_1_1Exchange.html#a21d9d0718b643b607b92da55a57caa7d",
-"classslick_1_1sim_1_1order__gateway_1_1FixParser.html#a5559f3bd5efca9a46db1ff705a78aa78",
-"classslick_1_1sim_1_1utils_1_1RingBuffer.html#ae7a781625f9419493094712c695c588f",
-"functions_s.html",
-"namespaceslick_1_1sim.html#a09bac05b4071391ef4bda98f0a1ca8ca",
-"namespaceslick_1_1sim_1_1md__publisher.html#adab8fd9efcac99e51df638d66d095f9f",
-"structslick_1_1sim_1_1Order.html#a1096850a222884e3a1497ade2a1d66cc",
-"structslick_1_1sim_1_1exch_1_1Symbol.html#a468ec804364582524f1f6a15494864ed"
+"classslick_1_1sim_1_1order__gateway_1_1FixParser.html#a416bacb0faec3027ee47d2af9eeac64f",
+"classslick_1_1sim_1_1utils_1_1fixed__string.html#aa23a3cbc85ff3ba492b356586d6a3c9f",
+"functions_vars_q.html",
+"namespaceslick_1_1sim.html#a1cc92a914194da155b330e9fae07a375",
+"namespaceslick_1_1sim_1_1utils.html#a675fb87fa2e17d16112aa99cb8c1ad72",
+"structslick_1_1sim_1_1Order.html#a5ea7a6ec13d91272687effcf71f76a15",
+"structslick_1_1sim_1_1exch_1_1Symbol.html#a6d105aa70b23cbe99d501c89b890a8b5"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

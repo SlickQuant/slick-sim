@@ -1239,7 +1239,7 @@ and <code>main.cpp</code>, so they apply to every venue.</p>
 <td><code>enabled</code></td>
 <td>bool</td>
 <td><code>true</code></td>
-<td>When false the venue is not started. <code>coinbase</code> and <code>hyperliquid</code> are skipped before construction by <code>main.cpp</code>; every other key is constructed but returns early from <code>start()</code> with a <code>... is disabled, skipping start</code> warning</td>
+<td>When false the venue is skipped by <code>main.cpp</code> before its adapter is even looked up</td>
 </tr>
 <tr>
 <td><code>request_queue_size</code></td>

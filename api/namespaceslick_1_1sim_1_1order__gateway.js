@@ -18,9 +18,7 @@ var namespaceslick_1_1sim_1_1order__gateway =
     [ "PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData" ],
     [ "PostRequestData", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData" ],
     [ "RestWsOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway" ],
-    [ "SbeParser", "classslick_1_1sim_1_1order__gateway_1_1SbeParser.html", "classslick_1_1sim_1_1order__gateway_1_1SbeParser" ],
     [ "TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway" ],
-    [ "TcpOrderGatewayClientInfo", "structslick_1_1sim_1_1order__gateway_1_1TcpOrderGatewayClientInfo.html", "structslick_1_1sim_1_1order__gateway_1_1TcpOrderGatewayClientInfo" ],
     [ "TCPServerConfig", "namespaceslick_1_1sim_1_1order__gateway.html#a597aacc023a656c03797dab1ff888e20", null ],
     [ "ProtocolType", "namespaceslick_1_1sim_1_1order__gateway.html#a21eaf560f68e2e781d35e64080dc0615", [
       [ "FIX", "namespaceslick_1_1sim_1_1order__gateway.html#a21eaf560f68e2e781d35e64080dc0615a6aaac758332a8320840ac0e5f8fc28e2", null ],

@@ -46,9 +46,7 @@ var annotated_dup =
           [ "PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData" ],
           [ "PostRequestData", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData" ],
           [ "RestWsOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway" ],
-          [ "SbeParser", "classslick_1_1sim_1_1order__gateway_1_1SbeParser.html", "classslick_1_1sim_1_1order__gateway_1_1SbeParser" ],
-          [ "TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway" ],
-          [ "TcpOrderGatewayClientInfo", "structslick_1_1sim_1_1order__gateway_1_1TcpOrderGatewayClientInfo.html", "structslick_1_1sim_1_1order__gateway_1_1TcpOrderGatewayClientInfo" ]
+          [ "TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway" ]
         ] ],
         [ "utils", "namespaceslick_1_1sim_1_1utils.html", [
           [ "fixed_string", "classslick_1_1sim_1_1utils_1_1fixed__string.html", "classslick_1_1sim_1_1utils_1_1fixed__string" ],

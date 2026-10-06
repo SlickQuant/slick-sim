@@ -44,6 +44,7 @@ var classslick_1_1sim_1_1exch_1_1Exchange =
     [ "order_gateways_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a54db6b62a48a436945aad49277c6cee1", null ],
     [ "order_request_cursor_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a4a11fa016f8ec3a28230f78601775097", null ],
     [ "phantom_reductions_", "classslick_1_1sim_1_1exch_1_1Exchange.html#afd8f65ba30d89cb5e14f8a3626e111e1", null ],
+    [ "publish_order_updates_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a4a5dacd6be13811987b4ef3b4512f712", null ],
     [ "request_queue_", "classslick_1_1sim_1_1exch_1_1Exchange.html#a0318912f68846160b7e15c58f6b0579a", null ],
     [ "response_queue_", "classslick_1_1sim_1_1exch_1_1Exchange.html#ae99f7743f1b98b9cbb28000baee0b34b", null ],
     [ "run_", "classslick_1_1sim_1_1exch_1_1Exchange.html#af3d98cb02c38978ab17e6a9a4ee65162", null ],

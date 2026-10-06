@@ -7,6 +7,7 @@ var namespaceslick_1_1sim_1_1exch =
     [ "OrderBookObserver", "structslick_1_1sim_1_1exch_1_1OrderBookObserver.html", "structslick_1_1sim_1_1exch_1_1OrderBookObserver" ],
     [ "Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", "structslick_1_1sim_1_1exch_1_1Symbol" ],
     [ "TradedCredit", "structslick_1_1sim_1_1exch_1_1TradedCredit.html", "structslick_1_1sim_1_1exch_1_1TradedCredit" ],
+    [ "MultiInstanceVenue", "conceptslick_1_1sim_1_1exch_1_1MultiInstanceVenue.html", null ],
     [ "WebSocketClient", "namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6", null ],
     [ "EventType", "namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929", [
       [ "LEVEL_UPDATE", "namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a7d3d2ab47ce9fd37525aa4edfdf9ccec", null ],
@@ -17,5 +18,6 @@ var namespaceslick_1_1sim_1_1exch =
       [ "TRADES", "namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62fa34307df0f797ed7940a1df8f8dfb838d", null ],
       [ "L2", "namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62fa7e6aa2d53f6ee2b1a34b017fa403cb76", null ],
       [ "__COUNT__", "namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62fac24f1659ef8e96af67e4a7d8663a3efb", null ]
-    ] ]
+    ] ],
+    [ "make_exchanges", "namespaceslick_1_1sim_1_1exch.html#a185f556a1dfe975cdb97a3892ec46031", null ]
 ];

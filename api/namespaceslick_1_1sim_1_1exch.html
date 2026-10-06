@@ -92,8 +92,10 @@ $(document).ready(function(){initNavTree('namespaceslick_1_1sim_1_1exch.html',''
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#concepts">Concepts</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">slick::sim::exch Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -117,6 +119,12 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quantity one trade print removed from phantom liquidity at one price, kept until a level update stamped at or after it accounts for it.  <a href="structslick_1_1sim_1_1exch_1_1TradedCredit.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptslick_1_1sim_1_1exch_1_1MultiInstanceVenue.html">MultiInstanceVenue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A venue whose one config entry can describe several exchanges. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a1412b06a2c4a308366a8a129301f64f6" id="r_a1412b06a2c4a308366a8a129301f64f6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6">WebSocketClient</a> = coinbase::WebSocketClient</td></tr>
@@ -135,6 +143,13 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:ab42d1d93f5cc2134c5d3499b480ce62f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The market-data channels the Hyperliquid adapter serves.  <a href="namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62f">More...</a><br /></td></tr>
 <tr class="separator:ab42d1d93f5cc2134c5d3499b480ce62f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a185f556a1dfe975cdb97a3892ec46031" id="r_a185f556a1dfe975cdb97a3892ec46031"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a185f556a1dfe975cdb97a3892ec46031"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html">Exchange</a> &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#a185f556a1dfe975cdb97a3892ec46031">make_exchanges</a> (const nlohmann::json &amp;config)</td></tr>
+<tr class="memdesc:a185f556a1dfe975cdb97a3892ec46031"><td class="mdescLeft">&#160;</td><td class="mdescRight">The factory body SLICK_SIM_REGISTER_VENUE registers.  <br /></td></tr>
+<tr class="separator:a185f556a1dfe975cdb97a3892ec46031"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a1412b06a2c4a308366a8a129301f64f6" name="a1412b06a2c4a308366a8a129301f64f6"></a>
@@ -212,6 +227,32 @@ Enumerations</h2></td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="hyperliquid__channels_8hpp_source.html#l00014">14</a> of file <a class="el" href="hyperliquid__channels_8hpp_source.html">hyperliquid_channels.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a185f556a1dfe975cdb97a3892ec46031" name="a185f556a1dfe975cdb97a3892ec46031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a185f556a1dfe975cdb97a3892ec46031">&#9670;&#160;</a></span>make_exchanges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::unique_ptr&lt; <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html">Exchange</a> &gt; &gt; slick::sim::exch::make_exchanges </td>
+          <td>(</td>
+          <td class="paramtype">const nlohmann::json &amp;&#160;</td>
+          <td class="paramname"><em>config</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The factory body SLICK_SIM_REGISTER_VENUE registers. </p>
+<p>A template because only there does <code>if constexpr</code> discard the branch that does not apply - in the macro's plain function, a single-instance venue's missing create_instances would still fail to compile. </p>
+
+<p class="definition">Definition at line <a class="el" href="exchange__registry_8hpp_source.html#l00068">68</a> of file <a class="el" href="exchange__registry_8hpp_source.html">exchange_registry.hpp</a>.</p>
 
 </div>
 </div>

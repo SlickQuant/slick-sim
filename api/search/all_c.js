@@ -29,10 +29,11 @@ var searchData=
   ['levels_26',['levels',['../structslick_1_1sim_1_1BookSnapshot.html#a2afd63e6395da44ef841882d3e0a5fa3',1,'slick::sim::BookSnapshot::levels'],['../structslick_1_1sim_1_1MDLevelUpdate.html#a0950b0f076cd11d07a872f28c760e556',1,'slick::sim::MDLevelUpdate::levels']]],
   ['limit_27',['LIMIT',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba3d49b5cb41d88e381beb0d887d7023a2',1,'slick::sim']]],
   ['liquidation_28',['LIQUIDATION',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba0be41ffc415fb247092a83c59ac57dd2',1,'slick::sim']]],
-  ['listen_5fsocket_5f_29',['listen_socket_',['../classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a498d0f411352905de415a3e44104c348',1,'slick::sim::order_gateway::RestWsOrderGateway::listen_socket_'],['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a36fe6659ad4ccbac6df2b518d00ec8c3',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher::listen_socket_']]],
-  ['logger_30',['Logger',['../namespaceslick_1_1sim_1_1engine.html#a97c0500a3ce4907a65cd26dbccffb61b',1,'slick::sim::engine']]],
-  ['logon_5freject_31',['LOGON_REJECT',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a7aeff389ed16ff9ffc718c5abfbc1e83',1,'slick::sim']]],
-  ['logon_5freply_32',['LOGON_REPLY',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a1fa1a9650f4f6f0e119982c9b1de3fbd',1,'slick::sim']]],
-  ['logon_5frequest_33',['LOGON_REQUEST',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a1ec952798e0c8cf522571a629d700a55',1,'slick::sim']]],
-  ['loop_5f_34',['loop_',['../classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a6485a1e8df7e8dd9f7da9d88c2990151',1,'slick::sim::order_gateway::RestWsOrderGateway::loop_'],['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#ac17f39a6e63fe82188b4fb01d45cd53c',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher::loop_']]]
+  ['listen_5fport_29',['listen_port',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#ae4640d0f3be0029817c78a0b19e7d3f2',1,'slick::sim::order_gateway::TcpOrderGateway']]],
+  ['listen_5fsocket_5f_30',['listen_socket_',['../classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a498d0f411352905de415a3e44104c348',1,'slick::sim::order_gateway::RestWsOrderGateway::listen_socket_'],['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a36fe6659ad4ccbac6df2b518d00ec8c3',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher::listen_socket_']]],
+  ['logger_31',['Logger',['../namespaceslick_1_1sim_1_1engine.html#a97c0500a3ce4907a65cd26dbccffb61b',1,'slick::sim::engine']]],
+  ['logon_5freject_32',['LOGON_REJECT',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a7aeff389ed16ff9ffc718c5abfbc1e83',1,'slick::sim']]],
+  ['logon_5freply_33',['LOGON_REPLY',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a1fa1a9650f4f6f0e119982c9b1de3fbd',1,'slick::sim']]],
+  ['logon_5frequest_34',['LOGON_REQUEST',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a1ec952798e0c8cf522571a629d700a55',1,'slick::sim']]],
+  ['loop_5f_35',['loop_',['../classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a6485a1e8df7e8dd9f7da9d88c2990151',1,'slick::sim::order_gateway::RestWsOrderGateway::loop_'],['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#ac17f39a6e63fe82188b4fb01d45cd53c',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher::loop_']]]
 ];

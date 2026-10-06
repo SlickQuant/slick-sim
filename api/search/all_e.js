@@ -8,7 +8,7 @@ var searchData=
   ['new_5fqty_5',['new_qty',['../structslick_1_1sim_1_1ModifyOrderMessage.html#aeb4cbad63cbfa53343a11817cfb52f1a',1,'slick::sim::ModifyOrderMessage::new_qty'],['../structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#ae6101ea9e137a3996b894e0b029d00b7',1,'slick::sim::exch::Exchange::PhantomReduction::new_qty']]],
   ['news_6',['NEWS',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7aff4e2dc4962dc25a1512353299992c8d',1,'slick::sim']]],
   ['next_5fclient_5fid_5f_7',['next_client_id_',['../classslick_1_1sim_1_1exch_1_1Exchange.html#abcc534278a082a1d0001d2f2c34f7080',1,'slick::sim::exch::Exchange']]],
-  ['next_5fpriority_5f_8',['next_priority_',['../classslick_1_1sim_1_1OrderBook.html#a1a42cc3cf2d73f19d20526fb8730e859',1,'slick::sim::OrderBook']]],
+  ['next_5fpriority_5f_8',['next_priority_',['../classslick_1_1sim_1_1OrderBook.html#ad01ad903dbf5be1532c07e8f879f4bcb',1,'slick::sim::OrderBook']]],
   ['next_5ftrade_5fid_5f_9',['next_trade_id_',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a339801bbc04fdc50e883839a3e653f87',1,'slick::sim::engine::MatchingEngine::next_trade_id_'],['../classslick_1_1sim_1_1exch_1_1Exchange.html#a27c85902255c30adfbc03da3e4451c87',1,'slick::sim::exch::Exchange::next_trade_id_']]],
   ['nextorderid_10',['nextOrderId',['../namespaceslick_1_1sim_1_1utils.html#a3ecda281a1b70afaf46bea72c8ceac5e',1,'slick::sim::utils']]],
   ['nextorderpriority_11',['nextOrderPriority',['../classslick_1_1sim_1_1OrderBook.html#a204ee867d178b29a4a379cf29b129160',1,'slick::sim::OrderBook']]],
