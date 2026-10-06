@@ -80,8 +80,19 @@ struct MDOrder {
     price_t price;
     qty_t qty;
     Side side;
+    /// NEW when the order entered the book, DELETE when it left it (qty is then
+    /// 0), CHANGE for anything in between - a partial fill, or an amendment of
+    /// price or quantity, which may also have changed `priority`.
+    MDUpdateAction update_action;
 };
 
+/// Every order-book change one request (or feed event) produced, in book order.
+///
+/// Published by Exchange::flushMarketDataCaches only for a venue that sets
+/// `publish_order_updates_`, and published there *last* - after the event's
+/// TRADE_SUMMARY and LEVEL frames - so for such a venue an ORDER frame marks the
+/// end of an event. Any book change produces at least one order update, so no event
+/// that touched the book is left without one.
 struct MDOrderUpdate {
     uint32_t num_orders;
     MDOrder orders[0];

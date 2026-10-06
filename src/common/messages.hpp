@@ -268,6 +268,12 @@ struct Request {
     time_t time_stamp;
     char symbol[32];
     MessageType msg_type;
+    /// Opaque correlation token, carried onto the order and echoed on every
+    /// OrderResponse that order produces (see OrderResponse::request_tag).
+    /// Meaningful only to the producer that sets it: queue slots are recycled, so a
+    /// gateway that never writes it leaves whatever the slot last held - harmless,
+    /// because nothing but the producer itself ever reads the echo.
+    uint64_t request_tag = 0;
     union {
         AddOrderMessage add_order;
         ModifyOrderMessage modify_order;
@@ -305,6 +311,16 @@ struct OrderResponse {
     time_t timestamp = 0;
     Side side = Side::UNKNOWN_SIDE;
     bool post_only = false;
+    /// The order's numeric exchange id, `Order::id` - the same number the order
+    /// carries in order-by-order market data, so a client can find its own orders
+    /// in that feed. 0 when no order exists (a reject of a new order).
+    uint64_t order_num = 0;
+    /// `request_tag` of the request this response answers, or for a response no
+    /// request triggered (a passive fill) the last one the order accepted.
+    uint64_t request_tag = 0;
+    /// On a fill (ExecType::TRADE): whether this order was the aggressor - the one
+    /// that crossed the spread - rather than the resting side. False otherwise.
+    bool aggressor = false;
 };
 
 struct Trade {
@@ -340,10 +356,15 @@ static_assert(sizeof(OrderResponse::client_order_id) == decltype(OrderIdentity::
 static_assert(sizeof(OrderResponse::order_id) == decltype(OrderIdentity::order_id)::buffer_size());
 static_assert(offsetof(OrderResponse, error_message) == sizeof(OrderIdentity));
 
-/// Fills the symbol/user_id/client_order_id/order_id header of a response from an
-/// order. One fixed-size copy, replacing four copies out of four heap blocks.
+/// Fills a response's identity from an order: the symbol/user_id/client_order_id/
+/// order_id header in one fixed-size copy, plus the numeric id and correlation tag.
+/// Every response built from an order goes through here, so neither of those two
+/// can be left holding a recycled slot's previous value.
 inline void setOrderIdentity(OrderResponse &response, const Order &order) noexcept {
     std::memcpy(&response, static_cast<const OrderIdentity *>(&order), sizeof(OrderIdentity));
+    response.order_num = order.id;
+    response.request_tag = order.request_tag;
+    response.aggressor = false;
 }
 
 struct TradeSummaryInfo {

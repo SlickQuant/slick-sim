@@ -45,7 +45,7 @@ and `main.cpp`, so they apply to every venue.
 
 | Key | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `enabled` | bool | `true` | When false the venue is not started. `coinbase` and `hyperliquid` are skipped before construction by `main.cpp`; every other key is constructed but returns early from `start()` with a `... is disabled, skipping start` warning |
+| `enabled` | bool | `true` | When false the venue is skipped by `main.cpp` before its adapter is even looked up |
 | `request_queue_size` | int | `1048576` | Capacity of the gateway → exchange queue |
 | `response_queue_size` | int | `1048576` | Capacity of the exchange → gateway queue |
 | `md_queue_size` | int | `16777216` | Capacity of the exchange → publisher byte queue. Coinbase also uses this to size its WebSocket stream multiplexer |

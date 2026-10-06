@@ -3,7 +3,7 @@
 #include <common/messages.hpp>
 #include <common/order.hpp>
 #include <common/types.hpp>
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 #include <slick/net/http.hpp>
 #include <nlohmann/json.hpp>
 #include <thread>

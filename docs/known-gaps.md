@@ -11,14 +11,10 @@ Each entry says what it is, where it lives, and what it means for you.
 
 ### CME, Eurex and ICE are not implemented
 
-There is no `CmeExchange`, no Eurex adapter, and no ICE adapter, despite `Venue::CME` and `Venue::ICE`
-existing in
-[`types.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp) and
-`README.md` describing exchange-adapter namespaces for all three. A zero-byte `src/exchange/exch_cme.hpp`
-used to stand in for the first of these; it has been removed, since an empty header is not a plan.
-
-The `Venue` enumerators stay regardless — a `Venue` is an identity written into every market-data
-frame, not a claim that an adapter exists, so `to_venue("cme")` still resolves.
+There is no CME, Eurex or ICE adapter, although `Venue::CME` and `Venue::ICE` exist in
+[`types.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp). A `Venue` is an
+identity written into every market-data frame, not a claim that an adapter exists, so `to_venue("cme")`
+still resolves.
 
 **What it means:** only `coinbase` and `hyperliquid` are usable venue keys in the config.
 
@@ -74,13 +70,16 @@ half - holding an `HttpResponse` past handler return, cancelling on abort, and t
 timeout timer - is deliberately not done yet, because nothing exercises the REST gateway over HTTP
 and those are precisely the parts that fail as a use-after-free rather than a wrong answer.
 
-### `MDUpdateType::ORDER` is never published
+### `MDUpdateType::ORDER` is published only on opt-in
 
-`Symbol::onOrderUpdate` fills `md_order_update_cache_`, but every call site clears the cache behind a
-`// TODO: publish MD order update` comment rather than calling `publishMDOrderUpdate`. The function
-exists and is correct; nothing invokes it.
+`Symbol::onOrderUpdate` fills `md_order_update_cache_` for every venue, and
+`Exchange::flushMarketDataCaches` publishes it as an `ORDER` frame - but only for an adapter that sets
+`publish_order_updates_`, and no in-tree adapter does. This used to be a gap for every venue: the
+cache was cleared behind a `// TODO: publish MD order update` and nothing reached `md_queue`.
 
-**What it means:** no order-by-order (L3) market data reaches clients. Only level data does.
+**What it means:** Coinbase and Hyperliquid clients still receive level data only. Their adapters
+clear the cache on their own feed paths too, so turning the flag on for them would need those paths
+to publish rather than clear.
 
 ### L3 order books are stubs
 
@@ -138,29 +137,18 @@ underscore rather than a hyphen.
 
 **What it means:** always pass the config path explicitly: `slick-sim config/slick_sim.json`.
 
-### QuickFIX, SBE and the TCP gateway are built but never used
+### The FIX and JSON message parsers are built only on request, and never used
 
-[`tcp_order_gateway.cpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/tcp_order_gateway.cpp),
 [`fix_parser.cpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/fix_parser.cpp),
-[`sbe_parser.cpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/sbe_parser.cpp),
 [`json_parser.cpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/json_parser.cpp)
-and the ~180 generated CME iLink3 SBE headers under `src/order_gateway/sbe/` all compile into the
-`order_gateway` target, but no exchange ever constructs a `TcpOrderGateway`. `main.cpp` still carries
-roughly 90 lines of commented-out scaffolding (`print_protocol_info`, per-client protocol selection)
-from when that path was live.
+and the `MessageParser` factory are an older generic parsing layer that nothing constructs at
+runtime. They sit behind `SLICK_SIM_ENABLE_FIX_JSON_PARSERS`, **off by default**, in their own
+`slick_sim_message_parsers` target - the only thing in the project that needs QuickFIX. `main.cpp`
+still carries roughly 90 lines of commented-out scaffolding (`print_protocol_info`, per-client protocol
+selection) from when that path was live.
 
-**What it means:** the code is still dead, but it is no longer a mandatory build cost. The whole
-cluster sits behind `SLICK_SIM_ENABLE_TCP_GATEWAY`, which defaults to `ON` so existing builds are
-unchanged. Configuring with `-DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF` drops those four sources, the `sbe/`
-include path, and the `find_package(quickfix CONFIG REQUIRED)` that made QuickFIX a hard dependency
-for code that never runs — so QuickFIX need not be installed at all.
+`TcpOrderGateway` itself is no longer part of this: it was rebuilt as a transport base for venues on
+a binary session protocol, and needs only slick-socket. The generated SBE headers and schema that
+used to live under `src/order_gateway/sbe/` were removed.
 
-### The Doxygen API reference deliberately excludes the SBE headers
-
-Not a defect — a documentation decision worth knowing. `Doxyfile.in` sets
-`EXCLUDE = src/order_gateway/sbe`, because ~180 machine-generated classes would bury every
-hand-written `slick::sim` type in the class index.
-
-**What it means:** generated SBE message classes will not appear in the
-[API reference](https://slickquant.github.io/slick-sim/api/). Read the headers directly, or
-the schema at `src/order_gateway/sbe/schemas/cme_official/ilinkbinary.xml`.
+**What it means:** QuickFIX need not be installed unless you turn the parsers on.

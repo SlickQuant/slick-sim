@@ -7,7 +7,7 @@
 #include <common/order.hpp>
 #include <common/types.hpp>
 #include <common/messages.hpp>
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 #include <coinbase/market_data.hpp>
 #include <coinbase/websocket.hpp>
 #include "../../test_helpers.hpp"

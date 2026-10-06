@@ -34,6 +34,7 @@ set(SLICK_SIM_TEST_SOURCES
     unit/exchange/test_order_pool_recycling.cpp
     unit/exchange/test_exchange_registry.cpp
     unit/exchange/test_exchange_lifecycle.cpp
+    unit/exchange/test_order_updates_and_tags.cpp
 
     # Priority 5: Type & Message Tests
     unit/common/test_types.cpp

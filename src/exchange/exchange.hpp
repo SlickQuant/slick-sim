@@ -133,6 +133,11 @@ protected:
     std::vector<std::unique_ptr<order_gateway::OrderGateway>> order_gateways_;
     std::unique_ptr<md_publisher::MarketDataPublisher> md_publisher_;
     bool enabled_ = true;
+    /// Whether flushMarketDataCaches publishes the per-order (MDUpdateType::ORDER)
+    /// frames the book produces. Off by default: only a venue with an order-by-order
+    /// feed reads them, and every other venue would pay md_queue bandwidth for frames
+    /// its publisher discards. An adapter that publishes MBO sets it in its constructor.
+    bool publish_order_updates_ = false;
     uint64_t next_trade_id_{1};
 
     /// Scratch for reconcilePhantomQty, reused so the reduction path allocates

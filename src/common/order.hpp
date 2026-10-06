@@ -307,6 +307,9 @@ static_assert(sizeof(OrderIdentity) == 32 + 37 + 37 + 37,
 struct Order : OrderIdentity {
     uint64_t id;
     uint64_t priority = 0;
+    /// `Request::request_tag` of the last request this order accepted, echoed on
+    /// its responses. See OrderResponse::request_tag.
+    uint64_t request_tag = 0;
     Side side = Side::BUY;
     OrderType type = OrderType::MARKET;
     OrderStatus status = OrderStatus::NEW;

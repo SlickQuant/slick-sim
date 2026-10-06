@@ -259,7 +259,8 @@ gateway (`validate_order`) and return HTTP 400 with Coinbase's own error strings
 ### `CxlRejectReason`, `BusinessRejectReason`, `SessionRejectReason`
 
 Declared in `messages.hpp` with `to_string` helpers. Nothing in the current code produces any of
-them — `OrderResponse` has no field of these types. They belong to the unused FIX/TCP gateway.
+them — `OrderResponse` has no field of these types. A venue gateway that needs them builds them
+itself, from the request it is answering.
 
 ### `SelfMatchPreventionMode`
 

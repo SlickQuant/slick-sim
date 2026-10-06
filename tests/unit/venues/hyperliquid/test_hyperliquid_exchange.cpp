@@ -7,7 +7,7 @@
 #include <common/types.hpp>
 #include <common/messages.hpp>
 #include <common/market_data.hpp>
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 #include <nlohmann/json.hpp>
 #include <cstring>
 #include "../../test_helpers.hpp"

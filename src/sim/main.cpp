@@ -20,6 +20,7 @@
 // slick::socket. main.cpp still names no venue: the flag is set from the link list.
 #include <slick/net/logging.hpp>
 #endif
+#include <exception>
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -151,8 +152,25 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
         }
 
-        exchanges.emplace_back(factory(it.value()));
-        exchanges.back()->start();
+        // A venue split into instances (an exchange's market segments) yields several.
+        // A venue rejects a config it cannot run by throwing - say why, rather
+        // than terminating on an uncaught exception.
+        std::vector<std::unique_ptr<Exchange>> created;
+        try
+        {
+            created = factory(it.value());
+        }
+        catch (const std::exception &ex)
+        {
+            std::cerr << "exchanges.\"" << it.key() << "\": " << ex.what() << "\n";
+            LOG_ERROR("exchanges.\"{}\": {}", it.key(), ex.what());
+            return EXIT_FAILURE;
+        }
+        for (auto &exchange : created)
+        {
+            exchanges.emplace_back(std::move(exchange));
+            exchanges.back()->start();
+        }
     }
 
     // Wait for user input to stop

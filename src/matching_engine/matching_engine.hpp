@@ -37,7 +37,8 @@ public:
 
 
     void publishOrderAck(const Order *order, time_t request_time);
-    void publishOrderExecution(const Order *order);
+    /// `aggressor`: the order crossed the spread, as opposed to resting and being hit.
+    void publishOrderExecution(const Order *order, bool aggressor);
     void publishOrderModify(const Order *order, price_t new_price, qty_t new_qty, time_t request_time);
     void publishOrderCancel(const Order *order, time_t request_time);
 

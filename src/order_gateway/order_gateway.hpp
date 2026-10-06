@@ -1,7 +1,6 @@
 #pragma once
 
 #include <slick/queue.h>
-#include "message_parser.hpp"
 #include <memory>
 #include <unordered_map>
 #include <functional>

@@ -103,12 +103,22 @@ void Symbol::onPriceLevelUpdate(const PriceLevelUpdate& update) {
 }
 
 void Symbol::onOrderUpdate(const OrderUpdate& update) {
+    // slick-orderbook reports an add with no previous state at all, and a removal
+    // with zero quantity; anything else is an existing order changing.
+    MDUpdateAction action = MDUpdateAction::ACTION_CHANGE;
+    if (update.isDelete()) {
+        action = MDUpdateAction::ACTION_DELETE;
+    } else if (update.old_qty == 0 && update.old_price == 0) {
+        action = MDUpdateAction::ACTION_NEW;
+    }
+
     md_order_update_cache_.push_back({
         .order_id = update.order_id,
         .event_time = update.timestamp,
         .priority = update.priority,
         .price = update.price,
         .qty = update.quantity,
-        .side = static_cast<Side>(update.side)
+        .side = static_cast<Side>(update.side),
+        .update_action = action
     });
 }

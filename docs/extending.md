@@ -250,6 +250,27 @@ For the response side you have two options:
 - **Asynchronous** (Coinbase WS): schedule a recurring drain on the loop with `loop_->defer`, look up
   the client socket by `user_id`, and push the report.
 
+### A binary session protocol
+
+For a venue that speaks a binary protocol over TCP, subclass
+[`TcpOrderGateway`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/tcp_order_gateway.hpp)
+instead. It runs the slick-socket server thread and hands you two things on it:
+
+```cpp
+size_t on_data(int connection_id, const uint8_t *data, size_t size) override;  // consume whole messages
+void on_response(const OrderResponse &response) override;                      // every engine response
+```
+
+`on_data` returns how many bytes it consumed; the base keeps the rest and presents it again, at the
+front, when more arrives. Responses are drained on the same server thread, so `send()` can be called
+straight from `on_response` - the server allows sends from its own thread only. Set
+`Request::request_tag` on what you publish, and every response the order produces echoes it, with the
+order's numeric id in `OrderResponse::order_num`. That is how a gateway echoes the client's request
+id on every report without a lookup.
+
+Call `stop()` in your own destructor: the server thread calls into the derived class, whose members
+are gone by the time the base destructor runs.
+
 ## 5. Implement the market-data publisher
 
 Subclass
@@ -281,6 +302,12 @@ request_queue_.publish(index);
 
 Track subscriptions in both directions — symbol → set of sockets (for fan-out) and per-socket
 pending/active sets (to know when to send the subscription confirmation).
+
+A venue whose market data is not a WebSocket subscription derives from `MarketDataPublisher` directly
+and runs its own thread - a UDP multicast feed, for example. If it publishes order by order, set
+`publish_order_updates_` in the exchange's constructor: the base then publishes each event's
+per-order changes as one `ORDER` frame, last, after the event's trades, so that frame marks the end
+of the event.
 
 ## 6. Register the venue
 

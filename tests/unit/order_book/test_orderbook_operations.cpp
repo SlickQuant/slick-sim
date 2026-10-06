@@ -2,8 +2,11 @@
 #include <order_book/order_book.hpp>
 #include <common/order.hpp>
 #include <common/types.hpp>
-#include <slick/object_pool.h>
+#include <slick/object_pool.hpp>
 #include "../test_helpers.hpp"
+#include <algorithm>
+#include <thread>
+#include <vector>
 
 using namespace slick::sim;
 using namespace slick::sim::test;
@@ -119,4 +122,45 @@ TEST_F(OrderBookOperationsTest, PriorityAssignment_Monotonic) {
     // Priorities should be increasing
     EXPECT_LT(order1->priority, order2->priority);
     EXPECT_LT(order2->priority, order3->priority);
+}
+
+namespace {
+
+/// Exposes the shared priority sequence. Never instantiated.
+struct PrioritySequence : OrderBook {
+    using OrderBook::nextOrderPriority;
+};
+
+}   // namespace
+
+// Every exchange runs its books on its own thread, and all of them draw from one
+// priority sequence. Drawn concurrently, each value must still be issued exactly
+// once and each thread must see its own draws rise - otherwise a book can be
+// handed a priority below one it already issued, and its FIFO order and the
+// MDOrderPriority it publishes run backwards.
+TEST(OrderBookPriorityTest, ConcurrentDrawsAreUniqueAndRiseOnEachThread) {
+    constexpr int THREADS = 4;
+    constexpr int DRAWS = 100'000;
+    std::vector<std::vector<uint64_t>> drawn(THREADS);
+    std::vector<std::thread> threads;
+    for (int t = 0; t < THREADS; ++t) {
+        threads.emplace_back([&out = drawn[t]] {
+            out.reserve(DRAWS);
+            for (int i = 0; i < DRAWS; ++i) {
+                out.push_back(PrioritySequence::nextOrderPriority());
+            }
+        });
+    }
+    for (auto &thread : threads) {
+        thread.join();
+    }
+
+    std::vector<uint64_t> all;
+    for (const auto &values : drawn) {
+        EXPECT_TRUE(std::is_sorted(values.begin(), values.end()));
+        EXPECT_EQ(std::adjacent_find(values.begin(), values.end()), values.end());
+        all.insert(all.end(), values.begin(), values.end());
+    }
+    std::sort(all.begin(), all.end());
+    EXPECT_EQ(std::adjacent_find(all.begin(), all.end()), all.end()) << "a priority was issued twice";
 }

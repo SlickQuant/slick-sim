@@ -230,6 +230,7 @@ void Exchange::handleNewOrderRequest(const Request &request)
         order->resetFillAccounting(msg.qty);
         order->type = msg.type;
         order->status = OrderStatus::PENDING_NEW;
+        order->request_tag = request.request_tag;
 
         sendOrderNewPending(order, request.time_stamp);
 
@@ -279,7 +280,15 @@ void Exchange::handleModifyOrderRequest(const Request &request)
         }
         order->status = OrderStatus::PENDING_REPLACE;
         order->last_update_time = utils::get_current_time_ns();
+        // The amendment's tag goes on the order for the responses it produces, but a
+        // rejected amendment must not leave it there: the order's later passive fills
+        // answer the last request it actually accepted.
+        const uint64_t accepted_tag = order->request_tag;
+        order->request_tag = request.request_tag;
         sendOrderReplacePending(order, request.time_stamp);
+        // modifyOrder can return the order to the pool once it is fully filled, so
+        // nothing below reads it unless the amendment was rejected - and a rejected
+        // amendment leaves the order resting.
         auto [reject_reason, trade_summaries] = symbol->modifyOrder(order, request.modify_order.new_price, request.modify_order.new_qty, request.time_stamp);
 
         if (!trade_summaries.empty())
@@ -292,6 +301,7 @@ void Exchange::handleModifyOrderRequest(const Request &request)
 
         if (reject_reason != OrdRejectReason::NONE)
         {
+            order->request_tag = accepted_tag;
             rejectModifyOrderRequest(request, reject_reason);
         }
 
@@ -325,6 +335,7 @@ void Exchange::handleCancelOrderRequest(const Request &request)
             return;
         }
         order->status = OrderStatus::PENDING_CANCEL;
+        order->request_tag = request.request_tag;
         sendOrderCancelPending(order, request.time_stamp);
         symbol->cancelOrder(order, request.time_stamp);
         // Removing the order shrank a book level, and that level update is sitting
@@ -361,6 +372,9 @@ void Exchange::rejectNewOrderRequest(const Request &request, OrdRejectReason rea
     std::memcpy(response.user_id, request.add_order.user_id, sizeof(response.user_id));
     std::memcpy(response.client_order_id, request.add_order.client_order_id, sizeof(response.client_order_id));
     std::memset(response.order_id, 0, sizeof(response.order_id));
+    response.order_num = 0;
+    response.request_tag = request.request_tag;
+    response.aggressor = false;
     response.request_time = request.time_stamp;
     response.response_type = MessageType::REJECT;
     response.order_status = OrderStatus::REJECTED;
@@ -386,6 +400,9 @@ void Exchange::rejectModifyOrderRequest(const Request &request, OrdRejectReason 
     std::memcpy(response.user_id, msg.user_id, sizeof(response.user_id));
     std::memcpy(response.client_order_id, msg.client_order_id, sizeof(response.client_order_id));
     std::memcpy(response.order_id, msg.order_id, sizeof(response.order_id));
+    response.order_num = 0;
+    response.request_tag = request.request_tag;
+    response.aggressor = false;
     response.response_type = MessageType::REJECT;
     response.order_status = OrderStatus::REJECTED;
     response.exec_type = ExecType::REJECTED;
@@ -410,6 +427,9 @@ void Exchange::rejectCancelOrderRequest(const Request &request, OrdRejectReason 
     std::memcpy(response.user_id, msg.user_id, sizeof(response.user_id));
     std::memcpy(response.client_order_id, msg.client_order_id, sizeof(response.client_order_id));
     std::memcpy(response.order_id, msg.order_id, sizeof(response.order_id));
+    response.order_num = 0;
+    response.request_tag = request.request_tag;
+    response.aggressor = false;
     response.response_type = MessageType::REJECT;
     response.order_status = OrderStatus::REJECTED;
     response.exec_type = ExecType::REJECTED;
@@ -448,7 +468,12 @@ void Exchange::flushMarketDataCaches(Symbol *symbol)
 
     if (!symbol->md_order_update_cache_.empty())
     {
-        // TODO: publish MD order update
+        // Published last, so for a venue that publishes order updates the ORDER
+        // frame closes the event - see MDOrderUpdate.
+        if (publish_order_updates_)
+        {
+            publishMDOrderUpdate(symbol->symbol_, symbol->md_order_update_cache_);
+        }
         symbol->md_order_update_cache_.clear();
     }
 }

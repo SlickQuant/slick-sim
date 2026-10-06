@@ -8,7 +8,7 @@ if (NOT hyperliquid_FOUND)
     FetchContent_Declare(
         hyperliquid-cpp
         GIT_REPOSITORY https://github.com/SlickQuant/hyperliquid-cpp.git
-        GIT_TAG v0.3.0
+        GIT_TAG main
     )
     FetchContent_MakeAvailable(hyperliquid-cpp)
 else()

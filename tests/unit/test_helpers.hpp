@@ -5,8 +5,8 @@
 #include <common/types.hpp>
 #include <common/messages.hpp>
 #include <common/market_data.hpp>
-#include <slick/queue.h>
-#include <slick/object_pool.h>
+#include <slick/queue.hpp>
+#include <slick/object_pool.hpp>
 #include <utils/order.hpp>
 #include <order_book/order_book.hpp>
 

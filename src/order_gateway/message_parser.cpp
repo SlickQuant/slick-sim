@@ -1,6 +1,5 @@
 #include "message_parser.hpp"
 #include "fix_parser.hpp"
-#include "sbe_parser.hpp"
 #include "json_parser.hpp"
 #include <slick/logger.hpp>
 
@@ -58,7 +57,11 @@ std::unique_ptr<MessageParser> MessageParserFactory::create_parser(ProtocolType 
         case ProtocolType::FIX:
             return std::make_unique<FixParser>();
         case ProtocolType::SBE:
-            return std::make_unique<SbeParser>();
+            // SBE is not one protocol but a family of venue schemas, each with its
+            // own session layer - so it is spoken by a venue adapter, not by a
+            // generic parser.
+            LOG_ERROR("SBE is decoded by venue adapters, not by a generic parser");
+            return nullptr;
         case ProtocolType::JSON:
             return std::make_unique<JsonParser>();
         default:
@@ -74,7 +77,6 @@ std::unique_ptr<MessageParser> MessageParserFactory::create_parser_from_data(con
     std::vector<std::unique_ptr<MessageParser>> parsers;
     parsers.push_back(std::make_unique<JsonParser>());
     parsers.push_back(std::make_unique<FixParser>());
-    parsers.push_back(std::make_unique<SbeParser>());
     
     for (auto& parser : parsers) {
         if (parser->can_handle(data, length)) {

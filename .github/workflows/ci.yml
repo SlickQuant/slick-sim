@@ -99,6 +99,7 @@ jobs:
         cmake -B build
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DCMAKE_TOOLCHAIN_FILE="${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        -DSLICK_SIM_ENABLE_FIX_JSON_PARSERS=ON
 
     - name: Build
       run: cmake --build build --config ${{ matrix.build_type }} --parallel
@@ -196,13 +197,17 @@ jobs:
             expect_venues: 'none'
           - name: coinbase only
             slug: coinbase
-            cmake_flags: -DSLICK_SIM_ENABLE_HYPERLIQUID=OFF
-            venue_packages: quickfix slick-socket "uwebsockets[core,ssl,zlib]" slick-net jwt-cpp coinbase-advanced-cpp
+            cmake_flags: >-
+              -DSLICK_SIM_ENABLE_HYPERLIQUID=OFF
+              -DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF
+            venue_packages: '"uwebsockets[core,ssl,zlib]" slick-net jwt-cpp coinbase-advanced-cpp'
             expect_venues: 'coinbase'
           - name: hyperliquid only
             slug: hyperliquid
-            cmake_flags: -DSLICK_SIM_ENABLE_COINBASE=OFF
-            venue_packages: quickfix slick-socket "uwebsockets[core,ssl,zlib]" slick-net slickquant-hyperliquid-cpp
+            cmake_flags: >-
+              -DSLICK_SIM_ENABLE_COINBASE=OFF
+              -DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF
+            venue_packages: '"uwebsockets[core,ssl,zlib]" slick-net slickquant-hyperliquid-cpp'
             expect_venues: 'hyperliquid'
 
     steps:
@@ -243,8 +248,8 @@ jobs:
     # matters more than what is in it. slick-queue is named because slick_sim_core
     # links slick::queue and it only ever arrived transitively. Everything that
     # follows an option is per-configuration instead: slick-net and uWebSockets for
-    # the venues that serve HTTP/WS, jwt-cpp for Coinbase alone, quickfix and
-    # slick-socket for the TCP gateway. So the "no venues" entry installs a core's
+    # the venues that serve HTTP/WS, jwt-cpp for Coinbase alone, slick-socket for
+    # the TCP gateway. So the "no venues" entry installs a core's
     # worth of packages and nothing else - it fails the moment a core target reaches
     # for a wire protocol again. slick-orderbook is absent from every entry because
     # CMake fetches it with FetchContent when find_package misses it.

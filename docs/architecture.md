@@ -147,7 +147,7 @@ linked against a handful of static libraries.
 | `slick_sim_core` | `src/` | INTERFACE target carrying the `src/` include root and the header-only dependencies; every other target links it |
 | `exchange` | `src/exchange/` | Orchestration base (`Exchange`), the venue registry, and `Symbol`, which binds one instrument's book to a matching engine |
 | `matching_engine` | `src/matching_engine/` | `MatchingEngine` interface, `FifoMatchingEngine`, and the four order-lifecycle publish helpers |
-| `order_gateway` | `src/order_gateway/` | `OrderGateway`/`RestWsOrderGateway` bases, plus the unused generic TCP/FIX/SBE gateway (`SLICK_SIM_ENABLE_TCP_GATEWAY`) |
+| `order_gateway` | `src/order_gateway/` | `OrderGateway`/`RestWsOrderGateway` bases, and `TcpOrderGateway`, the TCP transport base for venues on a binary session protocol (`SLICK_SIM_ENABLE_TCP_GATEWAY`) |
 | `market_data_publisher` | `src/market_data_publisher/` | `WebsocketMarketDataPublisher` base and `SequencedMessage` |
 | `md_feed` | `src/md_feed/` | The `MDFeed` interface — header-only INTERFACE target |
 | `slick_sim_venue_<venue>` | `src/venues/<venue>/` | One OBJECT library per venue: its exchange, feed, gateways, publisher and encoders. Optional, via `SLICK_SIM_ENABLE_<VENUE>` |

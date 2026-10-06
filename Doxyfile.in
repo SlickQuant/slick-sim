@@ -126,10 +126,6 @@ FILE_PATTERNS          = *.hpp \
 RECURSIVE              = YES
 EXCLUDE_SYMLINKS       = NO
 
-# src/order_gateway/sbe/ holds ~180 machine-generated CME iLink3 SBE headers.
-# Including them buries every hand-written slick::sim type in the class index.
-EXCLUDE                = src/order_gateway/sbe
-
 EXCLUDE_PATTERNS       = */build/* \
                          */.git/* \
                          */tests/*

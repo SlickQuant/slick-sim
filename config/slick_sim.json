@@ -2,12 +2,14 @@
     "log_level": "debug",
     "exchanges": {
         "coinbase": {
+            "enabled": true,
             "request_queue_size": 16777216,
             "response_queue_size": 16777216,
             "md_queue_size": 16777216,
             "self_match_prevention": "none",
             "md_feeds": [
                 {
+                    "enabled": false,
                     "type": "coinbase_live_ws"
                 }
             ],
@@ -24,6 +26,7 @@
             }
         },
         "hyperliquid": {
+            "enabled": false,
             "md_feeds": [
                 {
                     "type": "hyperliquid_live_ws",

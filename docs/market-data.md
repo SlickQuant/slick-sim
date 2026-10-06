@@ -413,7 +413,7 @@ a narrower buffer.
 | --- | --- | --- | --- |
 | `BOOK` (0) | `MDBookUpdate` | `publishMDBookUpdate` — never called | Coinbase publisher ignores it |
 | `LEVEL` (1) | `MDLevelUpdate` | `publishLevelUpdate` | Coinbase → `l2_data` `"update"` |
-| `ORDER` (2) | `MDOrderUpdate` | `publishMDOrderUpdate` — [never called](known-gaps.md#mdupdatetypeorder-is-never-published) | — |
+| `ORDER` (2) | `MDOrderUpdate` | `flushMarketDataCaches`, last frame of an event — [opt-in](known-gaps.md#mdupdatetypeorder-is-published-only-on-opt-in) | No in-tree venue |
 | `TRADE_SUMMARY` (3) | `TradeSummary` | `publishTradeSummary` | Coinbase → `market_trades` `"update"`; Hyperliquid → `trades` |
 | `TRADE` (4) | `MDTradeUpdate` | Reserved — nothing produces it | — |
 | `BOOK_SNAPSHOT` (5) | `BookSnapshot` | `populateL2Snapshot` | Coinbase → `l2_data` `"snapshot"`; Hyperliquid → `l2Book` / `l2` diff |

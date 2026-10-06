@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cstdint>
 #include <string>
 #include <set>
@@ -229,14 +230,21 @@ public:
 
     virtual std::string to_string() const = 0;
 
-protected:
+    /// One sequence shared by every book, so it is drawn from atomically: each
+    /// exchange runs on its own thread, and a plain increment raced between them
+    /// could hand a book a priority lower than one it had already issued - its
+    /// FIFO order, and the MDOrderPriority it publishes, would then run backwards.
+    ///
+    /// Public so a feed can draw a market order's place in the queue when the
+    /// order joins it, and keep it: a level sorts by this value, so an order
+    /// re-added under the priority it was given goes back where it was.
     static uint64_t nextOrderPriority() noexcept {
-        return ++next_priority_;
+        return next_priority_.fetch_add(1, std::memory_order_relaxed) + 1;
     }
 
 protected:
     friend struct Observer;
-    static uint64_t next_priority_;
+    static std::atomic<uint64_t> next_priority_;
     time_t last_update_time_ = 0;
     uint64_t last_seq_num_ = 0;
     symid_t sid_;
@@ -288,7 +296,7 @@ public:
 
 
 
-inline uint64_t OrderBook::next_priority_ = 0;
+inline std::atomic<uint64_t> OrderBook::next_priority_{0};
 
 inline Order* OrderBook::allocateOrder() {
     auto *order = order_buffer_.allocate();
@@ -310,6 +318,7 @@ inline Order* OrderBook::allocateOrder() {
     order->order_id.data()[36] = '\0';
 
     order->id = utils::nextOrderId();
+    order->request_tag = 0;
     order->created_time = utils::get_current_time_ns();
     order->last_update_time = order->created_time;
     order->resetFillAccounting();

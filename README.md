@@ -32,8 +32,7 @@ Early-stage, under active development. Two exchanges are implemented today:
 |---|---|---|---|---|
 | Coinbase | Implemented | REST | WebSocket (`user` channel) | WebSocket |
 | Hyperliquid | Implemented | REST | in the same HTTP response — no push channel | WebSocket |
-| CME | Not implemented — adapter file exists but is empty | — | — | — |
-| Eurex / ICE | Not implemented | — | — | — |
+| CME / Eurex / ICE | Not implemented | — | — | — |
 
 ## Architecture
 
@@ -70,9 +69,10 @@ Library targets:
 
 | Target | Responsibility |
 |---|---|
-| `exchange` | Per-venue orchestration (`CoinbaseExchange`, `HyperliquidExchange`) and `Symbol`, which binds one instrument's order book to a matching engine |
+| `exchange` | The `Exchange` base, the venue registry, and `Symbol`, which binds one instrument's order book to a matching engine |
+| `slick_sim_venue_<venue>` | One per enabled venue under `src/venues/`: its `Exchange` subclass, gateways, publisher and encoders |
 | `matching_engine` | FIFO price/time-priority matching (`FifoMatchingEngine`) and order lifecycle notifications (ack, fill, modify, cancel) |
-| `order_gateway` | Venue-native REST/WS order-entry endpoints — receives orders and returns order acks/fills/cancels/rejects to the client — plus an unused generic FIX/SBE/JSON TCP gateway |
+| `order_gateway` | Order-entry bases: `RestWsOrderGateway` for HTTP/WebSocket venues and `TcpOrderGateway`, the TCP transport base for venues on a binary session protocol |
 | `market_data_publisher` | Publishes book updates and executed trades in each venue's own WebSocket wire format |
 | `md_feed` | Ingests each venue's live public market data feed |
 | `common`, `order_book`, `utils` | Header-only: shared types (`Order`, `Request`, `Venue`, fixed-point price/qty helpers), `OrderBook` (wraps the external `slick-orderbook` L3 book), and misc helpers |
@@ -82,7 +82,7 @@ Library targets:
 - CMake 3.25+
 - A C++23 compiler: MSVC 2022 (17.7+ if you want AddressSanitizer), GCC, or Clang
 - No `vcpkg.json` manifest is committed, so the following must already be resolvable via `CMAKE_PREFIX_PATH` or a vcpkg toolchain file:
-  - [QuickFIX](https://github.com/quickfix/quickfix)
+  - [QuickFIX](https://github.com/quickfix/quickfix) — only with `SLICK_SIM_ENABLE_FIX_JSON_PARSERS` (off by default)
   - uWebSockets (`unofficial-uwebsockets`) — only with a venue adapter that serves HTTP/WebSocket
   - [nlohmann_json](https://github.com/nlohmann/json)
   - [jwt-cpp](https://github.com/Thalhammer/jwt-cpp) — only with the Coinbase adapter enabled
@@ -91,7 +91,7 @@ Library targets:
   - GoogleTest (only needed if building tests, which is on by default)
   - [slick-net](https://github.com/SlickQuant/slick-net) — only for venue adapters that speak HTTP/WebSocket (Coinbase, Hyperliquid); not needed if both are switched off
 
-Everything else — `slick-logger`, `slick-socket`, `slick-object-pool`, `slick-orderbook`, `coinbase-advanced-cpp`, `hyperliquid-cpp` — is fetched automatically via CMake `FetchContent` if not already installed locally. `slick-socket` is looked up only with the TCP gateway enabled, and the two venue SDKs only with their adapter enabled.
+Everything else — `slick-logger`, `slick-socket`, `slick-object-pool`, `slick-orderbook`, `coinbase-advanced-cpp`, `hyperliquid-cpp` — is fetched automatically via CMake `FetchContent` if not already installed locally. `slick-socket` (1.2.0 or later) is looked up only with the TCP gateway enabled, and the two venue SDKs only with their adapter enabled.
 
 ## Building
 
@@ -123,15 +123,16 @@ off drops its sources, its unit tests **and** its vendor SDK — so you do not n
 installed to build a Hyperliquid-only simulator.
 
 An adapter also declares its own networking stack: Coinbase and Hyperliquid speak HTTP/WebSocket and
-name `slick-net`, plus the uWebSockets-based gateway and publisher bases. A future venue on a binary
-session protocol (CME iLink, ICE) would name `slick-socket` instead — no venue inherits another's
-dependencies. With every venue and the TCP gateway off, `slick-net`, `jwt-cpp`, `uWebSockets` and
-`QuickFIX` are all unnecessary: nothing in the core links a wire protocol.
+name `slick-net`, plus the uWebSockets-based gateway and publisher bases. A venue on a binary session
+protocol would name `slick-socket` instead — no venue inherits another's dependencies. With every
+venue and the TCP gateway off, `slick-net`, `slick-socket`, `jwt-cpp`, `uWebSockets` and `QuickFIX` are
+all unnecessary: nothing in the core links a wire protocol.
 
 ```bash
 cmake -S . -B build -DSLICK_SIM_ENABLE_HYPERLIQUID=OFF    # Coinbase only
 cmake -S . -B build -DSLICK_SIM_ENABLE_COINBASE=OFF       # Hyperliquid only
-cmake -S . -B build -DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF    # drop the unused TCP/FIX/SBE gateway and QuickFIX
+cmake -S . -B build -DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF    # no TCP gateway, no slick-socket
+cmake -S . -B build -DSLICK_SIM_ENABLE_FIX_JSON_PARSERS=ON  # also build the unused FIX/JSON parsers (needs QuickFIX)
 ```
 
 All venue options default to `ON`, so an unqualified build is unchanged. A config key naming a venue
@@ -213,7 +214,7 @@ slick-sim config/slick_sim.json
 
 (The built binary's exact path depends on your CMake generator/config, e.g. `build/src/slick-sim` or `build/src/Debug/slick-sim.exe`.)
 
-> **Note:** any venue key other than `coinbase`/`hyperliquid` builds a generic `Exchange` that binds no ports and processes at most one request. The sample config's `cme` block is `"enabled": false` for that reason, and is skipped at startup with a warning. See [Known gaps](https://slickquant.github.io/slick-sim/known-gaps/).
+> **Note:** an enabled venue key with no adapter compiled in — a typo, or a venue switched off at configure time — is a fatal startup error that lists the adapters the binary does carry. See [Known gaps](https://slickquant.github.io/slick-sim/known-gaps/).
 
 Press `Ctrl+C` to stop — `slick-sim` catches `SIGINT` and shuts every enabled exchange down gracefully before exiting.
 
@@ -278,17 +279,15 @@ slick-sim/
 ├── config/
 │   └── slick_sim.json          # sample runtime configuration
 ├── docs/                        # published documentation sources
-├── scripts/
-│   ├── download_cme_schemas.py # fetches CME SBE schemas (not currently used by the build)
-│   └── create_fallback_schema.py
 ├── src/
 │   ├── common/                 # shared types: Order, Request, Venue, price/qty helpers (header-only)
-│   ├── exchange/                # Exchange base + CoinbaseExchange/HyperliquidExchange, Symbol
-│   ├── market_data_publisher/  # venue-native WS market data publishers
+│   ├── exchange/                # Exchange base, venue registry, Symbol
+│   ├── market_data_publisher/  # market data publisher bases
 │   ├── matching_engine/        # FifoMatchingEngine (FIFO price/time priority)
-│   ├── md_feed/                 # live market data ingestion (Coinbase, Hyperliquid)
+│   ├── md_feed/                 # the MDFeed interface
 │   ├── order_book/              # OrderBook wrapper around the slick-orderbook L3 book (header-only)
-│   ├── order_gateway/           # venue-native REST/WS order entry gateways
+│   ├── order_gateway/           # order entry bases: REST/WS, and the TCP transport
+│   ├── venues/                  # one directory per venue: coinbase/, hyperliquid/
 │   ├── sim/
 │   │   └── main.cpp             # slick-sim entry point
 │   └── utils/                   # order id / timestamp / price / fixed-width string helpers (header-only)

@@ -25,7 +25,11 @@ class Exchange;
 class ExchangeRegistry {
 public:
     /// A plain function pointer, not std::function - no allocation, no <functional>.
-    using Factory = std::unique_ptr<Exchange> (*)(const nlohmann::json &config);
+    ///
+    /// One config entry can build several exchanges: a venue split into
+    /// independent instances (an exchange's market segments) returns one per instance.
+    /// Every other venue returns exactly one.
+    using Factory = std::vector<std::unique_ptr<Exchange>> (*)(const nlohmann::json &config);
 
     static ExchangeRegistry &instance();
 
@@ -52,6 +56,25 @@ private:
     std::vector<Entry> entries_;
 };
 
+/// A venue whose one config entry can describe several exchanges.
+template <typename T>
+concept MultiInstanceVenue = requires(const nlohmann::json &config) { T::create_instances(config); };
+
+/// The factory body SLICK_SIM_REGISTER_VENUE registers. A template because only
+/// there does `if constexpr` discard the branch that does not apply - in the
+/// macro's plain function, a single-instance venue's missing create_instances
+/// would still fail to compile.
+template <typename T>
+std::vector<std::unique_ptr<Exchange>> make_exchanges(const nlohmann::json &config) {
+    if constexpr (MultiInstanceVenue<T>) {
+        return T::create_instances(config);
+    } else {
+        std::vector<std::unique_ptr<Exchange>> one;
+        one.push_back(std::make_unique<T>(config));
+        return one;
+    }
+}
+
 }   // end namespace slick::sim::exch
 
 /// Defines a venue's factory and registers it. Place at namespace scope in exactly
@@ -59,13 +82,20 @@ private:
 ///
 ///     SLICK_SIM_REGISTER_VENUE("coinbase", Venue::COINBASE, CoinbaseExchange);
 ///
+/// The factory builds one ExchangeType from the venue's config entry, unless
+/// ExchangeType declares
+///
+///     static std::vector<std::unique_ptr<Exchange>> create_instances(const nlohmann::json &);
+///
+/// in which case that decides how many instances the entry describes.
+///
 /// That TU must live in an OBJECT library - see cmake/SlickSimVenue.cmake for why
 /// a static library would let the linker drop this registration entirely.
 #define SLICK_SIM_REGISTER_VENUE(key, venue_enum, ExchangeType)                  \
     namespace {                                                                  \
-    ::std::unique_ptr<::slick::sim::exch::Exchange>                              \
+    ::std::vector<::std::unique_ptr<::slick::sim::exch::Exchange>>               \
     slick_sim_make_##ExchangeType(const ::nlohmann::json &config) {              \
-        return ::std::make_unique<ExchangeType>(config);                         \
+        return ::slick::sim::exch::make_exchanges<ExchangeType>(config);         \
     }                                                                            \
     [[maybe_unused]] const bool slick_sim_registered_##ExchangeType =            \
         ::slick::sim::exch::ExchangeRegistry::instance().add(                    \

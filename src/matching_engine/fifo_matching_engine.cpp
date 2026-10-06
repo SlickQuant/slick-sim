@@ -249,7 +249,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
         executeOrder(order, price, trade_qty, event_time);
         order_qty -= trade_qty;
 
-        engine.publishOrderExecution(order);
+        engine.publishOrderExecution(order, true);
 
         if (!book.executeOrder(book_order_id, trade_qty, event_time, seq_num, order_qty == 0)) [[unlikely]] {
             // Same hazard as the market-data replay overload below: a declined
@@ -275,7 +275,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
         // unreturned. Both are this loop's job, exactly as the market-data replay
         // path below does them. Read `full_book_order` before freeing it.
         if (full_book_order) [[unlikely]] {
-            engine.publishOrderExecution(full_book_order);
+            engine.publishOrderExecution(full_book_order, false);
             if (full_book_order->leaves_quantity == 0) {
                 // Erases whatever the maps still hold and returns it to the pool.
                 book.deleteOrder(full_book_order);
@@ -372,7 +372,7 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
         }
 
         if (our_order) {
-            engine.publishOrderExecution(our_order);
+            engine.publishOrderExecution(our_order, false);
             LOG_INFO("{} order {} filled {}@{}, leaves_qty={}, executed_qty={}, avg_fill_price={}", our_order->symbol.view(), our_order->order_id.view(), to_qty_double(trad_qty), to_price_double(trade_price), to_qty_double(our_order->leaves_quantity), to_qty_double(our_order->cum_quantity), to_price_double(our_order->avg_fill_price));
             if (our_order->leaves_quantity == 0) {
                 book.deleteOrder(our_order);

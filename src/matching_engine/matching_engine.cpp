@@ -29,10 +29,11 @@ void MatchingEngine::publishOrderAck(const Order *order, time_t request_time) {
     response_queue_.publish(index);
 }
 
-void MatchingEngine::publishOrderExecution(const Order *order) {
+void MatchingEngine::publishOrderExecution(const Order *order, bool aggressor) {
     auto index = response_queue_.reserve();
     auto &response = *response_queue_[index];
     setOrderIdentity(response, *order);
+    response.aggressor = aggressor;
     response.response_type = MessageType::EXECUTION_REPORT;
     response.exec_type = ExecType::TRADE;
     response.order_status = order->leaves_quantity ? OrderStatus::PARTIALLY_FILLED : OrderStatus::FILLED;

@@ -4,7 +4,7 @@
 #include <order_book/order_book.hpp>
 #include <common/order.hpp>
 #include <common/types.hpp>
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 #include <set>
 #include <string>
 #include "../test_helpers.hpp"

@@ -16,10 +16,13 @@ option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
 option(SLICK_SIM_ENABLE_COINBASE    "Build the Coinbase venue adapter"    ON)
 option(SLICK_SIM_ENABLE_HYPERLIQUID "Build the Hyperliquid venue adapter" ON)
 
-# The TCP/FIX/SBE order gateway is built but never constructed at runtime, and it
-# is the sole reason QuickFIX is a required dependency. Default ON to preserve the
-# existing build; turn it off for a materially lighter one.
-option(SLICK_SIM_ENABLE_TCP_GATEWAY "Build the (unused) TCP/FIX/SBE order gateway" ON)
+# The transport base for venues on a binary session protocol (TcpOrderGateway, over
+# slick-socket). Needs nothing but slick-socket.
+option(SLICK_SIM_ENABLE_TCP_GATEWAY "Build the TCP order gateway base" ON)
+
+# The generic FIX/JSON message parsers. Nothing constructs them at runtime, and they
+# are the only reason QuickFIX would be a dependency, so they are off by default.
+option(SLICK_SIM_ENABLE_FIX_JSON_PARSERS "Build the unused FIX/JSON message parsers (needs QuickFIX)" OFF)
 
 # -march=native bakes the build machine's instruction set into the binary.
 #
@@ -65,7 +68,7 @@ find_package(Threads REQUIRED)
 include(FetchContent)
 
 set(SLICK_LOGGER_ENABLE_SOURCE_LOCATION OFF CACHE BOOL "" FORCE)
-find_package(slick-logger 1.1.4 CONFIG QUIET)
+find_package(slick-logger 2.2.0 CONFIG QUIET)
 if (NOT slick-logger_FOUND)
     message(STATUS "Fetching slick-logger...")
     # Disable examples, tests, and benchmarks for slick_logger
@@ -75,21 +78,21 @@ if (NOT slick-logger_FOUND)
     FetchContent_Declare(
         slick-logger
         GIT_REPOSITORY https://github.com/SlickQuant/slick-logger.git
-        GIT_TAG v1.1.4
+        GIT_TAG v2.2.0
     )
     FetchContent_MakeAvailable(slick-logger)
 else()
     message(STATUS "Found slick-logger ${slick-logger_VERSION}: ${slick-logger_DIR}")
 endif()
 
-find_package(slick-object-pool 0.1.3 CONFIG QUIET)
+find_package(slick-object-pool 0.2.0 CONFIG QUIET)
 if (NOT slick-object-pool_FOUND)
     message(STATUS "Fetching slick-object-pool...")
     set(BUILD_SLICK_OBJECTPOOL_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-object-pool
         GIT_REPOSITORY https://github.com/SlickQuant/slick-object-pool.git
-        GIT_TAG v0.1.3
+        GIT_TAG v0.2.0
     )
     FetchContent_MakeAvailable(slick-object-pool)
 else()
@@ -122,31 +125,33 @@ else()
     message(STATUS "Found slick-orderbook ${slick-orderbook_VERSION}: ${slick-orderbook_DIR}")
 endif()
 
-# QuickFIX is needed only by the TCP/FIX/SBE gateway (prefer vcpkg installation).
+# slick-socket is the TCP order gateway's server, and the multicast transport for a
+# venue that publishes market data over UDP. The TCP gateway is a core target, so this
+# is resolved here rather than in a venue directory, but only when that option is on.
+#
+# 1.2.0 is the first version with TCPServerBase::onPoll() (how the gateway drains
+# engine responses on the server thread) and the pointer+size send_data() overloads.
 if(SLICK_SIM_ENABLE_TCP_GATEWAY)
-    # slick-socket is the TCP gateway's server, and the TCP gateway is its only user in
-    # the project - so it follows that option rather than being resolved for every build.
-    # A future venue on a binary session protocol (CME iLink, ICE) would speak it too, and
-    # would resolve it from its own directory the way the HTTP/WS venues resolve slick-net.
-    if(SLICK_SIM_ENABLE_TCP_GATEWAY)
-        find_package(slick-socket 1.0.6 CONFIG QUIET)
-        if (NOT slick-socket_FOUND)
-            message(STATUS "Fetching slick-socket...")
-            # Disable slick-socket example, and tests
-            set(BUILD_SLICK_SOCKET_EXAMPLES OFF CACHE BOOL "" FORCE)
-            set(BUILD_SLICK_SOCKET_TESTING OFF CACHE BOOL "" FORCE)
-            set(BUILD_SLICK_SOCKET_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-            FetchContent_Declare(
-                slick-socket
-                GIT_REPOSITORY https://github.com/SlickQuant/slick-socket.git
-                GIT_TAG v1.0.6
-            )
-            FetchContent_MakeAvailable(slick-socket)
-        else()
-            message(STATUS "Found slick-socket ${slick-socket_VERSION}: ${slick-socket_DIR}")
-        endif()
+    find_package(slick-socket 1.2.0 CONFIG QUIET)
+    if (NOT slick-socket_FOUND)
+        message(STATUS "Fetching slick-socket...")
+        # Disable slick-socket example, and tests
+        set(BUILD_SLICK_SOCKET_EXAMPLES OFF CACHE BOOL "" FORCE)
+        set(BUILD_SLICK_SOCKET_TESTING OFF CACHE BOOL "" FORCE)
+        set(BUILD_SLICK_SOCKET_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+        FetchContent_Declare(
+            slick-socket
+            GIT_REPOSITORY https://github.com/SlickQuant/slick-socket.git
+            GIT_TAG v1.2.0
+        )
+        FetchContent_MakeAvailable(slick-socket)
+    else()
+        message(STATUS "Found slick-socket ${slick-socket_VERSION}: ${slick-socket_DIR}")
     endif()
+endif()
 
+# QuickFIX is needed only by the FIX/JSON message parsers (prefer vcpkg installation).
+if(SLICK_SIM_ENABLE_FIX_JSON_PARSERS)
     find_package(quickfix CONFIG REQUIRED)
 endif()
 # What is NOT here, again: uWebSockets and jwt-cpp. Both are venue-driven -
