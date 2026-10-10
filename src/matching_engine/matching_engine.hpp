@@ -5,7 +5,7 @@
 #include <tuple>
 #include <order_book/order_book.hpp>
 #include <common/messages.hpp>
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 
 namespace slick::sim::engine {
 

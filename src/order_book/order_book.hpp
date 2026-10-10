@@ -9,8 +9,8 @@
 #include <chrono>
 #include <unordered_map>
 #include <type_traits>
-#include <slick/object_pool.h>
-#include <slick/queue.h>
+#include <slick/object_pool.hpp>
+#include <slick/queue.hpp>
 #include <common/order.hpp>
 #include <common/market_data.hpp>
 #include <common/types.hpp>

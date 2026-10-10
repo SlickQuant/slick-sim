@@ -2,7 +2,7 @@
 
 #include <common/messages.hpp>
 #include <common/order.hpp>
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 #include <cstring>
 #include <string>
 #include <unordered_map>

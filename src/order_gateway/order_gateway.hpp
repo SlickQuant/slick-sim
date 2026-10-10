@@ -1,6 +1,6 @@
 #pragma once
 
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 #include <memory>
 #include <unordered_map>
 #include <functional>

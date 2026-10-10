@@ -3,7 +3,7 @@
 #include <md_feed/md_feed.hpp>
 #include <coinbase/websocket.hpp>
 #include <memory>
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 
 namespace slick::sim::md_feed {
 

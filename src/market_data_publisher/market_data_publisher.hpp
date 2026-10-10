@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 #include <common/types.hpp>
 #include <common/messages.hpp>
 

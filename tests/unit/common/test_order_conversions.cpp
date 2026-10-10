@@ -2,7 +2,7 @@
 #include <common/order.hpp>
 #include <common/types.hpp>
 #include <limits>
-#include <slick/object_pool.h>
+#include <slick/object_pool.hpp>
 #include "../test_helpers.hpp"
 
 using namespace slick::sim;

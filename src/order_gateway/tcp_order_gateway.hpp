@@ -1,7 +1,7 @@
 #pragma once
 
 #include "order_gateway.hpp"
-#include <slick/queue.h>
+#include <slick/queue.hpp>
 #include <slick/socket/tcp_server.h>
 #include <common/messages.hpp>
 #include <cstdint>

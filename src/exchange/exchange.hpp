@@ -1,7 +1,7 @@
 #pragma once
 
-#include <slick/queue.h>
-#include <slick/object_pool.h>
+#include <slick/queue.hpp>
+#include <slick/object_pool.hpp>
 #include <md_feed/md_feed.hpp>
 #include <vector>
 #include <memory>

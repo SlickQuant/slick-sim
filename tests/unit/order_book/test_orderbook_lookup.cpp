@@ -2,7 +2,7 @@
 #include <order_book/order_book.hpp>
 #include <common/order.hpp>
 #include <common/types.hpp>
-#include <slick/object_pool.h>
+#include <slick/object_pool.hpp>
 #include <cstring>
 #include <string>
 #include <string_view>
