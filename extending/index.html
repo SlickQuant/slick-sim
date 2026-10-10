@@ -1605,7 +1605,10 @@ in-tree one, with its suites passed as <code>TESTS</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DSLICK_SIM_EXTERNAL_VENUES<span class="o">=</span>/path/to/slick-sim-kraken
 </code></pre></div>
 <p>Several directories are separated by <code>;</code>. Keep the setting in a <code>CMakeUserPresets.json</code>, which
-<code>.gitignore</code> excludes, so a local path never reaches the repository. An external venue's tests are
+<code>.gitignore</code> excludes, so a local path never reaches the repository (with VS Code's CMake Tools,
+<code>cmake.configureSettings</code> in the equally ignored <code>.vscode/settings.json</code> works too). Configure prints
+each directory as it is added and the venue names it registered, and warns about a directory that
+registered none. An external venue's tests are
 compiled into <code>slick_sim_tests</code> and include the shared fixtures as <code>"unit/test_helpers.hpp"</code>. It has
 no <code>SLICK_SIM_ENABLE_*</code> option: leaving the directory out of the list is what disables it.</p>
 <div class="admonition danger">
