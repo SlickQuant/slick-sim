@@ -17,7 +17,27 @@ foreach(dir IN LISTS SLICK_SIM_EXTERNAL_VENUES)
         message(FATAL_ERROR "SLICK_SIM_EXTERNAL_VENUES: no CMakeLists.txt in '${dir}'")
     endif()
     get_filename_component(_slick_sim_external_name "${dir}" NAME)
+    message(STATUS "Adding slick-sim external venue: ${dir}")
+
+    # The venues registered so far, so what this directory adds can be reported - and
+    # a directory that adds none (a path to the wrong repository, say) is flagged
+    # instead of silently contributing nothing.
+    get_property(_slick_sim_before GLOBAL PROPERTY SLICK_SIM_ENABLED_VENUES)
+    list(LENGTH _slick_sim_before _slick_sim_before_count)
+
+    # Indent the venue's own output (its dependency lookups) under the line above.
+    list(APPEND CMAKE_MESSAGE_INDENT "  ")
     add_subdirectory("${dir}" "${CMAKE_BINARY_DIR}/external_venues/${_slick_sim_external_name}")
+    list(POP_BACK CMAKE_MESSAGE_INDENT)
+
+    get_property(_slick_sim_after GLOBAL PROPERTY SLICK_SIM_ENABLED_VENUES)
+    list(SUBLIST _slick_sim_after ${_slick_sim_before_count} -1 _slick_sim_added)
+    if(_slick_sim_added)
+        message(STATUS "slick-sim external venue ${_slick_sim_external_name} registers: ${_slick_sim_added}")
+    else()
+        message(WARNING "SLICK_SIM_EXTERNAL_VENUES: '${dir}' registered no venue - "
+            "its CMakeLists.txt must call slick_sim_add_venue()")
+    endif()
 endforeach()
 
 get_property(_slick_sim_venues GLOBAL PROPERTY SLICK_SIM_ENABLED_VENUES)
