@@ -2,13 +2,16 @@
 # CMakeLists adds this directory only when SLICK_SIM_ENABLE_HYPERLIQUID is on. GLOBAL
 # so the imported targets survive into src/ and tests/, which link this venue's
 # object library from their own directory scopes.
-find_package(hyperliquid 0.4.0 CONFIG QUIET GLOBAL)
+
+set(HYPERLIQUID_MIN_VERSION 0.4.1)
+    
+find_package(hyperliquid ${HYPERLIQUID_MIN_VERSION} CONFIG QUIET GLOBAL)
 if (NOT hyperliquid_FOUND)
     message(STATUS "Fetching hyperliquid-cpp...")
     FetchContent_Declare(
         hyperliquid-cpp
         GIT_REPOSITORY https://github.com/SlickQuant/hyperliquid-cpp.git
-        GIT_TAG 0.4.0
+        GIT_TAG v${HYPERLIQUID_MIN_VERSION}
     )
     FetchContent_MakeAvailable(hyperliquid-cpp)
 else()
