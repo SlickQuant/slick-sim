@@ -67,8 +67,13 @@ find_package(Threads REQUIRED)
 
 include(FetchContent)
 
+set(SLICK_LOGGER_MIN_VERSION 2.2.1)
+set(SLICK_OBJECT_POOL_MIN_VERSION 0.2.0)
+set(SLICK_ORDERBOOK_MIN_VERSION 1.1.0)
+set(SLICK_SOCKET_MIN_VERSION 1.2.0)
+
 set(SLICK_LOGGER_ENABLE_SOURCE_LOCATION OFF CACHE BOOL "" FORCE)
-find_package(slick-logger 2.2.0 CONFIG QUIET)
+find_package(slick-logger ${SLICK_LOGGER_MIN_VERSION} CONFIG QUIET)
 if (NOT slick-logger_FOUND)
     message(STATUS "Fetching slick-logger...")
     # Disable examples, tests, and benchmarks for slick_logger
@@ -78,21 +83,21 @@ if (NOT slick-logger_FOUND)
     FetchContent_Declare(
         slick-logger
         GIT_REPOSITORY https://github.com/SlickQuant/slick-logger.git
-        GIT_TAG v2.2.0
+        GIT_TAG v${SLICK_LOGGER_MIN_VERSION}
     )
     FetchContent_MakeAvailable(slick-logger)
 else()
     message(STATUS "Found slick-logger ${slick-logger_VERSION}: ${slick-logger_DIR}")
 endif()
 
-find_package(slick-object-pool 0.2.0 CONFIG QUIET)
+find_package(slick-object-pool ${SLICK_OBJECT_POOL_MIN_VERSION} CONFIG QUIET)
 if (NOT slick-object-pool_FOUND)
     message(STATUS "Fetching slick-object-pool...")
     set(BUILD_SLICK_OBJECTPOOL_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-object-pool
         GIT_REPOSITORY https://github.com/SlickQuant/slick-object-pool.git
-        GIT_TAG v0.2.0
+        GIT_TAG v${SLICK_OBJECT_POOL_MIN_VERSION}
     )
     FetchContent_MakeAvailable(slick-object-pool)
 else()
@@ -110,7 +115,7 @@ endif()
 # venue must not make the minimal build heavier.
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/slick_sim_venue.cmake)
 
-find_package(slick-orderbook 1.0.5 CONFIG QUIET)
+find_package(slick-orderbook ${SLICK_ORDERBOOK_MIN_VERSION} CONFIG QUIET)
 if (NOT slick-orderbook_FOUND)
     message(STATUS "Fetching slick-orderbook...")
     set(SLICK_ORDERBOOK_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -118,7 +123,7 @@ if (NOT slick-orderbook_FOUND)
     FetchContent_Declare(
         slick-orderbook
         GIT_REPOSITORY https://github.com/SlickQuant/slick-orderbook.git
-        GIT_TAG v1.0.5
+        GIT_TAG v${SLICK_ORDERBOOK_MIN_VERSION}
     )
     FetchContent_MakeAvailable(slick-orderbook)
 else()
@@ -132,7 +137,7 @@ endif()
 # 1.2.0 is the first version with TCPServerBase::onPoll() (how the gateway drains
 # engine responses on the server thread) and the pointer+size send_data() overloads.
 if(SLICK_SIM_ENABLE_TCP_GATEWAY)
-    find_package(slick-socket 1.2.0 CONFIG QUIET)
+    find_package(slick-socket ${SLICK_SOCKET_MIN_VERSION} CONFIG QUIET)
     if (NOT slick-socket_FOUND)
         message(STATUS "Fetching slick-socket...")
         # Disable slick-socket example, and tests
@@ -142,7 +147,7 @@ if(SLICK_SIM_ENABLE_TCP_GATEWAY)
         FetchContent_Declare(
             slick-socket
             GIT_REPOSITORY https://github.com/SlickQuant/slick-socket.git
-            GIT_TAG v1.2.0
+            GIT_TAG v${SLICK_SOCKET_MIN_VERSION}
         )
         FetchContent_MakeAvailable(slick-socket)
     else()
