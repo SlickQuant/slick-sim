@@ -246,7 +246,8 @@ jobs:
 
     # Deliberately minimal: this list is the assertion, and what is missing from it
     # matters more than what is in it. slick-queue is named because slick_sim_core
-    # links slick::queue and it only ever arrived transitively. Everything that
+    # links slick::queue, and CMakeLists.txt finds it by name rather than waiting for
+    # it to arrive through slick-logger. Everything that
     # follows an option is per-configuration instead: slick-net and uWebSockets for
     # the venues that serve HTTP/WS, jwt-cpp for Coinbase alone, slick-socket for
     # the TCP gateway. So the "no venues" entry installs a core's

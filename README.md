@@ -91,7 +91,7 @@ Library targets:
   - GoogleTest (only needed if building tests, which is on by default)
   - [slick-net](https://github.com/SlickQuant/slick-net) — only for venue adapters that speak HTTP/WebSocket (Coinbase, Hyperliquid); not needed if both are switched off
 
-Everything else — `slick-logger`, `slick-socket`, `slick-object-pool`, `slick-orderbook`, `coinbase-advanced-cpp`, `hyperliquid-cpp` — is fetched automatically via CMake `FetchContent` if not already installed locally. `slick-socket` (1.2.0 or later) is looked up only with the TCP gateway enabled, and the two venue SDKs only with their adapter enabled.
+Everything else — `slick-queue`, `slick-logger`, `slick-socket`, `slick-object-pool`, `slick-orderbook`, `coinbase-advanced-cpp`, `hyperliquid-cpp` — is fetched automatically via CMake `FetchContent` if not already installed locally. `slick-socket` (1.2.0 or later) is looked up only with the TCP gateway enabled, and the two venue SDKs only with their adapter enabled.
 
 ## Building
 

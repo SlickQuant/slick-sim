@@ -67,10 +67,37 @@ find_package(Threads REQUIRED)
 
 include(FetchContent)
 
+set(SLICK_QUEUE_MIN_VERSION 2.3.0)
 set(SLICK_LOGGER_MIN_VERSION 2.2.1)
 set(SLICK_OBJECT_POOL_MIN_VERSION 0.2.0)
 set(SLICK_ORDERBOOK_MIN_VERSION 1.1.0)
 set(SLICK_SOCKET_MIN_VERSION 1.2.0)
+
+# slick_sim_core links slick::queue by name, so it is resolved here rather than left
+# to arrive through slick-logger. Arriving that way only works while slick-logger
+# comes from find_package, whose config finds slick-queue in this scope. On the FetchContent
+# path slick-logger's own CMakeLists finds it instead, and an imported target is
+# visible only in the directory that found it and below - so src/ fails at generate
+# time with:
+#
+#   The link interface of target "slick_sim_core" contains: slick::queue
+#   but the target was not found.
+#
+# Keep the version no lower than the one slick-logger asks for: if both have to
+# fetch, the first FetchContent_Declare wins and this is the first.
+find_package(slick-queue ${SLICK_QUEUE_MIN_VERSION} CONFIG QUIET)
+if (NOT slick-queue_FOUND)
+    message(STATUS "Fetching slick-queue...")
+    set(BUILD_SLICK_QUEUE_TESTS OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(
+        slick-queue
+        GIT_REPOSITORY https://github.com/SlickQuant/slick-queue.git
+        GIT_TAG v${SLICK_QUEUE_MIN_VERSION}
+    )
+    FetchContent_MakeAvailable(slick-queue)
+else()
+    message(STATUS "Found slick-queue ${slick-queue_VERSION}: ${slick-queue_DIR}")
+endif()
 
 set(SLICK_LOGGER_ENABLE_SOURCE_LOCATION OFF CACHE BOOL "" FORCE)
 find_package(slick-logger ${SLICK_LOGGER_MIN_VERSION} CONFIG QUIET)
