@@ -1334,6 +1334,11 @@ SMP disabled rather than aborting startup. See
 <p>The three <code>*_shm_name</code> keys appear in no sample config and are not otherwise exercised. Note that a
 shared-memory reader must be built with the same <code>int_fast64_t</code> width — see
 <a href="../market-data/#the-internal-market-data-wire-format">Market data</a>.</p>
+<p>A named segment is not removed at shutdown. Since slick-queue 2.3.0 a queue no longer unlinks its
+segment when it is destroyed, because another process may still be attached, and slick-sim does not
+unlink it either. On Linux and macOS the name therefore stays in <code>/dev/shm</code>, and a simulator
+restarted with the same name attaches to the old segment and whatever is still in it; remove the
+segment between runs if that is not what you want. Windows frees a segment with its last handle.</p>
 <div class="admonition danger">
 <p class="admonition-title">A missing <code>order_gateway</code> or <code>md_publisher</code> aborts the process</p>
 <p>The constructor throws <code>std::runtime_error</code> and nothing in <code>main</code> catches it.</p>

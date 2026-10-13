@@ -1654,6 +1654,12 @@ on the <strong>target</strong>, so the suite disappears with the venue:</p>
 <p><code>tests/unit/test_helpers.hpp</code> has the shared fixtures — from a venue directory that is
 <code>#include "../../test_helpers.hpp"</code>. The project convention (from <code>CLAUDE.md</code>) is that every bug fix
 gets a regression test.</p>
+<p>A fixture that names a shared-memory segment must build its queue with
+<code>makeTestQueue&lt;T&gt;(size, name)</code>, or its exchange (one configured with <code>*_shm_name</code> keys) with
+<code>makeTestExchange&lt;T&gt;(config)</code>, both from that header, never <code>std::make_unique</code>. A queue does not
+unlink its segment on destruction, so on Linux and macOS the next test would attach to the previous
+one's and read its responses. The helpers unlink the segments when the test ends, and clear any a
+crashed run left behind.</p>
 <h2 id="9-check-it-builds-without-the-others">9. Check it builds without the others<a class="headerlink" href="#9-check-it-builds-without-the-others" title="Permanent link">&para;</a></h2>
 <p>The point of the split is that venues are independent. Verify that:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-kraken<span class="w"> </span>-DSLICK_SIM_ENABLE_COINBASE<span class="o">=</span>OFF<span class="w"> </span>-DSLICK_SIM_ENABLE_HYPERLIQUID<span class="o">=</span>OFF
