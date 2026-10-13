@@ -89,10 +89,22 @@ find_package(slick-queue ${SLICK_QUEUE_MIN_VERSION} CONFIG QUIET)
 if (NOT slick-queue_FOUND)
     message(STATUS "Fetching slick-queue...")
     set(BUILD_SLICK_QUEUE_TESTS OFF CACHE BOOL "" FORCE)
+    # OVERRIDE_FIND_PACKAGE: getting here usually means an older slick-queue IS
+    # installed, just below the version asked for - and slick-net, slick-logger and
+    # the Coinbase SDK each call find_package(slick-queue) themselves, slick-net with
+    # no version at all. Without the override that call picks up the installed
+    # package on top of this fetched one, and its config dies on the alias the
+    # fetched tree already defines:
+    #
+    #   _add_library cannot create ALIAS target "slick::slick-queue" because target
+    #   "slick::queue" is itself an ALIAS.
+    #
+    # The override answers every later find_package(slick-queue) with this tree.
     FetchContent_Declare(
         slick-queue
         GIT_REPOSITORY https://github.com/SlickQuant/slick-queue.git
         GIT_TAG v${SLICK_QUEUE_MIN_VERSION}
+        OVERRIDE_FIND_PACKAGE
     )
     FetchContent_MakeAvailable(slick-queue)
 else()
