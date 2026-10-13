@@ -37,7 +37,7 @@ class SelfMatchPreventionTest : public ::testing::Test {
 protected:
     // Each exchange gets its own queues; the shm names are suffixed so tests
     // building several exchanges do not collide.
-    std::unique_ptr<TestableSMPExchange> makeExchange(const std::string &smp_mode) {
+    TestExchangePtr<TestableSMPExchange> makeExchange(const std::string &smp_mode) {
         auto config = R"({
             "request_queue_size": 4096,
             "response_queue_size": 4096,
@@ -52,7 +52,7 @@ protected:
         if (!smp_mode.empty()) {
             config["self_match_prevention"] = smp_mode;
         }
-        return std::make_unique<TestableSMPExchange>(config);
+        return makeTestExchange<TestableSMPExchange>(config);
     }
 
     // Drives the real subscription path so the symbol is created by addSymbol,

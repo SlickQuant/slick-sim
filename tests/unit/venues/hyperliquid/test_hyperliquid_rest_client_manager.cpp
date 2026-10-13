@@ -32,8 +32,8 @@ protected:
     void SetUp() override {
         // Use local (non-shared-memory) queues: named shared memory segments persist
         // across process runs on Windows, leaking stale cursors/data between test runs.
-        request_queue_  = std::make_unique<slick::queue<Request>>(4096, "hl_rest_req");
-        response_queue_ = std::make_unique<slick::queue<OrderResponse>>(4096, "hl_rest_resp");
+        request_queue_  = makeTestQueue<Request>(4096, "hl_rest_req");
+        response_queue_ = makeTestQueue<OrderResponse>(4096, "hl_rest_resp");
         req_cursor_     = 0;
         running_        = true;
 
@@ -128,8 +128,8 @@ protected:
         });
     }
 
-    std::unique_ptr<slick::queue<Request>>       request_queue_;
-    std::unique_ptr<slick::queue<OrderResponse>> response_queue_;
+    TestQueuePtr<Request>       request_queue_;
+    TestQueuePtr<OrderResponse> response_queue_;
     std::unique_ptr<HyperliquidRestOrderGateway> gateway_;
     std::thread  auto_responder_;
     uint64_t     req_cursor_ = 0;

@@ -23,7 +23,7 @@ constexpr uint64_t kT3 = 3000;
 class CoinbaseMarketDataMatchingTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        response_queue_ = std::make_unique<slick::queue<OrderResponse>>(4096, "test_coinbase_md_responses");
+        response_queue_ = makeTestQueue<OrderResponse>(4096, "test_coinbase_md_responses");
         matching_engine_ = std::make_unique<FifoMatchingEngine>(*response_queue_);
         order_book_ = std::make_shared<OrderBookImpl<OrderBookType::L2>>(kSymbolId, "BTC-USD", Venue::COINBASE);
         order_book_->addObserver(order_book_->shared_from_this());
@@ -37,7 +37,7 @@ protected:
         collector_.reset();
     }
 
-    std::unique_ptr<slick::queue<OrderResponse>> response_queue_;
+    TestQueuePtr<OrderResponse> response_queue_;
     std::unique_ptr<FifoMatchingEngine> matching_engine_;
     std::shared_ptr<OrderBook> order_book_;
     std::unique_ptr<OrderResponseCollector> collector_;

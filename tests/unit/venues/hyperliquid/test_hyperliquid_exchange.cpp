@@ -127,7 +127,7 @@ protected:
                 "port": 5000
             }
         })"_json;
-        exchange_ = std::make_unique<TestableHyperliquidExchange>(config);
+        exchange_ = makeTestExchange<TestableHyperliquidExchange>(config);
         collector_       = std::make_unique<OrderResponseCollector>(exchange_->response_queue());
         md_collector_    = std::make_unique<MarketDataCollector>(exchange_->md_queue());
         matching_engine_ = std::make_unique<FifoMatchingEngine>(exchange_->response_queue());
@@ -161,7 +161,7 @@ protected:
     std::unique_ptr<OrderResponseCollector>           collector_;
     std::unique_ptr<MarketDataCollector>              md_collector_;
     std::unique_ptr<FifoMatchingEngine>               matching_engine_;
-    std::unique_ptr<TestableHyperliquidExchange>      exchange_;
+    TestExchangePtr<TestableHyperliquidExchange>      exchange_;
 };
 
 // ===========================================================================

@@ -32,7 +32,7 @@ protected:
     static constexpr int kIterations = 64;   // many times the pool capacity
 
     void SetUp() override {
-        response_queue_ = std::make_unique<slick::queue<OrderResponse>>(65536, "pool_recycle_resp");
+        response_queue_ = makeTestQueue<OrderResponse>(65536, "pool_recycle_resp");
         matching_engine_ = std::make_unique<FifoMatchingEngine>(*response_queue_);
 
         symbol_.id_ = kSymbolId;
@@ -62,7 +62,7 @@ protected:
         return order;
     }
 
-    std::unique_ptr<slick::queue<OrderResponse>> response_queue_;
+    TestQueuePtr<OrderResponse> response_queue_;
     std::unique_ptr<FifoMatchingEngine> matching_engine_;
     Symbol symbol_;
 };

@@ -75,6 +75,12 @@ The three `*_shm_name` keys appear in no sample config and are not otherwise exe
 shared-memory reader must be built with the same `int_fast64_t` width — see
 [Market data](market-data.md#the-internal-market-data-wire-format).
 
+A named segment is not removed at shutdown. Since slick-queue 2.3.0 a queue no longer unlinks its
+segment when it is destroyed, because another process may still be attached, and slick-sim does not
+unlink it either. On Linux and macOS the name therefore stays in `/dev/shm`, and a simulator
+restarted with the same name attaches to the old segment and whatever is still in it; remove the
+segment between runs if that is not what you want. Windows frees a segment with its last handle.
+
 !!! danger "A missing `order_gateway` or `md_publisher` aborts the process"
     The constructor throws `std::runtime_error` and nothing in `main` catches it.
 

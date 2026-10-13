@@ -40,10 +40,10 @@ OrderResponse makeResponse(const std::string &order_id,
 class OrderStoreTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        queue_ = std::make_unique<slick::queue<OrderResponse>>(1024, "test_order_store");
+        queue_ = makeTestQueue<OrderResponse>(1024, "test_order_store");
         store_ = std::make_unique<OrderStore>(*queue_);
     }
-    std::unique_ptr<slick::queue<OrderResponse>> queue_;
+    TestQueuePtr<OrderResponse> queue_;
     std::unique_ptr<OrderStore> store_;
 };
 

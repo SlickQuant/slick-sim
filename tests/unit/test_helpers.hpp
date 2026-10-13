@@ -6,9 +6,14 @@
 #include <common/messages.hpp>
 #include <common/market_data.hpp>
 #include <slick/queue.hpp>
+#include <slick/shm/shared_memory.hpp>
 #include <slick/object_pool.hpp>
 #include <utils/order.hpp>
 #include <order_book/order_book.hpp>
+#include <nlohmann/json.hpp>
+#include <cstdint>
+#include <memory>
+#include <string>
 
 namespace slick::sim::test {
 
@@ -174,6 +179,77 @@ private:
     uint64_t cursor_;
     std::vector<std::vector<uint8_t>> frames_;
 };
+
+// Shared-memory cleanup for the queues a test names.
+//
+// slick-queue 2.3.0 stopped unlinking a named segment in the queue's destructor,
+// because a peer process may still be attached; removing the name became the
+// coordinator's job, through remove_shm(). On POSIX a name left behind outlives
+// the process, and the next queue built with that name attaches to the old
+// segment instead of creating one - so a collector, which reads from cursor 0, is
+// handed every response the previous test published. Windows frees a segment
+// with its last handle, so this only ever failed on Linux and macOS.
+//
+// A queue or exchange held through TestQueuePtr / TestExchangePtr unlinks its
+// segments when it is destroyed, which a failed ASSERT reaches as surely as a
+// passing test does. Build them with makeTestQueue / makeTestExchange rather than
+// std::make_unique whenever a shared-memory name is involved.
+
+template <typename T>
+concept ShmQueue = requires(const T& queue) { queue.remove_shm(); };
+
+/// Unlinks the segment behind a queue. A no-op for a queue on process memory.
+template <ShmQueue QueueT>
+void removeShm(QueueT& queue) noexcept {
+    queue.remove_shm();
+}
+
+/// Unlinks the segments behind an exchange's three queues.
+template <typename ExchangeT>
+void removeShm(ExchangeT& exchange) noexcept {
+    removeShm(exchange.request_queue());
+    removeShm(exchange.response_queue());
+    removeShm(exchange.md_queue());
+}
+
+/// Deleter that unlinks before it destroys. The unlink leaves the owner's own
+/// mappings valid, and has to come first: only a live queue can name its segment.
+struct ShmRemover {
+    template <typename T>
+    void operator()(T* owner) const noexcept {
+        removeShm(*owner);
+        delete owner;
+    }
+};
+
+template <typename T>
+using TestQueuePtr = std::unique_ptr<slick::queue<T>, ShmRemover>;
+
+template <typename ExchangeT>
+using TestExchangePtr = std::unique_ptr<ExchangeT, ShmRemover>;
+
+/// Builds a shared-memory queue that is unlinked when the test ends.
+///
+/// A segment already under `shm_name` is unlinked first. A test that crashed never
+/// ran its cleanup, and without this every later run would attach to what it left
+/// behind and fail for a reason that is nowhere in its own log.
+template <typename T>
+TestQueuePtr<T> makeTestQueue(uint32_t size, const char* shm_name) {
+    slick::shm::shared_memory::remove(shm_name);
+    return TestQueuePtr<T>(new slick::queue<T>(size, shm_name));
+}
+
+/// Builds an exchange whose shared-memory queues are unlinked when the test ends,
+/// clearing stale segments under its configured names first, as makeTestQueue does.
+template <typename ExchangeT>
+TestExchangePtr<ExchangeT> makeTestExchange(const nlohmann::json& config) {
+    for (const char* key : {"request_queue_shm_name", "response_queue_shm_name", "md_queue_shm_name"}) {
+        if (auto it = config.find(key); it != config.end()) {
+            slick::shm::shared_memory::remove(it->template get_ref<const std::string&>().c_str());
+        }
+    }
+    return TestExchangePtr<ExchangeT>(new ExchangeT(config));
+}
 
 // Test constants
 constexpr symid_t kSymbolId = 1;

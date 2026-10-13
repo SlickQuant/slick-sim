@@ -103,7 +103,7 @@ protected:
             }
         })"_json;
 
-        exchange_ = std::make_unique<TestableCoinbaseExchange>(config);
+        exchange_ = makeTestExchange<TestableCoinbaseExchange>(config);
         collector_      = std::make_unique<OrderResponseCollector>(exchange_->response_queue());
         md_collector_   = std::make_unique<MarketDataCollector>(exchange_->md_queue());
         matching_engine_ = std::make_unique<FifoMatchingEngine>(exchange_->response_queue());
@@ -147,7 +147,7 @@ protected:
     // SetUp() so it uses the same response_queue_ the collector reads from.
     std::unique_ptr<FifoMatchingEngine> matching_engine_;
 
-    std::unique_ptr<TestableCoinbaseExchange> exchange_;
+    TestExchangePtr<TestableCoinbaseExchange> exchange_;
 };
 
 // ===========================================================================

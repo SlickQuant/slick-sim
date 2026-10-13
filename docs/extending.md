@@ -465,6 +465,13 @@ Mirror the existing suites:
 `#include "../../test_helpers.hpp"`. The project convention (from `CLAUDE.md`) is that every bug fix
 gets a regression test.
 
+A fixture that names a shared-memory segment must build its queue with
+`makeTestQueue<T>(size, name)`, or its exchange (one configured with `*_shm_name` keys) with
+`makeTestExchange<T>(config)`, both from that header, never `std::make_unique`. A queue does not
+unlink its segment on destruction, so on Linux and macOS the next test would attach to the previous
+one's and read its responses. The helpers unlink the segments when the test ends, and clear any a
+crashed run left behind.
+
 ## 9. Check it builds without the others
 
 The point of the split is that venues are independent. Verify that:
