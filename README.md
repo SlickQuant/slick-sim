@@ -11,7 +11,7 @@ A exchange simulator that shadows real exchanges for risk-free strategy testing.
 
 The live feed is optional. Configure one and your orders compete against real quoted liquidity; omit it and `slick-sim` runs as a conventional exchange simulator, with books driven purely by the orders clients send. A historical-replay feed — matching against recorded market data — is planned but not yet implemented. See [Operating modes](https://slickquant.github.io/slick-sim/architecture/#operating-modes).
 
-Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.1.0`).
+Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.3.0`).
 
 ## Documentation
 
@@ -63,7 +63,9 @@ Each enabled exchange runs its own instance of the pipeline below. The market-da
                                                                (market data)
 ```
 
-`order_gateway` is bidirectional: it receives orders from the client and, via the `response_queue` fed by `MatchingEngine::publishOrderAck`/`publishOrderExecution`/`publishOrderModify`/`publishOrderCancel`, sends order acks, fills, modifies, cancels, and rejects back to the same client — independently of the market data path.
+`order_gateway` is bidirectional: it receives orders from the client and, via the `response_queue` fed by `MatchingEngine::publishOrderAck`/`publishOrderExecution`/`publishOrderModify`/`publishOrderCancel`, sends order acks, fills, modifies, cancels, and rejects back to the same client — independently of the market data path. A gateway can set `Request::request_tag` and gets it back on every response that request produces.
+
+The published market data is level data and trades. The core can also publish order-by-order updates (`MDUpdateType::ORDER`), for an adapter that opts in; neither in-tree adapter does. One venue config entry can also create several exchanges, for a venue split into independent market segments.
 
 Library targets:
 
@@ -87,7 +89,7 @@ Library targets:
   - [nlohmann_json](https://github.com/nlohmann/json)
   - [jwt-cpp](https://github.com/Thalhammer/jwt-cpp) — only with the Coinbase adapter enabled
   - [foonathan_memory](https://github.com/foonathan/memory)
-  - Boost (`uuid` component)
+  - Boost (`uuid` and `multiprecision` components)
   - GoogleTest (only needed if building tests, which is on by default)
   - [slick-net](https://github.com/SlickQuant/slick-net) — only for venue adapters that speak HTTP/WebSocket (Coinbase, Hyperliquid); not needed if both are switched off
 
@@ -205,6 +207,8 @@ directory: `-DSLICK_SIM_EXTERNAL_VENUES=/path/to/venue` (`;`-separated for sever
   - `md_publisher` — the port `slick-sim` serves its own venue-formatted market data WebSocket on. Hyperliquid also takes `upstream_base_url` (note: not `base_url`) for its `/info` proxy.
   - Coinbase additionally sets `request_queue_size` / `response_queue_size` / `md_queue_size`, the capacities of its internal lock-free queues.
 
+The checked-in sample is more conservative than the example above: it switches the Coinbase live feed off (`"enabled": false` on the feed entry) and disables Hyperliquid, so out of the box it runs Coinbase self-contained. Flip those keys to shadow the live venues.
+
 See the [configuration reference](https://slickquant.github.io/slick-sim/configuration/) for every key the code actually reads, with defaults.
 
 > **Note:** if no config path is given on the command line, `slick-sim` looks for `slick-sim.json` in the current directory — which does not match the committed sample's name or location (`config/slick_sim.json`). Always pass the path explicitly.
@@ -230,7 +234,7 @@ Logs:
 
 ## Testing
 
-Unit tests are built by default (`BUILD_EXCH_SIMULATOR_TESTING=ON`) using GoogleTest, covering the matching engine (FIFO matching, self-match prevention, time-in-force), order book operations, message/type conversions, the fixed-width wire-field helpers, the Coinbase/Hyperliquid exchange adapters, and the market-data wire encoders (`tests/unit/`).
+Unit tests are built by default (`BUILD_EXCH_SIMULATOR_TESTING=ON`) using GoogleTest, covering the matching engine (FIFO matching, self-match prevention, time-in-force), order book operations, message/type conversions, the fixed-width wire-field helpers, request-tag echoing and order-by-order market data, the Coinbase/Hyperliquid exchange adapters, and the market-data wire encoders (`tests/unit/`). A venue passes its own suites to `slick_sim_add_venue(... TESTS ...)`, so an out-of-tree venue's tests run in the same binary.
 
 ```bash
 cmake -S . -B build
@@ -280,6 +284,8 @@ slick-sim/
 ├── Doxyfile.in                  # API reference config (`--target docs` locally)
 ├── mkdocs.yml                   # documentation site config
 ├── requirements-docs.txt        # mkdocs-material toolchain
+├── cmake/
+│   └── slick_sim_venue.cmake   # slick_sim_add_venue() and the other venue helpers
 ├── config/
 │   └── slick_sim.json          # sample runtime configuration
 ├── docs/                        # published documentation sources

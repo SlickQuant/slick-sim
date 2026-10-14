@@ -1,3 +1,100 @@
+# v0.3.0 - 10-12-2026
+
+## Added
+
+- **Out-of-tree venues.** `-DSLICK_SIM_EXTERNAL_VENUES=/path/to/venue` (`;`-separated for several)
+  builds venue directories kept in their own repositories into `slick-sim`. Each one calls
+  `slick_sim_add_venue()` exactly like an in-tree venue, and no file in slick-sim changes. Configure
+  prints every directory as it is added and the venue names it registered, and warns about a
+  directory that registered none. See `docs/extending.md`.
+- `slick_sim_add_venue()` takes a `TESTS` list. The sources are compiled into `slick_sim_tests`, so a
+  venue's suite travels with the venue and an external one needs no edit to `tests/CMakeLists.txt`.
+- **Order-by-order market data.** `Exchange::flushMarketDataCaches` publishes the book's per-order
+  changes as `MDUpdateType::ORDER` frames (`MDOrderUpdate`) for an adapter that sets
+  `publish_order_updates_`. They were collected for every venue and then discarded behind a `TODO`.
+  The frame is published last, after the event's `TRADE_SUMMARY` and `LEVEL` frames, so for such a
+  venue it marks the end of an event. `MDOrder::update_action` says whether the order entered the
+  book, changed, or left it. Off by default, and no in-tree adapter turns it on: Coinbase and
+  Hyperliquid clients still receive level data only.
+- **One venue config entry can create several exchanges.** `ExchangeRegistry::Factory` returns a
+  vector, and an adapter that declares `static create_instances(const nlohmann::json &)` decides how
+  many instances its entry describes, for a venue split into independent market segments. Every other
+  adapter still yields exactly one.
+- `Request::request_tag`, an opaque correlation token a gateway sets on a request and gets back on
+  every `OrderResponse` that request produces. A passive fill carries the tag of the last request the
+  order accepted, and a rejected amendment does not replace it.
+- `OrderResponse::order_num`, the order's numeric id. It is the same number the order carries in
+  order-by-order market data, so a client can find its own orders in that feed. `0` on a reject of a
+  new order.
+- `OrderResponse::aggressor`, set on a fill for the order that crossed the spread.
+- `SLICK_SIM_ENABLE_FIX_JSON_PARSERS` (default `OFF`) builds the generic FIX and JSON message parsers
+  as their own `slick_sim_message_parsers` target.
+- `TcpOrderGateway::listen_port()` returns the bound port, which is the one the OS assigned when the
+  configured port is `0`.
+- Test helpers `makeTestQueue<T>(size, name)` and `makeTestExchange<T>(config)` in
+  `tests/unit/test_helpers.hpp`, for a fixture that names a shared-memory segment. See *Fixed*.
+
+## Fixed
+
+- The shared order-priority sequence is drawn atomically. Every exchange runs its books on its own
+  thread and all of them share one counter, so a plain increment could hand a book a priority lower
+  than one it had already issued, and its FIFO order would run backwards.
+- A venue that rejects its config by throwing now stops startup with an error naming the `exchanges`
+  key, instead of terminating the process on an uncaught exception.
+- Unit tests no longer read each other's shared-memory queues on Linux and macOS. slick-queue 2.3.0
+  stopped unlinking a named segment in the queue's destructor, so every fixture that named one left
+  it in `/dev/shm`, and the next test attached to it and read the previous test's responses. Those
+  fixtures build their queues and exchanges with the new test helpers, which unlink the segments when
+  the test ends and clear any a crashed run left behind.
+- Configure no longer fails when slick-logger is built from source. `slick_sim_core` links
+  `slick::queue` by name but relied on slick-logger's package config to bring it in, which does not
+  happen on the FetchContent path. slick-queue is now resolved explicitly at the top level.
+- Configure no longer fails when an installed slick-queue is older than the required version. The
+  fetched copy and the installed package were both picked up, and the installed config failed with
+  `cannot create ALIAS target "slick::slick-queue"`. The fetch is declared with
+  `OVERRIDE_FIND_PACKAGE`, so every later `find_package(slick-queue)` gets the fetched copy.
+
+## Changed
+
+- **`TcpOrderGateway` is rebuilt as a transport base for venues on a binary session protocol.** It
+  runs the slick-socket server thread, keeps the unconsumed tail of each connection's stream so a
+  protocol only ever sees bytes starting at a message boundary, and drains `response_queue_` on the
+  server thread so a protocol can answer from `on_response` with `send()`. A venue derives from it
+  and implements `on_data` and `on_response`; framing, sessions and sequencing are the venue's. The
+  constructor no longer takes a `ProtocolType`, and the per-client parser API is gone:
+  `set_order_callback`, `send_execution_report`, `set_client_protocol`,
+  `enable_auto_protocol_detection` and `get_client_protocols`. A derived class must call `stop()` in
+  its own destructor.
+- The FIX and JSON parsers are no longer part of `order_gateway`, and `order_gateway.hpp` no longer
+  includes `message_parser.hpp`. QuickFIX is needed only with `SLICK_SIM_ENABLE_FIX_JSON_PARSERS`,
+  and `SLICK_SIM_ENABLE_TCP_GATEWAY` now needs slick-socket and nothing else.
+- **`Request`, `OrderResponse`, `MDOrder` and `Order` gained fields**, so their layouts changed. A
+  process that reads the queues over shared memory must be rebuilt against this version.
+- `SLICK_SIM_REGISTER_VENUE` registers a factory that returns
+  `std::vector<std::unique_ptr<Exchange>>`. An adapter that uses the macro needs no change; code that
+  calls a registry factory directly does.
+- `MatchingEngine::publishOrderExecution` takes a second argument, whether the order was the
+  aggressor.
+- `OrderBook::nextOrderPriority()` is public, so a feed can draw a market order's place in the queue
+  when the order joins and re-add it under the same priority later.
+- **A named shared-memory queue is no longer removed at shutdown.** This follows slick-queue 2.3.0.
+  On Linux and macOS the segment stays in `/dev/shm`, and a simulator restarted with the same
+  `*_shm_name` attaches to the old segment and whatever is still in it. See `docs/configuration.md`.
+- Dependencies: slick-queue 2.3.0 (new as a direct requirement), slick-logger 1.1.4 to 2.2.1,
+  slick-object-pool 0.1.3 to 0.2.0, slick-orderbook 1.0.5 to 1.1.0, slick-socket 1.0.6 to 1.2.0,
+  coinbase-advanced-cpp 1.0.0 to 2.1.0 and hyperliquid-cpp 0.3.0 to 0.4.1. The Coinbase SDK is fetched
+  at a release tag instead of `main`. slick headers are included as `.hpp`; the `.h` spellings are
+  deprecated upstream.
+- `cmake/SlickSimVenue.cmake` is renamed `cmake/slick_sim_venue.cmake`.
+- The sample config carries an explicit `"enabled"` key on each venue and on the Coinbase feed. It
+  ships with Coinbase enabled and its live feed off, and with Hyperliquid disabled.
+
+## Removed
+
+- `SbeParser` (`src/order_gateway/sbe_parser.hpp`, `.cpp`). SBE is a family of venue schemas, each
+  with its own session layer, so a venue adapter decodes it. `MessageParserFactory` returns `nullptr`
+  for `ProtocolType::SBE`.
+
 # v0.2.0 - 08-23-2026
 
 ## Added
