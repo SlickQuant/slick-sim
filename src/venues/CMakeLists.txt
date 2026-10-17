@@ -30,10 +30,21 @@ foreach(dir IN LISTS SLICK_SIM_EXTERNAL_VENUES)
     add_subdirectory("${dir}" "${CMAKE_BINARY_DIR}/external_venues/${_slick_sim_external_name}")
     list(POP_BACK CMAKE_MESSAGE_INDENT)
 
+    # The version a venue's own project() declares. One that declares none inherits
+    # slick-sim's, which says nothing about the venue, so nothing is shown for it.
+    get_directory_property(_slick_sim_venue_project DIRECTORY "${dir}" DEFINITION PROJECT_NAME)
+    get_directory_property(_slick_sim_venue_version DIRECTORY "${dir}" DEFINITION PROJECT_VERSION)
+    if(_slick_sim_venue_project STREQUAL PROJECT_NAME OR NOT _slick_sim_venue_version)
+        set(_slick_sim_venue_version "")
+    else()
+        set(_slick_sim_venue_version " ${_slick_sim_venue_version}")
+    endif()
+
     get_property(_slick_sim_after GLOBAL PROPERTY SLICK_SIM_ENABLED_VENUES)
     list(SUBLIST _slick_sim_after ${_slick_sim_before_count} -1 _slick_sim_added)
     if(_slick_sim_added)
-        message(STATUS "slick-sim external venue ${_slick_sim_external_name} registers: ${_slick_sim_added}")
+        message(STATUS "slick-sim external venue ${_slick_sim_external_name}${_slick_sim_venue_version} registers: "
+            "${_slick_sim_added}")
     else()
         message(WARNING "SLICK_SIM_EXTERNAL_VENUES: '${dir}' registered no venue - "
             "its CMakeLists.txt must call slick_sim_add_venue()")

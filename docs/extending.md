@@ -428,8 +428,9 @@ cmake -S . -B build -DSLICK_SIM_EXTERNAL_VENUES=/path/to/slick-sim-kraken
 Several directories are separated by `;`. Keep the setting in a `CMakeUserPresets.json`, which
 `.gitignore` excludes, so a local path never reaches the repository (with VS Code's CMake Tools,
 `cmake.configureSettings` in the equally ignored `.vscode/settings.json` works too). Configure prints
-each directory as it is added and the venue names it registered, and warns about a directory that
-registered none. An external venue's tests are
+each directory as it is added and the venue names it registered - with the version its own
+`project()` declares, when it declares one - and warns about a directory that registered none. An
+external venue's tests are
 compiled into `slick_sim_tests` and include the shared fixtures as `"unit/test_helpers.hpp"`. It has
 no `SLICK_SIM_ENABLE_*` option: leaving the directory out of the list is what disables it.
 
