@@ -1261,12 +1261,11 @@
 
 
 <h1 id="adding-an-exchange">Adding an exchange<a class="headerlink" href="#adding-an-exchange" title="Permanent link">&para;</a></h1>
-<p>This is a checklist for implementing a new venue adapter, derived from the two that work. Read
-<a href="../architecture/">Architecture</a> first — the threading model determines most of the design.</p>
-<p>Concretely you need five pieces: a <code>Venue</code> enum entry, an <code>Exchange</code> subclass, an <code>MDFeed</code>, an
-<code>OrderGateway</code>, and a <code>MarketDataPublisher</code>. Everything venue-specific lives in <strong>one directory</strong>,
-<code>src/venues/&lt;name&gt;/</code>, built as one optional target — so beyond the enum line, the only wiring is that
-directory's own <code>CMakeLists.txt</code>.</p>
+<p>Use the existing adapters as references when adding a venue. Read <a href="../architecture/">Architecture</a>
+first; the threading model determines most of the design.</p>
+<p>A venue needs a <code>Venue</code> enum entry, an <code>Exchange</code> subclass, an <code>MDFeed</code>, an <code>OrderGateway</code> and a
+<code>MarketDataPublisher</code>. Keep its implementation in <code>src/venues/&lt;name&gt;/</code> as one optional target.
+Beyond the enum entry, its <code>CMakeLists.txt</code> handles the build wiring.</p>
 <p>Nothing in the core, and no existing venue, has to be edited to add a new one.</p>
 <h2 id="1-add-the-venue-enumerator">1. Add the <code>Venue</code> enumerator<a class="headerlink" href="#1-add-the-venue-enumerator" title="Permanent link">&para;</a></h2>
 <p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp"><code>src/common/types.hpp</code></a>
@@ -1583,9 +1582,9 @@ subdirectory, in <code>src/venues/CMakeLists.txt</code>:</p>
 <a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">    </span><span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">kraken</span><span class="p">)</span>
 <a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="nb">endif</span><span class="p">()</span>
 </code></pre></div>
-<p>That is the whole build change. <code>slick_sim_add_venue</code> links your target against <code>exchange</code> (which
-carries every core header transitively), defines <code>SLICK_SIM_HAS_KRAKEN</code> for consumers, and adds the
-venue to the list that <code>slick_sim_link_venues()</code> feeds to both <code>slick-sim</code> and <code>slick_sim_tests</code>.
+<p><code>slick_sim_add_venue</code> links the target against <code>exchange</code>, which carries the core headers. It also
+defines <code>SLICK_SIM_HAS_KRAKEN</code> for consumers and adds the venue to the list linked into both
+<code>slick-sim</code> and <code>slick_sim_tests</code>.
 Because <code>DEPENDS</code> is linked <code>PUBLIC</code>, your SDK and your networking stack reach the executable and the
 test binary without either of them naming a venue library.</p>
 <p>If your stack is <code>slick::net</code>, <code>main.cpp</code>'s bridge from its log output into slick-logger switches on by
@@ -1662,7 +1661,7 @@ unlink its segment on destruction, so on Linux and macOS the next test would att
 one's and read its responses. The helpers unlink the segments when the test ends, and clear any a
 crashed run left behind.</p>
 <h2 id="9-check-it-builds-without-the-others">9. Check it builds without the others<a class="headerlink" href="#9-check-it-builds-without-the-others" title="Permanent link">&para;</a></h2>
-<p>The point of the split is that venues are independent. Verify that:</p>
+<p>Check that the new venue builds independently:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-kraken<span class="w"> </span>-DSLICK_SIM_ENABLE_COINBASE<span class="o">=</span>OFF<span class="w"> </span>-DSLICK_SIM_ENABLE_HYPERLIQUID<span class="o">=</span>OFF
 <a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build-kraken
 <a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build-kraken

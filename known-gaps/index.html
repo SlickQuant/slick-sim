@@ -1147,11 +1147,8 @@
 
 
 <h1 id="known-gaps">Known gaps<a class="headerlink" href="#known-gaps" title="Permanent link">&para;</a></h1>
-<p><code>slick-sim</code> is early-stage. This page lists everything found in the current source that is
-unimplemented, half-wired, or behaves differently from what the surrounding code implies. It exists
-so the rest of the documentation can describe the intended design without having to hedge every
-paragraph, and so you do not spend an afternoon debugging something that was never finished.</p>
-<p>Each entry says what it is, where it lives, and what it means for you.</p>
+<p><code>slick-sim</code> is under active development. The limitations below include unfinished code paths and
+behaviour that differs from the intended design, with source references and consequences for clients.</p>
 <h2 id="venues">Venues<a class="headerlink" href="#venues" title="Permanent link">&para;</a></h2>
 <h3 id="cme-eurex-and-ice-are-not-implemented">CME, Eurex and ICE are not implemented<a class="headerlink" href="#cme-eurex-and-ice-are-not-implemented" title="Permanent link">&para;</a></h3>
 <p>There is no CME, Eurex or ICE adapter, although <code>Venue::CME</code> and <code>Venue::ICE</code> exist in
@@ -1160,10 +1157,7 @@ identity written into every market-data frame, not a claim that an adapter exist
 still resolves.</p>
 <p><strong>What it means:</strong> only <code>coinbase</code> and <code>hyperliquid</code> are usable venue keys in the config.</p>
 <h3 id="an-unknown-venue-key-is-rejected-at-startup">An unknown venue key is rejected at startup<a class="headerlink" href="#an-unknown-venue-key-is-rejected-at-startup" title="Permanent link">&para;</a></h3>
-<p>This used to be a gap: <code>main.cpp</code> dispatched on the config key with an <code>if/else</code>, and <strong>anything
-else</strong> constructed a plain <code>Exchange</code> that bound no ports, populated no publisher, and — because the
-base <code>start()</code> had no loop — processed at most one request before its thread exited. Silently.</p>
-<p>Both halves are now closed. The loop lives in
+<p>The processing loop lives in
 <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp"><code>Exchange::start()</code></a>,
 and keys resolve through the
 <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange_registry.hpp">venue registry</a>
@@ -1183,7 +1177,7 @@ register itself, which is what the <code>ExchangeRegistryTest</code> suite guard
 <code>response_queue_</code> in a loop with a 100 microsecond sleep, up to a 5 second timeout. That loop runs
 on the gateway's <strong>only</strong> uWebSockets event-loop thread, so while one request waits, no other
 client's request on that gateway is served at all - not even one that would answer instantly.</p>
-<p>The batch handlers are worse, because they poll once per entry rather than once per request:
+<p>Batch handlers poll once per entry, which compounds the delay:
 <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/venues/coinbase/coinbase_rest_order_gateway.cpp#L638"><code>handle_batch_cancel</code></a>
 and Hyperliquid's
 <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_rest_order_gateway.cpp#L263"><code>process_order_action</code></a>
@@ -1227,11 +1221,9 @@ implementation of that same two-method interface.</p>
 <a href="../architecture/#historical-replay-planned">operating mode</a> — matching client orders against
 recorded market data — but no feed implements it. Live WebSocket feeds are the only source of market
 data today.</p>
-<p>A <code>md_feeds</code> entry whose <code>type</code> is neither <code>coinbase_live_ws</code> nor <code>hyperliquid_live_ws</code> is silently
-ignored, which leaves the venue running
-<a href="../architecture/#self-contained-a-conventional-exchange-simulator">self-contained</a>. That is a valid
-mode, so a typo in <code>type</code> degrades quietly rather than erroring — worth checking the startup log if
-you expected live data and got an empty book.</p>
+<p>An unrecognised <code>md_feeds[].type</code> is silently ignored, leaving the venue
+<a href="../architecture/#self-contained-a-conventional-exchange-simulator">self-contained</a>. If you expected
+live data but see an empty book, check the feed type and startup log.</p>
 <h3 id="exchangeprocessmddata-and-the-market-data-thread-are-commented-out"><code>Exchange::processMdData()</code> and the market-data thread are commented out<a class="headerlink" href="#exchangeprocessmddata-and-the-market-data-thread-are-commented-out" title="Permanent link">&para;</a></h3>
 <p><code>Exchange</code> declares <code>md_thread_</code> and <code>md_feed_</code>, and <code>start()</code> has a commented-out block that would
 launch a dedicated market-data thread. <code>stop()</code> still joins <code>md_thread_</code> — dead code, since nothing

@@ -189,14 +189,13 @@ template&lt;size_t N&gt; </div>
 </div><div class="memdoc">
 
 <p>Copies a name into a fixed-width wire field. </p>
-<p>Replaces the <code>memcpy(dst, name.c_str(), sizeof(dst))</code> idiom, which reads sizeof(the field) bytes out of a buffer holding only as many characters as the name actually has, and leaves whatever followed the name in the field. The receiver reads these fields as C strings, so a non-zero byte landing after the name is not merely an over-read - it changes the value that arrives.</p>
-<p>Truncates to N-1 characters and zero-fills the remainder, so the field is always terminated and never carries bytes from the source's neighbourhood.</p>
-<p>The <code>memset(dst, 0, sizeof(dst))</code> + <code>memcpy(dst, s.c_str(), min(sizeof(dst), s.size()))</code> pairing it also replaces gets the over-read right but not the terminator: a value that exactly fills the field overwrites the last zero the memset put there, and the reader then runs off the end of the field.</p>
-<p>Returns true when the value did not fit, for callers that warn about it. </p>
+<p>Truncates to N-1 characters and zero-fills the remainder. The result is always NUL-terminated, with no bytes copied from beyond the source string.</p>
+<p>Copying sizeof(dst) bytes from a shorter string would over-read it and could change the value the receiver sees. Zeroing dst before copying up to N bytes also fails for an N-character value, which overwrites the terminator.</p>
+<p>Returns true when the value did not fit, so callers can warn about truncation. </p>
 
-<p class="definition">Definition at line <a class="el" href="fixed__string_8hpp_source.html#l00031">31</a> of file <a class="el" href="fixed__string_8hpp_source.html">fixed_string.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fixed__string_8hpp_source.html#l00024">24</a> of file <a class="el" href="fixed__string_8hpp_source.html">fixed_string.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fixed__string_8hpp_source.html#l00079">slick::sim::utils::fixed_string&lt; N &gt;::assign()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="fixed__string_8hpp_source.html#l00067">slick::sim::utils::fixed_string&lt; N &gt;::assign()</a>.</p>
 
 </div>
 </div>
@@ -248,7 +247,7 @@ template&lt;size_t N&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="utils_2order_8hpp_source.html#l00015">15</a> of file <a class="el" href="utils_2order_8hpp_source.html">order.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00325">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00326">slick::sim::Order::cum_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00327">slick::sim::Order::cum_value</a>, <a class="el" href="common_2order_8hpp_source.html#l00328">slick::sim::Order::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00329">slick::sim::Order::last_fill_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00337">slick::sim::Order::last_fill_time</a>, <a class="el" href="common_2order_8hpp_source.html#l00336">slick::sim::Order::last_update_time</a>, <a class="el" href="common_2order_8hpp_source.html#l00324">slick::sim::Order::leaves_quantity</a>, and <a class="el" href="common_2order_8hpp_source.html#l00330">slick::sim::Order::num_fills</a>.</p>
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00317">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00318">slick::sim::Order::cum_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00319">slick::sim::Order::cum_value</a>, <a class="el" href="common_2order_8hpp_source.html#l00320">slick::sim::Order::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00321">slick::sim::Order::last_fill_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00329">slick::sim::Order::last_fill_time</a>, <a class="el" href="common_2order_8hpp_source.html#l00328">slick::sim::Order::last_update_time</a>, <a class="el" href="common_2order_8hpp_source.html#l00316">slick::sim::Order::leaves_quantity</a>, and <a class="el" href="common_2order_8hpp_source.html#l00322">slick::sim::Order::num_fills</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00188">slick::sim::OrderBook::executeOrder()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>.</p>
 
@@ -416,7 +415,7 @@ template&lt;size_t N&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="timestamp_8hpp_source.html#l00091">91</a> of file <a class="el" href="timestamp_8hpp_source.html">timestamp.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00301">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00083">slick::sim::exch::Symbol::cancelOrder()</a>, <a class="el" href="exchange_8cpp_source.html#l00256">slick::sim::exch::Exchange::handleModifyOrderRequest()</a>, <a class="el" href="symbol_8cpp_source.html#l00061">slick::sim::exch::Symbol::modifyOrder()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00200">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00302">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, <a class="el" href="coinbase__exchange_8cpp_source.html#l00216">slick::sim::exch::CoinbaseExchange::processSequencedEvents()</a>, <a class="el" href="exchange_8cpp_source.html#l00419">slick::sim::exch::Exchange::rejectCancelOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00391">slick::sim::exch::Exchange::rejectModifyOrderRequest()</a>, and <a class="el" href="exchange_8cpp_source.html#l00367">slick::sim::exch::Exchange::rejectNewOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00299">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00080">slick::sim::exch::Symbol::cancelOrder()</a>, <a class="el" href="exchange_8cpp_source.html#l00252">slick::sim::exch::Exchange::handleModifyOrderRequest()</a>, <a class="el" href="symbol_8cpp_source.html#l00058">slick::sim::exch::Symbol::modifyOrder()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00185">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00287">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, <a class="el" href="coinbase__exchange_8cpp_source.html#l00216">slick::sim::exch::CoinbaseExchange::processSequencedEvents()</a>, <a class="el" href="exchange_8cpp_source.html#l00415">slick::sim::exch::Exchange::rejectCancelOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00387">slick::sim::exch::Exchange::rejectModifyOrderRequest()</a>, and <a class="el" href="exchange_8cpp_source.html#l00363">slick::sim::exch::Exchange::rejectNewOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -621,7 +620,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="utils_2order_8hpp_source.html#l00010">10</a> of file <a class="el" href="utils_2order_8hpp_source.html">order.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00301">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00095">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, and <a class="el" href="exchange_8cpp_source.html#l00617">slick::sim::exch::Exchange::reconcilePhantomQty()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00299">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00091">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, and <a class="el" href="exchange_8cpp_source.html#l00613">slick::sim::exch::Exchange::reconcilePhantomQty()</a>.</p>
 
 </div>
 </div>

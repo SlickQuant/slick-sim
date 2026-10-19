@@ -97,7 +97,7 @@ $(document).ready(function(){initNavTree('classslick_1_1sim_1_1order__gateway_1_
 </div><!--header-->
 <div class="contents">
 
-<p>A gateway-side view of the orders the simulator has reported on.  
+<p>Tracks the orders reported to one gateway.  
  <a href="classslick_1_1sim_1_1order__gateway_1_1OrderStore.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="order__store_8hpp_source.html">order_gateway/order_store.hpp</a>&gt;</code></p>
@@ -130,12 +130,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa567107b9266478212f70c4608f15c78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A gateway-side view of the orders the simulator has reported on. </p>
-<p>A gateway cannot answer "list this user's orders" by looking at the order books: those belong to the exchange thread, and reading them from a gateway's event loop would race it. What every gateway does have is the execution-report stream, and each <code><a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a></code> carries the order's whole identity plus its state at that moment - so replaying the stream in order reconstructs the current state of every order without touching anything the exchange owns.</p>
-<p>One instance per gateway. <code>slick::queue</code> gives each reader an independent cursor, so draining here does not disturb the request handlers polling the same queue for their own responses.</p>
-<p>Deliberately not thread safe: a gateway drains and reads this only on its own uWebSockets loop thread, which is the same rule the rest of the gateway follows. </p>
+<div class="textblock"><p>Tracks the orders reported to one gateway. </p>
+<p><a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> books belong to the exchange thread, so reading them from a gateway's event loop would race. Replaying <a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a> messages reconstructs each order's identity and state without reading exchange-owned data.</p>
+<p>Each gateway has its own store. slick::queue readers have independent cursors, so draining the store does not disturb request handlers polling for replies. All access stays on the gateway's uWebSockets loop thread; the store has no internal synchronisation. </p>
 
-<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00028">28</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00023">23</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a57c18a50f4bfbb118972fd15188a42e8" name="a57c18a50f4bfbb118972fd15188a42e8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a57c18a50f4bfbb118972fd15188a42e8">&#9670;&#160;</a></span>OrderStore() <span class="overload">[1/2]</span></h2>
@@ -192,7 +191,7 @@ Public Member Functions</h2></td></tr>
 <p>Self-draining, with its own cursor. </p>
 <p>For a gateway that has no continuous reader of its own and needs to catch up on demand. </p>
 
-<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00037">37</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00032">32</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
 
 </div>
 </div>
@@ -224,11 +223,11 @@ Public Member Functions</h2></td></tr>
 <p>Folds one execution report into the order it describes, creating it on first sight. </p>
 <p>Public so tests can drive it without standing up a queue. </p>
 
-<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00087">87</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00082">82</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00303">slick::sim::OrderResponse::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00325">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00342">slick::sim::Order::cancel_message</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8ad4539bffb6062bdcbd7e7cc1b1228926">slick::sim::CANCELED</a>, <a class="el" href="messages_8hpp_source.html#l00293">slick::sim::OrderResponse::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00299">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00335">slick::sim::Order::created_time</a>, <a class="el" href="messages_8hpp_source.html#l00309">slick::sim::OrderResponse::creation_time</a>, <a class="el" href="messages_8hpp_source.html#l00306">slick::sim::OrderResponse::cum_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00326">slick::sim::Order::cum_quantity</a>, <a class="el" href="messages_8hpp_source.html#l00295">slick::sim::OrderResponse::error_message</a>, <a class="el" href="messages_8hpp_source.html#l00297">slick::sim::OrderResponse::exec_type</a>, <a class="el" href="common_2order_8hpp_source.html#l00332">slick::sim::Order::filled_value</a>, <a class="el" href="messages_8hpp_source.html#l00302">slick::sim::OrderResponse::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00328">slick::sim::Order::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00329">slick::sim::Order::last_fill_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00337">slick::sim::Order::last_fill_time</a>, <a class="el" href="messages_8hpp_source.html#l00305">slick::sim::OrderResponse::last_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00336">slick::sim::Order::last_update_time</a>, <a class="el" href="messages_8hpp_source.html#l00307">slick::sim::OrderResponse::leaves_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00324">slick::sim::Order::leaves_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00330">slick::sim::Order::num_fills</a>, <a class="el" href="messages_8hpp_source.html#l00294">slick::sim::OrderResponse::order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00300">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="messages_8hpp_source.html#l00298">slick::sim::OrderResponse::order_status</a>, <a class="el" href="messages_8hpp_source.html#l00299">slick::sim::OrderResponse::order_type</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a51c4098970752e0185a5540f3d3f1e8e">slick::sim::PENDING_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00319">slick::sim::Order::pending_cancel</a>, <a class="el" href="messages_8hpp_source.html#l00313">slick::sim::OrderResponse::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00318">slick::sim::Order::post_only</a>, <a class="el" href="messages_8hpp_source.html#l00301">slick::sim::OrderResponse::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00322">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00317">slick::sim::Order::product_type</a>, <a class="el" href="messages_8hpp_source.html#l00304">slick::sim::OrderResponse::qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00323">slick::sim::Order::quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00341">slick::sim::Order::reject_message</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a9cc8ad3d99798c6726d4af0bd14e49d2">slick::sim::REJECTED</a>, <a class="el" href="messages_8hpp_source.html#l00312">slick::sim::OrderResponse::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00313">slick::sim::Order::side</a>, <a class="el" href="namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026ba5bac85a0c611ddef64ab0dfb383056f4">slick::sim::SPOT</a>, <a class="el" href="common_2order_8hpp_source.html#l00315">slick::sim::Order::status</a>, <a class="el" href="fixed__string_8hpp_source.html#l00094">slick::sim::utils::fixed_string&lt; N &gt;::str()</a>, <a class="el" href="messages_8hpp_source.html#l00291">slick::sim::OrderResponse::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00297">slick::sim::OrderIdentity::symbol</a>, <a class="el" href="messages_8hpp_source.html#l00300">slick::sim::OrderResponse::time_in_force</a>, <a class="el" href="common_2order_8hpp_source.html#l00316">slick::sim::Order::time_in_force</a>, <a class="el" href="messages_8hpp_source.html#l00311">slick::sim::OrderResponse::timestamp</a>, <a class="el" href="types_8hpp_source.html#l00036">slick::sim::to_price_double()</a>, <a class="el" href="types_8hpp_source.html#l00044">slick::sim::to_qty_double()</a>, <a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a3a5373f7c1598b9e251273833f5bca21">slick::sim::TRADE</a>, <a class="el" href="common_2order_8hpp_source.html#l00314">slick::sim::Order::type</a>, <a class="el" href="messages_8hpp_source.html#l00292">slick::sim::OrderResponse::user_id</a>, and <a class="el" href="common_2order_8hpp_source.html#l00298">slick::sim::OrderIdentity::user_id</a>.</p>
+<p class="reference">References <a class="el" href="messages_8hpp_source.html#l00303">slick::sim::OrderResponse::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00317">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00334">slick::sim::Order::cancel_message</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8ad4539bffb6062bdcbd7e7cc1b1228926">slick::sim::CANCELED</a>, <a class="el" href="messages_8hpp_source.html#l00293">slick::sim::OrderResponse::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00291">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00327">slick::sim::Order::created_time</a>, <a class="el" href="messages_8hpp_source.html#l00309">slick::sim::OrderResponse::creation_time</a>, <a class="el" href="messages_8hpp_source.html#l00306">slick::sim::OrderResponse::cum_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00318">slick::sim::Order::cum_quantity</a>, <a class="el" href="messages_8hpp_source.html#l00295">slick::sim::OrderResponse::error_message</a>, <a class="el" href="messages_8hpp_source.html#l00297">slick::sim::OrderResponse::exec_type</a>, <a class="el" href="common_2order_8hpp_source.html#l00324">slick::sim::Order::filled_value</a>, <a class="el" href="messages_8hpp_source.html#l00302">slick::sim::OrderResponse::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00320">slick::sim::Order::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00321">slick::sim::Order::last_fill_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00329">slick::sim::Order::last_fill_time</a>, <a class="el" href="messages_8hpp_source.html#l00305">slick::sim::OrderResponse::last_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00328">slick::sim::Order::last_update_time</a>, <a class="el" href="messages_8hpp_source.html#l00307">slick::sim::OrderResponse::leaves_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00316">slick::sim::Order::leaves_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00322">slick::sim::Order::num_fills</a>, <a class="el" href="messages_8hpp_source.html#l00294">slick::sim::OrderResponse::order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00292">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="messages_8hpp_source.html#l00298">slick::sim::OrderResponse::order_status</a>, <a class="el" href="messages_8hpp_source.html#l00299">slick::sim::OrderResponse::order_type</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a51c4098970752e0185a5540f3d3f1e8e">slick::sim::PENDING_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00311">slick::sim::Order::pending_cancel</a>, <a class="el" href="messages_8hpp_source.html#l00313">slick::sim::OrderResponse::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00310">slick::sim::Order::post_only</a>, <a class="el" href="messages_8hpp_source.html#l00301">slick::sim::OrderResponse::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00314">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00309">slick::sim::Order::product_type</a>, <a class="el" href="messages_8hpp_source.html#l00304">slick::sim::OrderResponse::qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00315">slick::sim::Order::quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00333">slick::sim::Order::reject_message</a>, <a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a9cc8ad3d99798c6726d4af0bd14e49d2">slick::sim::REJECTED</a>, <a class="el" href="messages_8hpp_source.html#l00312">slick::sim::OrderResponse::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00305">slick::sim::Order::side</a>, <a class="el" href="namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026ba5bac85a0c611ddef64ab0dfb383056f4">slick::sim::SPOT</a>, <a class="el" href="common_2order_8hpp_source.html#l00307">slick::sim::Order::status</a>, <a class="el" href="fixed__string_8hpp_source.html#l00082">slick::sim::utils::fixed_string&lt; N &gt;::str()</a>, <a class="el" href="messages_8hpp_source.html#l00291">slick::sim::OrderResponse::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00289">slick::sim::OrderIdentity::symbol</a>, <a class="el" href="messages_8hpp_source.html#l00300">slick::sim::OrderResponse::time_in_force</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::time_in_force</a>, <a class="el" href="messages_8hpp_source.html#l00311">slick::sim::OrderResponse::timestamp</a>, <a class="el" href="types_8hpp_source.html#l00036">slick::sim::to_price_double()</a>, <a class="el" href="types_8hpp_source.html#l00044">slick::sim::to_qty_double()</a>, <a class="el" href="namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a3a5373f7c1598b9e251273833f5bca21">slick::sim::TRADE</a>, <a class="el" href="common_2order_8hpp_source.html#l00306">slick::sim::Order::type</a>, <a class="el" href="messages_8hpp_source.html#l00292">slick::sim::OrderResponse::user_id</a>, and <a class="el" href="common_2order_8hpp_source.html#l00290">slick::sim::OrderIdentity::user_id</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00046">drain()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00041">drain()</a>.</p>
 
 </div>
 </div>
@@ -260,9 +259,9 @@ Public Member Functions</h2></td></tr>
 <p>A no-op on a store constructed without a queue, whose owner feeds it through <a class="el" href="classslick_1_1sim_1_1order__gateway_1_1OrderStore.html#aa567107b9266478212f70c4608f15c78" title="Folds one execution report into the order it describes, creating it on first sight.">apply()</a> instead.</p>
 <p>Bounded per call so a caller on the event loop cannot be stalled indefinitely by a backlog; whatever is left is picked up by the next drain. </p>
 
-<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00046">46</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00041">41</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="order__store_8hpp_source.html#l00087">apply()</a>, and <a class="el" href="order__store_8hpp_source.html#l00083">size()</a>.</p>
+<p class="reference">References <a class="el" href="order__store_8hpp_source.html#l00082">apply()</a>, and <a class="el" href="order__store_8hpp_source.html#l00078">size()</a>.</p>
 
 </div>
 </div>
@@ -290,7 +289,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00078">78</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00073">73</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
 
 </div>
 </div>
@@ -320,7 +319,7 @@ Public Member Functions</h2></td></tr>
 
 <p>The orders belonging to one user, most recently created first. </p>
 
-<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00060">60</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00055">55</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
 
 </div>
 </div>
@@ -347,9 +346,9 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00083">83</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="order__store_8hpp_source.html#l00078">78</a> of file <a class="el" href="order__store_8hpp_source.html">order_store.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00046">drain()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00041">drain()</a>.</p>
 
 </div>
 </div>

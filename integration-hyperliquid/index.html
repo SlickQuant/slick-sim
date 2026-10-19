@@ -1207,16 +1207,16 @@ and trades):</p>
 </tr>
 </tbody>
 </table>
-<p>There is no order-entry WebSocket, and therefore <strong>no push channel for fills</strong>. Order responses are
-returned synchronously in the <code>/exchange</code> HTTP reply, or not at all.</p>
+<p>There is no order-entry WebSocket or push channel for fills. The <code>/exchange</code> HTTP response carries
+the order result.</p>
 <h2 id="the-info-proxy">The <code>/info</code> proxy<a class="headerlink" href="#the-info-proxy" title="Permanent link">&para;</a></h2>
 <p>Both ports serve <code>POST /info</code>, and neither answers it locally. Requests are relayed <strong>verbatim</strong> to
 the real Hyperliquid API and the response is passed straight back
 (<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_info_proxy.hpp"><code>hyperliquid_info_proxy.hpp</code></a>).</p>
-<p>This exists so a <code>hyperliquid-cpp</code> client can point its <code>base_url</code> at either simulator port and still
-have <code>load_meta()</code> and <code>canonical_coin()</code> return real production metadata — asset universe, tick
-sizes, decimals. Without it, every client would have to be special-cased for the simulator.</p>
-<p>Consequences worth planning around:</p>
+<p>A <code>hyperliquid-cpp</code> client can point its <code>base_url</code> at either simulator port and use <code>load_meta()</code>
+and <code>canonical_coin()</code> to get production metadata: the asset universe, tick sizes and decimals.
+Clients need no simulator-specific metadata handling.</p>
+<p>The proxy has these constraints:</p>
 <ul>
 <li><strong><code>/info</code> needs outbound internet access.</strong> With no route to <code>api.hyperliquid.xyz</code>, metadata calls
   fail and clients cannot resolve coin names.</li>
@@ -1238,10 +1238,9 @@ sizes, decimals. Without it, every client would have to be special-cased for the
 <li><code>vaultAddress</code> in the request body.</li>
 <li>The configured <code>default_wallet</code> (<code>0x00…01</code> by default).</li>
 </ol>
-<p>Whatever comes out is used as the internal <code>user_id</code>. Since nothing routes responses asynchronously,
-its only real effect is on response correlation inside a single request — but if two clients share the
-<code>default_wallet</code> and submit orders concurrently, their responses can be mixed up, because correlation
-is on <code>user_id</code> + <code>client_order_id</code>.</p>
+<p>The selected wallet becomes the internal <code>user_id</code>. Responses are correlated by <code>user_id</code> and
+<code>client_order_id</code>. Concurrent clients sharing <code>default_wallet</code> can therefore receive mixed results,
+even though results are returned synchronously.</p>
 <h2 id="post-exchange"><code>POST /exchange</code><a class="headerlink" href="#post-exchange" title="Permanent link">&para;</a></h2>
 <p>The single order-entry route. The body must contain an <code>action</code> object with a <code>type</code>:</p>
 <table>
@@ -1432,8 +1431,7 @@ reports success while the engine rejects the cancel with <code>UNKNOWN_ORDER</co
 exactly what the engine looks up first. This route works. The response echoes the cloid:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">,</span><span class="w"> </span><span class="nt">"response"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cancel"</span><span class="p">,</span><span class="w"> </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"statuses"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"success"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-cloid-1"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
-<p>Still no confirmation that the cancel actually applied — a cancel for an unknown cloid reports
-<code>success</code> too.</p>
+<p>The response does not confirm the cancel. An unknown cloid also reports <code>success</code>.</p>
 <h3 id="batchmodify"><code>batchModify</code><a class="headerlink" href="#batchmodify" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">"action"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"batchModify"</span><span class="p">,</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">              </span><span class="nt">"modifies"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"oid"</span><span class="p">:</span><span class="w"> </span><span class="mi">12345</span><span class="p">,</span>

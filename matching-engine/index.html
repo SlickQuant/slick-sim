@@ -1246,7 +1246,7 @@
 <code>OrderBook</code> as a parameter on each call. Per-symbol configuration (currently just the SMP mode) is
 passed in from <code>Symbol</code>.</p>
 <h2 id="two-entry-points">Two entry points<a class="headerlink" href="#two-entry-points" title="Permanent link">&para;</a></h2>
-<p>The interface has two <code>match</code> overloads, and they exist for genuinely different reasons.</p>
+<p>The two <code>match</code> overloads handle client orders and incoming market-data liquidity.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// 1. A client order arrives.</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">OrdRejectReason</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TradeSummaryInfo</span><span class="o">&gt;&gt;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">match</span><span class="p">(</span><span class="n">Order</span><span class="o">*</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">price_t</span><span class="w"> </span><span class="n">order_price</span><span class="p">,</span><span class="w"> </span><span class="n">qty_t</span><span class="w"> </span><span class="n">order_qty</span><span class="p">,</span><span class="w"> </span><span class="n">OrderBook</span><span class="o">&amp;</span><span class="w"> </span><span class="n">book</span><span class="p">,</span>
@@ -1360,12 +1360,11 @@ allow-list — so are <code>AT_THE_OPENING</code> and <code>GOOD_TILL_CROSSING</
 <code>PENDING_REPLACE</code> mutation, and ahead of the FOK pre-validation. <code>wouldSelfMatch</code> walks the opposing
 side as far as the incoming quantity could actually reach and asks whether any of it is the order's
 own.</p>
-<p>That ordering is the whole point. The matching loop mutates before it matches — an amendment writes
-the new price and quantity onto the stored <code>Order</code> and reports <code>REPLACED</code>, and a new order is acked —
-so deciding mid-loop would mean telling the client its order was replaced or working and then
-rejecting it, with the amendment half-applied to an order that never moved on the book. Deciding
-first means a rejected order leaves no trace: the client sees its pending, then one <code>REJECTED</code>, and
-the stored order keeps its original price and quantity.</p>
+<p>The check must precede mutation. On entering the matching loop, an amendment updates the stored
+<code>Order</code> and reports <code>REPLACED</code>; a new order is acknowledged. Rejecting a self-match at that point
+would leave an amendment partly applied and send conflicting reports. With the pre-check, the client
+sees its pending report followed by one <code>REJECTED</code>, and the stored order keeps its original price
+and quantity.</p>
 <p>Running before the mutation does mean the pre-check has to derive the quantity the loop is <em>about</em>
 to use rather than reading it afterwards. The <code>order_qty</code> argument is the order's total quantity; for
 a partially filled amendment the loop will match only <code>leaves_quantity + (order_qty - quantity)</code>.
@@ -1488,7 +1487,7 @@ the cumulative totals. And the same three lines appear twice: here for the aggre
   display-only fee from a <code>fee_rate_</code> when building execution reports.</li>
 </ul>
 <h2 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h2>
-<p>The engine is the best-covered part of the codebase:</p>
+<p>These tests cover the matching engine:</p>
 <table>
 <thead>
 <tr>

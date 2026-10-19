@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('classslick_1_1sim_1_1order__gateway_1_
 </div><!--header-->
 <div class="contents">
 
-<p>Correlates an in-flight HTTP request with the execution report that answers it.  
+<p>Correlates an in-flight HTTP request with its execution report.  
  <a href="classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="pending__responses_8hpp_source.html">order_gateway/pending_responses.hpp</a>&gt;</code></p>
@@ -144,12 +144,12 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:aaf327afdec1c0c8cb695c2024f4d3672"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Correlates an in-flight HTTP request with the execution report that answers it. </p>
-<p>The REST handlers used to poll <code>response_queue_</code> with a 100us sleep until their own report arrived. That ran on the gateway's only event-loop thread, so one order stalled every other client's request for up to the full timeout - and the batch handlers polled once per entry, stalling for that long per order in the batch. A handler now records what it is waiting for and returns immediately; the gateway's drain completes the HTTP response when the report arrives, and the request's own timer completes it as a timeout if it does not.</p>
-<p>Waiters are matched by predicate rather than a keyed lookup because the handlers correlate on different things: a create knows its <code>client_order_id</code>, a cancel only the timestamp it stamped on its request. The list is bounded by the requests actually in flight, so scanning it is cheaper than maintaining several indexes.</p>
-<p>Single-threaded by construction - every method runs on the gateway's loop thread, the same rule the rest of the gateway follows. </p>
+<div class="textblock"><p>Correlates an in-flight HTTP request with its execution report. </p>
+<p>A handler records what it is waiting for and returns. The gateway's drain completes the response when a report arrives; the request timer completes it on timeout. Polling with a 100us sleep would block the gateway's only event loop for the full timeout, once per entry for a batch request.</p>
+<p>Predicates support the handlers' different correlation keys: client_order_id for creates and request timestamps for cancels. The list is bounded by the requests in flight, so scanning costs less than maintaining several indexes.</p>
+<p>All methods run on the gateway's loop thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00028">28</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00023">23</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a9b7e518d7d06393c439ef1282266b51b" name="a9b7e518d7d06393c439ef1282266b51b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9b7e518d7d06393c439ef1282266b51b">&#9670;&#160;</a></span>Completion</h2>
@@ -166,7 +166,7 @@ Static Public Attributes</h2></td></tr>
 <p>Invoked with the matching report, or with nullptr when the wait timed out. </p>
 <p>Called exactly once per waiter unless the waiter is abandoned. </p>
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00033">33</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00028">28</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>
@@ -182,7 +182,7 @@ Static Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00030">30</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00025">25</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>
@@ -198,7 +198,7 @@ Static Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00034">34</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00029">29</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>
@@ -230,7 +230,7 @@ Static Public Attributes</h2></td></tr>
 <p>Drops a waiter without completing it, for a client that went away. </p>
 <p>The completion is never run, because it would write to a dead connection. </p>
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00077">77</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00072">72</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>
@@ -268,7 +268,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00038">38</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00033">33</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>
@@ -299,7 +299,7 @@ Static Public Attributes</h2></td></tr>
 <p>Offers a report to the waiters, completing at most one of them. </p>
 <p>A report answers a single request, so the first match wins and the rest keep waiting. Returns whether anything claimed it. </p>
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00048">48</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00043">43</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>
@@ -330,7 +330,7 @@ Static Public Attributes</h2></td></tr>
 <p>Completes a waiter as timed out. </p>
 <p>A no-op if its report already arrived, so a timer that fires after the fact is harmless. </p>
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00065">65</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00060">60</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>
@@ -357,7 +357,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00093">93</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00088">88</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>
@@ -385,7 +385,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00084">84</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00079">79</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>
@@ -410,7 +410,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00036">36</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="pending__responses_8hpp_source.html#l00031">31</a> of file <a class="el" href="pending__responses_8hpp_source.html">pending_responses.hpp</a>.</p>
 
 </div>
 </div>

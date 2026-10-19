@@ -1294,10 +1294,9 @@
 </tr>
 </tbody>
 </table>
-<p>The two order-entry endpoints are <strong>not</strong> alternatives — they are the two halves of one round trip.
-You send on REST and hear back on the WebSocket.</p>
-<p>Point your client's REST base URL and WebSocket URLs at these and it should work unchanged, subject to
-the gaps noted throughout.</p>
+<p>Use both order-entry endpoints: submit orders over REST and receive execution reports over WebSocket.</p>
+<p>Point the client's REST and WebSocket URLs at the local endpoints. The limitations below describe
+where behaviour differs from Coinbase.</p>
 <div class="admonition important">
 <p class="admonition-title">Use both order-entry endpoints</p>
 <p>The REST route returns only the <code>PENDING_NEW</code> acknowledgement. Fills, cancels and rejects arrive
@@ -1315,9 +1314,8 @@ claim, and takes everything after the last <code>/</code> as the <code>user_id</
 <p>Signature verification is commented out in the WebSocket gateway and never attempted in REST. Any
 syntactically valid JWT is accepted; a malformed one gets <code>401 Unauthorized</code> (REST) or an error
 message and a socket close (WebSocket).</p>
-<p>The <code>user_id</code> matters: it is how responses are routed back. The WebSocket gateway keys its client map
-by <code>user_id</code>, so <strong>the REST and WebSocket connections must present tokens with the same <code>sub</code></strong> or
-your fills will be published to nobody.</p>
+<p>The WebSocket gateway routes responses by <code>user_id</code>. Use the same <code>sub</code> claim on the REST and
+WebSocket connections; otherwise no socket receives the fills.</p>
 <p>Market data requires no authentication.</p>
 <h2 id="rest-order-entry">REST order entry<a class="headerlink" href="#rest-order-entry" title="Permanent link">&para;</a></h2>
 <p>Nine routes are implemented. Everything else 404s.</p>
@@ -1461,7 +1459,7 @@ within the window is reported as success.</p>
 <p><code>UNKNOWN_ORDER</code> with <code>submitted = false</code> means the gateway has no record of that <code>order_id</code> at all —
 it only tracks orders created through <em>this</em> gateway instance, in an in-memory
 <code>order_id_to_symbol_</code> map that is not shared with the WebSocket gateway and does not survive a restart.</p>
-<p>Serialised cancels mean a batch of 20 unknown-to-the-engine orders can take up to 4 seconds.</p>
+<p>Cancels run in sequence. A batch of 20 orders unknown to the engine can take up to 4 seconds.</p>
 <h3 id="post-apiv3brokerageordersedit"><code>POST /api/v3/brokerage/orders/edit</code><a class="headerlink" href="#post-apiv3brokerageordersedit" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">"order_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"9f0c1a4e-…"</span><span class="p">,</span><span class="w"> </span><span class="nt">"price"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60500.00"</span><span class="p">,</span><span class="w"> </span><span class="nt">"size"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.02"</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>

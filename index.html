@@ -913,11 +913,9 @@
 
 
 <h1 id="slick-sim">Slick Sim<a class="headerlink" href="#slick-sim" title="Permanent link">&para;</a></h1>
-<p><code>slick-sim</code> is an exchange simulator that re-exposes a real venue's <em>own</em> APIs on local ports — the
-same <strong>order-entry</strong> endpoints you would send orders to, and the same <strong>market-data</strong> channels you
-would subscribe to for prices. A trading client connects to it exactly as it would to the real
-exchange — same REST routes, same WebSocket channels, same message shapes — but orders are matched by
-an in-process FIFO matching engine, so no capital is ever at risk.</p>
+<p><code>slick-sim</code> serves a venue's order-entry and market-data APIs on local ports. Clients use the same
+REST routes, WebSocket channels and message formats as on the real exchange. An in-process FIFO
+matching engine fills their orders without risking capital.</p>
 <p>What your orders match against depends on how you configure the market-data feed:</p>
 <ul>
 <li><strong>Shadowing</strong> — connect a live feed and <code>slick-sim</code> mirrors the real venue's book, so your orders
@@ -997,9 +995,8 @@ an in-process FIFO matching engine, so no capital is ever at risk.</p>
 </tbody>
 </table>
 <h2 id="before-you-rely-on-any-of-this">Before you rely on any of this<a class="headerlink" href="#before-you-rely-on-any-of-this" title="Permanent link">&para;</a></h2>
-<p><code>slick-sim</code> is early-stage and under active development. Several code paths are stubs, and a few do
-something other than what their surroundings suggest. Everything known is collected in
-<strong><a href="known-gaps/">Known gaps</a></strong> — read it before debugging behaviour that surprises you.</p>
+<p><code>slick-sim</code> is under active development. Some code paths are stubs or behave differently from the
+intended design. Check <a href="known-gaps/">Known gaps</a> when investigating unexpected behaviour.</p>
 <h2 id="elsewhere">Elsewhere<a class="headerlink" href="#elsewhere" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="https://slickquant.github.io/slick-sim/api/">API reference</a> — Doxygen-generated C++ reference for <code>src/</code>.</li>

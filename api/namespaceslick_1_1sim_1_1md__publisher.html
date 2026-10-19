@@ -149,7 +149,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a4dfc455026fcf7bce0e437d7c2cfa28c"><td class="mdescLeft">&#160;</td><td class="mdescRight">A run of trades in the order given.  <br /></td></tr>
 <tr class="separator:a4dfc455026fcf7bce0e437d7c2cfa28c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f512f7d971b8ddc7acacb625f2d464d" id="r_a6f512f7d971b8ddc7acacb625f2d464d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__publisher.html#a6f512f7d971b8ddc7acacb625f2d464d">to_hyperliquid_number</a> (int_fast64_t value)</td></tr>
-<tr class="memdesc:a6f512f7d971b8ddc7acacb625f2d464d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders a fixed-point price or size the way Hyperliquid puts one on the wire.  <br /></td></tr>
+<tr class="memdesc:a6f512f7d971b8ddc7acacb625f2d464d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Formats a fixed-point price or size as Hyperliquid does on the wire.  <br /></td></tr>
 <tr class="separator:a6f512f7d971b8ddc7acacb625f2d464d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
@@ -245,7 +245,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00134">134</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00126">126</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00034">slick::sim::md_publisher::L2Diff::l</a>, and <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00035">slick::sim::md_publisher::L2Diff::r</a>.</p>
 
@@ -267,7 +267,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00146">146</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00138">138</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
 
 </div>
 </div>
@@ -485,7 +485,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00092">92</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00084">84</a> of file <a class="el" href="hyperliquid__l2__diff_8cpp_source.html">hyperliquid_l2_diff.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00020">L2_PUBLISH_DEPTH</a>, <a class="el" href="market__data_8hpp_source.html#l00057">slick::sim::MDLevel::num_orders</a>, <a class="el" href="market__data_8hpp_source.html#l00055">slick::sim::MDLevel::price</a>, and <a class="el" href="market__data_8hpp_source.html#l00056">slick::sim::MDLevel::qty</a>.</p>
 
@@ -515,12 +515,11 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Renders a fixed-point price or size the way Hyperliquid puts one on the wire. </p>
-<p>The venue serialises both as shortest-round-trip floats, which always leave a fractional digit behind: 77052 goes out as "77052.0". Nothing is padded past that - 0.73245 stays "0.73245" and 1.915 stays "1.915" - so this is exactly <code>to_fixed_string</code> with a one-digit floor, not a fixed-decimal format. A session capture bears that out: all 201 distinct prices ended in ".0", and not one of the 8807 distinct sizes carried a trailing zero.</p>
-<p>Worth reproducing because a client may key levels by the price string it received rather than by a parsed number, and against the venue those keys carry the ".0".</p>
-<p>Hyperliquid's only, deliberately: Coinbase renders the same values with <code>to_price_string</code>/<code>to_qty_string</code>, which trim a whole number down to "99". </p>
+<p>Formats a fixed-point price or size as Hyperliquid does on the wire. </p>
+<p>The venue uses shortest-round-trip floats with at least one fractional digit: 77052 becomes "77052.0", while 0.73245 and 1.915 keep their existing digits. Use to_fixed_string with a one-digit minimum. In a session capture, all 201 distinct prices ended in ".0" and none of the 8807 distinct sizes had a trailing zero.</p>
+<p>This matters for clients that key levels by the received price string. Coinbase uses to_price_string/to_qty_string instead and renders whole values without the fractional digit, such as "99". </p>
 
-<p class="definition">Definition at line <a class="el" href="hyperliquid__wire__format_8hpp_source.html#l00023">23</a> of file <a class="el" href="hyperliquid__wire__format_8hpp_source.html">hyperliquid_wire_format.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hyperliquid__wire__format_8hpp_source.html#l00019">19</a> of file <a class="el" href="hyperliquid__wire__format_8hpp_source.html">hyperliquid_wire_format.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="types_8hpp_source.html#l00062">slick::sim::to_fixed_string()</a>.</p>
 
@@ -549,7 +548,7 @@ Variables</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="hyperliquid__l2__diff_8hpp_source.html#l00020">20</a> of file <a class="el" href="hyperliquid__l2__diff_8hpp_source.html">hyperliquid_l2_diff.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00092">split_book_snapshot()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="hyperliquid__l2__diff_8cpp_source.html#l00084">split_book_snapshot()</a>.</p>
 
 </div>
 </div>

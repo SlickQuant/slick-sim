@@ -1183,8 +1183,7 @@
 sample committed to the repository is <strong><code>config/slick_sim.json</code></strong> — different directory, and an
 underscore rather than a hyphen. The default will not find it.</p>
 </div>
-<p>This page documents every key the code actually reads, with the source that reads it. Anything not
-listed here is ignored.</p>
+<p>The supported keys and their defaults are listed below, with source references. Unlisted keys are ignored.</p>
 <h2 id="top-level">Top level<a class="headerlink" href="#top-level" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -1334,9 +1333,8 @@ SMP disabled rather than aborting startup. See
 <p>The three <code>*_shm_name</code> keys appear in no sample config and are not otherwise exercised. Note that a
 shared-memory reader must be built with the same <code>int_fast64_t</code> width — see
 <a href="../market-data/#the-internal-market-data-wire-format">Market data</a>.</p>
-<p>A named segment is not removed at shutdown. Since slick-queue 2.3.0 a queue no longer unlinks its
-segment when it is destroyed, because another process may still be attached, and slick-sim does not
-unlink it either. On Linux and macOS the name therefore stays in <code>/dev/shm</code>, and a simulator
+<p>Named segments survive shutdown. Since slick-queue 2.3.0, destroying a queue leaves its segment
+linked for other attached processes; slick-sim leaves it linked too. On Linux and macOS the name therefore stays in <code>/dev/shm</code>, and a simulator
 restarted with the same name attaches to the old segment and whatever is still in it; remove the
 segment between runs if that is not what you want. Windows frees a segment with its last handle.</p>
 <div class="admonition danger">
@@ -1378,8 +1376,7 @@ segment between runs if that is not what you want. Windows frees a segment with 
 is silently ignored.</p>
 <p>An exchange with no usable feed — <code>md_feeds</code> omitted, empty, or containing only unrecognised types —
 runs in <strong>self-contained mode</strong>: books start empty and the only liquidity is what clients submit.
-That is a supported configuration, not a broken one; it turns <code>slick-sim</code> into a conventional exchange
-simulator with the same order-entry and market-data surface. See
+This supported mode uses the same order-entry and market-data APIs as live shadowing. See
 <a href="../architecture/#operating-modes">Operating modes</a>.</p>
 <p>To disable a live feed without deleting the block, change its <code>type</code> to something the adapter does not
 recognise — there is no <code>enabled</code> flag on a feed entry.</p>
@@ -1489,8 +1486,8 @@ fail validation with <code>INVALID_PRODUCT_ID</code>.</p>
 </tr>
 </tbody>
 </table>
-<p>The publisher's own ping interval (15 s) and pong timeout (60 s) are hard-coded in
-<code>WebsocketMarketDataPublisher</code> and not configurable.</p>
+<p><code>WebsocketMarketDataPublisher</code> fixes the ping interval at 15 s and the pong timeout at 60 s.
+Neither has a configuration key.</p>
 <h2 id="hyperliquid">Hyperliquid<a class="headerlink" href="#hyperliquid" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">"hyperliquid"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nt">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
@@ -1672,8 +1669,7 @@ unchanged.</p>
 <p>The sample's disabled <code>cme</code> block reserves 4003 for its order gateway and 5002 for its market data
 publisher, so nothing collides if you enable it once a CME adapter exists.</p>
 <h2 id="outbound-network-calls">Outbound network calls<a class="headerlink" href="#outbound-network-calls" title="Permanent link">&para;</a></h2>
-<p>Worth knowing before running this in a restricted environment. <code>slick-sim</code> reaches the public internet
-in four places:</p>
+<p><code>slick-sim</code> makes the following outbound calls:</p>
 <ol>
 <li><strong>Coinbase market data</strong> — WebSocket, whenever a <code>coinbase_live_ws</code> feed is configured and a client
    subscribes.</li>

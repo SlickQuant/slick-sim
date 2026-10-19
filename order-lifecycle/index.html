@@ -1227,8 +1227,8 @@
 
 
 <h1 id="order-lifecycle">Order lifecycle<a class="headerlink" href="#order-lifecycle" title="Permanent link">&para;</a></h1>
-<p>This page follows a single order from the moment it arrives at a gateway to the moment the client
-sees a fill, then documents every enum and struct involved.</p>
+<p>An order passes from the gateway through the exchange and matching engine before its reports return
+to the client. The flow below traces that path, followed by the request and response types.</p>
 <h2 id="the-happy-path-end-to-end">The happy path, end to end<a class="headerlink" href="#the-happy-path-end-to-end" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>sequenceDiagram
     autonumber
@@ -1265,7 +1265,6 @@ sees a fill, then documents every enum and struct involved.</p>
     E-&gt;&gt;E: publishTradeSummary / publishLevelUpdate → md_queue
     SQ--&gt;&gt;G: async execution reports (WS gateway only)
     G--&gt;&gt;C: fills over the user channel</code></pre>
-<p>Two things about this flow are unusual and worth stating plainly.</p>
 <p><strong>The REST response is the <code>PENDING_NEW</code> report, not the fill.</strong> The gateway's polling loop breaks on
 the <em>first</em> response matching its <code>user_id</code> + <code>client_order_id</code>, which is always the <code>PENDING_NEW</code>
 report emitted by <code>sendOrderNewPending</code> before matching even starts. The HTTP call returns
@@ -1292,9 +1291,8 @@ a packed struct with a union payload:</p>
 </code></pre></div>
 <p><code>time_stamp</code> matters beyond logging: the cancel and edit handlers correlate responses by matching
 <code>OrderResponse::request_time</code> against the <code>Request::time_stamp</code> they published.</p>
-<p>The fixed-size char arrays are hard limits. <code>client_order_id</code> and <code>order_id</code> are 37 bytes (a UUID
-plus NUL); <code>symbol</code> is 32. The Coinbase gateway truncates and logs a warning when a <code>client_order_id</code>
-overflows.</p>
+<p>The fixed-size fields limit <code>client_order_id</code> and <code>order_id</code> to 37 bytes each (UUID plus NUL), and
+<code>symbol</code> to 32 bytes. The Coinbase gateway truncates an overlong <code>client_order_id</code> and logs a warning.</p>
 <h3 id="2-exchange-dispatch">2. Exchange dispatch<a class="headerlink" href="#2-exchange-dispatch" title="Permanent link">&para;</a></h3>
 <p><code>Exchange::processRequest</code> reads one request per call and switches on <code>msg_type</code>:</p>
 <table>
@@ -1585,7 +1583,7 @@ any price".</p>
 <p><code>OrderStatus</code>: <code>NEW</code> <code>0</code>, <code>PARTIALLY_FILLED</code> <code>1</code>, <code>FILLED</code> <code>2</code>, <code>DONE_FOR_DAY</code> <code>3</code>, <code>CANCELED</code> <code>4</code>,
 <code>REPLACED</code> <code>5</code>, <code>PENDING_CANCEL</code> <code>6</code>, <code>STOPPED</code> <code>7</code>, <code>REJECTED</code> <code>8</code>, <code>SUSPENDED</code> <code>9</code>, <code>PENDING_NEW</code>
 <code>A</code>, <code>CALCULATED</code> <code>B</code>, <code>EXPIRED</code> <code>C</code>, <code>ACCEPTED_FOR_BIDDING</code> <code>D</code>, <code>PENDING_REPLACE</code> <code>E</code>.</p>
-<p>Only a subset is ever produced: <code>PENDING_NEW</code>, <code>NEW</code>, <code>PARTIALLY_FILLED</code>, <code>FILLED</code>, <code>PENDING_REPLACE</code>,
+<p>The code produces these statuses: <code>PENDING_NEW</code>, <code>NEW</code>, <code>PARTIALLY_FILLED</code>, <code>FILLED</code>, <code>PENDING_REPLACE</code>,
 <code>REPLACED</code>, <code>PENDING_CANCEL</code>, <code>CANCELED</code>, <code>REJECTED</code>.</p>
 <h3 id="ordrejectreason"><code>OrdRejectReason</code><a class="headerlink" href="#ordrejectreason" title="Permanent link">&para;</a></h3>
 <p>Twenty-two values are declared. These are the ones actually raised:</p>

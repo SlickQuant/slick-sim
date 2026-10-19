@@ -97,7 +97,7 @@ $(document).ready(function(){initNavTree('structslick_1_1sim_1_1OrderIdentity.ht
 </div><!--header-->
 <div class="contents">
 
-<p>The four identity fields every order carries, in the exact order and width of the header that opens an <a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a>.  
+<p>The four identity fields, stored inline in the order and width used by <a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a>.  
  <a href="structslick_1_1sim_1_1OrderIdentity.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="common_2order_8hpp_source.html">common/order.hpp</a>&gt;</code></p>
@@ -124,11 +124,11 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a4e5ea1aa4597ea459c78b0f01183a5b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The four identity fields every order carries, in the exact order and width of the header that opens an <a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a>. </p>
-<p>These were four std::strings, which meant four heap allocations on an object that is pooled precisely so the order path never allocates, and a publish step that ran <code>memcpy(response.symbol, order-&gt;symbol.c_str(), sizeof(response.symbol))</code> once per field - four loads of a data pointer, four copies out of four unrelated heap blocks, and a read past the end of every string shorter than the wire field it was filling.</p>
-<p>Held inline and laid out to match, the whole header goes out in a single memcpy from memory the order already has hot. <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> derives from this so the block stays contiguous and addressable on its own; <a class="el" href="messages_8hpp.html">messages.hpp</a> static_asserts the layout against <a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a>, so resizing a field on either side fails the build rather than quietly shifting the ids on the wire. </p>
+<div class="textblock"><p>The four identity fields, stored inline in the order and width used by <a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a>. </p>
+<p>This avoids four heap allocations and lets the publisher copy the header with one memcpy, without reading past a short string's buffer.</p>
+<p><a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> derives from this type to keep the block contiguous and separately addressable. <a class="el" href="messages_8hpp.html">messages.hpp</a> checks the layout against <a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a> at compile time, so a field-size change cannot silently shift the wire identifiers. </p>
 
-<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00296">296</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00288">288</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a4dba131c8c05c2c439cd25853cf8778c" name="a4dba131c8c05c2c439cd25853cf8778c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4dba131c8c05c2c439cd25853cf8778c">&#9670;&#160;</a></span>client_order_id</h2>
@@ -142,9 +142,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00299">299</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00291">291</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00088">slick::sim::OrderBook::addOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="symbol_8cpp_source.html#l00083">slick::sim::exch::Symbol::cancelOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00121">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00107">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="exchange_8cpp_source.html#l00199">slick::sim::exch::Exchange::handleNewOrderRequest()</a>, <a class="el" href="symbol_8cpp_source.html#l00061">slick::sim::exch::Symbol::modifyOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00135">slick::sim::OrderBook::modifyOrder()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00088">slick::sim::OrderBook::addOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00082">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="symbol_8cpp_source.html#l00080">slick::sim::exch::Symbol::cancelOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00121">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00107">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="exchange_8cpp_source.html#l00195">slick::sim::exch::Exchange::handleNewOrderRequest()</a>, <a class="el" href="symbol_8cpp_source.html#l00058">slick::sim::exch::Symbol::modifyOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00135">slick::sim::OrderBook::modifyOrder()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
 
 </div>
 </div>
@@ -160,9 +160,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00300">300</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00292">292</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00088">slick::sim::OrderBook::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00301">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="symbol_8cpp_source.html#l00083">slick::sim::exch::Symbol::cancelOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00121">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00107">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>, <a class="el" href="symbol_8cpp_source.html#l00061">slick::sim::exch::Symbol::modifyOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00135">slick::sim::OrderBook::modifyOrder()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00088">slick::sim::OrderBook::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00299">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00082">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="symbol_8cpp_source.html#l00080">slick::sim::exch::Symbol::cancelOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00121">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00107">slick::sim::OrderBook::deleteOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>, <a class="el" href="symbol_8cpp_source.html#l00058">slick::sim::exch::Symbol::modifyOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00135">slick::sim::OrderBook::modifyOrder()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
 
 </div>
 </div>
@@ -178,9 +178,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00297">297</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00289">289</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">canFillCompletely()</a>, <a class="el" href="exchange_8cpp_source.html#l00199">slick::sim::exch::Exchange::handleNewOrderRequest()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00082">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">canFillCompletely()</a>, <a class="el" href="exchange_8cpp_source.html#l00195">slick::sim::exch::Exchange::handleNewOrderRequest()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00032">handleSelfMatch()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
 
 </div>
 </div>
@@ -196,9 +196,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00298">298</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="common_2order_8hpp_source.html#l00290">290</a> of file <a class="el" href="common_2order_8hpp_source.html">order.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00087">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="exchange_8cpp_source.html#l00199">slick::sim::exch::Exchange::handleNewOrderRequest()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__store_8hpp_source.html#l00082">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="exchange_8cpp_source.html#l00195">slick::sim::exch::Exchange::handleNewOrderRequest()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
 
 </div>
 </div>

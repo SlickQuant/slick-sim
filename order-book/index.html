@@ -1064,9 +1064,8 @@
 <p><code>slick::sim::OrderBook</code>
 (<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/order_book/order_book.hpp"><code>src/order_book/order_book.hpp</code></a>)
 wraps the external
-<a href="https://github.com/SlickQuant/slick-orderbook">slick-orderbook</a> L3 book and adds the one thing the
-simulator needs that a plain book does not: the ability to hold <strong>real-market liquidity and simulated
-user orders in the same structure</strong> while keeping them straight.</p>
+<a href="https://github.com/SlickQuant/slick-orderbook">slick-orderbook</a> L3 book. It holds real-market liquidity
+and simulated user orders in the same structure, with separate bookkeeping for each.</p>
 <h2 id="class-shape">Class shape<a class="headerlink" href="#class-shape" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">OrderBook</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">OrderBookL3</span><span class="p">,</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">                  </span><span class="k">public</span><span class="w"> </span><span class="n">orderbook</span><span class="o">::</span><span class="n">IOrderBookObserver</span><span class="p">,</span>
@@ -1080,13 +1079,12 @@ user orders in the same structure</strong> while keeping them straight.</p>
 adapters instantiate <code>OrderBookImpl&lt;OrderBookType::L2&gt;</code>; the <code>L3</code> specialisation's <code>populate*</code> methods
 are <a href="../known-gaps/#l3-order-books-are-stubs">empty stubs</a>.</p>
 <h2 id="phantom-orders-versus-simulator-orders">Phantom orders versus simulator orders<a class="headerlink" href="#phantom-orders-versus-simulator-orders" title="Permanent link">&para;</a></h2>
-<p>This is the central concept.</p>
 <p>When the market-data feed reports that the real venue has 5 BTC bid at 100,000, the simulator cannot
 know which orders make up that 5 BTC. It synthesises a <strong>phantom order</strong> — a single anonymous order
 for the whole level quantity, with a fresh id from <code>utils::nextOrderId()</code> — and inserts it into the
 L3 book. When your client sends a bid for 1 BTC at the same price, that becomes a <strong>simulator order</strong>
 inserted into the same price level, behind the phantom order in the queue.</p>
-<p>The book distinguishes them by a simple rule:</p>
+<p>The <code>orders_</code> index distinguishes them:</p>
 <blockquote>
 <p>An order is a <strong>simulator order</strong> if and only if it is in <code>orders_</code>.
 Everything else in the L3 book is phantom.</p>
@@ -1250,8 +1248,8 @@ orders.</p>
 </code></pre></div>
 <p>The <code>if (order)</code> guard is what makes it safe to call for phantom orders too.</p>
 <p>Note <code>order-&gt;last_fill_price = order-&gt;price</code> — the <em>order's own</em> price, not a trade price passed in.
-That is correct here because this only ever runs against the <strong>resting</strong> side: <code>executeOrder</code> is
-called with the book order's id, and a resting order trades at its own price. An aggressor's fill
+This function runs on the resting side: <code>executeOrder</code> receives the book order's id, and that order
+trades at its own price. An aggressor's fill
 price is the level it matched, which <code>FifoMatchingEngine::match</code> writes onto the aggressor directly;
 it is never routed through this function, because an order does not enter <code>orders_</code> until after it
 has finished matching.</p>

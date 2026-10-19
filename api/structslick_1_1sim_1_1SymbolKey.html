@@ -98,7 +98,7 @@ $(document).ready(function(){initNavTree('structslick_1_1sim_1_1SymbolKey.html',
 </div><!--header-->
 <div class="contents">
 
-<p>Identity of an instrument: a name is only unique within a venue.  
+<p>An instrument is identified by both venue and name.  
  <a href="structslick_1_1sim_1_1SymbolKey.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="symbol__manager_8hpp_source.html">common/symbol_manager.hpp</a>&gt;</code></p>
@@ -121,10 +121,10 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a390108ceca6a909c06c71d6e02a98cb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Identity of an instrument: a name is only unique within a venue. </p>
-<p>Keying the lookup on the name alone let two venues listing the same ticker collide - the second <code>createSymbol</code> found the name already present, so its Symbol was built but never became reachable, and every lookup for it returned the <em>other</em> venue's instrument instead. </p>
+<div class="textblock"><p>An instrument is identified by both venue and name. </p>
+<p>Using the name alone would make instruments with the same ticker on different venues collide: the second Symbol would be unreachable, and lookups would return the first. </p>
 
-<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00018">18</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00015">15</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a21989a0c82b1115c4ee00640872f3df0" name="a21989a0c82b1115c4ee00640872f3df0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a21989a0c82b1115c4ee00640872f3df0">&#9670;&#160;</a></span>operator==()</h2>
@@ -150,9 +150,9 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00022">22</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00019">19</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="symbol__manager_8hpp_source.html#l00020">name</a>, and <a class="el" href="symbol__manager_8hpp_source.html#l00019">venue</a>.</p>
+<p class="reference">References <a class="el" href="symbol__manager_8hpp_source.html#l00017">name</a>, and <a class="el" href="symbol__manager_8hpp_source.html#l00016">venue</a>.</p>
 
 </div>
 </div>
@@ -169,9 +169,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00020">20</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00017">17</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol__manager_8hpp_source.html#l00022">operator==()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol__manager_8hpp_source.html#l00019">operator==()</a>.</p>
 
 </div>
 </div>
@@ -187,9 +187,9 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00019">19</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="symbol__manager_8hpp_source.html#l00016">16</a> of file <a class="el" href="symbol__manager_8hpp_source.html">symbol_manager.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol__manager_8hpp_source.html#l00022">operator==()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol__manager_8hpp_source.html#l00019">operator==()</a>.</p>
 
 </div>
 </div>
