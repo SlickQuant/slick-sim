@@ -1,11 +1,7 @@
 # Known gaps
 
-`slick-sim` is early-stage. This page lists everything found in the current source that is
-unimplemented, half-wired, or behaves differently from what the surrounding code implies. It exists
-so the rest of the documentation can describe the intended design without having to hedge every
-paragraph, and so you do not spend an afternoon debugging something that was never finished.
-
-Each entry says what it is, where it lives, and what it means for you.
+`slick-sim` is under active development. The limitations below include unfinished code paths and
+behaviour that differs from the intended design, with source references and consequences for clients.
 
 ## Venues
 
@@ -20,11 +16,7 @@ still resolves.
 
 ### An unknown venue key is rejected at startup
 
-This used to be a gap: `main.cpp` dispatched on the config key with an `if/else`, and **anything
-else** constructed a plain `Exchange` that bound no ports, populated no publisher, and — because the
-base `start()` had no loop — processed at most one request before its thread exited. Silently.
-
-Both halves are now closed. The loop lives in
+The processing loop lives in
 [`Exchange::start()`](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp),
 and keys resolve through the
 [venue registry](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange_registry.hpp)
@@ -52,7 +44,7 @@ Every REST handler that needs a reply from the matching engine waits for it by p
 on the gateway's **only** uWebSockets event-loop thread, so while one request waits, no other
 client's request on that gateway is served at all - not even one that would answer instantly.
 
-The batch handlers are worse, because they poll once per entry rather than once per request:
+Batch handlers poll once per entry, which compounds the delay:
 [`handle_batch_cancel`](https://github.com/SlickQuant/slick-sim/blob/main/src/venues/coinbase/coinbase_rest_order_gateway.cpp#L638)
 and Hyperliquid's
 [`process_order_action`](https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_rest_order_gateway.cpp#L263)
@@ -111,11 +103,9 @@ implementation of that same two-method interface.
 recorded market data — but no feed implements it. Live WebSocket feeds are the only source of market
 data today.
 
-A `md_feeds` entry whose `type` is neither `coinbase_live_ws` nor `hyperliquid_live_ws` is silently
-ignored, which leaves the venue running
-[self-contained](architecture.md#self-contained-a-conventional-exchange-simulator). That is a valid
-mode, so a typo in `type` degrades quietly rather than erroring — worth checking the startup log if
-you expected live data and got an empty book.
+An unrecognised `md_feeds[].type` is silently ignored, leaving the venue
+[self-contained](architecture.md#self-contained-a-conventional-exchange-simulator). If you expected
+live data but see an empty book, check the feed type and startup log.
 
 ### `Exchange::processMdData()` and the market-data thread are commented out
 

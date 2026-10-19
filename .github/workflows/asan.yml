@@ -76,11 +76,9 @@ jobs:
           slickquant-hyperliquid-cpp \
           "uwebsockets[core,ssl,zlib]"
 
-    # CMAKE_BUILD_TYPE=Debug is load-bearing, not a preference: ENABLE_ASAN puts
-    # -fsanitize=address,undefined into CMAKE_CXX_FLAGS_DEBUG and
-    # CMAKE_EXE_LINKER_FLAGS_DEBUG only (see CMakeLists.txt). Configuring Release
-    # with ENABLE_ASAN=ON on GCC/Clang produces a build with no sanitizer in it and
-    # a green job that checked nothing.
+    # Debug is required: ENABLE_ASAN adds -fsanitize=address,undefined only to
+    # CMAKE_CXX_FLAGS_DEBUG and CMAKE_EXE_LINKER_FLAGS_DEBUG. A GCC/Clang Release
+    # build would run without sanitizers even with ENABLE_ASAN=ON.
     - name: Configure CMake
       shell: bash
       run: >
@@ -107,11 +105,8 @@ jobs:
     - name: Run tests under ASan + UBSan
       working-directory: build
       env:
-        # detect_leaks is off deliberately. The process exits with live singletons
-        # (SymbolManager) and pooled Orders that are never individually freed, so
-        # LeakSanitizer reports them at exit and would keep this job permanently
-        # red. Turning it on is worthwhile but is its own piece of work - it needs
-        # a suppressions file for the intentional cases first.
+        # Leak detection needs suppressions for intentionally live SymbolManager
+        # and pooled Orders at exit. Leave it off until those suppressions exist.
         ASAN_OPTIONS: detect_leaks=0:strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1
         # UBSan only warns by default and would let a failure pass as a green run.
         UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1

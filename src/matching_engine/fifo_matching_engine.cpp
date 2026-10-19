@@ -224,7 +224,7 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
         auto order_it = orders.begin();
         auto &book_order = *order_it;
 
-        // NEW: Self-Match Prevention check (exceptional case)
+        // Check for a self-match
         auto* full_book_order = book.findOrder(book_order.order_id);
         if (smp_mode != SelfMatchPreventionMode::NONE && isSelfMatch(order, full_book_order)) [[unlikely]] {
             // Handle self-match according to Symbol's SMP mode
@@ -352,19 +352,14 @@ std::vector<TradeSummaryInfo> match(MatchingEngine& engine, uint64_t order_id, p
 
         auto* our_order = book.findOrder(book_order_id);
 
-        // Decremented before the fill is booked, not after: is_last_in_batch is
-        // `qty == 0`, and the loop only runs while qty > 0, so reading it first made
-        // the flag permanently false. The level update carrying the final fill then
-        // never set F_END_EVENT, and a client batching until the end-of-event marker
-        // never saw its batch close. The order-driven overload above already does
-        // it in this order.
+        // Decrement before booking the fill so qty == 0 marks the final fill.
+        // Checking first would always be false while this loop runs, leaving
+        // F_END_EVENT unset and clients waiting for the batch to close.
         qty -= trad_qty;
         if (!book.executeOrder(book_order_id, trad_qty, event_time, seq_num, qty == 0)) [[unlikely]] {
-            // Nothing traded, so the resting order still carries its full quantity
-            // and the next pass would match it again - and again, until this
-            // aggressor's quantity ran out, publishing a fill each time against
-            // liquidity that never moves. That is a live bug's signature, not a
-            // recoverable state: give the quantity back and stop rather than spin.
+            // The execution failed, so the resting quantity is unchanged. Restore the
+            // aggressor quantity and stop; retrying would repeatedly report fills
+            // against the same liquidity.
             qty += trad_qty;
             LOG_ERROR("{} book rejected execution of order {} for qty {} at price {} (seq_num={}); abandoning match with {} unfilled",
                 book.symbolName().view(), book_order_id, trad_qty, trade_price, seq_num, qty);

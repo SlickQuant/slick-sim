@@ -400,13 +400,10 @@ void CoinbaseRestOrderGateway::handle_create_order(uWS::HttpResponse<false>* res
                 }
             }
 
-            // Captured before the request is queued, not after. initial_reading_index()
-            // returns the response queue's current write cursor, and the exchange thread
-            // is a hot spin loop - it can consume the request and publish PENDING_NEW
-            // before this thread runs its next instruction. Reading that cursor after
-            // publishing therefore starts the poll *past* our own response, and the
-            // order is reported to the client as a 504 timeout while it is resting, or
-            // already filled, in the book. Matches the cancel and modify handlers below.
+            // Capture the response cursor before publishing. The exchange can publish
+            // PENDING_NEW before this thread runs again. Reading the cursor afterwards
+            // could skip the response and report a 504 for an accepted or filled order.
+            // The cancel and modify handlers use the same ordering.
             uint64_t response_read_index = response_queue_.initial_reading_index();
 
             // Reserve space in request queue

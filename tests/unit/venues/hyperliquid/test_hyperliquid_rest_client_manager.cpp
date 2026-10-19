@@ -206,9 +206,7 @@ TEST_F(HyperliquidRestTest, PlaceOrder_RejectedResponse_ReturnsError) {
     };
     json body = {{"action", {{"type", "order"}, {"orders", json::array({order})}}}};
 
-    // Pre-register rejection: we need to intercept the auto-responder.
-    // Override: stop the auto-responder briefly, inject a REJECTED response manually.
-    // Simpler: stop auto-responder, post order, then inject REJECTED response ourselves.
+    // Stop the auto-responder, post the order, then inject a REJECTED response.
     running_ = false;
     if (auto_responder_.joinable()) auto_responder_.join();
 

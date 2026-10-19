@@ -88,15 +88,10 @@ void WebsocketMarketDataPublisher::stop() {
 }
 
 void WebsocketMarketDataPublisher::publish_processing() {
-    // Drain up to this many updates before handing the loop back, so socket
-    // writes and the heartbeat timer still get serviced under load.
-    //
-    // Every batch costs one defer, so the limit sets the ratio of scheduling
-    // overhead to work: at 100 a flood re-entered the loop once per 100 updates,
-    // at 1000 once per 1000. The yield still happens often enough that a client
-    // socket is never starved - a batch is bounded by the queue, and the two
-    // snapshot types below cut it short on their own because they are far more
-    // expensive to encode than an incremental update.
+    // Bound each drain so socket writes and heartbeats get time on the loop.
+    // Each batch costs one defer; raising the limit from 100 to 1000 reduces
+    // scheduling overhead during a flood. Snapshot frames end a batch early
+    // because they cost much more to encode than incremental updates.
     constexpr int max_batch = 1000;
     int processed = 0;
 
@@ -120,12 +115,11 @@ void WebsocketMarketDataPublisher::publish_processing() {
         ++processed;
     }
 
-    // Unconditionally, even when the queue came up empty. This defer is the only
-    // thing that runs publish_processing() again: md_queue_ is a lock-free queue
-    // with no wakeup, and the exchange thread that fills it never touches the
-    // loop. Skipping the reschedule on an empty queue - which looks like an easy
-    // win - stops the publisher permanently the first time it catches up.
-    // schedule_publish_processing() checks the running_ flag.
+    // Reschedule even when the queue is empty. This defer is the only way
+    // publish_processing() runs again: md_queue_ has no wakeup mechanism and
+    // the exchange thread never touches this loop. Skipping it would stop the
+    // publisher permanently once it catches up.
+    // schedule_publish_processing() checks running_.
     schedule_publish_processing();
 }
 

@@ -60,12 +60,9 @@ private:
 
 private:
     // ws_thread_, listen_socket_, loop_, heartbeat_timer_, port_, running_,
-    // data_cursor_, ping_interval_ms_ and pong_timeout_ all live in
-    // WebsocketMarketDataPublisher. Redeclaring them here shadowed the base
-    // copies - the ones the inherited start()/stop() actually drive - so
-    // check_heartbeats() was reading a second, independent pong_timeout_ that
-    // merely happened to share the default. CoinbasePublisher was already
-    // cleaned up this way.
+    // data_cursor_, ping_interval_ms_ and pong_timeout_ belong to
+    // WebsocketMarketDataPublisher. Use those members so heartbeat checks and
+    // inherited start()/stop() operate on the same state.
     std::string upstream_base_url_;
 
     std::unordered_set<wsT*> clients_;

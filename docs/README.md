@@ -1,10 +1,8 @@
 # Slick Sim
 
-`slick-sim` is an exchange simulator that re-exposes a real venue's *own* APIs on local ports — the
-same **order-entry** endpoints you would send orders to, and the same **market-data** channels you
-would subscribe to for prices. A trading client connects to it exactly as it would to the real
-exchange — same REST routes, same WebSocket channels, same message shapes — but orders are matched by
-an in-process FIFO matching engine, so no capital is ever at risk.
+`slick-sim` serves a venue's order-entry and market-data APIs on local ports. Clients use the same
+REST routes, WebSocket channels and message formats as on the real exchange. An in-process FIFO
+matching engine fills their orders without risking capital.
 
 What your orders match against depends on how you configure the market-data feed:
 
@@ -49,9 +47,8 @@ Read in this order if you are new to the codebase.
 
 ## Before you rely on any of this
 
-`slick-sim` is early-stage and under active development. Several code paths are stubs, and a few do
-something other than what their surroundings suggest. Everything known is collected in
-**[Known gaps](known-gaps.md)** — read it before debugging behaviour that surprises you.
+`slick-sim` is under active development. Some code paths are stubs or behave differently from the
+intended design. Check [Known gaps](known-gaps.md) when investigating unexpected behaviour.
 
 ## Elsewhere
 

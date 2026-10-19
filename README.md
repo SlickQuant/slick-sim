@@ -7,9 +7,13 @@
 [![Sanitizers](https://github.com/SlickQuant/slick-sim/actions/workflows/asan.yml/badge.svg)](https://github.com/SlickQuant/slick-sim/actions/workflows/asan.yml)
 [![GitHub release](https://img.shields.io/github/v/release/SlickQuant/slick-sim)](https://github.com/SlickQuant/slick-sim/releases)
 
-A exchange simulator that shadows real exchanges for risk-free strategy testing. For each configured venue, it ingests the exchange's *live* public market data, mirrors it into a local order book, and serves that exchange's own APIs on local ports — the same **order-entry** endpoints you would send orders to, and the same **market-data** channels you would subscribe to for prices. A trading client connects and trades against the simulator exactly as it would against the real exchange, with fills produced by an in-process FIFO matching engine instead of real capital.
+An exchange simulator for testing trading strategies without risking capital. For each configured
+venue, it mirrors live public market data into a local order book and serves the venue's order-entry
+endpoints and market-data channels on local ports. Clients use the same APIs as they would on the
+real exchange, with fills produced by an in-process FIFO matching engine.
 
-The live feed is optional. Configure one and your orders compete against real quoted liquidity; omit it and `slick-sim` runs as a conventional exchange simulator, with books driven purely by the orders clients send. A historical-replay feed — matching against recorded market data — is planned but not yet implemented. See [Operating modes](https://slickquant.github.io/slick-sim/architecture/#operating-modes).
+A live feed lets your orders compete against real quoted liquidity. Without one, the books contain
+only client orders. Historical replay against recorded market data is planned but not implemented. See [Operating modes](https://slickquant.github.io/slick-sim/architecture/#operating-modes).
 
 Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.3.0`).
 
@@ -120,9 +124,8 @@ cmake -S . -B build -DENABLE_NATIVE_ARCH=ON               # -march=native in Rel
 
 ### Choosing which venues to build
 
-Each venue adapter lives entirely in `src/venues/<venue>/` and builds as its own target. Switching one
-off drops its sources, its unit tests **and** its vendor SDK — so you do not need the Coinbase SDK
-installed to build a Hyperliquid-only simulator.
+Each venue adapter lives in `src/venues/<venue>/` and has its own build target. Disabling an
+adapter excludes its source files, tests and SDK. A Hyperliquid-only build needs no Coinbase SDK.
 
 An adapter also declares its own networking stack: Coinbase and Hyperliquid speak HTTP/WebSocket and
 name `slick-net`, plus the uWebSockets-based gateway and publisher bases. A venue on a binary session
@@ -146,7 +149,7 @@ A venue kept in its own repository is built in the same way, by pointing the con
 directory: `-DSLICK_SIM_EXTERNAL_VENUES=/path/to/venue` (`;`-separated for several). See
 [Out-of-tree venues](https://slickquant.github.io/slick-sim/extending/#out-of-tree-venues).
 
-`ENABLE_NATIVE_ARCH` is off by default because CI's Release binaries are what `release.yml` attaches to GitHub Releases — a binary built with `-march=native` on a runner with AVX-512 crashes with `SIGILL` on any older CPU. Turn it on for local or self-hosted production builds, where the target CPU is the build CPU and the extra vectorisation is worth having.
+`ENABLE_NATIVE_ARCH` is off by default because CI's Release binaries are what `release.yml` attaches to GitHub Releases — a binary built with `-march=native` on a runner with AVX-512 crashes with `SIGILL` on any older CPU. Turn it on for local or self-hosted production builds, where the target CPU is the build CPU and the extra vectorisation is worth having. When `slick-orderbook` is fetched rather than found installed, its own `-march=native` option follows this one, because its static library is linked into the same binary.
 
 ## Configuration
 
@@ -207,7 +210,9 @@ directory: `-DSLICK_SIM_EXTERNAL_VENUES=/path/to/venue` (`;`-separated for sever
   - `md_publisher` — the port `slick-sim` serves its own venue-formatted market data WebSocket on. Hyperliquid also takes `upstream_base_url` (note: not `base_url`) for its `/info` proxy.
   - Coinbase additionally sets `request_queue_size` / `response_queue_size` / `md_queue_size`, the capacities of its internal lock-free queues.
 
-The checked-in sample is more conservative than the example above: it switches the Coinbase live feed off (`"enabled": false` on the feed entry) and disables Hyperliquid, so out of the box it runs Coinbase self-contained. Flip those keys to shadow the live venues.
+The checked-in sample disables the Coinbase live feed (`"enabled": false` on the feed entry) and
+Hyperliquid, so it runs Coinbase with only client orders by default. Enable the feeds to shadow the
+live venues.
 
 See the [configuration reference](https://slickquant.github.io/slick-sim/configuration/) for every key the code actually reads, with defaults.
 
@@ -234,7 +239,10 @@ Logs:
 
 ## Testing
 
-Unit tests are built by default (`BUILD_EXCH_SIMULATOR_TESTING=ON`) using GoogleTest, covering the matching engine (FIFO matching, self-match prevention, time-in-force), order book operations, message/type conversions, the fixed-width wire-field helpers, request-tag echoing and order-by-order market data, the Coinbase/Hyperliquid exchange adapters, and the market-data wire encoders (`tests/unit/`). A venue passes its own suites to `slick_sim_add_venue(... TESTS ...)`, so an out-of-tree venue's tests run in the same binary.
+GoogleTest builds by default (`BUILD_EXCH_SIMULATOR_TESTING=ON`). The suite covers matching, order
+books, wire fields and messages, request tags, market data, both venue adapters and their encoders
+(`tests/unit/`). Out-of-tree venues can pass their suites to `slick_sim_add_venue(... TESTS ...)`
+so they run in the same test binary.
 
 ```bash
 cmake -S . -B build
@@ -261,13 +269,32 @@ unaffected if Doxygen is absent.
 
 ## Continuous integration & releases
 
-[`ci.yml`](.github/workflows/ci.yml) builds and tests every push/PR to `main` across Windows and Ubuntu (Debug + Release). macOS is currently excluded — GitHub's Intel (`macos-13`) runners have very limited hosted capacity and queue indefinitely, and the ARM `macos-latest` runners can't build `quickfix` (its vcpkg port excludes `arm64-osx`). Since there's no `vcpkg.json` manifest, each job clones and bootstraps vcpkg itself and installs the required ports in classic mode (cached per-OS) before configuring CMake.
+[`ci.yml`](.github/workflows/ci.yml) builds and tests Debug and Release on Windows, Ubuntu and
+macOS for pushes and pull requests to `main`. The Apple Silicon job omits the FIX/JSON parsers
+because vcpkg's `quickfix` port excludes `arm64-osx`; those parsers are off by default. It sets
+`MACOSX_DEPLOYMENT_TARGET=14.0` for macOS 14 compatibility. Without a `vcpkg.json` manifest, each
+job bootstraps vcpkg and installs the required ports in classic mode, with a per-OS cache. Release
+jobs check for `-march=native`; macOS also checks system-only dylib links and the minimum OS version.
 
-[`asan.yml`](.github/workflows/asan.yml) runs the same test suite on Ubuntu under AddressSanitizer and UndefinedBehaviorSanitizer. It must configure `Debug`: `ENABLE_ASAN` only injects `-fsanitize=address,undefined` into the `*_DEBUG` flag variables, so a Release configuration would produce an unsanitized binary and a green run that checked nothing — the job asserts the built binary actually carries `__asan_*` symbols rather than trusting that. Leak detection is off, because the process deliberately exits with live singletons and pooled objects that LeakSanitizer would report; enabling it needs a suppressions file first. UBSan's `alignment` check is disabled for the test binary alone: the wire structs are `#pragma pack(1)`, so every 8-byte field is misaligned by construction (`OrderResponse::price` sits at offset 404), and gtest's `EXPECT_EQ` binds a `const T&` to whichever one an assertion reads — inherent to exercising a packed protocol with gtest rather than a defect. `src/` keeps the check. Expect roughly 3x the normal test runtime.
+[`asan.yml`](.github/workflows/asan.yml) runs the Ubuntu tests with AddressSanitizer and
+UndefinedBehaviorSanitizer. It uses Debug because `ENABLE_ASAN` adds sanitizer flags only to
+`*_DEBUG` variables, and verifies that the binary contains `__asan_*` symbols. Leak detection
+remains off until intentional live singletons and pooled objects have suppressions. The test binary
+also disables UBSan's `alignment` check: packed wire fields such as `OrderResponse::price` at
+offset 404 are misaligned, and gtest's `EXPECT_EQ` binds them by `const T&`. The check stays enabled
+for `src/`. The sanitized suite takes roughly three times as long as a normal run.
 
-[`documentation.yml`](.github/workflows/documentation.yml) builds the MkDocs site and the Doxygen API reference, merges them into one tree (`/` and `/api` respectively), and publishes to the `gh-pages` branch on pushes to `main`. It deliberately does *not* configure CMake — Doxygen parses the sources directly, so the job needs only `doxygen`, `graphviz` and Python, and runs in about a minute instead of inheriting `ci.yml`'s vcpkg dependency chain. Pull requests build and upload the site as an artifact without deploying. Two further jobs lint the Markdown and check its links.
+[`documentation.yml`](.github/workflows/documentation.yml) combines MkDocs at `/` with the Doxygen
+API reference at `/api`, then publishes to `gh-pages` on pushes to `main`. Doxygen parses sources
+directly, so the job needs only `doxygen`, `graphviz` and Python and takes about a minute. Pull
+requests upload a site artifact without deploying. Other jobs lint Markdown and check links.
 
-[`release.yml`](.github/workflows/release.yml) triggers on `v*` tags. Rather than rebuilding, it reuses the Release-config Windows and Linux binaries `ci.yml` already built and tested for that exact commit (downloaded from that CI run's artifacts), packages each with its runtime libraries and the sample config, and drafts a GitHub Release with both archives attached. This means the tagged commit must already have a successful `ci.yml` run on `main` — tag what you've already merged, not an untested commit. Release notes are pulled from the matching `# vX.Y.Z` section of the [`CHANGELOG.md`](CHANGELOG.md) file, if present.
+[`release.yml`](.github/workflows/release.yml) runs on `v*` tags and reuses the Windows, Linux and
+macOS Release binaries that `ci.yml` built and tested for that commit. It packages the runtime
+libraries and sample config, then drafts a release with `windows-x64`, `linux-x64` and `macos-arm64`
+archives. Tag a commit on `main` after its CI run succeeds. Release notes come from the matching
+`# vX.Y.Z` section of [`CHANGELOG.md`](CHANGELOG.md), if present. The macOS binary is unsigned;
+a browser download may need `xattr -d com.apple.quarantine slick-sim` before the first run.
 
 ## Project structure
 
@@ -275,10 +302,10 @@ unaffected if Doxygen is absent.
 slick-sim/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml               # build + test on push/PR (Windows, Ubuntu)
+│       ├── ci.yml               # build + test on push/PR (Windows, Ubuntu, macOS)
 │       ├── asan.yml             # ASan + UBSan test run (Ubuntu, Debug)
 │       ├── documentation.yml    # MkDocs + Doxygen → GitHub Pages
-│       └── release.yml          # tag-triggered GitHub Release with Windows binary
+│       └── release.yml          # tag-triggered GitHub Release with Windows, Linux and macOS binaries
 ├── CHANGELOG.md                 # per-version notes, consumed by release.yml
 ├── CMakeLists.txt
 ├── Doxyfile.in                  # API reference config (`--target docs` locally)

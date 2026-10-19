@@ -9,12 +9,9 @@
 
 namespace slick::sim {
 
-/// Identity of an instrument: a name is only unique within a venue.
-///
-/// Keying the lookup on the name alone let two venues listing the same ticker
-/// collide - the second `createSymbol` found the name already present, so its
-/// Symbol was built but never became reachable, and every lookup for it returned
-/// the *other* venue's instrument instead.
+/// An instrument is identified by both venue and name. Using the name alone
+/// would make instruments with the same ticker on different venues collide:
+/// the second Symbol would be unreachable, and lookups would return the first.
 struct SymbolKey {
     Venue venue;
     symbol_name_t name;
@@ -45,9 +42,8 @@ public:
 
     /// A venue is required: see SymbolKey.
     exch::Symbol* getSymbol(std::string_view sym, Venue venue) const {
-        // The key holds its name inline, so this costs no allocation. Keyed by
-        // std::string it built - and freed - a string on every lookup, including
-        // one per inbound order on the request path.
+        // The inline name avoids allocating and freeing a string on each lookup,
+        // including the lookup for every inbound order.
         auto it = symbols_by_name_.find(SymbolKey{venue, sym});
         if (it == symbols_by_name_.end()) {
             return nullptr;
@@ -70,9 +66,8 @@ public:
             return it->second;
         }
 
-        // Constructed in place rather than built on the stack and moved in: the
-        // move is pure overhead here, and Symbol owns an observer registration
-        // that the move constructor has to re-point.
+        // Construct in place to avoid a move and the observer-registration update
+        // that Symbol's move constructor requires.
         auto &symbol = symbols_.emplace_back();
         symbol.id_ = static_cast<symid_t>(symbols_.size() - 1);
         symbol.symbol_ = sym;
@@ -87,12 +82,9 @@ private:
     SymbolManager() = default;
     ~SymbolManager() = default;
 
-    /// A deque, not a vector, because everything here hands out Symbol* and keeps
-    /// them: the map below, the exchanges, and every Order that resolves to an
-    /// instrument. A vector reserved for 512 symbols left all of those dangling
-    /// the moment the 513th was created - the map entries, the pointers callers
-    /// had already stored, and the return value of the create that reallocated.
-    /// deque never moves an element that is already in it.
+    /// Keep Symbol addresses stable as instruments are added. The lookup map,
+    /// exchanges and orders all retain Symbol pointers. A vector would invalidate
+    /// them on reallocation, including when a 512-entry reserve is exceeded.
     std::deque<exch::Symbol> symbols_;
     std::unordered_map<SymbolKey, exch::Symbol*, SymbolKeyHash> symbols_by_name_;
 };

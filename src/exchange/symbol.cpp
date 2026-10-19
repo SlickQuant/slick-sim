@@ -46,12 +46,9 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
     }
 
     if (!resting) [[unlikely]] {
-        // The book is the only thing that takes ownership of an order, so anything
-        // that did not rest has to go back to the pool here: fully filled orders,
-        // rejects (SMP, FOK), and IOC remainders alike. Freeing only on
-        // leaves_quantity == 0 leaked every order that was rejected or cancelled
-        // with quantity outstanding, and a client repeating a rejected order would
-        // drain the pool.
+        // Return every order that did not rest to the pool: fully filled orders,
+        // SMP/FOK rejects and IOC remainders. The book only owns resting orders;
+        // checking leaves_quantity == 0 alone would leak orders with quantity left.
         order_book_->freeOrder(order);
     }
 

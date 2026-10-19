@@ -4,9 +4,8 @@ using namespace slick::sim;
 using namespace slick::sim::exch;
 
 ExchangeRegistry &ExchangeRegistry::instance() {
-    // Function-local, so it is constructed by whichever venue's namespace-scope
-    // initialiser runs first. A namespace-scope registry would make that a coin
-    // flip across translation units.
+    // Construct on the first registration call to avoid depending on the order
+    // of namespace-scope initialisation across translation units.
     static ExchangeRegistry registry;
     return registry;
 }

@@ -12,10 +12,8 @@ using json = nlohmann::json;
 
 namespace {
 
-// Expected values are written out in full rather than recomputed with the same
-// formatter the code under test uses - a helper mirroring the implementation agrees
-// with it however wrong both are, which is how "0.00011628" went out as "0.000116"
-// unnoticed.
+// Write expected values explicitly. Reusing the production formatter would
+// hide shared mistakes, such as truncating "0.00011628" to "0.000116".
 
 // TradeSummary ends in a flexible array member, so back it with real storage.
 struct SummaryBuffer {

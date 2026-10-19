@@ -13,21 +13,17 @@ get_filename_component(SLICK_SIM_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}/../src" ABSO
 #
 #   slick_sim_find_venue_dependency(slick-net slick::net)
 #
-# Call it from src/venues/<name>/CMakeLists.txt, beside that venue's SDK lookup,
-# rather than from a condition shared by every venue: which networking stack an
-# adapter speaks is the adapter's own business. The two REST/WebSocket venues here
-# happen to share slick-net, but a CME iLink or ICE adapter speaks a binary session
-# protocol over slick-socket and must not pull slick-net into the build - which is
-# exactly what an "if any venue is enabled" condition does.
+# Call from the venue's CMakeLists.txt beside its SDK lookup. Each adapter
+# chooses its own networking stack: the REST/WebSocket venues use slick-net;
+# a binary CME iLink or ICE adapter uses slick-socket. Testing whether any venue
+# is enabled would incorrectly pull slick-net into those builds.
 #
-# GLOBAL is not optional. An imported target is visible only in the directory that
-# created it and below, while slick-sim (src/) and slick_sim_tests (tests/) link the
-# venue object library from sibling scopes and have to resolve every name in its
-# interface. Without promotion, generate fails with "links to target slick::net but
-# the target was not found".
+# GLOBAL makes imported targets visible to slick-sim and slick_sim_tests in
+# sibling directories. Without it, generation fails with "links to target
+# slick::net but the target was not found".
 #
-# A no-op when the target already exists: a venue SDK resolved just above may have
-# brought the same library in as a build-tree target, which find_package cannot see.
+# If the target already exists, do nothing. A venue SDK may have created it as
+# a build-tree target, which find_package cannot see.
 macro(slick_sim_find_venue_dependency pkg tgt)
     if (NOT TARGET ${tgt})
         find_package(${pkg} CONFIG REQUIRED GLOBAL ${ARGN})
@@ -82,20 +78,15 @@ endfunction()
 # whatever links the venue (slick-sim and slick_sim_tests) without either of them
 # naming a venue library.
 #
-# The target is an OBJECT library on purpose. Each adapter registers itself with
-# ExchangeRegistry from a namespace-scope initialiser, and nothing in the core ever
-# names that symbol - out of a *static* library the linker drops the whole object
-# as unreferenced and the venue silently vanishes from the registry (the same
-# reason a GoogleTest suite compiled into a .lib runs zero tests). Object files are
-# handed to the linker individually, so the initialiser survives, and it survives
-# identically for slick-sim and slick_sim_tests with no per-consumer link flag for
-# anyone to forget.
+# Use an OBJECT library to retain the namespace-scope registry initialiser.
+# Nothing in the core references it by name, so a static library could lose
+# the whole object as unreferenced, just as a GoogleTest suite in a .lib can
+# run zero tests. Passing object files directly preserves registration in both
+# slick-sim and slick_sim_tests without per-consumer linker flags.
 #
-# TESTS lists the venue's GoogleTest sources. They are compiled into
-# slick_sim_tests, so a venue's suite travels with the venue - which is what lets
-# an out-of-tree venue (SLICK_SIM_EXTERNAL_VENUES) bring its tests along without
-# editing tests/CMakeLists.txt. Relative paths resolve against the calling
-# directory.
+# TESTS lists GoogleTest sources to compile into slick_sim_tests. This lets
+# out-of-tree venues bring tests through SLICK_SIM_EXTERNAL_VENUES without
+# editing tests/CMakeLists.txt. Relative paths use the calling directory.
 function(slick_sim_add_venue name)
     cmake_parse_arguments(SSV "" "" "SOURCES;DEPENDS;TESTS" ${ARGN})
     set(target slick_sim_venue_${name})

@@ -1,7 +1,7 @@
 # Order lifecycle
 
-This page follows a single order from the moment it arrives at a gateway to the moment the client
-sees a fill, then documents every enum and struct involved.
+An order passes from the gateway through the exchange and matching engine before its reports return
+to the client. The flow below traces that path, followed by the request and response types.
 
 ## The happy path, end to end
 
@@ -43,8 +43,6 @@ sequenceDiagram
     G-->>C: fills over the user channel
 ```
 
-Two things about this flow are unusual and worth stating plainly.
-
 **The REST response is the `PENDING_NEW` report, not the fill.** The gateway's polling loop breaks on
 the *first* response matching its `user_id` + `client_order_id`, which is always the `PENDING_NEW`
 report emitted by `sendOrderNewPending` before matching even starts. The HTTP call returns
@@ -79,9 +77,8 @@ struct Request {
 `time_stamp` matters beyond logging: the cancel and edit handlers correlate responses by matching
 `OrderResponse::request_time` against the `Request::time_stamp` they published.
 
-The fixed-size char arrays are hard limits. `client_order_id` and `order_id` are 37 bytes (a UUID
-plus NUL); `symbol` is 32. The Coinbase gateway truncates and logs a warning when a `client_order_id`
-overflows.
+The fixed-size fields limit `client_order_id` and `order_id` to 37 bytes each (UUID plus NUL), and
+`symbol` to 32 bytes. The Coinbase gateway truncates an overlong `client_order_id` and logs a warning.
 
 ### 2. Exchange dispatch
 
@@ -235,7 +232,7 @@ any price".
 `REPLACED` `5`, `PENDING_CANCEL` `6`, `STOPPED` `7`, `REJECTED` `8`, `SUSPENDED` `9`, `PENDING_NEW`
 `A`, `CALCULATED` `B`, `EXPIRED` `C`, `ACCEPTED_FOR_BIDDING` `D`, `PENDING_REPLACE` `E`.
 
-Only a subset is ever produced: `PENDING_NEW`, `NEW`, `PARTIALLY_FILLED`, `FILLED`, `PENDING_REPLACE`,
+The code produces these statuses: `PENDING_NEW`, `NEW`, `PARTIALLY_FILLED`, `FILLED`, `PENDING_REPLACE`,
 `REPLACED`, `PENDING_CANCEL`, `CANCELED`, `REJECTED`.
 
 ### `OrdRejectReason`

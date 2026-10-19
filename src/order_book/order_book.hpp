@@ -255,15 +255,13 @@ protected:
 
     slick::ObjectPool<Order> order_buffer_;
     std::unordered_map<uint64_t, Order*> orders_;
-    // Keyed by the order's own fixed_string type rather than std::string: a
-    // std::string key meant a second heap allocation per resting order, on top of
-    // the one the Order used to make for the id itself. The transparent functors
-    // above take string_view, which fixed_string converts to, so both the keys and
-    // the string_view lookups below go through unchanged.
+    // Use fixed_string keys to avoid a separate heap allocation for each id.
+    // The transparent functors accept string_view, which fixed_string converts
+    // to, so callers can still look up orders by string_view.
     std::unordered_map<utils::fixed_string<37>, Order*, StringViewHash, StringViewEq> orders_by_client_order_id_;
     std::unordered_map<utils::fixed_string<37>, Order*, StringViewHash, StringViewEq> orders_by_order_id_;
     OrderUpdate last_order_update_;
-    std::unordered_map<price_t, qty_t> feed_md_level_quantity_;     // tracking the level quantity exclude exchange orders
+    std::unordered_map<price_t, qty_t> feed_md_level_quantity_;     // Level quantity excluding simulator orders
 };
 
 struct Empty {};
@@ -301,17 +299,14 @@ inline std::atomic<uint64_t> OrderBook::next_priority_{0};
 inline Order* OrderBook::allocateOrder() {
     auto *order = order_buffer_.allocate();
 
-    // The generator seeds a Mersenne twister from the OS entropy source when it is
-    // constructed, so building one per order - as `random_generator()()` did - cost
-    // far more than the id it produced. One per thread instead; orders are
-    // allocated on the exchange thread, and thread_local keeps that true if that
-    // ever stops holding.
+    // Keep one generator per thread. Constructing it seeds a Mersenne twister
+    // from OS entropy, which costs more than generating an id. Orders currently
+    // allocate on the exchange thread; thread_local also supports other callers.
     static thread_local boost::uuids::random_generator uuid_gen;
     const boost::uuids::uuid u = uuid_gen();
 
-    // A UUID renders as exactly 36 characters, which is the capacity of the id
-    // field, so it goes straight into the order's own buffer. lexical_cast built a
-    // std::string first and threw it away.
+    // Write the 36-character UUID directly into the id field, whose capacity
+    // matches it, without constructing a temporary std::string.
     static_assert(decltype(Order::order_id)::capacity() == 36,
         "order_id must hold a rendered UUID exactly");
     boost::uuids::to_chars(u, order->order_id.data());

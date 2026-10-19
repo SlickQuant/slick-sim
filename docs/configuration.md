@@ -12,8 +12,7 @@ slick-sim config/slick_sim.json
     sample committed to the repository is **`config/slick_sim.json`** — different directory, and an
     underscore rather than a hyphen. The default will not find it.
 
-This page documents every key the code actually reads, with the source that reads it. Anything not
-listed here is ignored.
+The supported keys and their defaults are listed below, with source references. Unlisted keys are ignored.
 
 ## Top level
 
@@ -75,9 +74,8 @@ The three `*_shm_name` keys appear in no sample config and are not otherwise exe
 shared-memory reader must be built with the same `int_fast64_t` width — see
 [Market data](market-data.md#the-internal-market-data-wire-format).
 
-A named segment is not removed at shutdown. Since slick-queue 2.3.0 a queue no longer unlinks its
-segment when it is destroyed, because another process may still be attached, and slick-sim does not
-unlink it either. On Linux and macOS the name therefore stays in `/dev/shm`, and a simulator
+Named segments survive shutdown. Since slick-queue 2.3.0, destroying a queue leaves its segment
+linked for other attached processes; slick-sim leaves it linked too. On Linux and macOS the name therefore stays in `/dev/shm`, and a simulator
 restarted with the same name attaches to the old segment and whatever is still in it; remove the
 segment between runs if that is not what you want. Windows frees a segment with its last handle.
 
@@ -97,8 +95,7 @@ is silently ignored.
 
 An exchange with no usable feed — `md_feeds` omitted, empty, or containing only unrecognised types —
 runs in **self-contained mode**: books start empty and the only liquidity is what clients submit.
-That is a supported configuration, not a broken one; it turns `slick-sim` into a conventional exchange
-simulator with the same order-entry and market-data surface. See
+This supported mode uses the same order-entry and market-data APIs as live shadowing. See
 [Operating modes](architecture.md#operating-modes).
 
 To disable a live feed without deleting the block, change its `type` to something the adapter does not
@@ -159,8 +156,8 @@ fail validation with `INVALID_PRODUCT_ID`.
 | --- | --- | --- |
 | `port` | int | `5000` |
 
-The publisher's own ping interval (15 s) and pong timeout (60 s) are hard-coded in
-`WebsocketMarketDataPublisher` and not configurable.
+`WebsocketMarketDataPublisher` fixes the ping interval at 15 s and the pong timeout at 60 s.
+Neither has a configuration key.
 
 ## Hyperliquid
 
@@ -285,8 +282,7 @@ publisher, so nothing collides if you enable it once a CME adapter exists.
 
 ## Outbound network calls
 
-Worth knowing before running this in a restricted environment. `slick-sim` reaches the public internet
-in four places:
+`slick-sim` makes the following outbound calls:
 
 1. **Coinbase market data** — WebSocket, whenever a `coinbase_live_ws` feed is configured and a client
    subscribes.

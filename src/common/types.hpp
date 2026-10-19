@@ -162,11 +162,8 @@ inline const char* to_string(Venue venue) {
     return "UNKNOWN";
 }
 
-/// Matches case-insensitively. The previous hand-written chain compared against
-/// the exact all-upper and exact all-lower spelling only, so a config key of
-/// "Coinbase" silently resolved to UNKNOWN_VENUE despite the docs promising
-/// otherwise. ExchangeRegistry resolves its keys with the same `iequals`, so a
-/// config key behaves identically whichever of the two looks it up.
+/// Matches venue names case-insensitively, including mixed-case names such as
+/// "Coinbase". ExchangeRegistry uses the same iequals comparison for config keys.
 inline Venue to_venue(std::string_view exch) {
 #define SLICK_SIM_VENUE_MATCH(name, text) \
     if (detail::iequals(exch, text)) { return Venue::name; }

@@ -14,10 +14,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # macos-latest is Apple Silicon, so the macOS leg builds for arm64-osx.
+        os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Debug, Release]
 
     runs-on: ${{ matrix.os }}
+
+    # Read only by Apple toolchains. Both the vcpkg port builds and slick-sim's own
+    # configure inherit it, so everything linked into the macOS binary targets the
+    # same release. Left unset, the binary would require whatever macOS the runner
+    # image runs. 14.0 is above Apple libc++'s 13.3 floor for the floating-point
+    # std::format the sources use.
+    env:
+      MACOSX_DEPLOYMENT_TARGET: '14.0'
 
     steps:
     - uses: actions/checkout@v4
@@ -44,14 +53,25 @@ jobs:
       id: cpusig
       shell: bash
       run: |
-        if [ "$RUNNER_OS" = "Linux" ]; then
-          raw=$(grep -m1 '^flags' /proc/cpuinfo | cut -d: -f2 | tr ' ' '\n' \
-                | grep -E '^(sse4_[12]|avx|avx2|avx512[a-z0-9_]*|bmi[12]|fma)$' | sort -u | tr '\n' ',')
-        else
-          raw=$(wmic cpu get Name /value 2>/dev/null | tr -d '\r' | grep '=' || echo "windows-unknown")
-        fi
+        case "$RUNNER_OS" in
+          Linux)
+            raw=$(grep -m1 '^flags' /proc/cpuinfo | cut -d: -f2 | tr ' ' '\n' \
+                  | grep -E '^(sse4_[12]|avx|avx2|avx512[a-z0-9_]*|bmi[12]|fma)$' | sort -u | tr '\n' ',')
+            ;;
+          macOS)
+            # No /proc/cpuinfo here. The brand string names the chip ("Apple M1 (Virtual)").
+            # The OS major version is included too: a macos-latest image bump also brings a
+            # new Xcode and SDK, and should start a fresh cache.
+            raw="$(uname -m) $(sysctl -n machdep.cpu.brand_string) macOS-$(sw_vers -productVersion | cut -d. -f1)"
+            ;;
+          *)
+            raw=$(wmic cpu get Name /value 2>/dev/null | tr -d '\r' | grep '=' || echo "windows-unknown")
+            ;;
+        esac
         echo "CPU signature source: $raw"
-        echo "sig=$(printf '%s' "$raw" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+        # macOS may not ship sha256sum; shasum gives the same digest.
+        if command -v sha256sum >/dev/null; then sum=sha256sum; else sum="shasum -a 256"; fi
+        echo "sig=$(printf '%s' "$raw" | $sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
 
     # No vcpkg.json manifest is committed in this repo by design (see CLAUDE.md), so
     # dependencies are installed explicitly in classic mode below.
@@ -76,11 +96,15 @@ jobs:
       run: |
         "${{ runner.temp }}/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
 
+    # vcpkg's quickfix port excludes arm64-osx, which covers every macos-latest runner.
+    # Only the FIX/JSON parsers need it, so macOS builds without them (see Configure CMake).
     - name: Install dependencies via vcpkg
       shell: bash
       run: |
+        quickfix=quickfix
+        if [ "$RUNNER_OS" = "macOS" ]; then quickfix=; fi
         "${{ runner.temp }}/vcpkg/vcpkg" install \
-          quickfix \
+          $quickfix \
           nlohmann-json \
           foonathan-memory \
           boost-uuid \
@@ -99,10 +123,33 @@ jobs:
         cmake -B build
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DCMAKE_TOOLCHAIN_FILE="${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        -DSLICK_SIM_ENABLE_FIX_JSON_PARSERS=ON
+        -DSLICK_SIM_ENABLE_FIX_JSON_PARSERS=${{ runner.os == 'macOS' && 'OFF' || 'ON' }}
 
+    # The Release binaries are shipped, so nothing compiled into them may be tuned to
+    # this runner's CPU. A fetched dependency is the way that happens unnoticed:
+    # slick-orderbook arrives through FetchContent with -march=native on by default.
+    # CMakeLists.txt overrides it from ENABLE_NATIVE_ARCH, and this step checks that
+    # override still holds. On macOS the flag is worse than non-portable, because
+    # Apple clang on arm64 can reject it outright. MSVC has no -march, and the Visual
+    # Studio generator writes no flags.make, so Windows is skipped.
+    - name: Assert no -march=native in the Release build
+      if: matrix.build_type == 'Release' && runner.os != 'Windows'
+      shell: bash
+      run: |
+        # Fail rather than pass vacuously if the generator stops writing flags.make.
+        n=$(find build -name flags.make | wc -l)
+        echo "Checking $n flags.make files"
+        test "$n" -gt 0
+        if grep -rl --include=flags.make -e '-march=native' build; then
+          echo "::error::the targets above compile with -march=native; the uploaded Release binary would not be portable"
+          exit 1
+        fi
+
+    # Bare --parallel means an unbounded `make -j`. The Linux runner copes with that.
+    # The macOS runner (3 cores, 7 GB) would start all ~55 translation units at once
+    # and swap, so there the job count is capped at the core count.
     - name: Build
-      run: cmake --build build --config ${{ matrix.build_type }} --parallel
+      run: cmake --build build --config ${{ matrix.build_type }} --parallel ${{ runner.os == 'macOS' && '3' || '' }}
 
     - name: Run tests
       working-directory: build
@@ -158,6 +205,26 @@ jobs:
         find build -type f -name slick-sim -exec cp {} release-stage/ \;
         cp "${{ runner.temp }}/vcpkg/installed/x64-linux/lib/"*.so* release-stage/ 2>/dev/null || true
 
+    # vcpkg's arm64-osx triplet is static, so no dylibs ship alongside the binary. The
+    # step asserts that, because a Homebrew library resolved in place of vcpkg's would
+    # load fine on this runner and then fail on a user's machine. It also asserts the
+    # deployment target took effect, since the job env above is easy to lose silently.
+    - name: Stage release artifact (macOS)
+      if: matrix.build_type == 'Release' && runner.os == 'macOS'
+      shell: bash
+      run: |
+        mkdir -p release-stage
+        find build -type f -name slick-sim -exec cp {} release-stage/ \;
+        bin=release-stage/slick-sim
+        otool -L "$bin"
+        if otool -L "$bin" | tail -n +2 | grep -vE '^[[:space:]]*(/usr/lib/|/System/Library/)'; then
+          echo "::error::slick-sim links the dylibs above from outside the OS; the release archive would not run elsewhere"
+          exit 1
+        fi
+        minos=$(otool -l "$bin" | awk '/LC_BUILD_VERSION/ { f = 1 } f && $1 == "minos" { print $2; exit }')
+        echo "minos: $minos (expected $MACOSX_DEPLOYMENT_TARGET)"
+        test "$minos" = "$MACOSX_DEPLOYMENT_TARGET"
+
     - name: Upload release build artifact
       if: matrix.build_type == 'Release'
       uses: actions/upload-artifact@v4
@@ -165,15 +232,10 @@ jobs:
         name: slick-sim-${{ runner.os }}-release
         path: release-stage/*
 
-  # Venue adapters are optional (SLICK_SIM_ENABLE_COINBASE / _HYPERLIQUID), and the
-  # configuration nobody builds locally is the one that rots: all venues off.
-  #
-  # The job's real assertion is the dependency list, not a grep. Each configuration
-  # installs only the packages it is supposed to need, so a core target that has
-  # quietly picked up a venue SDK — or a venue that has picked up the *other*
-  # venue's — fails to configure or link here, instead of working everywhere the
-  # SDK happens to be present. `build-and-test` above installs everything and so
-  # cannot catch that class of regression at all.
+  # Test optional venue configurations, including all venues disabled.
+  # Each configuration installs only its declared dependencies, so an accidental
+  # dependency on a venue SDK fails to configure or link. The full build installs
+  # every SDK and cannot detect that dependency leak.
   venue-options:
     name: venue options (${{ matrix.name }})
     runs-on: ubuntu-latest
@@ -182,11 +244,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # No venue SDK, no quickfix and - the sharp edge - no slick-net. That one
-          # belongs to the adapters that speak HTTP/WS, not to the simulator, so with
-          # none of them built main.cpp's log bridge is compiled out
-          # (SLICK_SIM_HAS_SLICK_NET is unset) and nothing links it. This entry fails
-          # the moment anything in the core reaches for networking again.
+          # Build without venue SDKs, QuickFIX or slick-net. HTTP/WS adapters own
+          # slick-net, so disabling them also removes main.cpp's log bridge
+          # (SLICK_SIM_HAS_SLICK_NET is unset). This catches core networking dependencies.
           - name: no venues
             slug: none
             cmake_flags: >-
@@ -244,16 +304,12 @@ jobs:
       run: |
         "${{ runner.temp }}/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
 
-    # Deliberately minimal: this list is the assertion, and what is missing from it
-    # matters more than what is in it. slick-queue is named because slick_sim_core
-    # links slick::queue, and CMakeLists.txt finds it by name rather than waiting for
-    # it to arrive through slick-logger. Everything that
-    # follows an option is per-configuration instead: slick-net and uWebSockets for
-    # the venues that serve HTTP/WS, jwt-cpp for Coinbase alone, slick-socket for
-    # the TCP gateway. So the "no venues" entry installs a core's
-    # worth of packages and nothing else - it fails the moment a core target reaches
-    # for a wire protocol again. slick-orderbook is absent from every entry because
-    # CMake fetches it with FetchContent when find_package misses it.
+    # Install the core dependencies plus this configuration's venue packages.
+    # slick_sim_core names slick::queue directly, so CMake resolves it explicitly
+    # instead of relying on slick-logger. Optional dependencies are slick-net and
+    # uWebSockets for HTTP/WS, jwt-cpp for Coinbase, and slick-socket for TCP.
+    # The no-venues entry checks that the core builds without wire protocols.
+    # slick-orderbook uses FetchContent when find_package cannot find it.
     - name: Install dependencies via vcpkg
       shell: bash
       run: |
@@ -298,9 +354,7 @@ jobs:
       working-directory: build
       run: ctest --output-on-failure
 
-    # An enabled config key with no adapter compiled in must fail loudly. This used
-    # to construct a generic Exchange that bound no ports and processed at most one
-    # request before going silent.
+    # An enabled venue with no compiled adapter must fail at startup.
     - name: Assert an unbuilt venue key is rejected at startup
       if: matrix.slug == 'none'
       shell: bash

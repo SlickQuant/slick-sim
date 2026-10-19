@@ -45,9 +45,8 @@ protected:
 
 }   // namespace
 
-// The base class used to call processRequest() exactly once with no loop, so any
-// adapter that did not override start() bound its ports and then went silent.
-// The loop lives in Exchange::start() now and adapters override poll() instead.
+// Exchange::start() must keep processing requests. Adapters add per-iteration
+// work through poll() and should not need to override start().
 TEST(ExchangeLifecycleTest, BaseStartLoopsUntilStopped) {
     CountingExchange exch(minimalConfig());
     exch.start();

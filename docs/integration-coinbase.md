@@ -10,11 +10,10 @@
 | WebSocket order entry | 4001 | sim → client | `user` channel — acks, fills, cancels |
 | WebSocket market data | 5000 | sim → client | `level2`, `market_trades`, `ticker`, `heartbeats` |
 
-The two order-entry endpoints are **not** alternatives — they are the two halves of one round trip.
-You send on REST and hear back on the WebSocket.
+Use both order-entry endpoints: submit orders over REST and receive execution reports over WebSocket.
 
-Point your client's REST base URL and WebSocket URLs at these and it should work unchanged, subject to
-the gaps noted throughout.
+Point the client's REST and WebSocket URLs at the local endpoints. The limitations below describe
+where behaviour differs from Coinbase.
 
 !!! important "Use both order-entry endpoints"
     The REST route returns only the `PENDING_NEW` acknowledgement. Fills, cancels and rejects arrive
@@ -38,9 +37,8 @@ Signature verification is commented out in the WebSocket gateway and never attem
 syntactically valid JWT is accepted; a malformed one gets `401 Unauthorized` (REST) or an error
 message and a socket close (WebSocket).
 
-The `user_id` matters: it is how responses are routed back. The WebSocket gateway keys its client map
-by `user_id`, so **the REST and WebSocket connections must present tokens with the same `sub`** or
-your fills will be published to nobody.
+The WebSocket gateway routes responses by `user_id`. Use the same `sub` claim on the REST and
+WebSocket connections; otherwise no socket receives the fills.
 
 Market data requires no authentication.
 
@@ -177,7 +175,7 @@ within the window is reported as success.
 it only tracks orders created through *this* gateway instance, in an in-memory
 `order_id_to_symbol_` map that is not shared with the WebSocket gateway and does not survive a restart.
 
-Serialised cancels mean a batch of 20 unknown-to-the-engine orders can take up to 4 seconds.
+Cancels run in sequence. A batch of 20 orders unknown to the engine can take up to 4 seconds.
 
 ### `POST /api/v3/brokerage/orders/edit`
 

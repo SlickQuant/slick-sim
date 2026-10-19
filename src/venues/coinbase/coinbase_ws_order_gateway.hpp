@@ -51,12 +51,9 @@ class CoinbaseWebsocketOrderGateway : public RestWsOrderGateway {
 
     std::string products_;
     std::unordered_map<std::string, std::string> product_by_id_;
-    /// Backs the `user` channel's subscribe snapshot. Fed from process_all_responses(),
-    /// which already reads every execution report, so this store keeps no cursor of
-    /// its own - see OrderStore.
-    ///
-    /// Replaces three containers that were declared but never populated: the snapshot
-    /// read one of them and so was always empty, whatever the client had traded.
+    /// Stores orders for the user-channel subscription snapshot.
+    /// process_all_responses() feeds it every execution report, so it needs no
+    /// cursor of its own. See OrderStore.
     OrderStore orders_;
     double fee_rate_ = 0.0012; // 1.2%
 

@@ -81,9 +81,8 @@ void Exchange::start()
     //     md_thread_ = std::thread([this]() { processMdData(); });
     // }
 
-    // The loop lives here now. It used to be absent from the base and duplicated
-    // verbatim in each adapter, so a subclass that inherited start() spun once and
-    // then went silent. Adapters override poll() instead.
+    // The base owns the processing loop. Adapters override poll() to add work
+    // to each iteration.
     thread_ = std::thread([this]()
                           {
         while (run_.load(std::memory_order_relaxed)) {
@@ -94,10 +93,8 @@ void Exchange::start()
 
 void Exchange::stop()
 {
-    // main() stops every exchange explicitly and then ~Exchange() stops it again.
-    // That was harmless while every step here was individually guarded, but
-    // stopping the feeds below is not idempotent - CoinbaseLiveWSFeed::stop()
-    // unsubscribes upstream.
+    // main() and ~Exchange() both call stop(). Guard the whole operation because
+    // CoinbaseLiveWSFeed::stop() unsubscribes upstream and must not run twice.
     if (!run_.exchange(false, std::memory_order_acq_rel))
     {
         return;
@@ -108,9 +105,8 @@ void Exchange::stop()
         md_thread_.join();
     }
 
-    // Joined BEFORE the feeds are touched: poll() reads md_feeds_ on the exchange
-    // thread, and CoinbaseExchange::handleMdUnsubscription erases from that same
-    // vector there.
+    // Join before touching feeds: poll() reads md_feeds_ on the exchange thread,
+    // and CoinbaseExchange::handleMdUnsubscription erases entries there.
     if (thread_.joinable())
     {
         thread_.join();
@@ -137,7 +133,7 @@ void Exchange::stop()
 
 void Exchange::processRequest()
 {
-    // process order rquests
+    // Process order requests
     auto [request, size] = request_queue_.read(order_request_cursor_);
     if (request)
     {

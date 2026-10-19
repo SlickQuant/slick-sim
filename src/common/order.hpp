@@ -278,21 +278,13 @@ inline constexpr std::string_view to_string(ProductType type) {
     return "UNKNOWN_PRODUCT_TYPE";
 }
 
-/// The four identity fields every order carries, in the exact order and width of
-/// the header that opens an OrderResponse.
+/// The four identity fields, stored inline in the order and width used by
+/// OrderResponse. This avoids four heap allocations and lets the publisher copy
+/// the header with one memcpy, without reading past a short string's buffer.
 ///
-/// These were four std::strings, which meant four heap allocations on an object
-/// that is pooled precisely so the order path never allocates, and a publish step
-/// that ran `memcpy(response.symbol, order->symbol.c_str(), sizeof(response.symbol))`
-/// once per field - four loads of a data pointer, four copies out of four
-/// unrelated heap blocks, and a read past the end of every string shorter than the
-/// wire field it was filling.
-///
-/// Held inline and laid out to match, the whole header goes out in a single
-/// memcpy from memory the order already has hot. Order derives from this so the
-/// block stays contiguous and addressable on its own; messages.hpp static_asserts
-/// the layout against OrderResponse, so resizing a field on either side fails the
-/// build rather than quietly shifting the ids on the wire.
+/// Order derives from this type to keep the block contiguous and separately
+/// addressable. messages.hpp checks the layout against OrderResponse at compile
+/// time, so a field-size change cannot silently shift the wire identifiers.
 struct OrderIdentity {
     utils::fixed_string<32> symbol;
     utils::fixed_string<37> user_id;

@@ -9,8 +9,8 @@ and trades):
 | REST order entry | 4002 | `POST /exchange`, `POST` and `GET /info` |
 | WebSocket market data | 5001 | `l2Book`, `l2`, `trades`, `heartbeat` — and also `POST /info` |
 
-There is no order-entry WebSocket, and therefore **no push channel for fills**. Order responses are
-returned synchronously in the `/exchange` HTTP reply, or not at all.
+There is no order-entry WebSocket or push channel for fills. The `/exchange` HTTP response carries
+the order result.
 
 ## The `/info` proxy
 
@@ -18,11 +18,11 @@ Both ports serve `POST /info`, and neither answers it locally. Requests are rela
 the real Hyperliquid API and the response is passed straight back
 ([`hyperliquid_info_proxy.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_info_proxy.hpp)).
 
-This exists so a `hyperliquid-cpp` client can point its `base_url` at either simulator port and still
-have `load_meta()` and `canonical_coin()` return real production metadata — asset universe, tick
-sizes, decimals. Without it, every client would have to be special-cased for the simulator.
+A `hyperliquid-cpp` client can point its `base_url` at either simulator port and use `load_meta()`
+and `canonical_coin()` to get production metadata: the asset universe, tick sizes and decimals.
+Clients need no simulator-specific metadata handling.
 
-Consequences worth planning around:
+The proxy has these constraints:
 
 - **`/info` needs outbound internet access.** With no route to `api.hyperliquid.xyz`, metadata calls
   fail and clients cannot resolve coin names.
@@ -49,10 +49,9 @@ There is none, and no signature is verified. The wallet identity is resolved in 
 2. `vaultAddress` in the request body.
 3. The configured `default_wallet` (`0x00…01` by default).
 
-Whatever comes out is used as the internal `user_id`. Since nothing routes responses asynchronously,
-its only real effect is on response correlation inside a single request — but if two clients share the
-`default_wallet` and submit orders concurrently, their responses can be mixed up, because correlation
-is on `user_id` + `client_order_id`.
+The selected wallet becomes the internal `user_id`. Responses are correlated by `user_id` and
+`client_order_id`. Concurrent clients sharing `default_wallet` can therefore receive mixed results,
+even though results are returned synchronously.
 
 ## `POST /exchange`
 
@@ -195,8 +194,7 @@ exactly what the engine looks up first. This route works. The response echoes th
 { "status": "ok", "response": { "type": "cancel", "data": { "statuses": [ { "success": "my-cloid-1" } ] } } }
 ```
 
-Still no confirmation that the cancel actually applied — a cancel for an unknown cloid reports
-`success` too.
+The response does not confirm the cancel. An unknown cloid also reports `success`.
 
 ### `batchModify`
 

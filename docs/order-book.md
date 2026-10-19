@@ -3,9 +3,8 @@
 `slick::sim::OrderBook`
 ([`src/order_book/order_book.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_book/order_book.hpp))
 wraps the external
-[slick-orderbook](https://github.com/SlickQuant/slick-orderbook) L3 book and adds the one thing the
-simulator needs that a plain book does not: the ability to hold **real-market liquidity and simulated
-user orders in the same structure** while keeping them straight.
+[slick-orderbook](https://github.com/SlickQuant/slick-orderbook) L3 book. It holds real-market liquidity
+and simulated user orders in the same structure, with separate bookkeeping for each.
 
 ## Class shape
 
@@ -26,15 +25,13 @@ are [empty stubs](known-gaps.md#l3-order-books-are-stubs).
 
 ## Phantom orders versus simulator orders
 
-This is the central concept.
-
 When the market-data feed reports that the real venue has 5 BTC bid at 100,000, the simulator cannot
 know which orders make up that 5 BTC. It synthesises a **phantom order** — a single anonymous order
 for the whole level quantity, with a fresh id from `utils::nextOrderId()` — and inserts it into the
 L3 book. When your client sends a bid for 1 BTC at the same price, that becomes a **simulator order**
 inserted into the same price level, behind the phantom order in the queue.
 
-The book distinguishes them by a simple rule:
+The `orders_` index distinguishes them:
 
 > An order is a **simulator order** if and only if it is in `orders_`.
 > Everything else in the L3 book is phantom.
@@ -216,8 +213,8 @@ bool executeOrder(OrderId order_id, Quantity executed_quantity, uint64_t timesta
 The `if (order)` guard is what makes it safe to call for phantom orders too.
 
 Note `order->last_fill_price = order->price` — the *order's own* price, not a trade price passed in.
-That is correct here because this only ever runs against the **resting** side: `executeOrder` is
-called with the book order's id, and a resting order trades at its own price. An aggressor's fill
+This function runs on the resting side: `executeOrder` receives the book order's id, and that order
+trades at its own price. An aggressor's fill
 price is the level it matched, which `FifoMatchingEngine::match` writes onto the aggressor directly;
 it is never routed through this function, because an order does not enter `orders_` until after it
 has finished matching.

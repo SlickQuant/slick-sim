@@ -9,10 +9,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
 
-# Venue adapters. Each lives entirely under src/venues/<name>/ and is built into
-# its own target; switching one off drops its sources, its unit tests and its
-# vendor SDK from the build. Both default ON, so an unqualified build is
-# unchanged.
+# Each venue builds as a separate target under src/venues/<name>/.
+# Disabling one removes its sources, tests and vendor SDK. Both default to ON.
 option(SLICK_SIM_ENABLE_COINBASE    "Build the Coinbase venue adapter"    ON)
 option(SLICK_SIM_ENABLE_HYPERLIQUID "Build the Hyperliquid venue adapter" ON)
 
@@ -47,23 +45,6 @@ endif()
 if (CMAKE_BUILD_TYPE MATCHES Release)
     add_definitions(-DNDEBUG)
 endif()
-
-# Must precede every find_package/FetchContent call below.
-#
-# slick-shm's exported target declares Threads::Threads in its link interface but
-# does not find_dependency(Threads) itself, so the target has to already exist by
-# the time its config is read. It is reached transitively and early:
-# slick-logger -> slick-queue -> slick-shm. Without this, a configure that takes
-# the FetchContent path for slick-logger (which happens whenever vcpkg's port is
-# older than the version required below) fails at generate time with:
-#
-#   The link interface of target "slick::shm" contains: Threads::Threads
-#   but the target was not found.
-#
-# Threads was previously found only as a side effect of a later dependency's
-# config - too late, and not something to rely on.
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
 
 include(FetchContent)
 
@@ -146,12 +127,9 @@ endif()
 # Declares slick_sim_add_venue()/slick_sim_find_venue_dependency() for the venue
 # directories and slick_sim_link_venues() for src/ and tests/.
 #
-# Note what is NOT here: no venue SDK and no venue networking library. Each adapter
-# resolves its own in src/venues/<name>/CMakeLists.txt, which is added only when
-# that venue's option is on - so the option is tested in one place and adding a
-# venue edits no shared file. A build with a venue off neither fetches nor links a
-# line of what that venue needs, which is the point of the split: a third or fourth
-# venue must not make the minimal build heavier.
+# Each adapter resolves its SDK and networking libraries in its own
+# src/venues/<name>/CMakeLists.txt. That directory is added only when the venue
+# is enabled, keeping disabled venues' dependencies out of the build.
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/slick_sim_venue.cmake)
 
 find_package(slick-orderbook ${SLICK_ORDERBOOK_MIN_VERSION} CONFIG QUIET)
@@ -159,6 +137,12 @@ if (NOT slick-orderbook_FOUND)
     message(STATUS "Fetching slick-orderbook...")
     set(SLICK_ORDERBOOK_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(SLICK_ORDERBOOK_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    # slick-orderbook builds a static library with -march=native on by default.
+    # That library is linked into slick-sim, so its flags end up in the same binary.
+    # Follow ENABLE_NATIVE_ARCH here, or the portable Release build is portable
+    # everywhere except the order book. Apple clang on arm64 can also reject
+    # -march=native outright. ci.yml asserts the flag is absent.
+    set(SLICK_ORDERBOOK_ENABLE_NATIVE_ARCH ${ENABLE_NATIVE_ARCH} CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-orderbook
         GIT_REPOSITORY https://github.com/SlickQuant/slick-orderbook.git
@@ -198,10 +182,8 @@ endif()
 if(SLICK_SIM_ENABLE_FIX_JSON_PARSERS)
     find_package(quickfix CONFIG REQUIRED)
 endif()
-# What is NOT here, again: uWebSockets and jwt-cpp. Both are venue-driven -
-# uWebSockets through slick_sim_require_rest_ws() for a venue that serves HTTP/WS,
-# jwt-cpp in src/venues/coinbase/ for the two gateways that sign with it - so a
-# core-only build needs neither installed.
+# Venues resolve uWebSockets through slick_sim_require_rest_ws(); Coinbase
+# resolves jwt-cpp for its two signing gateways. Core-only builds need neither.
 find_package(nlohmann_json CONFIG REQUIRED)
 #find_package(foonathan_memory CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED COMPONENTS uuid multiprecision)

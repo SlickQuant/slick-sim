@@ -10,21 +10,16 @@
 
 namespace slick::sim::order_gateway {
 
-/// A gateway-side view of the orders the simulator has reported on.
+/// Tracks the orders reported to one gateway.
 ///
-/// A gateway cannot answer "list this user's orders" by looking at the order books:
-/// those belong to the exchange thread, and reading them from a gateway's event loop
-/// would race it. What every gateway does have is the execution-report stream, and
-/// each `OrderResponse` carries the order's whole identity plus its state at that
-/// moment - so replaying the stream in order reconstructs the current state of every
-/// order without touching anything the exchange owns.
+/// Order books belong to the exchange thread, so reading them from a gateway's
+/// event loop would race. Replaying OrderResponse messages reconstructs each
+/// order's identity and state without reading exchange-owned data.
 ///
-/// One instance per gateway. `slick::queue` gives each reader an independent cursor,
-/// so draining here does not disturb the request handlers polling the same queue for
-/// their own responses.
-///
-/// Deliberately not thread safe: a gateway drains and reads this only on its own
-/// uWebSockets loop thread, which is the same rule the rest of the gateway follows.
+/// Each gateway has its own store. slick::queue readers have independent cursors,
+/// so draining the store does not disturb request handlers polling for replies.
+/// All access stays on the gateway's uWebSockets loop thread; the store has no
+/// internal synchronisation.
 class OrderStore {
 public:
     /// Projection only. For a gateway that already drains the response stream for

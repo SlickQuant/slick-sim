@@ -73,8 +73,8 @@ jobs:
     - name: Build API reference (Doxygen)
       run: doxygen Doxyfile
 
-    # One merged tree, one publish. Deploying the two halves separately would
-    # need keep_files: true and can race on the gh-pages branch.
+    # Publish the combined site once. Separate deployments would require
+    # keep_files: true and could race on the gh-pages branch.
     - name: Assemble combined site
       run: |
         mkdir -p site/api

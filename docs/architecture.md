@@ -14,9 +14,8 @@ identical in every case; only the source of the resting liquidity changes.
 
 ### Shadowing — matching against the live market
 
-The mode `slick-sim` is built for. It subscribes to the **real venue's live public market data** and
-reconstructs that venue's book locally, order by order. Your orders are inserted into that same book
-and matched against real, currently-quoted liquidity by a local FIFO engine.
+`slick-sim` subscribes to a venue's live public market data and reconstructs its book locally.
+Client orders enter that book and match against the quoted liquidity through a local FIFO engine.
 
 Prices and trades are therefore real; fills are simulated. Nothing is ever sent upstream except
 market-data subscriptions and — for Hyperliquid — read-only `/info` metadata queries.
@@ -26,9 +25,8 @@ market-data subscriptions and — for Hyperliquid — read-only `/info` metadata
 With no feed configured, the same machinery behaves like a conventional exchange simulator: books
 start empty and the only liquidity is what clients themselves submit. Orders rest, match against each
 other under the same FIFO price/time priority, and produce the same execution reports and
-venue-native market data. Useful for deterministic tests, for exercising a client's order-entry path
-without depending on the internet, and for multi-client scenarios where you want full control over
-both sides of every trade.
+venue-native market data. This mode supports deterministic tests and client order-entry tests without an internet connection.
+With multiple clients, you control both sides of every trade.
 
 Both adapters gate this on an internal `use_live_feed_` flag, set only when `md_feeds` contains an
 entry whose `type` the adapter recognises. Omit `md_feeds` entirely, or give it an unrecognised
@@ -63,8 +61,7 @@ liquidity:
 - **Simulator orders** — the orders your client actually sent. They rest in the same book, at the same
   price levels, competing for the same queue positions.
 
-The book cannot distinguish them structurally; it distinguishes them by bookkeeping. This split is
-the single most important idea in the codebase and is covered in detail in
+The book tracks the two kinds of order through separate bookkeeping. See
 [Order book](order-book.md).
 
 In self-contained mode the book simply contains no phantom orders. Nothing else changes — the same
@@ -124,7 +121,7 @@ flowchart TB
     MDP -->|"venue-native WS"| CM
 ```
 
-The two client-facing paths are fully independent, and each is bidirectional:
+Clients use two independent, bidirectional paths:
 
 - **Order entry** — `order_gateway` accepts orders from the client and returns acks, fills, cancels
   and rejects to that same client, over the same connection.
@@ -158,7 +155,7 @@ core ← venue: a venue target links `exchange`, and the executables link whiche
 
 ## Threading model
 
-This is the part most likely to trip you up, because it is not what the class structure suggests.
+Book mutation and order processing share one thread per exchange; network I/O runs on separate threads.
 
 ### Threads per exchange
 
@@ -191,10 +188,8 @@ void HyperliquidExchange::poll() { drainEventQueue(); }
 ```
 
 !!! note "The loop belongs to the base class"
-    It did not always. `Exchange::start()` used to call `processRequest()` exactly once with no loop,
-    and each adapter re-implemented the whole of `start()` to add one — so an adapter that inherited
-    it bound its ports and then went silent. The loop now lives in the base and `poll()` defaults to
-    doing nothing, which is correct for a venue with no feed.
+    `Exchange::start()` owns the processing loop. Adapters override `poll()` to add feed processing;
+    its default implementation does nothing, which suits a venue with no feed.
 
 **One uWebSockets event-loop thread per gateway and per publisher.** `RestWsOrderGateway::start()`
 and `WebsocketMarketDataPublisher::start()` each spawn a thread that builds a `uWS::App`, installs
@@ -215,8 +210,8 @@ buffer — which here is always the exchange thread.
   exchange loop calls `getInfo()->dispatch(100)` from `drainEventQueue()`, so `onL2BookUpdate` and
   `onTradesUpdate` likewise run **on the exchange thread**.
 
-The upshot is that a single thread per venue decodes market data, mutates the book, matches orders,
-and publishes — no locking is needed anywhere in that path.
+A single thread per venue decodes market data, mutates the book, matches orders and publishes.
+This path needs no locking.
 
 ### Which thread runs what
 
@@ -292,7 +287,7 @@ Symbols are created lazily, on the first market-data subscription for that instr
 adapter's `addSymbol()`. Creation assigns a `symid_t`, attaches the shared `FifoMatchingEngine` for
 that venue, and calls `createOrderBook<OrderBookType::L2>()`.
 
-Two properties are worth knowing:
+There are two limitations:
 
 - **Keyed by name across all venues.** `symbols_by_name_` is a flat `unordered_map<std::string,
   Symbol*>`. If Coinbase and a future venue both list an instrument under the same string, the second

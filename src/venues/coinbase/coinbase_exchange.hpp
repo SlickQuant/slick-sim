@@ -81,23 +81,11 @@ private:
                 // absorbed it, instead of reducing the same quantity twice.
                 return a.type != EventType::TRADE;
             }
-            // Same instant, same kind: pop the *highest* sequence_id first. That
-            // reads backwards next to the inverted event_time comparison above, but
-            // it is load-bearing — do not "fix" it to match. sequence_id is assigned
-            // as each event is enqueued, and the two enqueue loops deliberately walk
-            // their batch in opposite directions so that this ordering replays both
-            // chronologically:
-            //
-            //   onLevel2Updates  iterates the batch in REVERSE, so array index 0
-            //                    gets the highest id and replays first — Coinbase
-            //                    sends level updates oldest-first.
-            //   onMarketTrades   iterates FORWARD, so the last array element gets
-            //                    the highest id and replays first — Coinbase sends
-            //                    market_trades newest-first.
-            //
-            // Invert it and both batches replay backwards: levels settle on a stale
-            // quantity, and trades match against the book and take their public
-            // trade ids in reverse.
+            // For equal timestamps and types, pop the highest sequence_id first.
+            // The enqueue loops use opposite directions to restore chronological order:
+            // onLevel2Updates walks oldest-first data in reverse; onMarketTrades walks
+            // newest-first data forwards. Inverting this tie-break would replay both
+            // batches backwards, leaving stale levels and assigning trade ids in reverse.
             return a.sequence_id < b.sequence_id;
         }
     };
@@ -110,12 +98,9 @@ private:
         uint64_t last_seq_num = 0;
         uint64_t next_sequence_id = 0;
         uint64_t last_published_level_seq_num = 0;
-        /// Per symbol, not per exchange. It is flushed only when a later event
-        /// carries a different sequence, so one shared buffer still held a symbol's
-        /// rows when processSequencedEvents moved on to the next symbol's queue - and
-        /// the flush publishes under whichever symbol is dispatching, so those rows
-        /// went out under the wrong instrument, at prices belonging to another one,
-        /// while the symbol that produced them never saw them.
+        /// Buffer levels per symbol until a different sequence triggers a flush.
+        /// A shared buffer could retain one symbol's rows when dispatch moves to
+        /// another, publishing those rows under the wrong instrument.
         std::vector<MDLevel> level_update_buffer_;
         // Stamped onto every book mutation in place of the venue's seq_num. The
         // book silently discards a mutation whose sequence regresses, and both

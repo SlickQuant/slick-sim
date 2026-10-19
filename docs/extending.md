@@ -1,12 +1,11 @@
 # Adding an exchange
 
-This is a checklist for implementing a new venue adapter, derived from the two that work. Read
-[Architecture](architecture.md) first — the threading model determines most of the design.
+Use the existing adapters as references when adding a venue. Read [Architecture](architecture.md)
+first; the threading model determines most of the design.
 
-Concretely you need five pieces: a `Venue` enum entry, an `Exchange` subclass, an `MDFeed`, an
-`OrderGateway`, and a `MarketDataPublisher`. Everything venue-specific lives in **one directory**,
-`src/venues/<name>/`, built as one optional target — so beyond the enum line, the only wiring is that
-directory's own `CMakeLists.txt`.
+A venue needs a `Venue` enum entry, an `Exchange` subclass, an `MDFeed`, an `OrderGateway` and a
+`MarketDataPublisher`. Keep its implementation in `src/venues/<name>/` as one optional target.
+Beyond the enum entry, its `CMakeLists.txt` handles the build wiring.
 
 Nothing in the core, and no existing venue, has to be edited to add a new one.
 
@@ -395,9 +394,9 @@ if(SLICK_SIM_ENABLE_KRAKEN)
 endif()
 ```
 
-That is the whole build change. `slick_sim_add_venue` links your target against `exchange` (which
-carries every core header transitively), defines `SLICK_SIM_HAS_KRAKEN` for consumers, and adds the
-venue to the list that `slick_sim_link_venues()` feeds to both `slick-sim` and `slick_sim_tests`.
+`slick_sim_add_venue` links the target against `exchange`, which carries the core headers. It also
+defines `SLICK_SIM_HAS_KRAKEN` for consumers and adds the venue to the list linked into both
+`slick-sim` and `slick_sim_tests`.
 Because `DEPENDS` is linked `PUBLIC`, your SDK and your networking stack reach the executable and the
 test binary without either of them naming a venue library.
 
@@ -475,7 +474,7 @@ crashed run left behind.
 
 ## 9. Check it builds without the others
 
-The point of the split is that venues are independent. Verify that:
+Check that the new venue builds independently:
 
 ```bash
 cmake -S . -B build-kraken -DSLICK_SIM_ENABLE_COINBASE=OFF -DSLICK_SIM_ENABLE_HYPERLIQUID=OFF

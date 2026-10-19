@@ -42,8 +42,8 @@ TEST(SequencedMessageTest, StampsEachSubscribersOwnSequenceNumber) {
     }
 }
 
-// The point of the class: the body is serialised once, so rendering repeatedly must
-// keep producing correct output rather than accumulating or truncating.
+// Repeated rendering must preserve the serialised body without accumulating
+// or truncating content.
 TEST(SequencedMessageTest, RenderIsRepeatableAcrossManySubscribers) {
     auto message = makeUpdate();
     SequencedMessage payload(message);

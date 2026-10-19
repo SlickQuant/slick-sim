@@ -117,13 +117,10 @@ protected:
     queue<OrderResponse> response_queue_;
     queue<uint8_t> md_queue_;
     std::shared_ptr<md_feed::MDFeed> md_feed_;
-    /// Both adapters used to declare their own copy of this, which is why the base
-    /// `stop()` never stopped a feed. One vector, driven by base start/stop.
-    ///
-    /// Adapters populate it at different times: Hyperliquid builds its feeds in its
-    /// constructor, so `start()` below is what starts them; Coinbase creates one
-    /// per subscription and starts it there, so the vector is empty when `start()`
-    /// runs. Both are fine - `start()` starts whatever already exists.
+    /// Feeds owned by the exchange and managed by base start()/stop().
+    /// Hyperliquid creates them in its constructor, so start() starts them.
+    /// Coinbase creates and starts one per subscription; its vector is empty
+    /// when start() runs.
     std::vector<std::shared_ptr<md_feed::MDFeed>> md_feeds_;
     std::thread thread_;
     std::thread md_thread_;
@@ -154,11 +151,9 @@ protected:
     /// Self-match prevention mode applied to every symbol on this venue, from the
     /// `self_match_prevention` config key. Stamped onto each Symbol as it is created.
     SelfMatchPreventionMode smp_mode_ = SelfMatchPreventionMode::NONE;
-    /// Keyed by the same fixed_string width as `AddOrderMessage::user_id`, with
-    /// transparent functors so `clientIdFor` can look up by string_view. As a
-    /// `std::unordered_map<std::string, int>` every new order built a std::string
-    /// key just to probe the map, allocating for any user_id past the small-string
-    /// buffer even though the entry was almost always already there.
+    /// Keys use the width of AddOrderMessage::user_id. Transparent functors let
+    /// clientIdFor look up a string_view without allocating a temporary string,
+    /// even when user_id exceeds the small-string buffer.
     std::unordered_map<utils::fixed_string<sizeof(AddOrderMessage::user_id)>, int,
                        utils::StringViewHash, utils::StringViewEq> client_ids_;
     int next_client_id_ = 0;

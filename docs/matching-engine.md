@@ -10,7 +10,7 @@ passed in from `Symbol`.
 
 ## Two entry points
 
-The interface has two `match` overloads, and they exist for genuinely different reasons.
+The two `match` overloads handle client orders and incoming market-data liquidity.
 
 ```cpp
 // 1. A client order arrives.
@@ -144,12 +144,11 @@ The check runs at the top of `match()`, ahead of the order ack, ahead of the
 side as far as the incoming quantity could actually reach and asks whether any of it is the order's
 own.
 
-That ordering is the whole point. The matching loop mutates before it matches — an amendment writes
-the new price and quantity onto the stored `Order` and reports `REPLACED`, and a new order is acked —
-so deciding mid-loop would mean telling the client its order was replaced or working and then
-rejecting it, with the amendment half-applied to an order that never moved on the book. Deciding
-first means a rejected order leaves no trace: the client sees its pending, then one `REJECTED`, and
-the stored order keeps its original price and quantity.
+The check must precede mutation. On entering the matching loop, an amendment updates the stored
+`Order` and reports `REPLACED`; a new order is acknowledged. Rejecting a self-match at that point
+would leave an amendment partly applied and send conflicting reports. With the pre-check, the client
+sees its pending report followed by one `REJECTED`, and the stored order keeps its original price
+and quantity.
 
 Running before the mutation does mean the pre-check has to derive the quantity the loop is *about*
 to use rather than reading it afterwards. The `order_qty` argument is the order's total quantity; for
@@ -307,7 +306,7 @@ the cumulative totals. And the same three lines appear twice: here for the aggre
 
 ## Tests
 
-The engine is the best-covered part of the codebase:
+These tests cover the matching engine:
 
 | File | Covers |
 | --- | --- |

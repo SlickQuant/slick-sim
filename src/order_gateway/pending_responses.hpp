@@ -8,23 +8,18 @@
 
 namespace slick::sim::order_gateway {
 
-/// Correlates an in-flight HTTP request with the execution report that answers it.
+/// Correlates an in-flight HTTP request with its execution report.
 ///
-/// The REST handlers used to poll `response_queue_` with a 100us sleep until their
-/// own report arrived. That ran on the gateway's only event-loop thread, so one
-/// order stalled every other client's request for up to the full timeout - and the
-/// batch handlers polled once per entry, stalling for that long per order in the
-/// batch. A handler now records what it is waiting for and returns immediately; the
-/// gateway's drain completes the HTTP response when the report arrives, and the
-/// request's own timer completes it as a timeout if it does not.
+/// A handler records what it is waiting for and returns. The gateway's drain
+/// completes the response when a report arrives; the request timer completes it
+/// on timeout. Polling with a 100us sleep would block the gateway's only event
+/// loop for the full timeout, once per entry for a batch request.
 ///
-/// Waiters are matched by predicate rather than a keyed lookup because the handlers
-/// correlate on different things: a create knows its `client_order_id`, a cancel
-/// only the timestamp it stamped on its request. The list is bounded by the requests
-/// actually in flight, so scanning it is cheaper than maintaining several indexes.
+/// Predicates support the handlers' different correlation keys: client_order_id
+/// for creates and request timestamps for cancels. The list is bounded by the
+/// requests in flight, so scanning costs less than maintaining several indexes.
 ///
-/// Single-threaded by construction - every method runs on the gateway's loop thread,
-/// the same rule the rest of the gateway follows.
+/// All methods run on the gateway's loop thread.
 class PendingResponses {
 public:
     using Id = uint64_t;

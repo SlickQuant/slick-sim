@@ -21,20 +21,12 @@ std::string format_qty(qty_t qty) {
     return slick::sim::md_publisher::to_hyperliquid_number(qty);
 }
 
-// One side's contribution to "l" (changed/added, in current order) and "r"
-// (indices into `prev` that are no longer present in `curr`).
+// One side's changed/added levels (l) and removed indices (r).
 //
-// Both lists carry the live venue's own ordering, which a client is entitled to
-// rely on: "l" in book order (best price first), and "r" in ascending *price*
-// order - which is descending index on the bid side, whose array runs from the
-// highest price down. Hence `descending_index`, set for bids only.
-//
-// Emitting bid removals in ascending index order instead broke any client that
-// splices them off one at a time, because each deletion shifts the entries
-// behind it and the next index then resolves one slot too far. Hyperliquid's
-// own bid removals never arrive in that order, so such a client is correct
-// against the venue and desynced only here - the failure surfaced as a stale
-// level resting above the opposite side.
+// Keep the venue's ordering: l is best price first; r is ascending price,
+// which means descending index for bids. Set descending_index for bids only.
+// A client removing bids one at a time relies on that order. Ascending indices
+// would shift later entries, leave stale levels and desynchronise the book.
 void diff_side(const slick::sim::md_publisher::L2Levels& prev,
                 const slick::sim::md_publisher::L2Levels& curr,
                 bool descending_index,

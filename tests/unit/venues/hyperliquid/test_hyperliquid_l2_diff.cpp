@@ -14,10 +14,8 @@ using namespace slick::sim::md_publisher;
 using json = nlohmann::json;
 
 namespace {
-// Expected values are written out in full rather than recomputed with the same
-// formatter the code under test uses - a helper mirroring the implementation agrees
-// with it however wrong both are, which is how "0.00011628" went out as "0.000116"
-// unnoticed.
+// Write expected values explicitly. Reusing the production formatter would
+// hide shared mistakes, such as truncating "0.00011628" to "0.000116".
 
 // Applies a diff the way the contract reads it: every "r" index resolved
 // against the previous array before anything is removed.

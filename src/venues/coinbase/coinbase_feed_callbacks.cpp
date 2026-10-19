@@ -67,16 +67,12 @@ void CoinbaseExchange::onMarketDataDisconnected(WebSocketClient *client)
         }
     }
 
-    // Restart the feed that dropped rather than building a replacement. A
-    // WebSocketClient registers its producers on the shared multiplexer from its
-    // constructor, and stream_buffer_multiplexer has no way to unregister them - so a
-    // second client throws std::invalid_argument on the first duplicate id, uncaught
-    // on the exchange thread. Handing it a fresh offset instead would only trade that
-    // for a leak: the multiplexer owns each producer's stream_buffer, so every
-    // reconnect would strand the 64MB market-data and 16MB user-data rings of the
-    // client it replaced. Neither is necessary - `start()` calls
-    // WebSocketClient::subscribe(), which reopens a socket whose status is past
-    // CONNECTED and then re-sends the subscription.
+    // Restart the existing feed. WebSocketClient registers producers in its
+    // constructor, and the multiplexer cannot unregister them. A replacement with
+    // the same ids would throw std::invalid_argument on the exchange thread; new
+    // ids would leak the old 64MB market-data and 16MB user-data rings.
+    // start() calls subscribe(), which reopens a socket past CONNECTED and resends
+    // the subscription.
     disconnected_feed->start();
 
     LOG_INFO("WebSocket {:p} restarted market data feed for {} symbol(s)", (void *)client, symbols.size());
@@ -102,35 +98,24 @@ void CoinbaseExchange::onLevel2Snapshot(WebSocketClient * /* client */, uint64_t
 
     auto &pending_l2_subscriptions = pending_md_subscription_[coinbase::WebSocketChannel::LEVEL2];
     auto it = pending_l2_subscriptions.find(symbol);
-    // clearMDOrders(), not clear() - the contract this rebuild has to honour, and
-    // what Hyperliquid's snapshot path already calls. OrderBookL3::clear() unlinks
-    // orders without notifying observers, so feed_md_level_quantity_ kept every
-    // pre-snapshot price and the rebuild below added the snapshot's quantities on
-    // top of stale ones, leaving reconcilePhantomQty measuring against a level
-    // quantity the book never held. It also wiped the simulator's own resting orders
-    // out of the L3 book while orders_ went on holding them - so after a reconnect a
-    // client's live order was gone from the book, unable to fill or be swept, but
-    // still reported as resting.
+    // Rebuild through clearMDOrders(), as Hyperliquid does. Plain clear() unlinks
+    // orders without notifying observers: phantom totals would stay stale and
+    // simulator orders would disappear from the book but remain in the lookup maps.
+    // clearMDOrders() resets those totals and preserves active simulator orders.
     symbol->order_book_->clearMDOrders();
 
-    // Everything still queued describes the book that clear() just discarded, so it
-    // must not be replayed onto the rebuilt one. poll() drains the callbacks that
-    // delivered this snapshot and only then runs processSequencedEvents, so a trade
-    // received before a reconnect would otherwise match against fresh liquidity and
-    // fabricate fills - dispatchEvent's TRADE branch has no stale-timestamp guard to
-    // stop it, and the level branch's guard only compares against the rebuilt book.
-    // Everything queued at this point does predate the snapshot: every callback runs
-    // on the exchange thread in arrival order, so whatever arrives after this one is
-    // enqueued after this line.
+    // Discard events for the old book before rebuilding. poll() processes these
+    // callbacks before processSequencedEvents(), so an old trade could otherwise
+    // consume fresh liquidity and produce false fills. The TRADE branch has no
+    // stale-timestamp guard; the level guard sees only the rebuilt book.
+    // Callbacks run in arrival order on the exchange thread, so every event queued
+    // here predates this snapshot. Later arrivals will be queued after the reset.
     auto &state = symbol_event_state_[symbol];
     state.pending_events = {};
 
-    // The level-update batch in flight describes the book that was just discarded.
-    // It is only flushed downstream when a later event carries a different sequence,
-    // so leaving it here published pre-reset levels *after* the snapshot frame, as an
-    // ordinary incremental update - rebuilding liquidity the reset had removed. The
-    // publish boundary is re-primed too, so the first event after the snapshot starts
-    // a batch the way it would on a fresh subscription.
+    // Discard the pending level batch too. It describes the old book and would
+    // otherwise be flushed after the snapshot when the sequence changes. Reset the
+    // publish boundary so the next event starts a new batch.
     state.level_update_buffer_.clear();
     state.last_published_level_seq_num = 0;
 

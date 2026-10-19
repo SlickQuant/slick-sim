@@ -16,10 +16,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Reuses the exact Release-config binaries ci.yml already built and tested
-      # for this commit, instead of rebuilding from scratch. Requires the tagged
-      # commit to already have a successful ci.yml run (e.g. tag a commit that's
-      # already on main and has passed CI).
+      # Reuse the Release binaries already built and tested by ci.yml for this
+      # commit. Tag a commit with a successful CI run, such as one already on main.
       - name: Find CI run for this commit
         id: ci_run
         env:
@@ -49,6 +47,14 @@ jobs:
           run-id: ${{ steps.ci_run.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download macOS release build from CI
+        uses: actions/download-artifact@v4
+        with:
+          name: slick-sim-macOS-release
+          path: macos-build
+          run-id: ${{ steps.ci_run.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Package
         run: |
           VERSION="${GITHUB_REF#refs/tags/v}"
@@ -67,6 +73,15 @@ jobs:
           cp -r config "$LINUX_STAGE/"
           cp README.md LICENSE "$LINUX_STAGE/"
           tar -czf "${LINUX_STAGE}.tar.gz" "$LINUX_STAGE"
+
+          # ci.yml's macOS leg runs on Apple Silicon, so this archive is arm64-only.
+          MAC_STAGE="slick-sim-${VERSION}-macos-arm64"
+          mkdir -p "$MAC_STAGE"
+          cp macos-build/* "$MAC_STAGE/"
+          chmod +x "$MAC_STAGE/slick-sim"
+          cp -r config "$MAC_STAGE/"
+          cp README.md LICENSE "$MAC_STAGE/"
+          tar -czf "${MAC_STAGE}.tar.gz" "$MAC_STAGE"
 
       - name: Extract changelog for this version
         id: changelog
@@ -106,3 +121,4 @@ jobs:
           files: |
             slick-sim-*-windows-x64.zip
             slick-sim-*-linux-x64.tar.gz
+            slick-sim-*-macos-arm64.tar.gz

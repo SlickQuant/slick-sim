@@ -4,10 +4,9 @@ Market data flows in one direction: the real venue's WebSocket feed → an `MDFe
 thread, which mutates the book → the internal binary `md_queue_` → the venue's publisher → the
 client's WebSocket.
 
-The inbound half is optional. With no feed configured the simulator runs
-[self-contained](architecture.md#self-contained-a-conventional-exchange-simulator): the first two
-stages below are simply absent, the book is driven purely by client orders, and everything from
-`md_queue_` onwards works exactly as described here.
+The inbound feed is optional. In
+[self-contained mode](architecture.md#self-contained-a-conventional-exchange-simulator), client orders
+drive the book. The `md_queue_` and publisher still work as described below.
 
 ```mermaid
 flowchart LR
@@ -99,9 +98,9 @@ two enqueue loops walk their batch in opposite directions to suit each channel's
 | `onLevel2Updates` | **reverse** (`rbegin`→`rend`) | level updates oldest-first | array order |
 | `onMarketTrades` | **forward** | `market_trades` newest-first | reverse array order |
 
-Both land on chronological. "Fixing" the tie-break to match the `event_time` inversion replays both
-batches backwards — levels settle on a stale quantity, and trades match against the book and take
-their public trade ids in reverse.
+Both produce chronological order. Inverting the tie-break to match `event_time` would replay both
+batches backwards: levels would settle on stale quantities, and trades would match and receive
+public trade ids in reverse order.
 
 The same reversal decides where `F_END_EVENT` goes. Each loop enqueues in reverse *dispatch* order,
 so the element it visits **first** takes the lowest `sequence_id` and is dispatched **last** — and
@@ -268,9 +267,8 @@ Hyperliquid's undocumented `l2` channel sends compressed incremental diffs:
   not as prices, in ascending **price** order — so bid indices descend and ask indices ascend.
 - `t` — event time in milliseconds.
 
-Those indices are the problem: to turn index 2 back into a price, you need the exact ordered price
-list the venue had before this event. The simulator's own book cannot supply it, because it also
-contains your orders and may have levels the real market does not.
+Resolving an index to a price requires the venue's ordered price list from before the diff. The
+simulator book contains client orders and possibly extra levels, so it cannot serve as that list.
 
 So `HyperliquidExchange` keeps a separate mirror:
 
@@ -315,9 +313,8 @@ never saw. `r` goes out in ascending price order — which
 is **descending index on the bid side**, whose array runs from the highest price down, and ascending
 index on the ask side.
 
-That is not cosmetic. A client walking the list and splicing each index off as it reads it is correct
-exactly while the indices descend, because then no deletion moves an entry a later index still refers
-to. Hyperliquid sends bid removals that way, so such a client works against the venue. Emitting them
+A client can remove entries one at a time only while the indices descend: each deletion then leaves
+the entries referenced by later indices in place. Hyperliquid sends bid removals that way, so such a client works against the venue. Emitting them
 ascending here desynced it on the first multi-index bid removal: the level it failed to drop stayed
 resting **above the best ask**, and every later index-based removal on that side landed one slot off.
 
@@ -473,7 +470,7 @@ struct Trade { uint64_t order_id; qty_t qty; };
 
 !!! note "`price_t` width"
     `price_t` and `qty_t` are `int_fast64_t`, whose size is implementation-defined — 8 bytes on
-    x86-64 Linux and Windows, which is what these layouts assume. Because the queue may be backed by
+    x86-64 Linux and Windows and on arm64 macOS, which is what these layouts assume. Because the queue may be backed by
     shared memory, a reader built with a different `int_fast64_t` width would misparse every frame.
 
 ### `UpdateFlags`
@@ -514,8 +511,7 @@ short, since a whole book is far more expensive to encode than an incremental up
     `publish_processing` re-arms itself via `schedule_publish_processing()` even when the queue came
     up empty, and that is deliberate. The `defer` it posts is the *only* thing that runs the function
     again: `md_queue_` is a lock-free queue with no wakeup mechanism, and the exchange thread that
-    fills it never touches the publisher's loop. Skipping the reschedule when the queue is empty
-    looks like an easy saving and stops the publisher permanently the first time it catches up.
+    fills it never touches the publisher's loop. Skipping the reschedule on an empty queue stops the publisher permanently once it catches up.
 
 The wire formats produced are documented per venue:
 
@@ -565,8 +561,8 @@ publisher path that targets just the newly-subscribed sockets — it filters on 
 set — so emitting the newer trades as a separate frame would broadcast them to every existing
 subscriber that already saw them live.
 
-So the update block is always empty for simulator-generated trades. It earns its keep when shadowing
-a live feed, where Coinbase's upstream `market_trades` snapshot arrives on its own schedule and can
+The update block is always empty for simulator-generated trades. It is needed when shadowing a live
+feed, where Coinbase's upstream `market_trades` snapshot arrives on its own schedule and can
 carry prints newer than the level2 snapshot the simulator currently holds. Those upstream prints seed
 the history only — they are never fed to the matching engine, having happened before the simulator
 was listening, and they are the only trades that carry `F_NOT_IN_BOOK`.

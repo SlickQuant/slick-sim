@@ -12,21 +12,14 @@ namespace slick::sim::utils {
 
 /// Copies a name into a fixed-width wire field.
 ///
-/// Replaces the `memcpy(dst, name.c_str(), sizeof(dst))` idiom, which reads
-/// sizeof(the field) bytes out of a buffer holding only as many characters as the
-/// name actually has, and leaves whatever followed the name in the field. The
-/// receiver reads these fields as C strings, so a non-zero byte landing after the
-/// name is not merely an over-read - it changes the value that arrives.
+/// Truncates to N-1 characters and zero-fills the remainder. The result is always
+/// NUL-terminated, with no bytes copied from beyond the source string.
 ///
-/// Truncates to N-1 characters and zero-fills the remainder, so the field is
-/// always terminated and never carries bytes from the source's neighbourhood.
+/// Copying sizeof(dst) bytes from a shorter string would over-read it and could
+/// change the value the receiver sees. Zeroing dst before copying up to N bytes
+/// also fails for an N-character value, which overwrites the terminator.
 ///
-/// The `memset(dst, 0, sizeof(dst))` + `memcpy(dst, s.c_str(), min(sizeof(dst), s.size()))`
-/// pairing it also replaces gets the over-read right but not the terminator: a
-/// value that exactly fills the field overwrites the last zero the memset put
-/// there, and the reader then runs off the end of the field.
-///
-/// Returns true when the value did not fit, for callers that warn about it.
+/// Returns true when the value did not fit, so callers can warn about truncation.
 template<size_t N>
 inline bool copy_wire_field(char (&dst)[N], std::string_view src) noexcept {
     const auto len = std::min(src.size(), N - 1);
@@ -41,21 +34,16 @@ inline bool copy_wire_field(char (&dst)[N], std::string_view src) noexcept {
 
 /// A null-terminated character buffer of fixed capacity, stored inline.
 ///
-/// Stands in for `std::string` on the identity fields of `Order` and `Symbol`.
-/// Those fields are bounded by the fixed-width wire formats that carry them, are
-/// written once and read many times, and were costing a heap allocation each on
-/// objects that are pooled precisely so the order path never allocates.
+/// Order and Symbol use it for identity fields bounded by their wire formats.
+/// These fields are written once and read often; inline storage avoids heap
+/// allocations on pooled objects in the order path.
 ///
-/// The layout is exactly `char[N]` - no size field, no pointer - so a run of
-/// these matches a run of fixed-width wire fields byte for byte and a whole
-/// message header can be filled with one memcpy. `size()` is a `strnlen` over at
-/// most N bytes, which is why the type suits identity fields rather than anything
-/// measured in a loop.
+/// The layout is exactly char[N], with no size field or pointer. Consecutive
+/// fields therefore match a wire header byte for byte and can be copied with
+/// one memcpy. size() scans at most N bytes with strnlen, so avoid calling it
+/// repeatedly in a hot loop.
 ///
-/// Values that do not fit are truncated to N-1 characters. That is not a new
-/// limit: the wire fields these mirror have always truncated, and the previous
-/// `memcpy(dst, str.c_str(), sizeof(dst))` idiom silently read past the end of
-/// any shorter string to fill them.
+/// Values are truncated to N-1 characters, matching the wire fields' limit.
 template<size_t N>
 class fixed_string {
     static_assert(N > 1, "fixed_string needs room for at least one character and a terminator");

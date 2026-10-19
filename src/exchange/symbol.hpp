@@ -41,10 +41,8 @@ struct Symbol {
 
     symid_t id_ = INVALID_SYMBOL_ID;
     Venue venue_;
-    /// Wire-ready, so the publish path copies it as a fixed block. As a
-    /// std::string it was copied with
-    /// `memcpy(update->symbol, symbol_.c_str(), sizeof(update->symbol))`, which
-    /// reads past the end of every name shorter than the wire field.
+    /// Stored at wire width so publishing can copy the whole field without
+    /// reading past the end of a shorter string buffer.
     symbol_name_t symbol_;
     engine::MatchingEngine *matching_engine_;
     std::shared_ptr<OrderBook> order_book_;
@@ -76,11 +74,9 @@ struct Symbol {
         , matching_engine_(std::exchange(other.matching_engine_, nullptr))
         , order_book_(std::move(other.order_book_))
         , num_subscriptions_(other.num_subscriptions_.load(std::memory_order_relaxed))
-        // Moved, not left default-constructed: a Symbol that is moved must arrive
-        // with the capacity the constructor reserved, or it runs the rest of its
-        // life reallocating both caches as market data arrives. SymbolManager now
-        // constructs in place and never moves one, so nothing in the simulator
-        // exercises this today - which is exactly why it is worth stating.
+        // Move the reserved caches too, so a moved Symbol retains their capacity.
+        // Otherwise feed processing would have to allocate it again. SymbolManager
+        // currently constructs Symbols in place, so normal use does not test this.
         , md_level_update_cache_(std::move(other.md_level_update_cache_))
         , md_order_update_cache_(std::move(other.md_order_update_cache_))
         , book_observer_(std::make_shared<OrderBookObserver>(this))
