@@ -7,19 +7,21 @@
 namespace slick::sim::utils {
 
 inline std::string format_timestamp_iso8601(const std::chrono::system_clock::time_point& tp, int num_sebsecond_digits = 3) {
-    auto utc_time = std::chrono::clock_cast<std::chrono::utc_clock>(tp);
-    auto seconds = std::chrono::floor<std::chrono::seconds>(utc_time);
+    // system_clock counts Unix time, which is already UTC without leap seconds, so tp
+    // formats as UTC as-is. A clock_cast to utc_clock would only add a leap-second
+    // lookup per call, and Apple's libc++ ships neither utc_clock nor clock_cast.
+    auto seconds = std::chrono::floor<std::chrono::seconds>(tp);
 
     if (num_sebsecond_digits > 6) {
-        auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(utc_time - seconds);
+        auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(tp - seconds);
         return std::format("{:%Y-%m-%dT%H:%M:%S}.{:09d}Z", seconds, nanoseconds.count());
     }
     else if (num_sebsecond_digits > 3) {
-        auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(utc_time - seconds);
+        auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(tp - seconds);
         return std::format("{:%Y-%m-%dT%H:%M:%S}.{:06d}Z", seconds, microseconds.count());
     }
     else if (num_sebsecond_digits > 0) {
-        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(utc_time - seconds);
+        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(tp - seconds);
         return std::format("{:%Y-%m-%dT%H:%M:%S}.{:03d}Z", seconds, milliseconds.count());
     }
     return std::format("{:%Y-%m-%dT%H:%M:%S}Z", seconds);

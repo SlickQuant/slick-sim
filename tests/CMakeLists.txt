@@ -40,6 +40,7 @@ set(SLICK_SIM_TEST_SOURCES
     unit/common/test_types.cpp
     unit/common/test_messages.cpp
     unit/common/test_shm_cleanup.cpp
+    unit/common/test_timestamp.cpp
 
     # Priority 6: Order Gateway Tests
     unit/order_gateway/test_order_store.cpp
