@@ -64,12 +64,18 @@ concept MultiInstanceVenue = requires(const nlohmann::json &config) { T::create_
 /// there does `if constexpr` discard the branch that does not apply - in the
 /// macro's plain function, a single-instance venue's missing create_instances
 /// would still fail to compile.
-template <typename T>
-std::vector<std::unique_ptr<Exchange>> make_exchanges(const nlohmann::json &config) {
+///
+/// Base is always Exchange. It is a parameter only to make the vector's type
+/// dependent: unique_ptr's destructor is constexpr in C++23, and clang instantiates
+/// a constexpr destructor as soon as it sees a non-dependent use of it, so a plain
+/// vector<unique_ptr<Exchange>> local would need Exchange complete wherever this
+/// header is included. Dependent, it waits for instantiation, where T is complete.
+template <typename T, typename Base = Exchange>
+std::vector<std::unique_ptr<Base>> make_exchanges(const nlohmann::json &config) {
     if constexpr (MultiInstanceVenue<T>) {
         return T::create_instances(config);
     } else {
-        std::vector<std::unique_ptr<Exchange>> one;
+        std::vector<std::unique_ptr<Base>> one;
         one.push_back(std::make_unique<T>(config));
         return one;
     }

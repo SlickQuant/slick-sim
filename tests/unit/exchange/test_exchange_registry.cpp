@@ -1,4 +1,7 @@
 #include <gtest/gtest.h>
+// Keep this ahead of anything that defines Exchange. The header only forward-declares
+// it, and clang (macOS CI) rejects the header if a template in it needs Exchange
+// complete, so this include order is the compile check for that.
 #include <exchange/exchange_registry.hpp>
 
 using namespace slick::sim;
