@@ -2,7 +2,7 @@ var searchData=
 [
   ['main_0',['main',['../main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main.cpp']]],
   ['main_2ecpp_1',['main.cpp',['../main_8cpp.html',1,'']]],
-  ['make_5fexchanges_2',['make_exchanges',['../namespaceslick_1_1sim_1_1exch.html#a185f556a1dfe975cdb97a3892ec46031',1,'slick::sim::exch']]],
+  ['make_5fexchanges_2',['make_exchanges',['../namespaceslick_1_1sim_1_1exch.html#aae6409ac12fb7d0a72d671196d987fa8',1,'slick::sim::exch']]],
   ['market_3',['MARKET',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566baffb8d99dc885d37eec36c5497244cba8',1,'slick::sim']]],
   ['market_5fclosed_4',['market_closed',['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562a863d1ba1d1a22fe6049d3a4a2a6ac6a1',1,'slick::sim::MARKET_CLOSED'],['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a863d1ba1d1a22fe6049d3a4a2a6ac6a1',1,'slick::sim::MARKET_CLOSED'],['../namespaceslick_1_1sim.html#a0a9f0bd1a7d704fe4599a7420d34e1d3ade0badcb96ee438931a41e35e6bfbd0b',1,'slick::sim::MARKET_CLOSED']]],
   ['market_5fdata_2ehpp_5',['market_data.hpp',['../market__data_8hpp.html',1,'']]],

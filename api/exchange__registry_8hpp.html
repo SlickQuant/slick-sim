@@ -147,10 +147,10 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a185f556a1dfe975cdb97a3892ec46031" id="r_a185f556a1dfe975cdb97a3892ec46031"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a185f556a1dfe975cdb97a3892ec46031"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html">Exchange</a> &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#a185f556a1dfe975cdb97a3892ec46031">slick::sim::exch::make_exchanges</a> (const nlohmann::json &amp;config)</td></tr>
-<tr class="memdesc:a185f556a1dfe975cdb97a3892ec46031"><td class="mdescLeft">&#160;</td><td class="mdescRight">The factory body SLICK_SIM_REGISTER_VENUE registers.  <br /></td></tr>
-<tr class="separator:a185f556a1dfe975cdb97a3892ec46031"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae6409ac12fb7d0a72d671196d987fa8" id="r_aae6409ac12fb7d0a72d671196d987fa8"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Base  = Exchange&gt; </td></tr>
+<tr class="memitem:aae6409ac12fb7d0a72d671196d987fa8"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; Base &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#aae6409ac12fb7d0a72d671196d987fa8">slick::sim::exch::make_exchanges</a> (const nlohmann::json &amp;config)</td></tr>
+<tr class="memdesc:aae6409ac12fb7d0a72d671196d987fa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The factory body SLICK_SIM_REGISTER_VENUE registers.  <br /></td></tr>
+<tr class="separator:aae6409ac12fb7d0a72d671196d987fa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ad0083bd8c50907cf6e611a9ca6fd4515" name="ad0083bd8c50907cf6e611a9ca6fd4515"></a>
@@ -201,7 +201,7 @@ Functions</h2></td></tr>
 </pre><p> in which case that decides how many instances the entry describes.</p>
 <p>That TU must live in an OBJECT library - see cmake/slick_sim_venue.cmake for why a static library would let the linker drop this registration entirely. </p>
 
-<p class="definition">Definition at line <a class="el" href="exchange__registry_8hpp_source.html#l00094">94</a> of file <a class="el" href="exchange__registry_8hpp_source.html">exchange_registry.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="exchange__registry_8hpp_source.html#l00100">100</a> of file <a class="el" href="exchange__registry_8hpp_source.html">exchange_registry.hpp</a>.</p>
 
 </div>
 </div>
