@@ -174,6 +174,7 @@ void CoinbaseExchange::handleMdSubscription(const Request &request)
         break;
     }
     case coinbase::WebSocketChannel::TICKER:
+    default:
         break;
     }
 }

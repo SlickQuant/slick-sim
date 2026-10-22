@@ -94,6 +94,7 @@ void Symbol::onPriceLevelUpdate(const PriceLevelUpdate& update) {
         .qty = update.quantity,
         .num_orders = update.num_orders,
         .level_index = update.level_index,
+        .update_action = MDUpdateAction::ACTION_NEW,  // unread on LEVEL frames, qty 0 means delete
         .flags = (update.change_flags & slick::orderbook::ChangeFlag::LastInBatch) ? UpdateFlags::F_END_EVENT : UpdateFlags::F_NONE,
         .side = static_cast<Side>(update.side)
     });

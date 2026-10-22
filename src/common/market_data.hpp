@@ -15,6 +15,7 @@ namespace slick::sim {
 // the UBSan job fails on it (json's converting constructor and
 // vector::emplace_back both bind, which is how it slipped in once already).
 #pragma pack(push, 1)
+SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN
 
 enum MDUpdateType : uint8_t {
     BOOK,
@@ -105,6 +106,7 @@ struct MarketDataUpdate {
     uint8_t data[0];
 };
 
+SLICK_SIM_ZERO_SIZE_ARRAY_END
 #pragma pack(pop)
 
 /// An instrument name at its wire width.
@@ -120,6 +122,7 @@ struct MarketDataUpdate {
 using symbol_name_t = utils::fixed_string<sizeof(MarketDataUpdate::symbol)>;
 
 #pragma pack(push, 1)
+SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN
 
 enum MDSubscriptionRejectReason : uint8_t {
     NONE,
@@ -184,6 +187,7 @@ struct MDTradeSnapshotResponse {
     MDTrade trades[0];
 };
 
+SLICK_SIM_ZERO_SIZE_ARRAY_END
 #pragma pack(pop)
 
 }   // end namespace slick::sim

@@ -319,7 +319,6 @@ void CoinbaseRestOrderGateway::handle_create_order(uWS::HttpResponse<false>* res
             TimeInForce tif;
             price_t price = NULL_PRICE;
             qty_t qty = 0;
-            bool post_only = false;
 
             // Pattern match on nested configuration keys
             if (order_config.contains("limit_limit_gtc")) {
@@ -328,7 +327,7 @@ void CoinbaseRestOrderGateway::handle_create_order(uWS::HttpResponse<false>* res
                 auto& cfg = order_config["limit_limit_gtc"];
                 qty = to_qty_t(std::stod(cfg["base_size"].get<std::string>()));
                 price = to_price_t(std::stod(cfg["limit_price"].get<std::string>()));
-                post_only = cfg.value("post_only", false);
+                // post_only is ignored: AddOrderMessage has no field to carry it.
             }
             else if (order_config.contains("market_market_ioc")) {
                 order_type = OrderType::MARKET;

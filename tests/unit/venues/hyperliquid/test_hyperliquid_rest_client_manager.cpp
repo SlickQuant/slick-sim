@@ -91,7 +91,7 @@ protected:
                         OrderStatus status, const std::string& oid_str) {
         auto idx  = response_queue_->reserve();
         auto* rsp = (*response_queue_)[idx];
-        std::memset(rsp, 0, sizeof(*rsp));
+        *rsp = OrderResponse{};
         std::memcpy(rsp->user_id, user_id.c_str(),
                     std::min(sizeof(rsp->user_id) - 1, user_id.size()));
         std::memcpy(rsp->client_order_id, cloid.c_str(),

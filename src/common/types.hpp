@@ -6,6 +6,16 @@
 #include <string_view>
 #include <boost/multiprecision/cpp_int.hpp>
 
+// Bracket wire structs that end in a `T name[0]` payload. Zero-size arrays are an
+// extension: this quiets GCC/clang -Wpedantic for the block, MSVC's C4200 is off in CMake.
+#if defined(__GNUC__)
+#define SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
+#define SLICK_SIM_ZERO_SIZE_ARRAY_END _Pragma("GCC diagnostic pop")
+#else
+#define SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN
+#define SLICK_SIM_ZERO_SIZE_ARRAY_END
+#endif
+
 namespace slick::sim {
 
 using price_t = int_fast64_t;

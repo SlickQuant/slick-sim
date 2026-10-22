@@ -216,6 +216,7 @@ inline std::string to_string(CxlRejectReason reject) {
 }
 
 #pragma pack(push, 1)
+SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN
 
 enum class MessageType : uint8_t {
     UNKNOWN = 0,
@@ -339,6 +340,7 @@ struct TradeSummary {
     Trade trades[0];
 };
 
+SLICK_SIM_ZERO_SIZE_ARRAY_END
 #pragma pack(pop)
 
 // setOrderIdentity() copies an order's OrderIdentity over the head of an
@@ -361,7 +363,9 @@ static_assert(offsetof(OrderResponse, error_message) == sizeof(OrderIdentity));
 /// Every response built from an order goes through here, so neither of those two
 /// can be left holding a recycled slot's previous value.
 inline void setOrderIdentity(OrderResponse &response, const Order &order) noexcept {
-    std::memcpy(&response, static_cast<const OrderIdentity *>(&order), sizeof(OrderIdentity));
+    // void*: OrderResponse is trivially copyable, GCC's -Wclass-memaccess just trips on its
+    // default member initializers.
+    std::memcpy(static_cast<void *>(&response), static_cast<const OrderIdentity *>(&order), sizeof(OrderIdentity));
     response.order_num = order.id;
     response.request_tag = order.request_tag;
     response.aggressor = false;
