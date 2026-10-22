@@ -4,6 +4,8 @@ var types_8hpp =
     [ "SLICK_SIM_VENUE_ENUMERATOR", "types_8hpp.html#a075972cb922264f0d055eb61bc69d69c", null ],
     [ "SLICK_SIM_VENUE_LIST", "types_8hpp.html#afaf6b8516bf04d516effe80e6814e19c", null ],
     [ "SLICK_SIM_VENUE_MATCH", "types_8hpp.html#a186d668f4a7fa80d4f10a2adc9d385f2", null ],
+    [ "SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN", "types_8hpp.html#abfed81f4239e3b242344ec5fd1b2b18f", null ],
+    [ "SLICK_SIM_ZERO_SIZE_ARRAY_END", "types_8hpp.html#ad2631ab3af13d447e539d076e5b60b94", null ],
     [ "cum_value_t", "types_8hpp.html#ac68d41e163c0546bf5d9c256de19b94a", null ],
     [ "price_t", "types_8hpp.html#a55744a3b84aa316240e0c9d91f4c6f16", null ],
     [ "qty_t", "types_8hpp.html#ab7fcad70f6b4f10b417e66c85efe03de", null ],

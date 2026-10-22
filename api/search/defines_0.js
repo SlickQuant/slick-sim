@@ -4,5 +4,7 @@ var searchData=
   ['slick_5fsim_5fvenue_5fcase_1',['SLICK_SIM_VENUE_CASE',['../types_8hpp.html#acb48902001de9f6d78e17576c5c8831f',1,'types.hpp']]],
   ['slick_5fsim_5fvenue_5fenumerator_2',['SLICK_SIM_VENUE_ENUMERATOR',['../types_8hpp.html#a075972cb922264f0d055eb61bc69d69c',1,'types.hpp']]],
   ['slick_5fsim_5fvenue_5flist_3',['SLICK_SIM_VENUE_LIST',['../types_8hpp.html#afaf6b8516bf04d516effe80e6814e19c',1,'types.hpp']]],
-  ['slick_5fsim_5fvenue_5fmatch_4',['SLICK_SIM_VENUE_MATCH',['../types_8hpp.html#a186d668f4a7fa80d4f10a2adc9d385f2',1,'types.hpp']]]
+  ['slick_5fsim_5fvenue_5fmatch_4',['SLICK_SIM_VENUE_MATCH',['../types_8hpp.html#a186d668f4a7fa80d4f10a2adc9d385f2',1,'types.hpp']]],
+  ['slick_5fsim_5fzero_5fsize_5farray_5fbegin_5',['SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN',['../types_8hpp.html#abfed81f4239e3b242344ec5fd1b2b18f',1,'types.hpp']]],
+  ['slick_5fsim_5fzero_5fsize_5farray_5fend_6',['SLICK_SIM_ZERO_SIZE_ARRAY_END',['../types_8hpp.html#ad2631ab3af13d447e539d076e5b60b94',1,'types.hpp']]]
 ];

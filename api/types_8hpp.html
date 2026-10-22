@@ -129,6 +129,10 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:abfed81f4239e3b242344ec5fd1b2b18f" id="r_abfed81f4239e3b242344ec5fd1b2b18f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="types_8hpp.html#abfed81f4239e3b242344ec5fd1b2b18f">SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN</a></td></tr>
+<tr class="separator:abfed81f4239e3b242344ec5fd1b2b18f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2631ab3af13d447e539d076e5b60b94" id="r_ad2631ab3af13d447e539d076e5b60b94"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="types_8hpp.html#ad2631ab3af13d447e539d076e5b60b94">SLICK_SIM_ZERO_SIZE_ARRAY_END</a></td></tr>
+<tr class="separator:ad2631ab3af13d447e539d076e5b60b94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afaf6b8516bf04d516effe80e6814e19c" id="r_afaf6b8516bf04d516effe80e6814e19c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="types_8hpp.html#afaf6b8516bf04d516effe80e6814e19c">SLICK_SIM_VENUE_LIST</a>(X)</td></tr>
 <tr class="memdesc:afaf6b8516bf04d516effe80e6814e19c"><td class="mdescLeft">&#160;</td><td class="mdescRight">One line per venue: the enumerator, then the canonical name <code>to_string</code> returns and <code>to_venue</code> accepts.  <br /></td></tr>
 <tr class="separator:afaf6b8516bf04d516effe80e6814e19c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -260,7 +264,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00147">147</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00157">157</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -290,7 +294,7 @@ Variables</h2></td></tr>
 <p>APPEND ONLY. <code>Venue</code> is written into every MarketDataUpdate frame and into the shared-memory md queue, so inserting in the middle renumbers the existing venues under any process already reading a queue or a capture file.</p>
 <p>This list is deliberately NOT conditional on the per-venue build options. A Venue is an identity written on the wire, not a claim that an adapter was compiled in: <code>to_venue("coinbase")</code> still yields COINBASE in a build with the Coinbase adapter switched off, which is what lets a capture recorded elsewhere still be read here. </p>
 
-<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00138">138</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00148">148</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
@@ -319,6 +323,38 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="abfed81f4239e3b242344ec5fd1b2b18f" name="abfed81f4239e3b242344ec5fd1b2b18f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfed81f4239e3b242344ec5fd1b2b18f">&#9670;&#160;</a></span>SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SLICK_SIM_ZERO_SIZE_ARRAY_BEGIN</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00015">15</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ad2631ab3af13d447e539d076e5b60b94" name="ad2631ab3af13d447e539d076e5b60b94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2631ab3af13d447e539d076e5b60b94">&#9670;&#160;</a></span>SLICK_SIM_ZERO_SIZE_ARRAY_END</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SLICK_SIM_ZERO_SIZE_ARRAY_END</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00016">16</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
 </div>
 </div>
