@@ -3,7 +3,7 @@
 # so the imported targets survive into src/ and tests/, which link this venue's
 # object library from their own directory scopes.
 
-set(HYPERLIQUID_MIN_VERSION 0.4.1)
+set(HYPERLIQUID_MIN_VERSION 0.4.2)
     
 find_package(hyperliquid ${HYPERLIQUID_MIN_VERSION} CONFIG QUIET GLOBAL)
 if (NOT hyperliquid_FOUND)
