@@ -164,3 +164,43 @@ TEST(OrderBookPriorityTest, ConcurrentDrawsAreUniqueAndRiseOnEachThread) {
     std::sort(all.begin(), all.end());
     EXPECT_EQ(std::adjacent_find(all.begin(), all.end()), all.end()) << "a priority was issued twice";
 }
+
+// to_string() used std::advance(rend(), -20): UB on a book with < 20 asks, and on
+// libstdc++ flat_map (input_iterator_tag) it walked off the end for any book.
+namespace {
+void addAsks(OrderBook &book, int count) {
+    for (int i = 0; i < count; ++i) {
+        book.addBookOrder(1000 + i, slick::orderbook::Side::Sell, price(101.0 + i), kQty10, 1000, i + 1);
+    }
+}
+} // namespace
+
+TEST_F(OrderBookOperationsTest, ToString_EmptyBook) {
+    EXPECT_EQ(order_book_->to_string(), "OrderBook: BTC-USD\n");
+}
+
+TEST_F(OrderBookOperationsTest, ToString_FewerThan20AskLevels) {
+    addAsks(*order_book_, 3);
+    order_book_->addBookOrder(2000, slick::orderbook::Side::Buy, kPrice100, kQty10, 1000, 10);
+
+    const auto s = order_book_->to_string();
+    const auto p101 = s.find("101.00"), p102 = s.find("102.00"), p103 = s.find("103.00");
+    ASSERT_NE(p101, std::string::npos);
+    ASSERT_NE(p102, std::string::npos);
+    ASSERT_NE(p103, std::string::npos);
+    EXPECT_LT(p103, p102);  // asks printed worst first
+    EXPECT_LT(p102, p101);
+    EXPECT_NE(s.find("100.00"), std::string::npos);
+}
+
+TEST_F(OrderBookOperationsTest, ToString_CapsAt20AskLevels) {
+    addAsks(*order_book_, 25);
+
+    const auto s = order_book_->to_string();
+    EXPECT_NE(s.find("101.00"), std::string::npos);
+    EXPECT_NE(s.find("120.00"), std::string::npos);
+    EXPECT_LT(s.find("120.00"), s.find("101.00"));
+    for (int p = 121; p <= 125; ++p) {
+        EXPECT_EQ(s.find(std::to_string(p) + ".00"), std::string::npos) << p;
+    }
+}

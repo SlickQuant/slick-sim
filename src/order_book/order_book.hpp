@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <iterator>
 #include <string>
 #include <set>
 #include <sstream>
@@ -401,9 +402,9 @@ inline std::string OrderBookImpl<BookType>::to_string() const {
     std::stringstream ss;
     ss << "OrderBook: " << symbol_ << "\n";
     auto &sell_levels = getLevelsL3(orderbook::Side::Sell);
-    auto it_sell = sell_levels.rend();
-    std::advance(it_sell, -20);
-    for (; it_sell !=  sell_levels.rend(); ++it_sell) {
+    // Best 20 asks, worst first. ranges::next clamps to end() and is O(1) on flat_map.
+    auto it_sell = std::make_reverse_iterator(std::ranges::next(sell_levels.begin(), 20, sell_levels.end()));
+    for (; it_sell != sell_levels.rend(); ++it_sell) {
         ss << std::right << std::setw(50) << std::format("{:.2f}", to_price_double(it_sell->first));
         ss << std::right << std::setw(20) << std::format("{:.8f}", to_qty_double(it_sell->second.total_quantity));
         ss << std::right << std::setw(10) << it_sell->second.orderCount() << "\n";
