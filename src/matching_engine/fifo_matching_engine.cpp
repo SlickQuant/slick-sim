@@ -308,10 +308,11 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> match(MatchingEngine&
         }
     }
 
-    if (order->time_in_force == TimeInForce::IMMEDIATE_OR_CANCEL && order_qty > 0) {
-        // FOK: Cancel any remaining quantity if we couldn't fill the entire order
+    // What cannot rest is cancelled: an IOC's remainder, and a market order's, which
+    // would otherwise rest at NULL_PRICE.
+    if (order_qty > 0 && !order->restsRemainder()) {
         engine.publishOrderCancel(order, request_time);
-        LOG_INFO("{} Order {} has TIF=IOC and was not completely filled, canceling remaining qty {}", order->symbol.view(), order->id, order_qty);
+        LOG_INFO("{} Order {} cannot rest and was not completely filled, canceling remaining qty {}", order->symbol.view(), order->id, order_qty);
     }
 
     return std::make_tuple(OrdRejectReason::NONE, trade_summaries);

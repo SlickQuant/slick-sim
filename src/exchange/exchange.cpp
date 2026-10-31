@@ -3,6 +3,7 @@
 #include <common/symbol_manager.hpp>
 #include <utils/order.hpp>
 #include <utils/timestamp.hpp>
+#include <algorithm>
 
 using namespace slick::sim::exch;
 using namespace slick::sim;
@@ -684,6 +685,110 @@ void Exchange::reconcilePhantomQty(Symbol *symbol, Side side, price_t price, qty
                              reduction.priority, seq_num,
                              end_event && (i + 1 == phantom_reductions_.size()));
         }
+    }
+}
+
+void Exchange::applyMarketOrder(Symbol *symbol, const MarketOrderEvent &event)
+{
+    auto &book = *symbol->order_book_;
+    const auto timestamp = event.transact_time;
+
+    switch (event.action)
+    {
+    case MDUpdateAction::ACTION_NEW:
+        restMarketOrder(symbol, event);
+        break;
+    case MDUpdateAction::ACTION_DELETE:
+        // Already gone if a client order or a replayed trade took all of it.
+        book.deleteOrder(event.book_order_id, timestamp);
+        break;
+    case MDUpdateAction::ACTION_CHANGE:
+    {
+        // OrderBook::findOrder answers for the simulator's own orders only.
+        const auto *resting = book.OrderBookL3::findOrder(event.book_order_id);
+        if (resting && !event.requeue)
+        {
+            // The venue's quantity wins: liquidity a client took from this order,
+            // and the market did not, comes back in place. Equal quantities are a
+            // no-op that publishes nothing.
+            book.modifyOrder(event.book_order_id, event.price, event.qty, timestamp, resting->priority);
+        }
+        else
+        {
+            // Requeued, or taken entirely by a client order while the venue still
+            // reports it. Either way it rests under the event's book priority. A
+            // requeue carries a new one and joins the back. A taken order carries
+            // the one it had and goes back where it was.
+            if (resting)
+            {
+                book.deleteOrder(event.book_order_id, timestamp);
+            }
+            restMarketOrder(symbol, event);
+        }
+        break;
+    }
+    }
+    markMarketChanged(symbol);
+}
+
+void Exchange::restMarketOrder(Symbol *symbol, const MarketOrderEvent &event)
+{
+    auto &book = *symbol->order_book_;
+    // OrderBookL3 reads a priority of 0 as "use the timestamp", which would sort this
+    // order against the clients' sequence-numbered priorities instead of beside them,
+    // and a null price would rest the phantom at the top of the book for good.
+    assert(event.book_priority != 0);
+    assert(event.price != NULL_PRICE);
+    qty_t qty = event.qty;
+    for (const auto &trade : symbol->matching_engine_->match(event.side, event.book_order_id, event.price, qty, book,
+                                                             event.transact_time))
+    {
+        publishTradeSummary(symbol, trade);
+    }
+    if (qty > 0)
+    {
+        // The level sorts by book priority, so a restored order lands back in
+        // place only under its own. addBookOrder would draw a fresh one.
+        // A false here means the id was already resting: the venue repeated an order
+        // it never removed, and the mirror would silently drop this quantity.
+        [[maybe_unused]] const bool added = book.OrderBookL3::addOrder(
+            event.book_order_id, to_book_side(event.side), event.price, qty, event.transact_time, event.book_priority);
+        assert(added);
+    }
+}
+
+void Exchange::replayMarketTrade(Symbol *symbol, const MarketTradeEvent &event)
+{
+    // The aggressor is not an order: its id only names the first leg of the trade
+    // summary, exactly as the level feeds' replay does, so it is drawn from the same
+    // sequence and can never collide with a resting order.
+    qty_t qty = event.qty;
+    for (const auto &trade : symbol->matching_engine_->match(event.aggressor, utils::nextOrderId(), event.price, qty,
+                                                             *symbol->order_book_, event.transact_time))
+    {
+        publishTradeSummary(symbol, trade);
+    }
+    markMarketChanged(symbol);
+}
+
+void Exchange::flushMarketEvents()
+{
+    for (auto *symbol : market_changed_symbols_)
+    {
+        flushMarketDataCaches(symbol);
+    }
+    market_changed_symbols_.clear();
+}
+
+void Exchange::markMarketChanged(Symbol *symbol)
+{
+    // A scan rather than a hash: the list holds only the symbols one event touched
+    // before the venue flushed (CME and ICE flush at the end of every packet), which is
+    // a handful. A venue that flushed far less often would want a per-symbol flag.
+    if (std::find(market_changed_symbols_.begin(), market_changed_symbols_.end(), symbol) ==
+        market_changed_symbols_.end())
+    {
+        market_changed_symbols_.push_back(symbol);
     }
 }
 

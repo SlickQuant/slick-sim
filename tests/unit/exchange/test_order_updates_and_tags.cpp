@@ -133,6 +133,24 @@ std::vector<OrderResponse> responsesFor(const std::vector<OrderResponse> &all, c
     return matched;
 }
 
+Request marketOrder(const std::string &symbol, const std::string &user, const std::string &cl_ord_id, Side side,
+                    qty_t q, TimeInForce tif, uint64_t tag) {
+    Request request = newOrder(symbol, user, cl_ord_id, side, NULL_PRICE, q, tag);
+    request.add_order.type = OrderType::MARKET;
+    request.add_order.time_in_force = tif;
+    return request;
+}
+
+/// The ClOrdID of the resting order the first passive fill in `all` took from.
+std::string firstPassiveFill(const std::vector<OrderResponse> &all) {
+    for (const auto &response : all) {
+        if (response.exec_type == ExecType::TRADE && !response.aggressor) {
+            return response.client_order_id;
+        }
+    }
+    return {};
+}
+
 }   // namespace
 
 // ===========================================================================
@@ -292,4 +310,100 @@ TEST(RequestTagTest, PassiveFillCarriesLastAcceptedTagNotARejectedAmendment) {
     ASSERT_NE(bob_fill, bob.end());
     EXPECT_TRUE(bob_fill->aggressor);
     EXPECT_EQ(bob_fill->request_tag, 30u);
+}
+
+// ===========================================================================
+// Queue priority on amendment
+// ===========================================================================
+
+namespace {
+
+/// A buy rests at `a_price`, then B at 100; A is amended to `new_price`/`new_qty`.
+/// Returns which of them a 2-lot sell at 100 then fills first.
+std::string firstAfterAmending(const char *stem, price_t a_price, price_t new_price, qty_t new_qty) {
+    OrderUpdateExchange exchange(testConfig(), false);
+    const auto sym = uniqueSymbol(stem);
+    exchange.addSymbol(sym);
+    OrderResponseCollector responses(exchange.response_queue());
+    exchange.submit(newOrder(sym, "alice", "A", Side::BUY, a_price, kQty5, 1));
+    exchange.submit(newOrder(sym, "bob", "B", Side::BUY, kPrice100, kQty5, 2));
+    exchange.amend(amendOrder(sym, "alice", "A", new_price, new_qty, 3));
+    responses.collect();
+    exchange.submit(newOrder(sym, "carol", "S", Side::SELL, kPrice100, kQty2, 4));
+    return firstPassiveFill(responses.collect());
+}
+
+}   // namespace
+
+// Regression: only a price change drew a new priority, so a larger order kept its place.
+TEST(AmendPriorityTest, ALargerQuantityLosesItsPlace) {
+    EXPECT_EQ(firstAfterAmending("PRI-UP", kPrice100, kPrice100, kQty10), "B");
+}
+
+TEST(AmendPriorityTest, ASmallerQuantityKeepsItsPlace) {
+    EXPECT_EQ(firstAfterAmending("PRI-DOWN", kPrice100, kPrice100, kQty3), "A");
+}
+
+// A, first at 99, joins B's level at 100 behind it.
+TEST(AmendPriorityTest, ANewPriceLosesItsPlace) {
+    EXPECT_EQ(firstAfterAmending("PRI-PX", kPrice99, kPrice100, kQty5), "B");
+}
+
+// Regression: an amendment stored the order's leaves as its total. Filled 2 of 10,
+// cut to 9 and then to 8, the order looked to grow from 7 and lost its place, and its
+// fills reported the shrunken total.
+TEST(AmendPriorityTest, CuttingAPartlyFilledOrderKeepsItsPlace) {
+    constexpr qty_t lot = kQty10 / 10;
+    OrderUpdateExchange exchange(testConfig(), false);
+    const auto sym = uniqueSymbol("PRI-CUT");
+    exchange.addSymbol(sym);
+    OrderResponseCollector responses(exchange.response_queue());
+    exchange.submit(newOrder(sym, "alice", "A", Side::BUY, kPrice100, kQty10, 1));
+    exchange.submit(newOrder(sym, "bob", "B", Side::BUY, kPrice100, kQty5, 2));
+    exchange.submit(newOrder(sym, "carol", "S1", Side::SELL, kPrice100, kQty2, 3));
+    exchange.amend(amendOrder(sym, "alice", "A", kPrice100, 9 * lot, 4));
+    exchange.amend(amendOrder(sym, "alice", "A", kPrice100, 8 * lot, 5));
+    responses.collect();
+
+    exchange.submit(newOrder(sym, "carol", "S2", Side::SELL, kPrice100, kQty2, 6));
+    const auto all = responses.collect();
+    EXPECT_EQ(firstPassiveFill(all), "A");
+    const auto mine = responsesFor(all, "A");
+    const auto fill = std::find_if(mine.begin(), mine.end(),
+                                   [](const OrderResponse &r) { return r.exec_type == ExecType::TRADE; });
+    ASSERT_NE(fill, mine.end());
+    EXPECT_EQ(fill->qty, 8 * lot) << "a fill reports the order's total";
+}
+
+// ===========================================================================
+// Market orders
+// ===========================================================================
+
+// Regression: a DAY or GTC market order's remainder rested at NULL_PRICE, and the
+// next order to cross it tripped an assertion in the matching loop.
+TEST(MarketOrderTest, TheRemainderIsCancelledNotRested) {
+    OrderUpdateExchange exchange(testConfig(), false);
+    const auto sym = uniqueSymbol("MKT-REST");
+    auto *symbol = exchange.addSymbol(sym);
+    OrderResponseCollector responses(exchange.response_queue());
+
+    exchange.submit(newOrder(sym, "alice", "S1", Side::SELL, kPrice100, kQty2, 1));
+    exchange.submit(marketOrder(sym, "bob", "M1", Side::BUY, kQty5, TimeInForce::GOOD_TILL_CANCEL, 2));
+    auto mine = responsesFor(responses.collect(), "M1");
+    ASSERT_FALSE(mine.empty());
+    EXPECT_EQ(mine.back().exec_type, ExecType::CANCELED);
+    EXPECT_EQ(mine.back().cum_qty, kQty2);
+    EXPECT_EQ(symbol->findOrderByClientOrderId("M1"), nullptr);
+
+    // On an empty book nothing fills, and nothing rests.
+    exchange.submit(marketOrder(sym, "bob", "M2", Side::BUY, kQty5, TimeInForce::DAY, 3));
+    mine = responsesFor(responses.collect(), "M2");
+    ASSERT_FALSE(mine.empty());
+    EXPECT_EQ(mine.back().exec_type, ExecType::CANCELED);
+    EXPECT_EQ(symbol->findOrderByClientOrderId("M2"), nullptr);
+
+    exchange.submit(newOrder(sym, "carol", "S2", Side::SELL, kPrice100, kQty2, 4));
+    const auto all = responses.collect();
+    EXPECT_TRUE(firstPassiveFill(all).empty());
+    EXPECT_NE(symbol->findOrderByClientOrderId("S2"), nullptr);
 }

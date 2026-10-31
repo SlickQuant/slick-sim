@@ -35,16 +35,21 @@ set(SLICK_SIM_TEST_SOURCES
     unit/exchange/test_exchange_registry.cpp
     unit/exchange/test_exchange_lifecycle.cpp
     unit/exchange/test_order_updates_and_tags.cpp
+    unit/exchange/test_market_mirror.cpp
+    unit/exchange/test_instance_expansion.cpp
 
     # Priority 5: Type & Message Tests
     unit/common/test_types.cpp
     unit/common/test_messages.cpp
     unit/common/test_shm_cleanup.cpp
     unit/common/test_timestamp.cpp
+    unit/common/test_decimal.cpp
 
     # Priority 6: Order Gateway Tests
     unit/order_gateway/test_order_store.cpp
     unit/order_gateway/test_pending_responses.cpp
+    unit/order_gateway/test_retransmit_ring.cpp
+    unit/order_gateway/test_cl_ord_id_index.cpp
 
     # Priority 7: Market Data Publisher Tests
     unit/market_data_publisher/test_sequenced_message.cpp
@@ -52,6 +57,14 @@ set(SLICK_SIM_TEST_SOURCES
 
 # One block per venue, gated on the TARGET rather than the option so a venue
 # disabled for any other reason drops its suite too.
+# The multicast feed plumbing is header-only over slick-socket, which only the TCP
+# gateway build brings in.
+if(SLICK_SIM_ENABLE_TCP_GATEWAY)
+    list(APPEND SLICK_SIM_TEST_SOURCES
+        unit/md_feed/test_multicast_packet_feed.cpp
+    )
+endif()
+
 if(TARGET slick_sim_venue_coinbase)
     list(APPEND SLICK_SIM_TEST_SOURCES
         unit/venues/coinbase/test_coinbase_exchange.cpp

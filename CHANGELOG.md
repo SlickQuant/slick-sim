@@ -1,3 +1,40 @@
+# v0.4.0 - 10-30-2026
+
+## Added
+
+Venue-neutral helpers for binary-protocol venues, moved here from the CME venue so the ICE venue can
+share them:
+
+- **Order-by-order mirror** on `Exchange`. `applyMarketOrder`, `replayMarketTrade` and
+  `flushMarketEvents` rest a live MBO/FOD feed's orders as phantom liquidity and replay its trades.
+  The events are `MarketOrderEvent` and `MarketTradeEvent` (`exchange/market_events.hpp`).
+- `exch::expand_instances`, `claim` and `group_key` (`exchange/instance_expansion.hpp`) split one
+  config entry into several exchanges (CME segments, ICE silos) by merge-patch, and throw when two
+  instances claim the same instrument, port or multicast group.
+- `utils::from_decimal9` / `to_decimal9` (`utils/decimal.hpp`) convert exponent -9 wire decimals to
+  and from the 1e-8 scale. `from_decimal9` refuses a digit the scale cannot hold.
+- `order_gateway::RetransmitRing` (`order_gateway/retransmit_ring.hpp`) keeps sent messages by
+  sequence number for a resend.
+- `order_gateway::ClOrdIdIndex` (`order_gateway/cl_ord_id_index.hpp`) maps a session's ClOrdIDs to
+  its working orders. A new order or replace claims its ClOrdID when sent, so no other order can take
+  it before the exchange answers. Replaces of one order may share it.
+- `md_feed::MulticastPacketFeed` (`md_feed/multicast_packet_feed.hpp`): one receiver thread per
+  multicast group, all feeding the exchange thread through one lock-free queue, with per-line muting.
+  A packet too large for the queue is refused and counted rather than thrown out of the receiver
+  thread, and `loss_count()` reports the bytes a receiver overwrote before they were drained.
+  Header-only, so only a venue that uses it links slick-socket.
+
+## Fixed
+
+- A market order's unfilled remainder is cancelled, as an IOC's is. A DAY or GTC one rested at
+  `NULL_PRICE`, and the next order to reach it failed an assertion in the matching loop.
+- An amendment that changes the price or raises the quantity sends the order to the back of its level.
+  The engine wrote the new price onto the order before the book compared prices, so every amended
+  order kept its priority, even at a new price, where it went ahead of orders already queued there.
+- An amendment no longer records a partly filled order's leaves as its total. The total shrank with
+  every amendment, so the order's fills reported the smaller figure, and cutting it again looked like
+  an increase that cost it its place.
+
 # v0.3.0 - 10-12-2026
 
 ## Added

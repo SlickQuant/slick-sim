@@ -15,7 +15,7 @@ real exchange, with fills produced by an in-process FIFO matching engine.
 A live feed lets your orders compete against real quoted liquidity. Without one, the books contain
 only client orders. Historical replay against recorded market data is planned but not implemented. See [Operating modes](https://slickquant.github.io/slick-sim/architecture/#operating-modes).
 
-Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.3.0`).
+Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.4.0`).
 
 ## Documentation
 
@@ -69,18 +69,18 @@ Each enabled exchange runs its own instance of the pipeline below. The market-da
 
 `order_gateway` is bidirectional: it receives orders from the client and, via the `response_queue` fed by `MatchingEngine::publishOrderAck`/`publishOrderExecution`/`publishOrderModify`/`publishOrderCancel`, sends order acks, fills, modifies, cancels, and rejects back to the same client — independently of the market data path. A gateway can set `Request::request_tag` and gets it back on every response that request produces.
 
-The published market data is level data and trades. The core can also publish order-by-order updates (`MDUpdateType::ORDER`), for an adapter that opts in; neither in-tree adapter does. One venue config entry can also create several exchanges, for a venue split into independent market segments.
+The published market data is level data and trades. The core can also publish order-by-order updates (`MDUpdateType::ORDER`), for an adapter that opts in; neither in-tree adapter does. One venue config entry can also create several exchanges, for a venue split into independent market segments. For a venue with a binary order-by-order feed, the core can mirror that feed's orders into the book and replay its trades against them, and it carries the pieces such venues share: a multicast packet feed, a retransmission ring and a ClOrdID index for order-entry sessions, and exponent -9 decimal conversion.
 
 Library targets:
 
 | Target | Responsibility |
 |---|---|
-| `exchange` | The `Exchange` base, the venue registry, and `Symbol`, which binds one instrument's order book to a matching engine |
+| `exchange` | The `Exchange` base with its order-by-order market mirror, the venue registry, and `Symbol`, which binds one instrument's order book to a matching engine |
 | `slick_sim_venue_<venue>` | One per enabled venue under `src/venues/`: its `Exchange` subclass, gateways, publisher and encoders |
 | `matching_engine` | FIFO price/time-priority matching (`FifoMatchingEngine`) and order lifecycle notifications (ack, fill, modify, cancel) |
-| `order_gateway` | Order-entry bases: `RestWsOrderGateway` for HTTP/WebSocket venues and `TcpOrderGateway`, the TCP transport base for venues on a binary session protocol |
+| `order_gateway` | Order-entry bases: `RestWsOrderGateway` for HTTP/WebSocket venues and `TcpOrderGateway`, the TCP transport base for venues on a binary session protocol, with `RetransmitRing` and `ClOrdIdIndex` for their sessions |
 | `market_data_publisher` | Publishes book updates and executed trades in each venue's own WebSocket wire format |
-| `md_feed` | Ingests each venue's live public market data feed |
+| `md_feed` | Ingests each venue's live public market data feed; `MulticastPacketFeed` receives a binary feed's multicast groups |
 | `common`, `order_book`, `utils` | Header-only: shared types (`Order`, `Request`, `Venue`, fixed-point price/qty helpers), `OrderBook` (wraps the external `slick-orderbook` L3 book), and misc helpers |
 
 ## Prerequisites
@@ -318,16 +318,16 @@ slick-sim/
 ├── docs/                        # published documentation sources
 ├── src/
 │   ├── common/                 # shared types: Order, Request, Venue, price/qty helpers (header-only)
-│   ├── exchange/                # Exchange base, venue registry, Symbol
+│   ├── exchange/                # Exchange base, venue registry, Symbol, market mirror events, instance expansion
 │   ├── market_data_publisher/  # market data publisher bases
 │   ├── matching_engine/        # FifoMatchingEngine (FIFO price/time priority)
-│   ├── md_feed/                 # the MDFeed interface
+│   ├── md_feed/                 # the MDFeed interface, MulticastPacketFeed
 │   ├── order_book/              # OrderBook wrapper around the slick-orderbook L3 book (header-only)
-│   ├── order_gateway/           # order entry bases: REST/WS, and the TCP transport
+│   ├── order_gateway/           # order entry bases: REST/WS, the TCP transport, retransmit ring, ClOrdID index
 │   ├── venues/                  # one directory per venue: coinbase/, hyperliquid/
 │   ├── sim/
 │   │   └── main.cpp             # slick-sim entry point
-│   └── utils/                   # order id / timestamp / price / fixed-width string helpers (header-only)
+│   └── utils/                   # order id / timestamp / price / decimal / fixed-width string helpers (header-only)
 ├── tests/
 │   └── unit/                    # GoogleTest suite (slick_sim_tests)
 ├── LICENSE

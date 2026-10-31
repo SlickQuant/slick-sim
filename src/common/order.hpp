@@ -351,6 +351,14 @@ struct Order : OrderIdentity {
     
     Order() = default;
 
+    /// Whether what matching leaves of it rests on the book; otherwise it is cancelled.
+    /// A market order has no price to rest at, whatever its time in force.
+    [[nodiscard]] bool restsRemainder() const noexcept {
+        return price != NULL_PRICE &&
+               (time_in_force == TimeInForce::DAY || time_in_force == TimeInForce::GOOD_TILL_CANCEL ||
+                time_in_force == TimeInForce::GOOD_TILL_DATE);
+    }
+
     double price_double() const noexcept {
         return to_price_double(price);
     }

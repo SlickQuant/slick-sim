@@ -17,6 +17,7 @@
 #include <matching_engine/matching_engine.hpp>
 #include <order_gateway/order_gateway.hpp>
 #include <market_data_publisher/market_data_publisher.hpp>
+#include "market_events.hpp"
 
 namespace slick::sim::exch {
 
@@ -86,6 +87,25 @@ protected:
     void reconcilePhantomQty(Symbol *symbol, Side side, price_t price, qty_t target_qty,
                              time_t event_time, uint64_t seq_num, bool end_event);
 
+    // Order-by-order mirror of the venue's own book, for a venue whose live feed
+    // reports every order (CME MDP 3.0 MBO, ICE iMpact FOD). applyMarketOrder and
+    // replayMarketTrade mark the symbol changed, and flushMarketEvents publishes
+    // the changes once the venue's event closes.
+
+    /// Rests, changes or removes a market order as a phantom order. The venue's own
+    /// book is never crossed, so a market order that would cross ours is crossing a
+    /// client's order. It is matched first, filling the client, and rests with what
+    /// is left.
+    void applyMarketOrder(Symbol *symbol, const MarketOrderEvent &event);
+    /// Replays a market trade as an aggressor order at the trade's price and
+    /// quantity, so a client order queued ahead of the market orders it filled is
+    /// filled first. The venue's order updates for those orders follow and set each
+    /// to its reported quantity. A remainder does not rest, because the venue
+    /// reports the aggressor's residual as an order of its own.
+    void replayMarketTrade(Symbol *symbol, const MarketTradeEvent &event);
+    /// Publishes every symbol a market event changed since the last call.
+    void flushMarketEvents();
+
     /// Public trade ids, one independent sequence per venue. Exchange-thread
     /// only, so a plain increment is enough.
     uint64_t nextVenueTradeId() noexcept { return next_trade_id_++; }
@@ -147,6 +167,15 @@ protected:
         uint64_t priority;
     };
     std::vector<PhantomReduction> phantom_reductions_;
+
+    /// Symbols a market event has changed and not yet published. A handful per
+    /// venue, so a scan beats hashing - for as long as a venue flushes at the end of
+    /// every packet, as CME and ICE do, which keeps the list to the symbols of one
+    /// packet. A venue that flushed far less often would make markMarketChanged
+    /// quadratic in its instrument count, and want a flag on Symbol instead.
+    std::vector<Symbol *> market_changed_symbols_;
+    void restMarketOrder(Symbol *symbol, const MarketOrderEvent &event);
+    void markMarketChanged(Symbol *symbol);
 
     /// Self-match prevention mode applied to every symbol on this venue, from the
     /// `self_match_prevention` config key. Stamped onto each Symbol as it is created.

@@ -27,21 +27,14 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
     // Only add to book if no rejection and remaining quantity exists
     bool resting = false;
     if (reject_reason == OrdRejectReason::NONE && order->leaves_quantity > 0) [[likely]] {
-        // Check if TimeInForce allows resting on book
-        bool should_rest = (
-            order->time_in_force == TimeInForce::DAY ||
-            order->time_in_force == TimeInForce::GOOD_TILL_CANCEL ||
-            order->time_in_force == TimeInForce::GOOD_TILL_DATE
-        );
-
-        if (should_rest) [[likely]] {
+        if (order->restsRemainder()) [[likely]] {
             order_book_->addOrder(order, order->created_time);
             resting = true;
         } else {
-            // IOC: Remainder is implicitly cancelled (not added to book)
-            // FOK: Will never reach here (would have been rejected in match)
-            LOG_INFO("{} Order {} has TIF={}, not adding to book (leaves_qty={})",
-                symbol_.view(), order->id, static_cast<char>(order->time_in_force), order->leaves_quantity);
+            // The engine has already cancelled the remainder: an IOC, or a market order.
+            LOG_INFO("{} Order {} cannot rest (TIF={}, market={}), not adding to book (leaves_qty={})",
+                symbol_.view(), order->id, static_cast<char>(order->time_in_force), order->price == NULL_PRICE,
+                order->leaves_quantity);
         }
     }
 
@@ -59,15 +52,24 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::modifyOrder(O
 {
     LOG_INFO("{} Modifying order {}: oid={}, client_oid={}, new_price={}, new_qty={}", symbol_.view(), order->id, order->order_id.view(), order->client_order_id.view(), new_price, new_qty);
     
+    // A new price or a larger quantity loses the order its place, as on CME and ICE.
+    // Read now: the match writes the amendment onto the order.
+    const bool requeue = new_price != order->price || new_qty > order->quantity;
+
     // An amendment re-enters the matching loop, so it needs the same SMP mode a
     // new order gets — otherwise a symbol configured for SMP would still let an
     // amended order trade against its owner's resting orders.
     auto [reject_reason, trade_summaries] = matching_engine_->match(
         order, new_price, new_qty, *order_book_.get(), request_time, order->last_update_time, 0, smp_mode_);
-    
+
     order->last_update_time = utils::get_current_time_ns();
     if (reject_reason == OrdRejectReason::NONE) {
-        order_book_->modifyOrder(order, new_price, order->leaves_quantity, order->last_update_time, 0, true);
+        if (requeue) {
+            order->priority = OrderBook::nextOrderPriority();
+        }
+        // The book stores this as the order's total and rests its leaves. Passing the
+        // leaves made a partly filled order's total shrink with every amendment.
+        order_book_->modifyOrder(order, new_price, order->quantity, order->last_update_time, 0, true);
     }
 
     if (order->leaves_quantity == 0) {
