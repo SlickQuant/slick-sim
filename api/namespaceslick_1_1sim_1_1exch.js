@@ -4,6 +4,8 @@ var namespaceslick_1_1sim_1_1exch =
     [ "Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html", "classslick_1_1sim_1_1exch_1_1Exchange" ],
     [ "ExchangeRegistry", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry.html", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry" ],
     [ "HyperliquidExchange", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange" ],
+    [ "MarketOrderEvent", "structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html", "structslick_1_1sim_1_1exch_1_1MarketOrderEvent" ],
+    [ "MarketTradeEvent", "structslick_1_1sim_1_1exch_1_1MarketTradeEvent.html", "structslick_1_1sim_1_1exch_1_1MarketTradeEvent" ],
     [ "OrderBookObserver", "structslick_1_1sim_1_1exch_1_1OrderBookObserver.html", "structslick_1_1sim_1_1exch_1_1OrderBookObserver" ],
     [ "Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", "structslick_1_1sim_1_1exch_1_1Symbol" ],
     [ "TradedCredit", "structslick_1_1sim_1_1exch_1_1TradedCredit.html", "structslick_1_1sim_1_1exch_1_1TradedCredit" ],
@@ -19,5 +21,8 @@ var namespaceslick_1_1sim_1_1exch =
       [ "L2", "namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62fa7e6aa2d53f6ee2b1a34b017fa403cb76", null ],
       [ "__COUNT__", "namespaceslick_1_1sim_1_1exch.html#ab42d1d93f5cc2134c5d3499b480ce62fac24f1659ef8e96af67e4a7d8663a3efb", null ]
     ] ],
+    [ "claim", "namespaceslick_1_1sim_1_1exch.html#a61584f560219118f8e188667720039dd", null ],
+    [ "expand_instances", "namespaceslick_1_1sim_1_1exch.html#a4beedf3404a7bbaeb43a742c82c208c1", null ],
+    [ "group_key", "namespaceslick_1_1sim_1_1exch.html#ad140223292b6072952ee962d834a2144", null ],
     [ "make_exchanges", "namespaceslick_1_1sim_1_1exch.html#aae6409ac12fb7d0a72d671196d987fa8", null ]
 ];

@@ -4,6 +4,7 @@ var namespaceslick_1_1sim_1_1order__gateway =
       [ "to_coinbase_string", "namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a3f5338485bd169e5dcb3821f4b854e65", null ],
       [ "to_json", "namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#ad52e6c536bbdde31370c540c4853dfff", null ]
     ] ],
+    [ "ClOrdIdIndex", "classslick_1_1sim_1_1order__gateway_1_1ClOrdIdIndex.html", "classslick_1_1sim_1_1order__gateway_1_1ClOrdIdIndex" ],
     [ "CoinbaseRestOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway" ],
     [ "CoinbaseWebsocketOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway" ],
     [ "FixParser", "classslick_1_1sim_1_1order__gateway_1_1FixParser.html", "classslick_1_1sim_1_1order__gateway_1_1FixParser" ],
@@ -18,6 +19,7 @@ var namespaceslick_1_1sim_1_1order__gateway =
     [ "PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData" ],
     [ "PostRequestData", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData" ],
     [ "RestWsOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway" ],
+    [ "RetransmitRing", "classslick_1_1sim_1_1order__gateway_1_1RetransmitRing.html", "classslick_1_1sim_1_1order__gateway_1_1RetransmitRing" ],
     [ "TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway" ],
     [ "TCPServerConfig", "namespaceslick_1_1sim_1_1order__gateway.html#a597aacc023a656c03797dab1ff888e20", null ],
     [ "ProtocolType", "namespaceslick_1_1sim_1_1order__gateway.html#a21eaf560f68e2e781d35e64080dc0615", [

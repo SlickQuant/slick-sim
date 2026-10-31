@@ -11,6 +11,8 @@ var annotated_dup =
           [ "Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html", "classslick_1_1sim_1_1exch_1_1Exchange" ],
           [ "ExchangeRegistry", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry.html", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry" ],
           [ "HyperliquidExchange", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange" ],
+          [ "MarketOrderEvent", "structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html", "structslick_1_1sim_1_1exch_1_1MarketOrderEvent" ],
+          [ "MarketTradeEvent", "structslick_1_1sim_1_1exch_1_1MarketTradeEvent.html", "structslick_1_1sim_1_1exch_1_1MarketTradeEvent" ],
           [ "OrderBookObserver", "structslick_1_1sim_1_1exch_1_1OrderBookObserver.html", "structslick_1_1sim_1_1exch_1_1OrderBookObserver" ],
           [ "Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", "structslick_1_1sim_1_1exch_1_1Symbol" ],
           [ "TradedCredit", "structslick_1_1sim_1_1exch_1_1TradedCredit.html", "structslick_1_1sim_1_1exch_1_1TradedCredit" ]
@@ -19,7 +21,9 @@ var annotated_dup =
           [ "CoinbaseLiveWSFeed", "classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html", "classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed" ],
           [ "HyperliquidFeedCallbacks", "structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks.html", "structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks" ],
           [ "HyperliquidLiveWSFeed", "classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html", "classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed" ],
-          [ "MDFeed", "classslick_1_1sim_1_1md__feed_1_1MDFeed.html", "classslick_1_1sim_1_1md__feed_1_1MDFeed" ]
+          [ "MDFeed", "classslick_1_1sim_1_1md__feed_1_1MDFeed.html", "classslick_1_1sim_1_1md__feed_1_1MDFeed" ],
+          [ "MulticastPacketFeed", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed" ],
+          [ "packet_feed_traits", "structslick_1_1sim_1_1md__feed_1_1packet__feed__traits.html", "structslick_1_1sim_1_1md__feed_1_1packet__feed__traits" ]
         ] ],
         [ "md_publisher", "namespaceslick_1_1sim_1_1md__publisher.html", [
           [ "CoinbasePublisher", "classslick_1_1sim_1_1md__publisher_1_1CoinbasePublisher.html", "classslick_1_1sim_1_1md__publisher_1_1CoinbasePublisher" ],
@@ -32,6 +36,7 @@ var annotated_dup =
           [ "WebsocketMarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html", "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher" ]
         ] ],
         [ "order_gateway", "namespaceslick_1_1sim_1_1order__gateway.html", [
+          [ "ClOrdIdIndex", "classslick_1_1sim_1_1order__gateway_1_1ClOrdIdIndex.html", "classslick_1_1sim_1_1order__gateway_1_1ClOrdIdIndex" ],
           [ "CoinbaseRestOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway" ],
           [ "CoinbaseWebsocketOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway" ],
           [ "FixParser", "classslick_1_1sim_1_1order__gateway_1_1FixParser.html", "classslick_1_1sim_1_1order__gateway_1_1FixParser" ],
@@ -46,6 +51,7 @@ var annotated_dup =
           [ "PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData" ],
           [ "PostRequestData", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData" ],
           [ "RestWsOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway" ],
+          [ "RetransmitRing", "classslick_1_1sim_1_1order__gateway_1_1RetransmitRing.html", "classslick_1_1sim_1_1order__gateway_1_1RetransmitRing" ],
           [ "TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway" ]
         ] ],
         [ "utils", "namespaceslick_1_1sim_1_1utils.html", [

@@ -10,5 +10,6 @@ var searchData=
   ['getsymbol_7',['getsymbol',['../classslick_1_1sim_1_1SymbolManager.html#a5a7a262fd997641be94d6467dd238a7f',1,'slick::sim::SymbolManager::getSymbol(std::string_view sym, Venue venue) const'],['../classslick_1_1sim_1_1SymbolManager.html#a6573a9ed0ef849ba318868db5a328cf9',1,'slick::sim::SymbolManager::getSymbol(symid_t sid)']]],
   ['good_5ftill_5fcancel_8',['GOOD_TILL_CANCEL',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a0ac4638d73e5d5ee08d7cefbeeefd8ef',1,'slick::sim']]],
   ['good_5ftill_5fcrossing_9',['GOOD_TILL_CROSSING',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ac85a71b961f3461331e457d5dd8e4323',1,'slick::sim']]],
-  ['good_5ftill_5fdate_10',['GOOD_TILL_DATE',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ad283b3e8aafad68b9e3a6ca11a241f83',1,'slick::sim']]]
+  ['good_5ftill_5fdate_10',['GOOD_TILL_DATE',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ad283b3e8aafad68b9e3a6ca11a241f83',1,'slick::sim']]],
+  ['group_5fkey_11',['group_key',['../namespaceslick_1_1sim_1_1exch.html#ad140223292b6072952ee962d834a2144',1,'slick::sim::exch']]]
 ];

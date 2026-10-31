@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.3.0</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.4.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -108,6 +108,7 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespaceslick_1_1sim_1_1engine" id="r_namespaceslick_1_1sim_1_1engine"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1engine.html">engine</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceslick_1_1sim_1_1exch" id="r_namespaceslick_1_1sim_1_1exch"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html">exch</a></td></tr>
+<tr class="memdesc:namespaceslick_1_1sim_1_1exch"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helpers for a venue whose one config entry describes several independent exchange instances, such as CME's market segments or ICE's silos. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceslick_1_1sim_1_1md__feed" id="r_namespaceslick_1_1sim_1_1md__feed"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__feed.html">md_feed</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,6 +117,7 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespaceslick_1_1sim_1_1order__gateway" id="r_namespaceslick_1_1sim_1_1order__gateway"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1order__gateway.html">order_gateway</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespaceslick_1_1sim_1_1utils" id="r_namespaceslick_1_1sim_1_1utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1utils.html">utils</a></td></tr>
+<tr class="memdesc:namespaceslick_1_1sim_1_1utils"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conversions between wire decimals with a constant exponent of -9 (CME PRICE9, ICE Decimal9) and the simulator's 1e-8 fixed point. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -1539,7 +1541,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="messages_8hpp_source.html#l00365">365</a> of file <a class="el" href="messages_8hpp_source.html">messages.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="matching__engine_8cpp_source.html#l00009">slick::sim::engine::MatchingEngine::publishOrderAck()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00078">slick::sim::engine::MatchingEngine::publishOrderCancel()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00032">slick::sim::engine::MatchingEngine::publishOrderExecution()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00056">slick::sim::engine::MatchingEngine::publishOrderModify()</a>, <a class="el" href="exchange_8cpp_source.html#l00733">slick::sim::exch::Exchange::sendOrderCancelPending()</a>, <a class="el" href="exchange_8cpp_source.html#l00690">slick::sim::exch::Exchange::sendOrderNewPending()</a>, and <a class="el" href="exchange_8cpp_source.html#l00712">slick::sim::exch::Exchange::sendOrderReplacePending()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="matching__engine_8cpp_source.html#l00009">slick::sim::engine::MatchingEngine::publishOrderAck()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00078">slick::sim::engine::MatchingEngine::publishOrderCancel()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00032">slick::sim::engine::MatchingEngine::publishOrderExecution()</a>, <a class="el" href="matching__engine_8cpp_source.html#l00056">slick::sim::engine::MatchingEngine::publishOrderModify()</a>, <a class="el" href="exchange_8cpp_source.html#l00838">slick::sim::exch::Exchange::sendOrderCancelPending()</a>, <a class="el" href="exchange_8cpp_source.html#l00795">slick::sim::exch::Exchange::sendOrderNewPending()</a>, and <a class="el" href="exchange_8cpp_source.html#l00817">slick::sim::exch::Exchange::sendOrderReplacePending()</a>.</p>
 
 </div>
 </div>
@@ -1569,7 +1571,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="order__book_8hpp_source.html#l00037">37</a> of file <a class="el" href="order__book_8hpp_source.html">order_book.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00089">slick::sim::OrderBook::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00173">slick::sim::OrderBook::clearMDOrders()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00091">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, and <a class="el" href="exchange_8cpp_source.html#l00613">slick::sim::exch::Exchange::reconcilePhantomQty()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00089">slick::sim::OrderBook::addOrder()</a>, <a class="el" href="order__book_8hpp_source.html#l00173">slick::sim::OrderBook::clearMDOrders()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00091">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exchange_8cpp_source.html#l00614">slick::sim::exch::Exchange::reconcilePhantomQty()</a>, and <a class="el" href="exchange_8cpp_source.html#l00734">slick::sim::exch::Exchange::restMarketOrder()</a>.</p>
 
 </div>
 </div>
@@ -1648,7 +1650,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="reference">References <a class="el" href="types_8hpp_source.html#l00029">DOUBLE_MULTIPLIER</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00082">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="common_2order_8hpp_source.html#l00378">slick::sim::Order::avg_fill_price_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00374">slick::sim::Order::last_fill_price_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00327">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00354">slick::sim::Order::price_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00401">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00082">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="common_2order_8hpp_source.html#l00386">slick::sim::Order::avg_fill_price_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00382">slick::sim::Order::last_fill_price_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00328">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00362">slick::sim::Order::price_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00401">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
 
 </div>
 </div>
@@ -1747,7 +1749,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="reference">References <a class="el" href="types_8hpp_source.html#l00029">DOUBLE_MULTIPLIER</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00082">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="common_2order_8hpp_source.html#l00362">slick::sim::Order::cum_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00370">slick::sim::Order::last_fill_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00366">slick::sim::Order::leaves_qty_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00327">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00358">slick::sim::Order::qty_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00401">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="order__store_8hpp_source.html#l00082">slick::sim::order_gateway::OrderStore::apply()</a>, <a class="el" href="common_2order_8hpp_source.html#l00370">slick::sim::Order::cum_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00378">slick::sim::Order::last_fill_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00374">slick::sim::Order::leaves_qty_double()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00328">match()</a>, <a class="el" href="common_2order_8hpp_source.html#l00366">slick::sim::Order::qty_double()</a>, and <a class="el" href="order__book_8hpp_source.html#l00401">slick::sim::OrderBookImpl&lt; BookType &gt;::to_string()</a>.</p>
 
 </div>
 </div>
@@ -1846,7 +1848,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="reference">References <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527a472a87ec8b79b84919f30601350aee38">CANCEL_NEWEST</a>, <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527aea0eb6f26da5299ad66391f753f271a6">CANCEL_RESTING</a>, and <a class="el" href="namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527ab50339a10e1de285ac99d4c3990b8693">NONE</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00018">slick::sim::exch::Exchange::Exchange()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00019">slick::sim::exch::Exchange::Exchange()</a>.</p>
 
 </div>
 </div>
@@ -1968,7 +1970,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00130">MARKET_CLOSED</a>, <a class="el" href="market__data_8hpp_source.html#l00128">NONE</a>, and <a class="el" href="market__data_8hpp_source.html#l00129">UNKNOWN_CONTRACT</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00018">slick::sim::exch::Exchange::Exchange()</a>, <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="tcp__order__gateway_8cpp_source.html#l00035">slick::sim::order_gateway::TcpOrderGateway::onClientConnected()</a>, <a class="el" href="tcp__order__gateway_8cpp_source.html#l00040">slick::sim::order_gateway::TcpOrderGateway::onClientDisconnected()</a>, <a class="el" href="exchange_8cpp_source.html#l00049">slick::sim::exch::Exchange::start()</a>, <a class="el" href="ws__md__publisher_8cpp_source.html#l00018">slick::sim::md_publisher::WebsocketMarketDataPublisher::start()</a>, <a class="el" href="rest__ws__order__gateway_8cpp_source.html#l00006">slick::sim::order_gateway::RestWsOrderGateway::start()</a>, <a class="el" href="tcp__order__gateway_8cpp_source.html#l00023">slick::sim::order_gateway::TcpOrderGateway::start()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00019">slick::sim::exch::Exchange::Exchange()</a>, <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="tcp__order__gateway_8cpp_source.html#l00035">slick::sim::order_gateway::TcpOrderGateway::onClientConnected()</a>, <a class="el" href="tcp__order__gateway_8cpp_source.html#l00040">slick::sim::order_gateway::TcpOrderGateway::onClientDisconnected()</a>, <a class="el" href="exchange_8cpp_source.html#l00050">slick::sim::exch::Exchange::start()</a>, <a class="el" href="ws__md__publisher_8cpp_source.html#l00018">slick::sim::md_publisher::WebsocketMarketDataPublisher::start()</a>, <a class="el" href="rest__ws__order__gateway_8cpp_source.html#l00006">slick::sim::order_gateway::RestWsOrderGateway::start()</a>, <a class="el" href="tcp__order__gateway_8cpp_source.html#l00023">slick::sim::order_gateway::TcpOrderGateway::start()</a>, and <a class="el" href="coinbase__common_8hpp_source.html#l00026">slick::sim::order_gateway::coinbase::to_json()</a>.</p>
 
 </div>
 </div>
@@ -2372,7 +2374,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="types_8hpp_source.html#l00028">28</a> of file <a class="el" href="types_8hpp_source.html">types.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">canFillCompletely()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00327">match()</a>, <a class="el" href="exchange_8cpp_source.html#l00415">slick::sim::exch::Exchange::rejectCancelOrderRequest()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00074">wouldSelfMatch()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="symbol_8cpp_source.html#l00015">slick::sim::exch::Symbol::addOrder()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00099">canFillCompletely()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>, <a class="el" href="fifo__matching__engine_8cpp_source.html#l00328">match()</a>, <a class="el" href="exchange_8cpp_source.html#l00416">slick::sim::exch::Exchange::rejectCancelOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00734">slick::sim::exch::Exchange::restMarketOrder()</a>, <a class="el" href="common_2order_8hpp_source.html#l00356">slick::sim::Order::restsRemainder()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00074">wouldSelfMatch()</a>.</p>
 
 </div>
 </div>

@@ -7,10 +7,12 @@ var searchData=
   ['handleneworderrequest_4',['handleNewOrderRequest',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a14867b5c0ddf53b3020408aef1c23618',1,'slick::sim::exch::Exchange']]],
   ['handleselfmatch_5',['handleSelfMatch',['../fifo__matching__engine_8cpp.html#ad30da9fa5d49f0c0ff26d5a4f52c9dc3',1,'fifo_matching_engine.cpp']]],
   ['has_5ferror_6',['has_error',['../structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a81c540bb48e2379d4380a7864ae941db',1,'slick::sim::order_gateway::ParseResult']]],
-  ['has_5forder_7',['has_order',['../structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a37ea9c2ae8428935d45a8282b5dc3e9b',1,'slick::sim::order_gateway::ParseResult']]],
-  ['has_5fresponse_8',['has_response',['../structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a0c5475332c63e1c3e6561762ac162fbc',1,'slick::sim::order_gateway::ParseResult']]],
-  ['hyperliquidexchange_9',['HyperliquidExchange',['../classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#adf9abdde179194f7f468c04f7970c185',1,'slick::sim::exch::HyperliquidExchange']]],
-  ['hyperliquidlivewsfeed_10',['HyperliquidLiveWSFeed',['../classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html#ad64cccc8340ed4bec1233e7374febd26',1,'slick::sim::md_feed::HyperliquidLiveWSFeed']]],
-  ['hyperliquidpublisher_11',['HyperliquidPublisher',['../classslick_1_1sim_1_1md__publisher_1_1HyperliquidPublisher.html#a66fa7d38ec86d781811843672334a3a4',1,'slick::sim::md_publisher::HyperliquidPublisher']]],
-  ['hyperliquidrestordergateway_12',['HyperliquidRestOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1HyperliquidRestOrderGateway.html#a4af03b798e356a147ac1ff4da4d195f3',1,'slick::sim::order_gateway::HyperliquidRestOrderGateway']]]
+  ['has_5fgroup_7',['has_group',['../classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a75e0ccf76218749a73a03e37040f6b20',1,'slick::sim::md_feed::MulticastPacketFeed']]],
+  ['has_5forder_8',['has_order',['../structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a37ea9c2ae8428935d45a8282b5dc3e9b',1,'slick::sim::order_gateway::ParseResult']]],
+  ['has_5fresponse_9',['has_response',['../structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a0c5475332c63e1c3e6561762ac162fbc',1,'slick::sim::order_gateway::ParseResult']]],
+  ['holds_10',['holds',['../classslick_1_1sim_1_1order__gateway_1_1RetransmitRing.html#a33d7e5431de677249564a56632833398',1,'slick::sim::order_gateway::RetransmitRing']]],
+  ['hyperliquidexchange_11',['HyperliquidExchange',['../classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#adf9abdde179194f7f468c04f7970c185',1,'slick::sim::exch::HyperliquidExchange']]],
+  ['hyperliquidlivewsfeed_12',['HyperliquidLiveWSFeed',['../classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html#ad64cccc8340ed4bec1233e7374febd26',1,'slick::sim::md_feed::HyperliquidLiveWSFeed']]],
+  ['hyperliquidpublisher_13',['HyperliquidPublisher',['../classslick_1_1sim_1_1md__publisher_1_1HyperliquidPublisher.html#a66fa7d38ec86d781811843672334a3a4',1,'slick::sim::md_publisher::HyperliquidPublisher']]],
+  ['hyperliquidrestordergateway_14',['HyperliquidRestOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1HyperliquidRestOrderGateway.html#a4af03b798e356a147ac1ff4da4d195f3',1,'slick::sim::order_gateway::HyperliquidRestOrderGateway']]]
 ];

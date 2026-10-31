@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['name_0',['name',['../structslick_1_1sim_1_1SymbolKey.html#a390108ceca6a909c06c71d6e02a98cb0',1,'slick::sim::SymbolKey']]],
+  ['name_0',['name',['../classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#ac263f4840f06059fcb1bdc1a674ffe52',1,'slick::sim::md_feed::MulticastPacketFeed::name()'],['../structslick_1_1sim_1_1SymbolKey.html#a390108ceca6a909c06c71d6e02a98cb0',1,'slick::sim::SymbolKey::name']]],
   ['new_1',['new',['../namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a24d459a81449d7210c8f9a86c2913034',1,'slick::sim::NEW'],['../namespaceslick_1_1sim.html#a163da124bf5e81e7750cb5974658c086a24d459a81449d7210c8f9a86c2913034',1,'slick::sim::NEW']]],
   ['new_5forder_5frequest_2',['NEW_ORDER_REQUEST',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a6b5132fa6bd3ac6caba7783d214dbaa6',1,'slick::sim']]],
   ['new_5forder_5fsingle_3',['NEW_ORDER_SINGLE',['../namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685a4267df522115e504279015e5c53247e9',1,'slick::sim']]],
@@ -9,13 +9,13 @@ var searchData=
   ['news_6',['NEWS',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7aff4e2dc4962dc25a1512353299992c8d',1,'slick::sim']]],
   ['next_5fclient_5fid_5f_7',['next_client_id_',['../classslick_1_1sim_1_1exch_1_1Exchange.html#abcc534278a082a1d0001d2f2c34f7080',1,'slick::sim::exch::Exchange']]],
   ['next_5fpriority_5f_8',['next_priority_',['../classslick_1_1sim_1_1OrderBook.html#ad01ad903dbf5be1532c07e8f879f4bcb',1,'slick::sim::OrderBook']]],
-  ['next_5ftrade_5fid_5f_9',['next_trade_id_',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a339801bbc04fdc50e883839a3e653f87',1,'slick::sim::engine::MatchingEngine::next_trade_id_'],['../classslick_1_1sim_1_1exch_1_1Exchange.html#a27c85902255c30adfbc03da3e4451c87',1,'slick::sim::exch::Exchange::next_trade_id_']]],
+  ['next_5ftrade_5fid_5f_9',['next_trade_id_',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a27c85902255c30adfbc03da3e4451c87',1,'slick::sim::exch::Exchange::next_trade_id_'],['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a339801bbc04fdc50e883839a3e653f87',1,'slick::sim::engine::MatchingEngine::next_trade_id_']]],
   ['nextorderid_10',['nextOrderId',['../namespaceslick_1_1sim_1_1utils.html#a3ecda281a1b70afaf46bea72c8ceac5e',1,'slick::sim::utils']]],
   ['nextorderpriority_11',['nextOrderPriority',['../classslick_1_1sim_1_1OrderBook.html#a204ee867d178b29a4a379cf29b129160',1,'slick::sim::OrderBook']]],
   ['nexttradeid_12',['nextTradeId',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#ab19d9873ddc8982c1ddab45b953ceed5',1,'slick::sim::engine::MatchingEngine']]],
   ['nextvenuetradeid_13',['nextVenueTradeId',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a21d9d0718b643b607b92da55a57caa7d',1,'slick::sim::exch::Exchange']]],
   ['non_5ficeberg_5frequest_5fon_5ficeberg_14',['NON_ICEBERG_REQUEST_ON_ICEBERG',['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562a8aaac1b69296479292cd8b0e3527c880',1,'slick::sim']]],
-  ['none_15',['none',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337ab50339a10e1de285ac99d4c3990b8693',1,'slick::sim::NONE'],['../namespaceslick_1_1sim.html#a0a9f0bd1a7d704fe4599a7420d34e1d3a85f539001467e885c9539c6d39233b4f',1,'slick::sim::NONE'],['../namespaceslick_1_1sim.html#a297ba608de53df48468a6d44a907f989ab50339a10e1de285ac99d4c3990b8693',1,'slick::sim::NONE'],['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562ab50339a10e1de285ac99d4c3990b8693',1,'slick::sim::NONE'],['../namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527ab50339a10e1de285ac99d4c3990b8693',1,'slick::sim::NONE']]],
+  ['none_15',['none',['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562ab50339a10e1de285ac99d4c3990b8693',1,'slick::sim::NONE'],['../namespaceslick_1_1sim.html#a0a9f0bd1a7d704fe4599a7420d34e1d3a85f539001467e885c9539c6d39233b4f',1,'slick::sim::NONE'],['../namespaceslick_1_1sim.html#a297ba608de53df48468a6d44a907f989ab50339a10e1de285ac99d4c3990b8693',1,'slick::sim::NONE'],['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337ab50339a10e1de285ac99d4c3990b8693',1,'slick::sim::NONE'],['../namespaceslick_1_1sim.html#a876a8885604d611024ae2ff54b4f2527ab50339a10e1de285ac99d4c3990b8693',1,'slick::sim::NONE']]],
   ['not_5flogged_5fin_16',['NOT_LOGGED_IN',['../namespaceslick_1_1sim.html#a297ba608de53df48468a6d44a907f989a0b5c454d04697a80927a7ab49a06fd51',1,'slick::sim']]],
   ['null_5fprice_17',['NULL_PRICE',['../namespaceslick_1_1sim.html#a0d6fd8d8b2c0422ead99084f2b051f73',1,'slick::sim']]],
   ['num_5fask_18',['num_ask',['../structslick_1_1sim_1_1BookSnapshot.html#a01c2a11326a2b375d22e839655571526',1,'slick::sim::BookSnapshot']]],

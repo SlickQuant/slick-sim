@@ -16,13 +16,14 @@ var searchData=
   ['_7ematchingengine_13',['~MatchingEngine',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a3507d96f8d9469eb5352162d385e6d20',1,'slick::sim::engine::MatchingEngine']]],
   ['_7emdfeed_14',['~MDFeed',['../classslick_1_1sim_1_1md__feed_1_1MDFeed.html#a5ecef6d738974c4f107369a2cd845dbc',1,'slick::sim::md_feed::MDFeed']]],
   ['_7emessageparser_15',['~MessageParser',['../classslick_1_1sim_1_1order__gateway_1_1MessageParser.html#a6a4bfc61de2e924cc1216e30b990ebe5',1,'slick::sim::order_gateway::MessageParser']]],
-  ['_7eorderbook_16',['~OrderBook',['../classslick_1_1sim_1_1OrderBook.html#a3c29057ab9d52000cf9e31465ffa2258',1,'slick::sim::OrderBook']]],
-  ['_7eorderbookimpl_17',['~OrderBookImpl',['../classslick_1_1sim_1_1OrderBookImpl.html#ad923102f1a62cab39903c66584a92a09',1,'slick::sim::OrderBookImpl']]],
-  ['_7eordergateway_18',['~OrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html#a501b32112792fd096f3e9de58554edb8',1,'slick::sim::order_gateway::OrderGateway']]],
-  ['_7erequest_19',['~Request',['../structslick_1_1sim_1_1Request.html#a1d856be119fea66d0b8e8657aa964d0d',1,'slick::sim::Request']]],
-  ['_7erestwsordergateway_20',['~RestWsOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a65d1300541f0df053a26fbcf4eb698ad',1,'slick::sim::order_gateway::RestWsOrderGateway']]],
-  ['_7eringbuffer_21',['~RingBuffer',['../classslick_1_1sim_1_1utils_1_1RingBuffer.html#ae7a781625f9419493094712c695c588f',1,'slick::sim::utils::RingBuffer']]],
-  ['_7esymbol_22',['~Symbol',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a4990f99d616a0d9e966dcaebd02aad55',1,'slick::sim::exch::Symbol']]],
-  ['_7etcpordergateway_23',['~TcpOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a87eb7529a12c6314cd5a8054872e9e92',1,'slick::sim::order_gateway::TcpOrderGateway']]],
-  ['_7ewebsocketmarketdatapublisher_24',['~WebsocketMarketDataPublisher',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]]
+  ['_7emulticastpacketfeed_16',['~MulticastPacketFeed',['../classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a73aa1868da6133f25f758db2fe92af93',1,'slick::sim::md_feed::MulticastPacketFeed']]],
+  ['_7eorderbook_17',['~OrderBook',['../classslick_1_1sim_1_1OrderBook.html#a3c29057ab9d52000cf9e31465ffa2258',1,'slick::sim::OrderBook']]],
+  ['_7eorderbookimpl_18',['~OrderBookImpl',['../classslick_1_1sim_1_1OrderBookImpl.html#ad923102f1a62cab39903c66584a92a09',1,'slick::sim::OrderBookImpl']]],
+  ['_7eordergateway_19',['~OrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html#a501b32112792fd096f3e9de58554edb8',1,'slick::sim::order_gateway::OrderGateway']]],
+  ['_7erequest_20',['~Request',['../structslick_1_1sim_1_1Request.html#a1d856be119fea66d0b8e8657aa964d0d',1,'slick::sim::Request']]],
+  ['_7erestwsordergateway_21',['~RestWsOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a65d1300541f0df053a26fbcf4eb698ad',1,'slick::sim::order_gateway::RestWsOrderGateway']]],
+  ['_7eringbuffer_22',['~RingBuffer',['../classslick_1_1sim_1_1utils_1_1RingBuffer.html#ae7a781625f9419493094712c695c588f',1,'slick::sim::utils::RingBuffer']]],
+  ['_7esymbol_23',['~Symbol',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a4990f99d616a0d9e966dcaebd02aad55',1,'slick::sim::exch::Symbol']]],
+  ['_7etcpordergateway_24',['~TcpOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a87eb7529a12c6314cd5a8054872e9e92',1,'slick::sim::order_gateway::TcpOrderGateway']]],
+  ['_7ewebsocketmarketdatapublisher_25',['~WebsocketMarketDataPublisher',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]]
 ];

@@ -9,6 +9,7 @@ var structslick_1_1sim_1_1Order =
     [ "price_double", "structslick_1_1sim_1_1Order.html#ab1b57927af28959677d4def8b1b34ad6", null ],
     [ "qty_double", "structslick_1_1sim_1_1Order.html#a9bd9ddcbfc3bdaf16f89c035df48ac74", null ],
     [ "resetFillAccounting", "structslick_1_1sim_1_1Order.html#aa83185f29b91a18f3abc0638ae7f3779", null ],
+    [ "restsRemainder", "structslick_1_1sim_1_1Order.html#a0de90015cf88b8b103648cf51b2cb6bc", null ],
     [ "avg_fill_price", "structslick_1_1sim_1_1Order.html#a04a6d3346a3726ddcef66d24cb019eef", null ],
     [ "cancel_message", "structslick_1_1sim_1_1Order.html#a79e772260d40cf45f80626d59be760e5", null ],
     [ "client_id", "structslick_1_1sim_1_1Order.html#adf8dd207865e485f00d151677b829a5d", null ],
