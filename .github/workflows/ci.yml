@@ -145,11 +145,12 @@ jobs:
           exit 1
         fi
 
-    # Bare --parallel means an unbounded `make -j`. The Linux runner copes with that.
-    # The macOS runner (3 cores, 7 GB) would start all ~55 translation units at once
-    # and swap, so there the job count is capped at the core count.
+    # Bare --parallel means an unbounded `make -j`, which starts every translation unit
+    # at once. At ~60 of them the Linux runner ran out of memory and was terminated
+    # mid-build, and the macOS one (3 cores, 7 GB) swaps, so both build one job per core.
+    # Windows (MSBuild) sets its own count.
     - name: Build
-      run: cmake --build build --config ${{ matrix.build_type }} --parallel ${{ runner.os == 'macOS' && '3' || '' }}
+      run: cmake --build build --config ${{ matrix.build_type }} --parallel ${{ runner.os == 'macOS' && '3' || runner.os == 'Linux' && '"$(nproc)"' || '' }}
 
     - name: Run tests
       working-directory: build
@@ -347,8 +348,9 @@ jobs:
         # ignored option flag would produce.
         grep -E "slick-sim venues: ${EXPECT}( |\$)" configure.log
 
+    # One job per core: an unbounded `make -j` runs the runner out of memory (see build).
     - name: Build
-      run: cmake --build build --parallel
+      run: cmake --build build --parallel "$(nproc)"
 
     - name: Run tests
       working-directory: build

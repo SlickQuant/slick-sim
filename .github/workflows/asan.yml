@@ -88,8 +88,10 @@ jobs:
         -DBUILD_EXCH_SIMULATOR_TESTING=ON
         -DCMAKE_TOOLCHAIN_FILE="${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
+    # One job per core: an unbounded `make -j` runs the runner out of memory, and
+    # sanitized objects are the largest.
     - name: Build
-      run: cmake --build build --parallel
+      run: cmake --build build --parallel "$(nproc)"
 
     - name: Verify the sanitizer is actually linked
       shell: bash
