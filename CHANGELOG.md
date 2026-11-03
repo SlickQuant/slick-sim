@@ -1,3 +1,13 @@
+# v0.5.1 - 11-03-2026
+
+## Added
+
+- `MulticastPacketFeed::set_joined` leaves or rejoins a line's multicast group on its open socket,
+  so a venue can drop its snapshot loop while the book is live. A left line is muted too. The
+  membership changes only when the socket call succeeds. A failed join or leave is logged once and
+  retried every 100 ms. The receiver thread keeps running, so the exchange thread never waits on it,
+  and a call with nothing pending costs two compares.
+
 # v0.5.0 - 11-02-2026
 
 ## Added

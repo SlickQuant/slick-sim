@@ -16,7 +16,7 @@ ICE when configured.
 A live feed lets your orders compete against real quoted liquidity. Without one, the books contain
 only client orders. Historical replay against recorded market data is planned but not implemented. See [Operating modes](https://slickquant.github.io/slick-sim/architecture/#operating-modes).
 
-Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.5.0`).
+Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.5.1`).
 
 ## Documentation
 
