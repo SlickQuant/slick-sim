@@ -6,7 +6,7 @@
 # other directory scopes, and an imported target is otherwise visible only here and
 # below - see slick_sim_find_venue_dependency() in cmake/slick_sim_venue.cmake.
 
-set(COINBASE_ADVANCED_CPP_MIN_VERSION 2.1.0)
+set(COINBASE_ADVANCED_CPP_MIN_VERSION 2.1.1)
 
 find_package(coinbase-advanced-cpp ${COINBASE_ADVANCED_CPP_MIN_VERSION} CONFIG QUIET GLOBAL)
 if (NOT coinbase-advanced-cpp_FOUND)
