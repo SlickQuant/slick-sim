@@ -485,6 +485,8 @@ enum UpdateFlags : uint8_t {
 ```
 
 `F_END_EVENT` maps to slick-orderbook's `ChangeFlag::LastInBatch`, set in `Symbol::onPriceLevelUpdate`.
+`Symbol::addOrder` also sets it on the last level update of an order that does not rest, since its
+last book change (a fill that left it short, or an SMP cancel) was flagged mid-batch.
 
 `F_NOT_IN_BOOK` is set only on trades seeded from a venue's own trade snapshot, and is what
 [splits the subscribe-time trade snapshot](#the-recent-trade-snapshot).

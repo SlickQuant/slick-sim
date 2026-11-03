@@ -39,6 +39,13 @@ std::tuple<OrdRejectReason, std::vector<TradeSummaryInfo>> Symbol::addOrder(Orde
     }
 
     if (!resting) [[unlikely]] {
+        // Nothing rests to close the event, and the last thing this order did to
+        // the book (a fill short of its quantity, or an SMP cancel) was booked as
+        // mid-batch. Close the event on its last level update.
+        if (!md_level_update_cache_.empty()) {
+            auto &last = md_level_update_cache_.back();
+            last.flags = static_cast<uint8_t>(last.flags | UpdateFlags::F_END_EVENT);
+        }
         // Return every order that did not rest to the pool: fully filled orders,
         // SMP/FOK rejects and IOC remainders. The book only owns resting orders;
         // checking leaves_quantity == 0 alone would leak orders with quantity left.

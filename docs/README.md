@@ -14,7 +14,8 @@ What your orders match against depends on how you configure the market-data feed
 
 See [Operating modes](architecture.md#operating-modes).
 
-Two venues are implemented today, and they differ in how order results get back to you:
+CME and ICE are built out of tree. The two venues in this repository differ in how order results get
+back to you:
 
 - **[Coinbase](integration-coinbase.md)** — you submit orders over **REST**, but acks, fills and
   cancels arrive on a **separate WebSocket** (`user` channel). The REST call returns only a
@@ -32,7 +33,7 @@ Read in this order if you are new to the codebase.
 | --- | --- |
 | [Architecture](architecture.md) | The shadowing model, component map, threading model, and the lock-free queues that connect everything |
 | [Order lifecycle](order-lifecycle.md) | One order traced end to end, from HTTP request to execution report, plus every status and reject-reason enum |
-| [Matching engine](matching-engine.md) | FIFO price/time priority, time-in-force handling, self-match prevention, trade summaries, fixed-point arithmetic |
+| [Matching engine](matching-engine.md) | FIFO and pro-rata matching, time-in-force handling, self-match prevention, trade summaries, fixed-point arithmetic |
 | [Order book](order-book.md) | The single L3 book holding both real-market phantom liquidity and simulated user orders, and how the two are kept apart |
 | [Market data](market-data.md) | Feed ingestion, per-venue event sequencing, how venue trade prints are matched rather than relayed, and the internal binary market-data wire format |
 | [Adding an exchange](extending.md) | A checklist for implementing a new venue adapter, grounded in the two that work |

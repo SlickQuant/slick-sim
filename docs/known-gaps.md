@@ -5,14 +5,17 @@ behaviour that differs from the intended design, with source references and cons
 
 ## Venues
 
-### CME, Eurex and ICE are not implemented
+### CME and ICE are out of tree, and Eurex is not implemented
 
-There is no CME, Eurex or ICE adapter, although `Venue::CME` and `Venue::ICE` exist in
-[`types.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp). A `Venue` is an
-identity written into every market-data frame, not a claim that an adapter exists, so `to_venue("cme")`
-still resolves.
+This repository has no CME or ICE adapter. Both are built from separate repositories with
+`-DSLICK_SIM_EXTERNAL_VENUES`, so a default build does not carry them. There is no Eurex adapter at
+all. `Venue::CME` and `Venue::ICE` exist in
+[`types.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp) either way. A
+`Venue` is an identity written into every market-data frame, not a claim that an adapter exists, so
+`to_venue("cme")` still resolves.
 
-**What it means:** only `coinbase` and `hyperliquid` are usable venue keys in the config.
+**What it means:** in a default build, only `coinbase` and `hyperliquid` are usable venue keys in the
+config.
 
 ### An unknown venue key is rejected at startup
 
@@ -82,14 +85,14 @@ Only the `L2` specialisations do real work — and both adapters call `createOrd
 
 **What it means:** `OrderBookType::L3` is only useful in tests. Do not select it for a live venue.
 
-### Pro-rata matching does not exist
+### Pro-rata matching covers the core algorithm only
 
-`MatchingEngine::Type` declares `ProRata`, and `matching_engines_` is sized by
-`MatchingEngine::Type::__count__`, but
-[`pro_rata_matching_engine.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/matching_engine/pro_rata_matching_engine.hpp)
-is a **zero-byte file**.
+[`ProRataMatchingEngine`](matching-engine.md#pro-rata) implements the size split, lot rounding,
+minimum allocation, FIFO percentage and FIFO leftover. It does not implement top-order priority,
+leveling or LMM allocations, and only CME and ICE can select it.
 
-**What it means:** every symbol on every venue uses `FifoMatchingEngine`.
+**What it means:** CME's Allocation, Threshold Pro-Rata and LMM algorithms are approximated by plain
+pro-rata.
 
 ### The historical-data feed does not exist
 

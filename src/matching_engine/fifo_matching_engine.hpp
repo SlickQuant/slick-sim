@@ -1,10 +1,8 @@
+#pragma once
+
 #include "matching_engine.hpp"
 #include "slick/logger.hpp"
 #include <common/order.hpp>
-
-namespace slick::orderbook::detail {
-    struct PriceLevelL3;
-}
 
 namespace slick::sim::engine {
 

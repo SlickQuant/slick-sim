@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <exchange/exchange.hpp>
 #include <exchange/symbol.hpp>
-#include <matching_engine/fifo_matching_engine.hpp>
 #include <common/symbol_manager.hpp>
 #include <nlohmann/json.hpp>
 #include <algorithm>
@@ -47,12 +46,7 @@ public:
 
     Symbol *addSymbol(std::string_view name) {
         auto *symbol = SymbolManager::instance().createSymbol(name, Venue::STOCK);
-        if (!matching_engines_[engine::MatchingEngine::Type::FIFO]) {
-            matching_engines_[engine::MatchingEngine::Type::FIFO] =
-                std::make_unique<engine::FifoMatchingEngine>(response_queue_);
-        }
-        symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
-        symbol->smp_mode_ = smp_mode_;
+        assignMatching(symbol);
         symbol->createOrderBook<OrderBookType::L2>();
         return symbol;
     }
@@ -406,4 +400,59 @@ TEST(MarketOrderTest, TheRemainderIsCancelledNotRested) {
     const auto all = responses.collect();
     EXPECT_TRUE(firstPassiveFill(all).empty());
     EXPECT_NE(symbol->findOrderByClientOrderId("S2"), nullptr);
+}
+
+// ===========================================================================
+// An order that does not rest still closes its event
+// ===========================================================================
+
+namespace {
+
+/// The flags of the last level in the last LEVEL frame published. Fails the test
+/// and returns 0 when there is none, so a missing frame can't pass as a closed event.
+uint8_t lastLevelFlags(MarketDataCollector &md) {
+    const auto frames = md.collect(MDUpdateType::LEVEL);
+    if (frames.empty()) {
+        ADD_FAILURE() << "no LEVEL frame published";
+        return 0;
+    }
+    const auto *update = reinterpret_cast<const MDLevelUpdate *>(frames.back()->data);
+    if (update->num_level_update == 0) {
+        ADD_FAILURE() << "last LEVEL frame has no levels";
+        return 0;
+    }
+    return update->levels[update->num_level_update - 1].flags;
+}
+
+}   // namespace
+
+// The last fill left the IOC short of its quantity, so it was booked as mid-batch,
+// and nothing rested afterwards to close the event.
+TEST(EventCloseTest, AnIocRemainderStillClosesTheEvent) {
+    OrderUpdateExchange exchange(testConfig(), false);
+    const auto sym = uniqueSymbol("EOE-IOC");
+    exchange.addSymbol(sym);
+    MarketDataCollector md(exchange.md_queue());
+
+    exchange.submit(newOrder(sym, "alice", "S1", Side::SELL, kPrice100, kQty2, 1));
+    md.collect();
+    auto ioc = newOrder(sym, "bob", "B1", Side::BUY, kPrice100, kQty5, 2);
+    ioc.add_order.time_in_force = TimeInForce::IMMEDIATE_OR_CANCEL;
+    exchange.submit(ioc);
+
+    EXPECT_TRUE(lastLevelFlags(md) & UpdateFlags::F_END_EVENT);
+}
+
+// SMP cancels are booked as mid-batch too. Here they are all the order did.
+TEST(EventCloseTest, AnOrderThatOnlyCancelsItsOwnOrdersClosesTheEvent) {
+    OrderUpdateExchange exchange(testConfig("cancel_resting"), false);
+    const auto sym = uniqueSymbol("EOE-SMP");
+    exchange.addSymbol(sym);
+    MarketDataCollector md(exchange.md_queue());
+
+    exchange.submit(newOrder(sym, "alice", "S1", Side::SELL, kPrice100, kQty2, 1));
+    md.collect();
+    exchange.submit(marketOrder(sym, "alice", "M1", Side::BUY, kQty5, TimeInForce::IMMEDIATE_OR_CANCEL, 2));
+
+    EXPECT_TRUE(lastLevelFlags(md) & UpdateFlags::F_END_EVENT);
 }

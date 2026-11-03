@@ -15,6 +15,7 @@
 #include <common/market_data.hpp>
 #include <order_book/order_book.hpp>
 #include <matching_engine/matching_engine.hpp>
+#include <matching_engine/matching_config.hpp>
 #include <order_gateway/order_gateway.hpp>
 #include <market_data_publisher/market_data_publisher.hpp>
 #include "market_events.hpp"
@@ -117,6 +118,18 @@ protected:
     /// is left out of SMP rather than being lumped in with every other one.
     int clientIdFor(const char *user_id);
 
+    /// Reads `matching_algorithm` and `pro_rata` from the venue's config. Opt-in:
+    /// only a venue that offers pro-rata calls it. Without it every symbol matches
+    /// FIFO. Throws std::logic_error once a symbol has an engine, since that symbol
+    /// would keep it.
+    void configureMatching(const nlohmann::json &config);
+    const engine::MatchingConfig &matchingConfig() const noexcept {
+        return matching_;
+    }
+    /// Points a new symbol at the venue's configured engine, creating the engine
+    /// on first use, and stamps the venue's SMP mode on it.
+    void assignMatching(Symbol *symbol);
+
     virtual void handleMdSubscription(const Request &/* request */) {}
     virtual void handleMdUnsubscription(const Request &/* request */) {}
 
@@ -180,6 +193,11 @@ protected:
     /// Self-match prevention mode applied to every symbol on this venue, from the
     /// `self_match_prevention` config key. Stamped onto each Symbol as it is created.
     SelfMatchPreventionMode smp_mode_ = SelfMatchPreventionMode::NONE;
+    /// The engine assignMatching hands out. FIFO unless configureMatching says otherwise.
+    engine::MatchingConfig matching_;
+    /// The config sets matching keys and configureMatching has not read them, so
+    /// start() warns that this venue matches FIFO regardless.
+    bool matching_keys_unread_ = false;
     /// Keys use the width of AddOrderMessage::user_id. Transparent functors let
     /// clientIdFor look up a string_view without allocating a temporary string,
     /// even when user_id exceeds the small-string buffer.

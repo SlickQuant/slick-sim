@@ -15,7 +15,8 @@ identical in every case; only the source of the resting liquidity changes.
 ### Shadowing — matching against the live market
 
 `slick-sim` subscribes to a venue's live public market data and reconstructs its book locally.
-Client orders enter that book and match against the quoted liquidity through a local FIFO engine.
+Client orders enter that book and match against the quoted liquidity through a local matching
+engine: FIFO, or [pro-rata](matching-engine.md#pro-rata) on a venue that enables it.
 
 Prices and trades are therefore real; fills are simulated. Nothing is ever sent upstream except
 market-data subscriptions and — for Hyperliquid — read-only `/info` metadata queries.
@@ -24,7 +25,7 @@ market-data subscriptions and — for Hyperliquid — read-only `/info` metadata
 
 With no feed configured, the same machinery behaves like a conventional exchange simulator: books
 start empty and the only liquidity is what clients themselves submit. Orders rest, match against each
-other under the same FIFO price/time priority, and produce the same execution reports and
+other under the same matching rules, and produce the same execution reports and
 venue-native market data. This mode supports deterministic tests and client order-entry tests without an internet connection.
 With multiple clients, you control both sides of every trade.
 
@@ -93,7 +94,7 @@ flowchart TB
         EX["Exchange<br/>CoinbaseExchange / HyperliquidExchange"]
         SYM["Symbol<br/>one per instrument"]
         BOOK["OrderBook (L3)<br/>simulator orders<br/>+ phantom orders if a feed is configured"]
-        ME["FifoMatchingEngine"]
+        ME["MatchingEngine<br/>FIFO or pro-rata"]
         OG["order_gateway<br/>REST / WebSocket"]
         MDP["market_data_publisher<br/>WebSocket"]
     end
@@ -143,7 +144,7 @@ linked against a handful of static libraries.
 | --- | --- | --- |
 | `slick_sim_core` | `src/` | INTERFACE target carrying the `src/` include root and the header-only dependencies; every other target links it |
 | `exchange` | `src/exchange/` | Orchestration base (`Exchange`), the venue registry, and `Symbol`, which binds one instrument's book to a matching engine |
-| `matching_engine` | `src/matching_engine/` | `MatchingEngine` interface, `FifoMatchingEngine`, and the four order-lifecycle publish helpers |
+| `matching_engine` | `src/matching_engine/` | `MatchingEngine` interface, `FifoMatchingEngine`, `ProRataMatchingEngine`, and the four order-lifecycle publish helpers |
 | `order_gateway` | `src/order_gateway/` | `OrderGateway`/`RestWsOrderGateway` bases, and `TcpOrderGateway`, the TCP transport base for venues on a binary session protocol (`SLICK_SIM_ENABLE_TCP_GATEWAY`) |
 | `market_data_publisher` | `src/market_data_publisher/` | `WebsocketMarketDataPublisher` base and `SequencedMessage` |
 | `md_feed` | `src/md_feed/` | The `MDFeed` interface — header-only INTERFACE target |
@@ -217,7 +218,7 @@ This path needs no locking.
 
 | Code | Thread | Notes |
 | --- | --- | --- |
-| `Exchange::processRequest`, `handleNewOrderRequest`, `Symbol::addOrder`, `FifoMatchingEngine::match`, all `publish*` | Exchange thread | The only thread that mutates an `OrderBook` |
+| `Exchange::processRequest`, `handleNewOrderRequest`, `Symbol::addOrder`, `MatchingEngine::match`, all `publish*` | Exchange thread | The only thread that mutates an `OrderBook` |
 | `CoinbaseExchange::onLevel2Updates`, `onMarketTrades` | **Exchange thread**, via `processData()` | Push `Event`s into the per-symbol priority queue for time-ordering |
 | `CoinbaseExchange::onLevel2Snapshot` | **Exchange thread**, via `processData()` | Mutates the book directly, bypassing the priority queue |
 | `HyperliquidExchange::onL2BookUpdate`, `onTradesUpdate` | **Exchange thread**, via `dispatch()` | Append to `event_queue_`, processed later in the same `drainEventQueue()` call |
@@ -284,8 +285,8 @@ exch::Symbol* createSymbol(std::string_view sym, Venue venue);
 ```
 
 Symbols are created lazily, on the first market-data subscription for that instrument, by the
-adapter's `addSymbol()`. Creation assigns a `symid_t`, attaches the shared `FifoMatchingEngine` for
-that venue, and calls `createOrderBook<OrderBookType::L2>()`.
+adapter's `addSymbol()`. Creation assigns a `symid_t`, attaches the venue's shared matching engine
+through `assignMatching`, and calls `createOrderBook<OrderBookType::L2>()`.
 
 There are two limitations:
 

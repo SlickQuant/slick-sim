@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include <exchange/exchange.hpp>
 #include <exchange/symbol.hpp>
-#include <matching_engine/fifo_matching_engine.hpp>
 #include <common/symbol_manager.hpp>
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <cstring>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include "../test_helpers.hpp"
@@ -30,15 +30,13 @@ nlohmann::json mirrorConfig() {
 
 class MirrorExchange : public Exchange {
 public:
-    explicit MirrorExchange(const nlohmann::json &config) : Exchange(Venue::STOCK, config) {}
+    explicit MirrorExchange(const nlohmann::json &config) : Exchange(Venue::STOCK, config) {
+        configureMatching(config);
+    }
 
     Symbol *addSymbol(std::string_view name) {
         auto *symbol = SymbolManager::instance().createSymbol(name, Venue::STOCK);
-        if (!matching_engines_[engine::MatchingEngine::Type::FIFO]) {
-            matching_engines_[engine::MatchingEngine::Type::FIFO] =
-                std::make_unique<engine::FifoMatchingEngine>(response_queue_);
-        }
-        symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
+        assignMatching(symbol);
         symbol->createOrderBook<OrderBookType::L2>();
         return symbol;
     }
@@ -47,6 +45,7 @@ public:
     void apply(Symbol *symbol, const MarketOrderEvent &event) { applyMarketOrder(symbol, event); }
     void trade(Symbol *symbol, const MarketTradeEvent &event) { replayMarketTrade(symbol, event); }
     void flush() { flushMarketEvents(); }
+    void configure(const nlohmann::json &config) { configureMatching(config); }
 };
 
 std::string uniqueSymbol(const char *stem) {
@@ -266,6 +265,59 @@ TEST(MarketMirrorTest, ATradeReplayRestsNoRemainder) {
 
     EXPECT_EQ(restingQty(symbol, market.book_order_id), 0);
     EXPECT_TRUE(queueAt(symbol, Side::SELL, kPrice101).empty());
+}
+
+namespace {
+
+nlohmann::json proRataMirrorConfig() {
+    auto config = mirrorConfig();
+    config["matching_algorithm"] = "pro_rata";
+    config["pro_rata"] = {{"lot_size", 1}};
+    return config;
+}
+
+}   // namespace
+
+TEST(MarketMirrorTest, SymbolsMatchWithTheConfiguredEngine) {
+    MirrorExchange fifo(mirrorConfig());
+    EXPECT_EQ(fifo.addSymbol(uniqueSymbol("MM-FIFO"))->matching_engine_->type(), engine::MatchingEngine::Type::FIFO);
+
+    MirrorExchange pro_rata(proRataMirrorConfig());
+    auto *first = pro_rata.addSymbol(uniqueSymbol("MM-PRORATA"));
+    auto *second = pro_rata.addSymbol(uniqueSymbol("MM-PRORATA"));
+    EXPECT_EQ(first->matching_engine_->type(), engine::MatchingEngine::Type::ProRata);
+    EXPECT_EQ(first->matching_engine_, second->matching_engine_) << "one engine serves every symbol of a venue";
+}
+
+// A symbol keeps the engine it was given, so changing the config afterwards
+// would split the venue across two engines.
+TEST(MarketMirrorTest, ConfigureMatchingAfterASymbolThrows) {
+    MirrorExchange exchange(mirrorConfig());
+    exchange.addSymbol(uniqueSymbol("MM-LATE"));
+    EXPECT_THROW(exchange.configure(proRataMirrorConfig()), std::logic_error);
+}
+
+// On a pro-rata venue a replayed trade fills the client by its share of the level,
+// not by queue position: behind 8 market lots, a 2-lot order still gets 1 of a 5-lot
+// trade, where FIFO would give it nothing.
+TEST(MarketMirrorTest, ProRataTradeReplayFillsTheClientBySize) {
+    MirrorExchange exchange(proRataMirrorConfig());
+    const auto sym = uniqueSymbol("MM-PRORATA-TRADE");
+    auto *symbol = exchange.addSymbol(sym);
+    OrderResponseCollector responses(exchange.response_queue());
+    const auto market = marketOrder(MDUpdateAction::ACTION_NEW, Side::BUY, kPrice100, qty(8));
+    exchange.apply(symbol, market);
+    exchange.submit(clientOrder(sym, "B1", Side::BUY, kPrice100, kQty2));
+
+    MarketTradeEvent trade;
+    trade.price = kPrice100;
+    trade.qty = kQty5;
+    trade.aggressor = Side::SELL;
+    trade.transact_time = 2;
+    exchange.trade(symbol, trade);
+
+    EXPECT_EQ(filledQty(responses.collect(), "B1"), qty(1));
+    EXPECT_EQ(restingQty(symbol, market.book_order_id), qty(4));
 }
 
 TEST(MarketMirrorTest, ChangesArePublishedOnFlush) {

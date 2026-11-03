@@ -18,6 +18,8 @@ set(SLICK_SIM_TEST_SOURCES
     unit/matching_engine/test_matching_engine_smp.cpp
     unit/matching_engine/test_matching_engine_tif.cpp
     unit/matching_engine/test_feed_liquidity_matching.cpp
+    unit/matching_engine/test_pro_rata_matching_engine.cpp
+    unit/matching_engine/test_matching_config.cpp
 
     # Priority 2: Order Tests
     unit/common/test_order.cpp
@@ -44,6 +46,7 @@ set(SLICK_SIM_TEST_SOURCES
     unit/common/test_shm_cleanup.cpp
     unit/common/test_timestamp.cpp
     unit/common/test_decimal.cpp
+    unit/common/test_math.cpp
 
     # Priority 6: Order Gateway Tests
     unit/order_gateway/test_order_store.cpp

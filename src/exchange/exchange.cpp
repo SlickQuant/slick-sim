@@ -4,6 +4,7 @@
 #include <utils/order.hpp>
 #include <utils/timestamp.hpp>
 #include <algorithm>
+#include <cassert>
 
 using namespace slick::sim::exch;
 using namespace slick::sim;
@@ -45,6 +46,7 @@ Exchange::Exchange(
             LOG_INFO("Exchange {} self-match prevention: {}", to_string(venue), to_string(smp_mode_));
         }
     }
+    matching_keys_unread_ = config.contains("matching_algorithm") || config.contains("pro_rata");
 }
 
 void Exchange::start()
@@ -53,6 +55,13 @@ void Exchange::start()
     {
         LOG_WARN("Exchange {} is disabled, skipping start", to_string(venue_));
         return;
+    }
+    // Here rather than in the constructor, which cannot know whether the venue's
+    // own constructor goes on to call configureMatching.
+    if (matching_keys_unread_)
+    {
+        LOG_WARN("Exchange {} matches FIFO only; matching_algorithm and pro_rata are ignored", to_string(venue_));
+        matching_keys_unread_ = false;
     }
 
     run_.store(true, std::memory_order_release);
@@ -191,6 +200,31 @@ int Exchange::clientIdFor(const char *user_id)
     // First order from this user - only now is a key worth materialising, and it
     // is stored inline rather than on the heap.
     return client_ids_.emplace(key, next_client_id_++).first->second;
+}
+
+void Exchange::configureMatching(const nlohmann::json &config)
+{
+    if (std::ranges::any_of(matching_engines_, [](const auto &slot) { return slot != nullptr; }))
+    {
+        throw std::logic_error(std::format("Exchange {}: configureMatching after a symbol was assigned an engine",
+                                           to_string(venue_)));
+    }
+    matching_ = engine::MatchingConfig::from_json(config);
+    matching_keys_unread_ = false;
+}
+
+void Exchange::assignMatching(Symbol *symbol)
+{
+    // SymbolManager hands back an existing (venue, name), so a second bind would
+    // move a live symbol onto this exchange's engine and SMP mode.
+    assert(symbol->matching_engine_ == nullptr && "symbol is already bound to an exchange's engine");
+    auto &slot = matching_engines_[matching_.type];
+    if (!slot)
+    {
+        slot = engine::createMatchingEngine(matching_, response_queue_);
+    }
+    symbol->matching_engine_ = slot.get();
+    symbol->smp_mode_ = smp_mode_;
 }
 
 void Exchange::handleNewOrderRequest(const Request &request)

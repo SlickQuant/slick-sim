@@ -44,7 +44,7 @@ struct Symbol {
     /// Stored at wire width so publishing can copy the whole field without
     /// reading past the end of a shorter string buffer.
     symbol_name_t symbol_;
-    engine::MatchingEngine *matching_engine_;
+    engine::MatchingEngine *matching_engine_ = nullptr;
     std::shared_ptr<OrderBook> order_book_;
     std::atomic_uint16_t num_subscriptions_ = 0;
     SelfMatchPreventionMode smp_mode_ = SelfMatchPreventionMode::NONE;

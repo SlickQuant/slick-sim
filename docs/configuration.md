@@ -70,6 +70,26 @@ including against another order with no `user_id`. An unrecognised value logs a 
 SMP disabled rather than aborting startup. See
 [Matching engine](matching-engine.md#self-match-prevention).
 
+### `matching_algorithm`
+
+Only CME and ICE read these keys, CME per segment and ICE per silo. Coinbase and Hyperliquid always
+match FIFO, and log a warning at startup if the keys are set.
+
+| Key | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `matching_algorithm` | string | `"fifo"` | `"fifo"` or `"pro_rata"` |
+| `pro_rata.lot_size` | number | `1` | Allocations round down to this, in venue quantity units |
+| `pro_rata.min_allocation` | number | `0` | A pro-rata share below this rounds to 0. CME's Pro-Rata uses 2 |
+| `pro_rata.fifo_percent` | int | `0` | Share of the incoming quantity filled FIFO before the split, 0-100 |
+
+```json
+"matching_algorithm": "pro_rata",
+"pro_rata": { "lot_size": 1, "min_allocation": 2, "fifo_percent": 0 }
+```
+
+Startup throws on any other algorithm, an out-of-range value or a wrong JSON type, since falling back
+to FIFO would silently change who gets filled. See [Matching engine](matching-engine.md#pro-rata).
+
 The three `*_shm_name` keys appear in no sample config and are not otherwise exercised. Note that a
 shared-memory reader must be built with the same `int_fast64_t` width — see
 [Market data](market-data.md#the-internal-market-data-wire-format).
@@ -277,8 +297,9 @@ unchanged.
 | Hyperliquid REST order entry (`/exchange`, `/info`) | 4003 | **4002** |
 | Hyperliquid market data (+ `/info`) | 5001 | 5001 |
 
-The sample's disabled `cme` block reserves 4003 for its order gateway and 5002 for its market data
-publisher, so nothing collides if you enable it once a CME adapter exists.
+The sample's disabled `cme` block is a placeholder that reserves 4003 for an order gateway and 5002
+for a market data publisher. The out-of-tree CME venue has its own config layout, documented in its
+repository.
 
 ## Outbound network calls
 

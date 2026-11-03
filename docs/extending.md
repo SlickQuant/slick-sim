@@ -95,18 +95,17 @@ unsubscribing a feed twice.
 ```cpp
 Symbol* KrakenExchange::addSymbol(std::string_view symbol) {
     auto* sym = SymbolManager::instance().createSymbol(symbol, Venue::KRAKEN);
-    if (!matching_engines_[engine::MatchingEngine::Type::FIFO]) {
-        matching_engines_[engine::MatchingEngine::Type::FIFO] =
-            std::make_unique<engine::FifoMatchingEngine>(response_queue_);
-    }
-    sym->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
+    assignMatching(sym);   // the venue's engine and SMP mode
     sym->createOrderBook<OrderBookType::L2>();
     return sym;
 }
 ```
 
 Use `L2`, not `L3` — the [L3 specialisation's `populate*` methods are stubs](known-gaps.md#l3-order-books-are-stubs).
-The engine is created lazily and shared by every symbol on the venue.
+The engine is created lazily and shared by every symbol on the venue. It is FIFO unless the
+constructor calls `configureMatching(config)`, which lets the venue's config
+[select pro-rata](configuration.md#matching_algorithm). Call it before the first `assignMatching`;
+after that it throws.
 
 Remember `SymbolManager` is global and keyed by symbol name across all venues. If your venue's symbols
 could collide with an existing venue's, namespace them.
@@ -490,7 +489,7 @@ catches a core target having quietly picked up a dependency through a venue SDK.
 - [ ] One line appended to `SLICK_SIM_VENUE_LIST` in `types.hpp`
 - [ ] Everything venue-specific under `src/venues/<name>/` — nothing in the core directories
 - [ ] `Exchange` subclass overriding **`poll()`, not `start()`**
-- [ ] `addSymbol()` creating an `L2` book and attaching the shared FIFO engine
+- [ ] `addSymbol()` creating an `L2` book and calling `assignMatching`
 - [ ] `handleMdSubscription` / `handleMdUnsubscription` with per-channel pending tracking
 - [ ] Feed callbacks that enqueue only — no book mutation off the exchange thread
 - [ ] `MDFeed` implementation (optional — omit for a self-contained venue)

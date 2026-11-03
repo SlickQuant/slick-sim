@@ -1,7 +1,6 @@
 #include <slick/logger.hpp>
 #include "hyperliquid_exchange.hpp"
 #include "hyperliquid_live_ws_feed.hpp"
-#include <matching_engine/fifo_matching_engine.hpp>
 #include <common/symbol_manager.hpp>
 #include <utils/timestamp.hpp>
 #include <utils/order.hpp>
@@ -63,12 +62,7 @@ void HyperliquidExchange::poll() {
 Symbol* HyperliquidExchange::addSymbol(std::string_view coin) {
     auto *symbol = sym_mgr.createSymbol(coin, Venue::HYPERLIQUID);
     assert(symbol);
-    if (!matching_engines_[engine::MatchingEngine::Type::FIFO]) {
-        matching_engines_[engine::MatchingEngine::Type::FIFO] =
-            std::make_unique<engine::FifoMatchingEngine>(response_queue_);
-    }
-    symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
-    symbol->smp_mode_ = smp_mode_;
+    assignMatching(symbol);   // FIFO: Hyperliquid never calls configureMatching
     symbol->createOrderBook<OrderBookType::L2>();
     return symbol;
 }

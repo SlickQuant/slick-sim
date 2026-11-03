@@ -1,12 +1,16 @@
 # Matching engine
 
-`FifoMatchingEngine` implements price/time priority matching. It is the only engine that exists —
-`MatchingEngine::Type::ProRata` is declared but
-[unimplemented](known-gaps.md#pro-rata-matching-does-not-exist).
+There are two engines:
+
+- `FifoMatchingEngine` matches by price, then time.
+- `ProRataMatchingEngine` matches by price, then size. See [Pro-rata](#pro-rata).
+
+Every venue uses FIFO unless it opts in to pro-rata, and only CME and ICE do.
 
 One engine instance is shared by every symbol on a venue; it holds no per-symbol state, taking the
 `OrderBook` as a parameter on each call. Per-symbol configuration (currently just the SMP mode) is
-passed in from `Symbol`.
+passed in from `Symbol`. Both engines build on the helpers in `match_common.hpp`: the preamble before
+matching, one fill, and the trade summaries. The steps below describe FIFO.
 
 ## Two entry points
 
@@ -105,22 +109,25 @@ the `priority` counter. Price priority comes from `getBestLevel<SIDE>()` walking
 skipped entirely and the order sweeps until filled or the book is empty.
 
 The `is_last_in_batch` argument to `executeOrder` is `order_qty == 0`, so observers see the batch
-close on the final fill.
+close on the final fill. When quantity remains, a resting remainder closes it. An order that does
+not rest gets the flag from `Symbol::addOrder` on its last level update.
 
-### Step 4 — immediate-or-cancel remainder
+### Step 4 — a remainder that cannot rest
 
-After the loop, if the TIF is `IMMEDIATE_OR_CANCEL` and quantity remains, `publishOrderCancel` fires.
-The order is not removed from anything here — it was never added to the book. `Symbol::addOrder`
-handles that:
+After the loop, if quantity remains and `order->restsRemainder()` is false, `publishOrderCancel`
+fires. The order was never added to the book, so nothing is removed here. `restsRemainder()` is the
+same test `Symbol::addOrder` uses to decide whether to rest it:
 
 ```cpp
-bool should_rest = (tif == DAY || tif == GOOD_TILL_CANCEL || tif == GOOD_TILL_DATE);
+return price != NULL_PRICE &&
+       (time_in_force == DAY || time_in_force == GOOD_TILL_CANCEL || time_in_force == GOOD_TILL_DATE);
 ```
 
-Only those three rest. IOC and FOK remainders are dropped, and — because the test is a positive
-allow-list — so are `AT_THE_OPENING` and `GOOD_TILL_CROSSING`.
+A market order (`NULL_PRICE`) never rests, and a limit order rests only under those three TIFs. The
+test is an allow-list, so IOC, FOK, `AT_THE_OPENING` and `GOOD_TILL_CROSSING` remainders are all
+dropped.
 
-Finally, `Symbol::addOrder` returns the `Order` to the object pool if `leaves_quantity == 0`.
+Finally, `Symbol::addOrder` returns every order that did not rest to the object pool.
 
 ## Self-match prevention
 
@@ -189,20 +196,16 @@ with the new price and quantity, which means an amendment that makes the order m
 immediately. Only afterwards does it call `order_book_->modifyOrder(...)` to reposition whatever is
 left.
 
-Queue priority is handled by the book, not the engine:
+`Symbol::modifyOrder` decides queue priority:
 
 ```cpp
-// OrderBook::modifyOrder
-else if (new_price != order->price) {
-    order->price = new_price;
-    order->priority = nextOrderPriority();   // price change ⇒ lose queue position
-}
-order->quantity = new_qty;
+const bool requeue = new_price != order->price || new_qty > order->quantity;   // read before match()
+// ... match() ...
+if (requeue) order->priority = OrderBook::nextOrderPriority();
 ```
 
-A pure quantity change keeps its place in the queue; a price change goes to the back of the new
-level. That matches real venue behaviour. Note the asymmetry: quantity *increases* also keep
-priority, which most real venues would not allow.
+A new price or a larger quantity sends the order to the back of its level, as on CME and ICE. A
+quantity decrease keeps its place.
 
 ## Trade summaries
 
@@ -243,6 +246,47 @@ to avoid reducing a price level twice — see
     `trade_summary.Trades.size()`. The two agree because `num_orders` is incremented exactly once per
     `Trades` entry after the initial pair — but they are independent counters, so any future change to
     one must update the other.
+
+## Pro-rata
+
+`ProRataMatchingEngine` shares FIFO's preamble, fills and summaries. It differs only in who trades at a
+level. For an aggressor with `Q` left against a level holding `T` in total:
+
+1. If `Q >= T`, every order fills in full, as under FIFO, and matching moves on to the next level.
+   Lot rounding applies only to pro-rata shares, so these full fills are not rounded.
+2. Otherwise, `fifo_percent` of `Q`, rounded down to lots, is filled in queue order first.
+3. The rest is split in proportion to what each order still has. Each share is rounded down to whole
+   `lot_size`, and a share below `min_allocation` becomes 0.
+4. Whatever is left is filled in queue order, with no minimum, so the allocations always add up to
+   `Q`. Usually that is rounding residue. On a level of many small orders, though, every share can
+   round below `min_allocation`, and then most of `Q` fills FIFO, one small order after another.
+
+Each resting order gets at most one fill per aggressor per level, in queue order. All allocations are
+computed before any is executed, because a full fill unlinks the order from the level's list. The
+scratch buffer is an engine member; only the exchange thread uses it, so it needs no locks.
+
+Example: resting orders of 10, 10 and 10 lots, and an aggressor for 10. Each share is 3.33, which
+rounds down to 3. The 1 lot left over goes to the front of the queue, so the fills are 4, 3 and 3.
+
+SMP covers the whole level, because pro-rata can allocate to any order on a level the aggressor
+reaches. `CANCEL_RESTING` cancels every one of the owner's orders there, and `CANCEL_NEWEST` rejects
+if any of them is there. That covers orders FIFO would never have reached and orders whose share
+would have been 0, so `CANCEL_RESTING` removes more than FIFO would on the same book. A level's
+cancels also all come before its fills, whereas FIFO interleaves the two in queue order.
+
+FOK uses the same liquidity check as FIFO, because the total that can trade does not depend on how it
+is split.
+
+The market-data overload splits the same way, so a replayed venue trade fills a client order by its
+share of the level. Under FIFO it would depend on queue position.
+
+### Enabling it
+
+A venue opts in by calling `configureMatching(config)` in its constructor and `assignMatching(symbol)`
+in `addSymbol`. CME and ICE do this. CME reads the keys per segment and ICE per silo. See
+[Configuration](configuration.md#matching_algorithm).
+
+Not modelled: top-order priority, leveling, and LMM allocations.
 
 ## Fixed-point arithmetic
 
@@ -314,3 +358,5 @@ These tests cover the matching engine:
 | `tests/unit/matching_engine/test_matching_engine_tif.cpp` | DAY/GTC resting, IOC remainder cancel, FOK pre-check |
 | `tests/unit/matching_engine/test_matching_engine_smp.cpp` | All three SMP modes, including the FOK interaction |
 | `tests/unit/matching_engine/test_feed_liquidity_matching.cpp` | The overload-2 market-data path |
+| `tests/unit/matching_engine/test_pro_rata_matching_engine.cpp` | Pro-rata split, lot rounding, `min_allocation`, `fifo_percent`, SMP reach, the feed path |
+| `tests/unit/matching_engine/test_matching_config.cpp` | `matching_algorithm` / `pro_rata` parsing and engine creation |

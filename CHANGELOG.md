@@ -1,3 +1,29 @@
+# v0.5.0 - 11-02-2026
+
+## Added
+
+- **Pro-rata matching** in `ProRataMatchingEngine`. At a level the aggressor cannot take whole, it
+  splits the quantity by size. The `fifo_percent` slice goes FIFO first. Shares round down to
+  `lot_size` and drop to 0 below `min_allocation`, and the leftover goes FIFO. SMP covers every order
+  on a reached level. The market-data overload splits the same way, so a replayed trade fills a
+  client order by its share of the level.
+- `Exchange::configureMatching` reads `matching_algorithm` (`fifo` or `pro_rata`) and the `pro_rata`
+  block, and `Exchange::assignMatching` gives a symbol the configured engine. Every venue uses
+  `assignMatching`; only CME and ICE call `configureMatching`, so Coinbase and Hyperliquid stay FIFO
+  and log a warning at startup if the keys are set. A bad value fails startup, and
+  `configureMatching` throws once a symbol has an engine.
+- `utils::mul_div_floor` (`utils/math.hpp`): floor(a * b / c) with a 128-bit product.
+
+## Changed
+
+- Both engines share the preamble, single-fill and trade-summary code in
+  `matching_engine/match_common.hpp`. FIFO behaviour is unchanged.
+
+## Fixed
+
+- An order that does not rest closes its market-data event. An IOC or market order whose last fill
+  left it short, or whose only effect was SMP cancels, left the event open with no `F_END_EVENT`.
+
 # v0.4.0 - 10-30-2026
 
 ## Added

@@ -1,7 +1,6 @@
 #include <slick/logger.hpp>
 #include "coinbase_exchange.hpp"
 #include "coinbase_live_ws_feed.hpp"
-#include <matching_engine/fifo_matching_engine.hpp>
 #include <common/symbol_manager.hpp>
 #include <coinbase/websocket.hpp>
 #include <utils/timestamp.hpp>
@@ -74,12 +73,7 @@ Symbol *CoinbaseExchange::addSymbol(std::string_view product_id)
     assert(!sym_mgr.getSymbol(product_id, venue_));
     auto symbol = sym_mgr.createSymbol(product_id, Venue::COINBASE);
     assert(symbol);
-    if (!matching_engines_[engine::MatchingEngine::Type::FIFO])
-    {
-        matching_engines_[engine::MatchingEngine::Type::FIFO] = std::make_unique<engine::FifoMatchingEngine>(response_queue_);
-    }
-    symbol->matching_engine_ = matching_engines_[engine::MatchingEngine::Type::FIFO].get();
-    symbol->smp_mode_ = smp_mode_;
+    assignMatching(symbol);   // FIFO: Coinbase never calls configureMatching
     symbol->createOrderBook<OrderBookType::L2>();
     return symbol;
 }

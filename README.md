@@ -10,12 +10,13 @@
 An exchange simulator for testing trading strategies without risking capital. For each configured
 venue, it mirrors live public market data into a local order book and serves the venue's order-entry
 endpoints and market-data channels on local ports. Clients use the same APIs as they would on the
-real exchange, with fills produced by an in-process FIFO matching engine.
+real exchange, with fills produced by an in-process matching engine: FIFO, or pro-rata on CME and
+ICE when configured.
 
 A live feed lets your orders compete against real quoted liquidity. Without one, the books contain
 only client orders. Historical replay against recorded market data is planned but not implemented. See [Operating modes](https://slickquant.github.io/slick-sim/architecture/#operating-modes).
 
-Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.4.0`).
+Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.5.0`).
 
 ## Documentation
 
@@ -30,13 +31,17 @@ The sources live in [`docs/`](docs/) and render on GitHub too.
 
 ## Status
 
-Early-stage, under active development. Two exchanges are implemented today:
+Early-stage, under active development. Two exchanges are implemented in this repository:
 
 | Exchange | Status | Submit orders | Receive fills | Market data |
 |---|---|---|---|---|
 | Coinbase | Implemented | REST | WebSocket (`user` channel) | WebSocket |
 | Hyperliquid | Implemented | REST | in the same HTTP response — no push channel | WebSocket |
-| CME / Eurex / ICE | Not implemented | — | — | — |
+| CME, ICE | Out of tree¹ | iLink 3 / BOE over TCP | execution reports on the same session | MDP 3.0 / iMpact multicast |
+| Eurex | Not implemented | — | — | — |
+
+¹ Built from the separate `slick-sim-cme` and `slick-sim-ice` repositories with
+`-DSLICK_SIM_EXTERNAL_VENUES`. They are the only venues that can match pro-rata.
 
 ## Architecture
 
@@ -55,7 +60,7 @@ Each enabled exchange runs its own instance of the pipeline below. The market-da
                                                                        │ per instrument
                                                                        ▼
                                                                      Symbol
-                                                         OrderBook (L3) + FifoMatchingEngine
+                                                         OrderBook (L3) + MatchingEngine
                                                                        │
                                                                        │ book updates / executed trades
                                                                        ▼
@@ -77,7 +82,7 @@ Library targets:
 |---|---|
 | `exchange` | The `Exchange` base with its order-by-order market mirror, the venue registry, and `Symbol`, which binds one instrument's order book to a matching engine |
 | `slick_sim_venue_<venue>` | One per enabled venue under `src/venues/`: its `Exchange` subclass, gateways, publisher and encoders |
-| `matching_engine` | FIFO price/time-priority matching (`FifoMatchingEngine`) and order lifecycle notifications (ack, fill, modify, cancel) |
+| `matching_engine` | FIFO (`FifoMatchingEngine`) and pro-rata (`ProRataMatchingEngine`) matching, and order lifecycle notifications (ack, fill, modify, cancel) |
 | `order_gateway` | Order-entry bases: `RestWsOrderGateway` for HTTP/WebSocket venues and `TcpOrderGateway`, the TCP transport base for venues on a binary session protocol, with `RetransmitRing` and `ClOrdIdIndex` for their sessions |
 | `market_data_publisher` | Publishes book updates and executed trades in each venue's own WebSocket wire format |
 | `md_feed` | Ingests each venue's live public market data feed; `MulticastPacketFeed` receives a binary feed's multicast groups |
@@ -320,7 +325,7 @@ slick-sim/
 │   ├── common/                 # shared types: Order, Request, Venue, price/qty helpers (header-only)
 │   ├── exchange/                # Exchange base, venue registry, Symbol, market mirror events, instance expansion
 │   ├── market_data_publisher/  # market data publisher bases
-│   ├── matching_engine/        # FifoMatchingEngine (FIFO price/time priority)
+│   ├── matching_engine/        # FIFO and pro-rata matching engines
 │   ├── md_feed/                 # the MDFeed interface, MulticastPacketFeed
 │   ├── order_book/              # OrderBook wrapper around the slick-orderbook L3 book (header-only)
 │   ├── order_gateway/           # order entry bases: REST/WS, the TCP transport, retransmit ring, ClOrdID index
