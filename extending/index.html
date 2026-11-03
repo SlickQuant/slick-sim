@@ -1602,7 +1602,12 @@ in-tree one, with its suites passed as <code>TESTS</code>:</p>
 <p>Point slick-sim at it when configuring. No file in slick-sim changes:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DSLICK_SIM_EXTERNAL_VENUES<span class="o">=</span>/path/to/slick-sim-kraken
 </code></pre></div>
-<p>Several directories are separated by <code>;</code>. Keep the setting in a <code>CMakeUserPresets.json</code>, which
+<p>Separate several directories with <code>;</code> and quote the whole argument. Bash and PowerShell
+treat a bare <code>;</code> as the end of the command, so CMake gets only the first directory and the shell
+tries to run the second one:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="s2">"-DSLICK_SIM_EXTERNAL_VENUES=/path/to/venue-a;/path/to/venue-b"</span>
+</code></pre></div>
+<p>Keep the setting in a <code>CMakeUserPresets.json</code>, which
 <code>.gitignore</code> excludes, so a local path never reaches the repository (with VS Code's CMake Tools,
 <code>cmake.configureSettings</code> in the equally ignored <code>.vscode/settings.json</code> works too). Configure prints
 each directory as it is added and the venue names it registered - with the version its own
@@ -1621,11 +1626,11 @@ catch exactly that regression.</p>
 <h2 id="8-tests">8. Tests<a class="headerlink" href="#8-tests" title="Permanent link">&para;</a></h2>
 <p>Put the suites in <code>tests/unit/venues/kraken/</code> and add a gated block to <code>tests/CMakeLists.txt</code> — keyed
 on the <strong>target</strong>, so the suite disappears with the venue:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nb">if</span><span class="p">(</span><span class="s">TARGET</span><span class="w"> </span><span class="s">slick_sim_venue_kraken</span><span class="p">)</span>
-<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">    </span><span class="nb">list</span><span class="p">(</span><span class="s">APPEND</span><span class="w"> </span><span class="s">SLICK_SIM_TEST_SOURCES</span>
-<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">        </span><span class="s">unit/venues/kraken/test_kraken_exchange.cpp</span>
-<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">    </span><span class="p">)</span>
-<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="nb">endif</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nb">if</span><span class="p">(</span><span class="s">TARGET</span><span class="w"> </span><span class="s">slick_sim_venue_kraken</span><span class="p">)</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">    </span><span class="nb">list</span><span class="p">(</span><span class="s">APPEND</span><span class="w"> </span><span class="s">SLICK_SIM_TEST_SOURCES</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">        </span><span class="s">unit/venues/kraken/test_kraken_exchange.cpp</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="nb">endif</span><span class="p">()</span>
 </code></pre></div>
 <p>Mirror the existing suites:</p>
 <table>
@@ -1661,9 +1666,9 @@ one's and read its responses. The helpers unlink the segments when the test ends
 crashed run left behind.</p>
 <h2 id="9-check-it-builds-without-the-others">9. Check it builds without the others<a class="headerlink" href="#9-check-it-builds-without-the-others" title="Permanent link">&para;</a></h2>
 <p>Check that the new venue builds independently:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-kraken<span class="w"> </span>-DSLICK_SIM_ENABLE_COINBASE<span class="o">=</span>OFF<span class="w"> </span>-DSLICK_SIM_ENABLE_HYPERLIQUID<span class="o">=</span>OFF
-<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build-kraken
-<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build-kraken
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build-kraken<span class="w"> </span>-DSLICK_SIM_ENABLE_COINBASE<span class="o">=</span>OFF<span class="w"> </span>-DSLICK_SIM_ENABLE_HYPERLIQUID<span class="o">=</span>OFF
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>cmake<span class="w"> </span>--build<span class="w"> </span>build-kraken
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build-kraken
 </code></pre></div>
 <p>Configuring with every venue off must still build and link the core — that is the configuration that
 catches a core target having quietly picked up a dependency through a venue SDK.</p>
