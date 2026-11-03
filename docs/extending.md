@@ -423,7 +423,15 @@ Point slick-sim at it when configuring. No file in slick-sim changes:
 cmake -S . -B build -DSLICK_SIM_EXTERNAL_VENUES=/path/to/slick-sim-kraken
 ```
 
-Several directories are separated by `;`. Keep the setting in a `CMakeUserPresets.json`, which
+Separate several directories with `;` and quote the whole argument. Bash and PowerShell
+treat a bare `;` as the end of the command, so CMake gets only the first directory and the shell
+tries to run the second one:
+
+```bash
+cmake -S . -B build "-DSLICK_SIM_EXTERNAL_VENUES=/path/to/venue-a;/path/to/venue-b"
+```
+
+Keep the setting in a `CMakeUserPresets.json`, which
 `.gitignore` excludes, so a local path never reaches the repository (with VS Code's CMake Tools,
 `cmake.configureSettings` in the equally ignored `.vscode/settings.json` works too). Configure prints
 each directory as it is added and the venue names it registered - with the version its own

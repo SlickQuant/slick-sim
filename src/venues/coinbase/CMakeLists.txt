@@ -16,6 +16,7 @@ if (NOT coinbase-advanced-cpp_FOUND)
     set(BUILD_COINBASE_ADVANCED_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         coinbase-advanced-cpp
+        SYSTEM
         GIT_REPOSITORY https://github.com/SlickQuant/coinbase-advanced-cpp.git
         GIT_TAG v${COINBASE_ADVANCED_CPP_MIN_VERSION}
     )

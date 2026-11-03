@@ -83,6 +83,7 @@ if (NOT slick-queue_FOUND)
     # The override answers every later find_package(slick-queue) with this tree.
     FetchContent_Declare(
         slick-queue
+        SYSTEM
         GIT_REPOSITORY https://github.com/SlickQuant/slick-queue.git
         GIT_TAG v${SLICK_QUEUE_MIN_VERSION}
         OVERRIDE_FIND_PACKAGE
@@ -102,6 +103,7 @@ if (NOT slick-logger_FOUND)
     set(BUILD_SLICK_LOGGER_BENCHMARKS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-logger
+        SYSTEM
         GIT_REPOSITORY https://github.com/SlickQuant/slick-logger.git
         GIT_TAG v${SLICK_LOGGER_MIN_VERSION}
     )
@@ -116,6 +118,7 @@ if (NOT slick-object-pool_FOUND)
     set(BUILD_SLICK_OBJECTPOOL_TESTS OFF CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-object-pool
+        SYSTEM
         GIT_REPOSITORY https://github.com/SlickQuant/slick-object-pool.git
         GIT_TAG v${SLICK_OBJECT_POOL_MIN_VERSION}
     )
@@ -145,6 +148,7 @@ if (NOT slick-orderbook_FOUND)
     set(SLICK_ORDERBOOK_ENABLE_NATIVE_ARCH ${ENABLE_NATIVE_ARCH} CACHE BOOL "" FORCE)
     FetchContent_Declare(
         slick-orderbook
+        SYSTEM
         GIT_REPOSITORY https://github.com/SlickQuant/slick-orderbook.git
         GIT_TAG v${SLICK_ORDERBOOK_MIN_VERSION}
     )
@@ -169,6 +173,7 @@ if(SLICK_SIM_ENABLE_TCP_GATEWAY)
         set(BUILD_SLICK_SOCKET_SHARED_LIBS OFF CACHE BOOL "" FORCE)
         FetchContent_Declare(
             slick-socket
+            SYSTEM
             GIT_REPOSITORY https://github.com/SlickQuant/slick-socket.git
             GIT_TAG v${SLICK_SOCKET_MIN_VERSION}
         )
