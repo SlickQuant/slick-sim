@@ -16,7 +16,7 @@ var searchData=
   ['_7ematchingengine_13',['~MatchingEngine',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#a3507d96f8d9469eb5352162d385e6d20',1,'slick::sim::engine::MatchingEngine']]],
   ['_7emdfeed_14',['~MDFeed',['../classslick_1_1sim_1_1md__feed_1_1MDFeed.html#a5ecef6d738974c4f107369a2cd845dbc',1,'slick::sim::md_feed::MDFeed']]],
   ['_7emessageparser_15',['~MessageParser',['../classslick_1_1sim_1_1order__gateway_1_1MessageParser.html#a6a4bfc61de2e924cc1216e30b990ebe5',1,'slick::sim::order_gateway::MessageParser']]],
-  ['_7emulticastpacketfeed_16',['~MulticastPacketFeed',['../classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a73aa1868da6133f25f758db2fe92af93',1,'slick::sim::md_feed::MulticastPacketFeed']]],
+  ['_7emulticastpacketfeed_16',['~MulticastPacketFeed',['../classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#acea40f9db63b1fa9881692fab371d496',1,'slick::sim::md_feed::MulticastPacketFeed']]],
   ['_7eorderbook_17',['~OrderBook',['../classslick_1_1sim_1_1OrderBook.html#a3c29057ab9d52000cf9e31465ffa2258',1,'slick::sim::OrderBook']]],
   ['_7eorderbookimpl_18',['~OrderBookImpl',['../classslick_1_1sim_1_1OrderBookImpl.html#ad923102f1a62cab39903c66584a92a09',1,'slick::sim::OrderBookImpl']]],
   ['_7eordergateway_19',['~OrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html#a501b32112792fd096f3e9de58554edb8',1,'slick::sim::order_gateway::OrderGateway']]],

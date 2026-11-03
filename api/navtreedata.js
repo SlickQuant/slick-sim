@@ -67,14 +67,14 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#af1a17de031e85308e127948b9261ff6b",
-"classslick_1_1sim_1_1md__publisher_1_1SequencedMessage.html#a24de20d96f8e0dd459dd6c273d662e6e",
-"classslick_1_1sim_1_1order__gateway_1_1RetransmitRing.html#a9508bad18ec6e6a27b1a75275963524f",
-"common_2order_8hpp_source.html",
-"math_8hpp.html#a41184c1b24b50c3c4cdb18a0c7ecfbe2",
-"namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562ab50339a10e1de285ac99d4c3990b8693",
-"structslick_1_1sim_1_1Fill.html",
-"structslick_1_1sim_1_1OrderResponse.html#a4a5fd7713ad0b6393942e14ed65b5321",
-"structslick_1_1sim_1_1exch_1_1Symbol.html#a8ae3a2bd3ba8cf94b862bb3e946cfc7f"
+"classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html#aad524060a1fe884667fdffeed4dbe771",
+"classslick_1_1sim_1_1order__gateway_1_1RetransmitRing.html#a33d7e5431de677249564a56632833398",
+"common_2order_8hpp.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba86c12beda467fc39b3c1251beff478f3",
+"matching__config_8hpp_source.html",
+"namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562a82d5d3973f589ad8c19c16357ea151be",
+"structslick_1_1sim_1_1CancelOrderMessage.html#a57269cf93b0ae4af47cdf91539d9a9cc",
+"structslick_1_1sim_1_1OrderResponse.html#a36f1b6754a17ab37e7600964ee39e43d",
+"structslick_1_1sim_1_1exch_1_1Symbol.html#a750e00f30705bc6f0f14162e43b1b148"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
