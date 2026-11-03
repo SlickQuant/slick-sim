@@ -20,10 +20,11 @@ var searchData=
   ['_7eorderbook_17',['~OrderBook',['../classslick_1_1sim_1_1OrderBook.html#a3c29057ab9d52000cf9e31465ffa2258',1,'slick::sim::OrderBook']]],
   ['_7eorderbookimpl_18',['~OrderBookImpl',['../classslick_1_1sim_1_1OrderBookImpl.html#ad923102f1a62cab39903c66584a92a09',1,'slick::sim::OrderBookImpl']]],
   ['_7eordergateway_19',['~OrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html#a501b32112792fd096f3e9de58554edb8',1,'slick::sim::order_gateway::OrderGateway']]],
-  ['_7erequest_20',['~Request',['../structslick_1_1sim_1_1Request.html#a1d856be119fea66d0b8e8657aa964d0d',1,'slick::sim::Request']]],
-  ['_7erestwsordergateway_21',['~RestWsOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a65d1300541f0df053a26fbcf4eb698ad',1,'slick::sim::order_gateway::RestWsOrderGateway']]],
-  ['_7eringbuffer_22',['~RingBuffer',['../classslick_1_1sim_1_1utils_1_1RingBuffer.html#ae7a781625f9419493094712c695c588f',1,'slick::sim::utils::RingBuffer']]],
-  ['_7esymbol_23',['~Symbol',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a4990f99d616a0d9e966dcaebd02aad55',1,'slick::sim::exch::Symbol']]],
-  ['_7etcpordergateway_24',['~TcpOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a87eb7529a12c6314cd5a8054872e9e92',1,'slick::sim::order_gateway::TcpOrderGateway']]],
-  ['_7ewebsocketmarketdatapublisher_25',['~WebsocketMarketDataPublisher',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]]
+  ['_7eproratamatchingengine_20',['~ProRataMatchingEngine',['../classslick_1_1sim_1_1engine_1_1ProRataMatchingEngine.html#af580da61c2b19751d38304cdd7425ca1',1,'slick::sim::engine::ProRataMatchingEngine']]],
+  ['_7erequest_21',['~Request',['../structslick_1_1sim_1_1Request.html#a1d856be119fea66d0b8e8657aa964d0d',1,'slick::sim::Request']]],
+  ['_7erestwsordergateway_22',['~RestWsOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#a65d1300541f0df053a26fbcf4eb698ad',1,'slick::sim::order_gateway::RestWsOrderGateway']]],
+  ['_7eringbuffer_23',['~RingBuffer',['../classslick_1_1sim_1_1utils_1_1RingBuffer.html#ae7a781625f9419493094712c695c588f',1,'slick::sim::utils::RingBuffer']]],
+  ['_7esymbol_24',['~Symbol',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a4990f99d616a0d9e966dcaebd02aad55',1,'slick::sim::exch::Symbol']]],
+  ['_7etcpordergateway_25',['~TcpOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a87eb7529a12c6314cd5a8054872e9e92',1,'slick::sim::order_gateway::TcpOrderGateway']]],
+  ['_7ewebsocketmarketdatapublisher_26',['~WebsocketMarketDataPublisher',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]]
 ];

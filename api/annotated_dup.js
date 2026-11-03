@@ -3,8 +3,14 @@ var annotated_dup =
     [ "slick", "namespaceslick.html", [
       [ "sim", "namespaceslick_1_1sim.html", [
         [ "engine", "namespaceslick_1_1sim_1_1engine.html", [
+          [ "detail", "namespaceslick_1_1sim_1_1engine_1_1detail.html", [
+            [ "MatchContext", "structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html", "structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext" ]
+          ] ],
           [ "FifoMatchingEngine", "classslick_1_1sim_1_1engine_1_1FifoMatchingEngine.html", "classslick_1_1sim_1_1engine_1_1FifoMatchingEngine" ],
-          [ "MatchingEngine", "classslick_1_1sim_1_1engine_1_1MatchingEngine.html", "classslick_1_1sim_1_1engine_1_1MatchingEngine" ]
+          [ "MatchingConfig", "structslick_1_1sim_1_1engine_1_1MatchingConfig.html", "structslick_1_1sim_1_1engine_1_1MatchingConfig" ],
+          [ "MatchingEngine", "classslick_1_1sim_1_1engine_1_1MatchingEngine.html", "classslick_1_1sim_1_1engine_1_1MatchingEngine" ],
+          [ "ProRataConfig", "structslick_1_1sim_1_1engine_1_1ProRataConfig.html", "structslick_1_1sim_1_1engine_1_1ProRataConfig" ],
+          [ "ProRataMatchingEngine", "classslick_1_1sim_1_1engine_1_1ProRataMatchingEngine.html", "classslick_1_1sim_1_1engine_1_1ProRataMatchingEngine" ]
         ] ],
         [ "exch", "namespaceslick_1_1sim_1_1exch.html", [
           [ "CoinbaseExchange", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange" ],

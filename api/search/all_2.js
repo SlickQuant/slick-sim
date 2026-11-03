@@ -4,7 +4,7 @@ var searchData=
   ['binary_1',['BINARY',['../namespaceslick_1_1sim_1_1order__gateway.html#a21eaf560f68e2e781d35e64080dc0615a98ad0e8750ae10ad556ed7a62affb452',1,'slick::sim::order_gateway']]],
   ['body_2',['body',['../structslick_1_1sim_1_1ProxiedHttpResponse.html#a99e603f14d5f5b4acfff0918b30ec262',1,'slick::sim::ProxiedHttpResponse']]],
   ['body_5fbuffer_3',['body_buffer',['../structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html#a60e5097e8f05df16a9a07cd763cd32a2',1,'slick::sim::order_gateway::PostRequestData']]],
-  ['book_4',['BOOK',['../namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11a67779133ea54f02a37253673ff56a0ea',1,'slick::sim']]],
+  ['book_4',['book',['../structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#a463d43d5b17703e08be4cef475253c3c',1,'slick::sim::engine::detail::MatchContext::book'],['../namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11a67779133ea54f02a37253673ff56a0ea',1,'slick::sim::BOOK']]],
   ['book_5fobserver_5f_5',['book_observer_',['../structslick_1_1sim_1_1exch_1_1Symbol.html#acde2a8dd58f2350053f669d9552645ed',1,'slick::sim::exch::Symbol']]],
   ['book_5forder_5fid_6',['book_order_id',['../structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html#a38e7c1259118c438338ba8d68b7f66f3',1,'slick::sim::exch::MarketOrderEvent']]],
   ['book_5fpriority_7',['book_priority',['../structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html#afef3d7b34ebeae064cf0801a58957e8f',1,'slick::sim::exch::MarketOrderEvent']]],

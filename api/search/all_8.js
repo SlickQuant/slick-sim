@@ -5,7 +5,7 @@ var searchData=
   ['handlemdunsubscription_2',['handlemdunsubscription',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a08416af82a06a1e18f2cc26dc36eb51d',1,'slick::sim::exch::Exchange::handleMdUnsubscription()'],['../classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#a9759ea0bf080b0136c82972349761971',1,'slick::sim::exch::CoinbaseExchange::handleMdUnsubscription()'],['../classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#aeb2d266ee4cf363a6f7c19b7925a0297',1,'slick::sim::exch::HyperliquidExchange::handleMdUnsubscription()']]],
   ['handlemodifyorderrequest_3',['handleModifyOrderRequest',['../classslick_1_1sim_1_1exch_1_1Exchange.html#ab4e7bfdcb41f0f06ff91a3f6faf3af57',1,'slick::sim::exch::Exchange']]],
   ['handleneworderrequest_4',['handleNewOrderRequest',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a14867b5c0ddf53b3020408aef1c23618',1,'slick::sim::exch::Exchange']]],
-  ['handleselfmatch_5',['handleSelfMatch',['../fifo__matching__engine_8cpp.html#ad30da9fa5d49f0c0ff26d5a4f52c9dc3',1,'fifo_matching_engine.cpp']]],
+  ['handleselfmatch_5',['handleSelfMatch',['../namespaceslick_1_1sim_1_1engine_1_1detail.html#ab0c9353cce2bbfd562e2a4430b7d4368',1,'slick::sim::engine::detail']]],
   ['has_5ferror_6',['has_error',['../structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a81c540bb48e2379d4380a7864ae941db',1,'slick::sim::order_gateway::ParseResult']]],
   ['has_5fgroup_7',['has_group',['../classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a75e0ccf76218749a73a03e37040f6b20',1,'slick::sim::md_feed::MulticastPacketFeed']]],
   ['has_5forder_8',['has_order',['../structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a37ea9c2ae8428935d45a8282b5dc3e9b',1,'slick::sim::order_gateway::ParseResult']]],

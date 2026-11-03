@@ -66,15 +66,15 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"classslick_1_1sim_1_1exch_1_1Exchange.html#a1504ddfbf4ab78fb07ed44f68b898113",
-"classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a7622b209fb33d55abfdb941c8ba91e09",
-"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a609257c3111045296f2ebc9a3e6028db",
-"exchange_8hpp_source.html",
-"messages_8hpp.html#a643229c6d27fa2c4cc2651be0a9a5337a93931db7fd9d745a24c73c5acb3a1a79",
-"namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba43c3a25f4ac09f187ecd891919449f2c",
-"structslick_1_1sim_1_1MDOrder.html#aceca08d1f79b944e7aab5e8bce7d8fcd",
-"structslick_1_1sim_1_1Request.html#abf926edf2263ab522fcef7a4d7d9e419",
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html"
+"classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html#af1a17de031e85308e127948b9261ff6b",
+"classslick_1_1sim_1_1md__publisher_1_1SequencedMessage.html#a24de20d96f8e0dd459dd6c273d662e6e",
+"classslick_1_1sim_1_1order__gateway_1_1RetransmitRing.html#a9508bad18ec6e6a27b1a75275963524f",
+"common_2order_8hpp_source.html",
+"math_8hpp.html#a41184c1b24b50c3c4cdb18a0c7ecfbe2",
+"namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562ab50339a10e1de285ac99d4c3990b8693",
+"structslick_1_1sim_1_1Fill.html",
+"structslick_1_1sim_1_1OrderResponse.html#a4a5fd7713ad0b6393942e14ed65b5321",
+"structslick_1_1sim_1_1exch_1_1Symbol.html#a8ae3a2bd3ba8cf94b862bb3e946cfc7f"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

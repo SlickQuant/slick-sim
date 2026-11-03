@@ -1,7 +1,7 @@
 var searchData=
 [
   ['reconcilephantomqty_0',['reconcilePhantomQty',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a67a593dc60a3c89b19a9e2a3f93bfced',1,'slick::sim::exch::Exchange']]],
-  ['recordtrade_1',['recordTrade',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a7972ff81787721edcd0cf27f34914f5c',1,'slick::sim::exch::Symbol']]],
+  ['recordtrade_1',['recordtrade',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a7972ff81787721edcd0cf27f34914f5c',1,'slick::sim::exch::Symbol::recordTrade()'],['../namespaceslick_1_1sim_1_1engine_1_1detail.html#a265ef009962eb11b29962ddcd00497b4',1,'slick::sim::engine::detail::recordTrade()']]],
   ['register_5fparser_2',['register_parser',['../classslick_1_1sim_1_1order__gateway_1_1MessageParserFactory.html#af785d6a2622b86dce8d5d24e168cd451',1,'slick::sim::order_gateway::MessageParserFactory']]],
   ['rejectcancelorderrequest_3',['rejectCancelOrderRequest',['../classslick_1_1sim_1_1exch_1_1Exchange.html#ae487d60e58eacb7b22f89c52a03acf3f',1,'slick::sim::exch::Exchange']]],
   ['rejectmdsubscription_4',['rejectMdSubscription',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a96dfd0cb104e4891307f03e6ee6d56f9',1,'slick::sim::exch::Exchange']]],
@@ -14,7 +14,7 @@ var searchData=
   ['request_11',['Request',['../structslick_1_1sim_1_1Request.html#a0b5e653c1a3ae2347f3b6a173994a803',1,'slick::sim::Request']]],
   ['request_5fqueue_12',['request_queue',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a556182ece61183677e691bbcab3ab093',1,'slick::sim::exch::Exchange']]],
   ['reserve_5frequest_13',['reserve_request',['../classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a8c39288638605ad50df4c163b9a905ae',1,'slick::sim::order_gateway::TcpOrderGateway']]],
-  ['reset_14',['reset',['../classslick_1_1sim_1_1order__gateway_1_1FixParser.html#afeb456049214c4e24f1351f0f9fbf021',1,'slick::sim::order_gateway::FixParser::reset()'],['../classslick_1_1sim_1_1order__gateway_1_1MessageParser.html#af6c858c60345096c9a1d657b5183e322',1,'slick::sim::order_gateway::MessageParser::reset()'],['../classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#a2397f9e369a33de3a97353f27bcb90ca',1,'slick::sim::order_gateway::JsonParser::reset()']]],
+  ['reset_14',['reset',['../classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#a2397f9e369a33de3a97353f27bcb90ca',1,'slick::sim::order_gateway::JsonParser::reset()'],['../classslick_1_1sim_1_1order__gateway_1_1MessageParser.html#af6c858c60345096c9a1d657b5183e322',1,'slick::sim::order_gateway::MessageParser::reset()'],['../classslick_1_1sim_1_1order__gateway_1_1FixParser.html#afeb456049214c4e24f1351f0f9fbf021',1,'slick::sim::order_gateway::FixParser::reset()']]],
   ['resetfillaccounting_15',['resetFillAccounting',['../structslick_1_1sim_1_1Order.html#aa83185f29b91a18f3abc0638ae7f3779',1,'slick::sim::Order']]],
   ['resize_16',['resize',['../classslick_1_1sim_1_1order__gateway_1_1RetransmitRing.html#a6b83c94a69758cc96295f096e192af4a',1,'slick::sim::order_gateway::RetransmitRing']]],
   ['response_5fqueue_17',['response_queue',['../classslick_1_1sim_1_1exch_1_1Exchange.html#ab50339a96a5b92d45b2e0ae70f197002',1,'slick::sim::exch::Exchange']]],

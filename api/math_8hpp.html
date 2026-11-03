@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Slick Sim: slick::orderbook Namespace Reference</title>
+<title>Slick Sim: utils/math.hpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.4.0</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.5.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -64,7 +64,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('namespaceslick_1_1orderbook.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('math_8hpp.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -91,22 +91,49 @@ $(document).ready(function(){initNavTree('namespaceslick_1_1orderbook.html','');
 
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
-  <div class="headertitle"><div class="title">slick::orderbook Namespace Reference</div></div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">math.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;<a class="el" href="types_8hpp_source.html">common/types.hpp</a>&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for math.hpp:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="math_8hpp__incl.svg" width="603" height="198"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="math_8hpp__dep__incl.svg" width="212" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+<p><a href="math_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
-<tr class="memitem:namespaceslick_1_1orderbook_1_1detail" id="r_namespaceslick_1_1orderbook_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1orderbook_1_1detail.html">detail</a></td></tr>
+<tr class="memitem:namespaceslick" id="r_namespaceslick"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick.html">slick</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceslick_1_1sim" id="r_namespaceslick_1_1sim"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim.html">slick::sim</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceslick_1_1sim_1_1utils" id="r_namespaceslick_1_1sim_1_1utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1utils.html">slick::sim::utils</a></td></tr>
+<tr class="memdesc:namespaceslick_1_1sim_1_1utils"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conversions between wire decimals with a constant exponent of -9 (CME PRICE9, ICE Decimal9) and the simulator's 1e-8 fixed point. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a41184c1b24b50c3c4cdb18a0c7ecfbe2" id="r_a41184c1b24b50c3c4cdb18a0c7ecfbe2"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1utils.html#a41184c1b24b50c3c4cdb18a0c7ecfbe2">slick::sim::utils::mul_div_floor</a> (uint64_t a, uint64_t b, uint64_t c) noexcept</td></tr>
+<tr class="memdesc:a41184c1b24b50c3c4cdb18a0c7ecfbe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">floor(a * b / c), with the product held at 128 bits.  <br /></td></tr>
+<tr class="separator:a41184c1b24b50c3c4cdb18a0c7ecfbe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespaceslick.html">slick</a></li><li class="navelem"><a class="el" href="namespaceslick_1_1orderbook.html">orderbook</a></li>
+    <li class="navelem"><a class="el" href="dir_cbdb8362360e11eafe2fa3bc74cf0ffd.html">utils</a></li><li class="navelem"><a class="el" href="math_8hpp.html">math.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

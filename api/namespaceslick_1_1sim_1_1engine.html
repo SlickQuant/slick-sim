@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.4.0</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.5.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -91,23 +91,44 @@ $(document).ready(function(){initNavTree('namespaceslick_1_1sim_1_1engine.html',
 
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">slick::sim::engine Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceslick_1_1sim_1_1engine_1_1detail" id="r_namespaceslick_1_1sim_1_1engine_1_1detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1engine_1_1detail.html">detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1engine_1_1FifoMatchingEngine.html">FifoMatchingEngine</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1engine_1_1MatchingConfig.html">MatchingConfig</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which engine a venue's symbols match with.  <a href="structslick_1_1sim_1_1engine_1_1MatchingConfig.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1engine_1_1MatchingEngine.html">MatchingEngine</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1engine_1_1ProRataConfig.html">ProRataConfig</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pro-rata allocation rules. Quantities use the venue's fixed-point scale.  <a href="structslick_1_1sim_1_1engine_1_1ProRataConfig.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1engine_1_1ProRataMatchingEngine.html">ProRataMatchingEngine</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pro-rata matching: at each price level an aggressor that cannot take the whole level is split across its orders by size, not by queue position.  <a href="classslick_1_1sim_1_1engine_1_1ProRataMatchingEngine.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a97c0500a3ce4907a65cd26dbccffb61b" id="r_a97c0500a3ce4907a65cd26dbccffb61b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1engine.html#a97c0500a3ce4907a65cd26dbccffb61b">Logger</a> = slick::logger::Logger</td></tr>
 <tr class="separator:a97c0500a3ce4907a65cd26dbccffb61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a0b3d19d5995d348c3c0ab455b643037e" id="r_a0b3d19d5995d348c3c0ab455b643037e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classslick_1_1sim_1_1engine_1_1MatchingEngine.html">MatchingEngine</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1engine.html#a0b3d19d5995d348c3c0ab455b643037e">createMatchingEngine</a> (const <a class="el" href="structslick_1_1sim_1_1engine_1_1MatchingConfig.html">MatchingConfig</a> &amp;config, slick::queue&lt; <a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a> &gt; &amp;response_queue)</td></tr>
+<tr class="separator:a0b3d19d5995d348c3c0ab455b643037e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a97c0500a3ce4907a65cd26dbccffb61b" name="a97c0500a3ce4907a65cd26dbccffb61b"></a>
@@ -122,7 +143,42 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8hpp_source.html#l00011">11</a> of file <a class="el" href="fifo__matching__engine_8hpp_source.html">fifo_matching_engine.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="fifo__matching__engine_8hpp_source.html#l00009">9</a> of file <a class="el" href="fifo__matching__engine_8hpp_source.html">fifo_matching_engine.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a0b3d19d5995d348c3c0ab455b643037e" name="a0b3d19d5995d348c3c0ab455b643037e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b3d19d5995d348c3c0ab455b643037e">&#9670;&#160;</a></span>createMatchingEngine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classslick_1_1sim_1_1engine_1_1MatchingEngine.html">MatchingEngine</a> &gt; slick::sim::engine::createMatchingEngine </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structslick_1_1sim_1_1engine_1_1MatchingConfig.html">MatchingConfig</a> &amp;&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">slick::queue&lt; <a class="el" href="structslick_1_1sim_1_1OrderResponse.html">OrderResponse</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>response_queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="matching__config_8cpp_source.html#l00090">90</a> of file <a class="el" href="matching__config_8cpp_source.html">matching_config.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="matching__config_8hpp_source.html#l00027">slick::sim::engine::MatchingConfig::pro_rata</a>, <a class="el" href="matching__engine_8hpp_source.html#l00017">slick::sim::engine::MatchingEngine::ProRata</a>, and <a class="el" href="matching__config_8hpp_source.html#l00026">slick::sim::engine::MatchingConfig::type</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="exchange_8cpp_source.html#l00216">slick::sim::exch::Exchange::assignMatching()</a>.</p>
 
 </div>
 </div>

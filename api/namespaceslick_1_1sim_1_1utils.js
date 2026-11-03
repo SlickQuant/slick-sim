@@ -16,6 +16,7 @@ var namespaceslick_1_1sim_1_1utils =
     [ "isPriceBetter", "namespaceslick_1_1sim_1_1utils.html#afcec067c6927eda88ef6a3c5956becf5", null ],
     [ "isPriceBetterOrEqual", "namespaceslick_1_1sim_1_1utils.html#a279c1650ff35a694ab7c77d1298f20d7", null ],
     [ "isPriceBetterOrEqual", "namespaceslick_1_1sim_1_1utils.html#a885b8c91414df916abaf3c8831597830", null ],
+    [ "mul_div_floor", "namespaceslick_1_1sim_1_1utils.html#a41184c1b24b50c3c4cdb18a0c7ecfbe2", null ],
     [ "nextOrderId", "namespaceslick_1_1sim_1_1utils.html#a3ecda281a1b70afaf46bea72c8ceac5e", null ],
     [ "to_decimal9", "namespaceslick_1_1sim_1_1utils.html#a5bf3f327c89fbcb34908cdff45211fa9", null ],
     [ "DECIMAL9_PER_FIXED", "namespaceslick_1_1sim_1_1utils.html#aa6b3379b8535c3aa171bf9a1905faaec", null ],

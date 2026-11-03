@@ -540,10 +540,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-4-immediate-or-cancel-remainder" class="md-nav__link">
+  <a href="#step-4-a-remainder-that-cannot-rest" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 4 — immediate-or-cancel remainder
+        Step 4 — a remainder that cannot rest
       
     </span>
   </a>
@@ -624,6 +624,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pro-rata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pro-rata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pro-rata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-it_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1076,10 +1104,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-4-immediate-or-cancel-remainder" class="md-nav__link">
+  <a href="#step-4-a-remainder-that-cannot-rest" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 4 — immediate-or-cancel remainder
+        Step 4 — a remainder that cannot rest
       
     </span>
   </a>
@@ -1164,6 +1192,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pro-rata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pro-rata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pro-rata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-it_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#fixed-point-arithmetic" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1239,12 +1295,16 @@
 
 
 <h1 id="matching-engine">Matching engine<a class="headerlink" href="#matching-engine" title="Permanent link">&para;</a></h1>
-<p><code>FifoMatchingEngine</code> implements price/time priority matching. It is the only engine that exists —
-<code>MatchingEngine::Type::ProRata</code> is declared but
-<a href="../known-gaps/#pro-rata-matching-does-not-exist">unimplemented</a>.</p>
+<p>There are two engines:</p>
+<ul>
+<li><code>FifoMatchingEngine</code> matches by price, then time.</li>
+<li><code>ProRataMatchingEngine</code> matches by price, then size. See <a href="#pro-rata">Pro-rata</a>.</li>
+</ul>
+<p>Every venue uses FIFO unless it opts in to pro-rata, and only CME and ICE do.</p>
 <p>One engine instance is shared by every symbol on a venue; it holds no per-symbol state, taking the
 <code>OrderBook</code> as a parameter on each call. Per-symbol configuration (currently just the SMP mode) is
-passed in from <code>Symbol</code>.</p>
+passed in from <code>Symbol</code>. Both engines build on the helpers in <code>match_common.hpp</code>: the preamble before
+matching, one fill, and the trade summaries. The steps below describe FIFO.</p>
 <h2 id="two-entry-points">Two entry points<a class="headerlink" href="#two-entry-points" title="Permanent link">&para;</a></h2>
 <p>The two <code>match</code> overloads handle client orders and incoming market-data liquidity.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// 1. A client order arrives.</span>
@@ -1318,16 +1378,19 @@ the <code>priority</code> counter. Price priority comes from <code>getBestLevel&
 <p><code>NULL_PRICE</code> doubles as the market-order sentinel: when <code>order_price == NULL_PRICE</code> the price test is
 skipped entirely and the order sweeps until filled or the book is empty.</p>
 <p>The <code>is_last_in_batch</code> argument to <code>executeOrder</code> is <code>order_qty == 0</code>, so observers see the batch
-close on the final fill.</p>
-<h3 id="step-4-immediate-or-cancel-remainder">Step 4 — immediate-or-cancel remainder<a class="headerlink" href="#step-4-immediate-or-cancel-remainder" title="Permanent link">&para;</a></h3>
-<p>After the loop, if the TIF is <code>IMMEDIATE_OR_CANCEL</code> and quantity remains, <code>publishOrderCancel</code> fires.
-The order is not removed from anything here — it was never added to the book. <code>Symbol::addOrder</code>
-handles that:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">bool</span><span class="w"> </span><span class="n">should_rest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">tif</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">DAY</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">tif</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">GOOD_TILL_CANCEL</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">tif</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">GOOD_TILL_DATE</span><span class="p">);</span>
+close on the final fill. When quantity remains, a resting remainder closes it. An order that does
+not rest gets the flag from <code>Symbol::addOrder</code> on its last level update.</p>
+<h3 id="step-4-a-remainder-that-cannot-rest">Step 4 — a remainder that cannot rest<a class="headerlink" href="#step-4-a-remainder-that-cannot-rest" title="Permanent link">&para;</a></h3>
+<p>After the loop, if quantity remains and <code>order-&gt;restsRemainder()</code> is false, <code>publishOrderCancel</code>
+fires. The order was never added to the book, so nothing is removed here. <code>restsRemainder()</code> is the
+same test <code>Symbol::addOrder</code> uses to decide whether to rest it:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">return</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">NULL_PRICE</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">       </span><span class="p">(</span><span class="n">time_in_force</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">DAY</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">time_in_force</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">GOOD_TILL_CANCEL</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">time_in_force</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">GOOD_TILL_DATE</span><span class="p">);</span>
 </code></pre></div>
-<p>Only those three rest. IOC and FOK remainders are dropped, and — because the test is a positive
-allow-list — so are <code>AT_THE_OPENING</code> and <code>GOOD_TILL_CROSSING</code>.</p>
-<p>Finally, <code>Symbol::addOrder</code> returns the <code>Order</code> to the object pool if <code>leaves_quantity == 0</code>.</p>
+<p>A market order (<code>NULL_PRICE</code>) never rests, and a limit order rests only under those three TIFs. The
+test is an allow-list, so IOC, FOK, <code>AT_THE_OPENING</code> and <code>GOOD_TILL_CROSSING</code> remainders are all
+dropped.</p>
+<p>Finally, <code>Symbol::addOrder</code> returns every order that did not rest to the object pool.</p>
 <h2 id="self-match-prevention">Self-match prevention<a class="headerlink" href="#self-match-prevention" title="Permanent link">&para;</a></h2>
 <p>SMP compares <code>Order::client_id</code> between the incoming order and each resting order:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">incoming</span><span class="o">-&gt;</span><span class="n">client_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">book_order</span><span class="o">-&gt;</span><span class="n">client_id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
@@ -1394,17 +1457,13 @@ rather than lumped together with every other unauthenticated one.</p>
 with the new price and quantity, which means an amendment that makes the order marketable trades
 immediately. Only afterwards does it call <code>order_book_-&gt;modifyOrder(...)</code> to reposition whatever is
 left.</p>
-<p>Queue priority is handled by the book, not the engine:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// OrderBook::modifyOrder</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">new_price</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">price</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_price</span><span class="p">;</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">priority</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nextOrderPriority</span><span class="p">();</span><span class="w">   </span><span class="c1">// price change ⇒ lose queue position</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">}</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">order</span><span class="o">-&gt;</span><span class="n">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_qty</span><span class="p">;</span>
+<p><code>Symbol::modifyOrder</code> decides queue priority:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">requeue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_price</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">price</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">new_qty</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">quantity</span><span class="p">;</span><span class="w">   </span><span class="c1">// read before match()</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">// ... match() ...</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">requeue</span><span class="p">)</span><span class="w"> </span><span class="n">order</span><span class="o">-&gt;</span><span class="n">priority</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OrderBook</span><span class="o">::</span><span class="n">nextOrderPriority</span><span class="p">();</span>
 </code></pre></div>
-<p>A pure quantity change keeps its place in the queue; a price change goes to the back of the new
-level. That matches real venue behaviour. Note the asymmetry: quantity <em>increases</em> also keep
-priority, which most real venues would not allow.</p>
+<p>A new price or a larger quantity sends the order to the back of its level, as on CME and ICE. A
+quantity decrease keeps its place.</p>
 <h2 id="trade-summaries">Trade summaries<a class="headerlink" href="#trade-summaries" title="Permanent link">&para;</a></h2>
 <p>Each <code>match()</code> call returns <code>std::vector&lt;TradeSummaryInfo&gt;</code> — the public print of what happened, which
 the exchange forwards to <code>md_queue_</code> via <code>publishTradeSummary</code>.</p>
@@ -1438,6 +1497,38 @@ to avoid reducing a price level twice — see
 <code>Trades</code> entry after the initial pair — but they are independent counters, so any future change to
 one must update the other.</p>
 </div>
+<h2 id="pro-rata">Pro-rata<a class="headerlink" href="#pro-rata" title="Permanent link">&para;</a></h2>
+<p><code>ProRataMatchingEngine</code> shares FIFO's preamble, fills and summaries. It differs only in who trades at a
+level. For an aggressor with <code>Q</code> left against a level holding <code>T</code> in total:</p>
+<ol>
+<li>If <code>Q &gt;= T</code>, every order fills in full, as under FIFO, and matching moves on to the next level.
+   Lot rounding applies only to pro-rata shares, so these full fills are not rounded.</li>
+<li>Otherwise, <code>fifo_percent</code> of <code>Q</code>, rounded down to lots, is filled in queue order first.</li>
+<li>The rest is split in proportion to what each order still has. Each share is rounded down to whole
+   <code>lot_size</code>, and a share below <code>min_allocation</code> becomes 0.</li>
+<li>Whatever is left is filled in queue order, with no minimum, so the allocations always add up to
+   <code>Q</code>. Usually that is rounding residue. On a level of many small orders, though, every share can
+   round below <code>min_allocation</code>, and then most of <code>Q</code> fills FIFO, one small order after another.</li>
+</ol>
+<p>Each resting order gets at most one fill per aggressor per level, in queue order. All allocations are
+computed before any is executed, because a full fill unlinks the order from the level's list. The
+scratch buffer is an engine member; only the exchange thread uses it, so it needs no locks.</p>
+<p>Example: resting orders of 10, 10 and 10 lots, and an aggressor for 10. Each share is 3.33, which
+rounds down to 3. The 1 lot left over goes to the front of the queue, so the fills are 4, 3 and 3.</p>
+<p>SMP covers the whole level, because pro-rata can allocate to any order on a level the aggressor
+reaches. <code>CANCEL_RESTING</code> cancels every one of the owner's orders there, and <code>CANCEL_NEWEST</code> rejects
+if any of them is there. That covers orders FIFO would never have reached and orders whose share
+would have been 0, so <code>CANCEL_RESTING</code> removes more than FIFO would on the same book. A level's
+cancels also all come before its fills, whereas FIFO interleaves the two in queue order.</p>
+<p>FOK uses the same liquidity check as FIFO, because the total that can trade does not depend on how it
+is split.</p>
+<p>The market-data overload splits the same way, so a replayed venue trade fills a client order by its
+share of the level. Under FIFO it would depend on queue position.</p>
+<h3 id="enabling-it_1">Enabling it<a class="headerlink" href="#enabling-it_1" title="Permanent link">&para;</a></h3>
+<p>A venue opts in by calling <code>configureMatching(config)</code> in its constructor and <code>assignMatching(symbol)</code>
+in <code>addSymbol</code>. CME and ICE do this. CME reads the keys per segment and ICE per silo. See
+<a href="../configuration/#matching_algorithm">Configuration</a>.</p>
+<p>Not modelled: top-order priority, leveling, and LMM allocations.</p>
 <h2 id="fixed-point-arithmetic">Fixed-point arithmetic<a class="headerlink" href="#fixed-point-arithmetic" title="Permanent link">&para;</a></h2>
 <p>Prices and quantities are <code>int_fast64_t</code> scaled by <code>DOUBLE_MULTIPLIER = 1e8</code>
 (<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/common/types.hpp"><code>types.hpp</code></a>):</p>
@@ -1511,6 +1602,14 @@ the cumulative totals. And the same three lines appear twice: here for the aggre
 <tr>
 <td><code>tests/unit/matching_engine/test_feed_liquidity_matching.cpp</code></td>
 <td>The overload-2 market-data path</td>
+</tr>
+<tr>
+<td><code>tests/unit/matching_engine/test_pro_rata_matching_engine.cpp</code></td>
+<td>Pro-rata split, lot rounding, <code>min_allocation</code>, <code>fifo_percent</code>, SMP reach, the feed path</td>
+</tr>
+<tr>
+<td><code>tests/unit/matching_engine/test_matching_config.cpp</code></td>
+<td><code>matching_algorithm</code> / <code>pro_rata</code> parsing and engine creation</td>
 </tr>
 </tbody>
 </table>

@@ -2,8 +2,9 @@ var searchData=
 [
   ['body_0',['body',['../structslick_1_1sim_1_1ProxiedHttpResponse.html#a99e603f14d5f5b4acfff0918b30ec262',1,'slick::sim::ProxiedHttpResponse']]],
   ['body_5fbuffer_1',['body_buffer',['../structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html#a60e5097e8f05df16a9a07cd763cd32a2',1,'slick::sim::order_gateway::PostRequestData']]],
-  ['book_5fobserver_5f_2',['book_observer_',['../structslick_1_1sim_1_1exch_1_1Symbol.html#acde2a8dd58f2350053f669d9552645ed',1,'slick::sim::exch::Symbol']]],
-  ['book_5forder_5fid_3',['book_order_id',['../structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html#a38e7c1259118c438338ba8d68b7f66f3',1,'slick::sim::exch::MarketOrderEvent']]],
-  ['book_5fpriority_4',['book_priority',['../structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html#afef3d7b34ebeae064cf0801a58957e8f',1,'slick::sim::exch::MarketOrderEvent']]],
-  ['buy_5',['buy',['../structslick_1_1sim_1_1MDBookUpdate.html#ad55425c5e02a5da67b7184fca1fc9083',1,'slick::sim::MDBookUpdate']]]
+  ['book_2',['book',['../structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#a463d43d5b17703e08be4cef475253c3c',1,'slick::sim::engine::detail::MatchContext']]],
+  ['book_5fobserver_5f_3',['book_observer_',['../structslick_1_1sim_1_1exch_1_1Symbol.html#acde2a8dd58f2350053f669d9552645ed',1,'slick::sim::exch::Symbol']]],
+  ['book_5forder_5fid_4',['book_order_id',['../structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html#a38e7c1259118c438338ba8d68b7f66f3',1,'slick::sim::exch::MarketOrderEvent']]],
+  ['book_5fpriority_5',['book_priority',['../structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html#afef3d7b34ebeae064cf0801a58957e8f',1,'slick::sim::exch::MarketOrderEvent']]],
+  ['buy_6',['buy',['../structslick_1_1sim_1_1MDBookUpdate.html#ad55425c5e02a5da67b7184fca1fc9083',1,'slick::sim::MDBookUpdate']]]
 ];

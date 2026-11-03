@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.4.0</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.5.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -126,6 +126,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a9a76746d0605ad46d7115204ce0d8bd9"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1utils.html#a9a76746d0605ad46d7115204ce0d8bd9">copy_wire_field</a> (char(&amp;dst)[N], std::string_view src) noexcept</td></tr>
 <tr class="memdesc:a9a76746d0605ad46d7115204ce0d8bd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies a name into a fixed-width wire field.  <br /></td></tr>
 <tr class="separator:a9a76746d0605ad46d7115204ce0d8bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41184c1b24b50c3c4cdb18a0c7ecfbe2" id="r_a41184c1b24b50c3c4cdb18a0c7ecfbe2"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1utils.html#a41184c1b24b50c3c4cdb18a0c7ecfbe2">mul_div_floor</a> (uint64_t a, uint64_t b, uint64_t c) noexcept</td></tr>
+<tr class="memdesc:a41184c1b24b50c3c4cdb18a0c7ecfbe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">floor(a * b / c), with the product held at 128 bits.  <br /></td></tr>
+<tr class="separator:a41184c1b24b50c3c4cdb18a0c7ecfbe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ecda281a1b70afaf46bea72c8ceac5e" id="r_a3ecda281a1b70afaf46bea72c8ceac5e"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1utils.html#a3ecda281a1b70afaf46bea72c8ceac5e">nextOrderId</a> () noexcept</td></tr>
 <tr class="separator:a3ecda281a1b70afaf46bea72c8ceac5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dd881010d120cac1cd8c1eddb8db938" id="r_a7dd881010d120cac1cd8c1eddb8db938"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1utils.html#a7dd881010d120cac1cd8c1eddb8db938">executeOrder</a> (<a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> *order, <a class="el" href="namespaceslick_1_1sim.html#a55744a3b84aa316240e0c9d91f4c6f16">price_t</a> price, <a class="el" href="namespaceslick_1_1sim.html#ab7fcad70f6b4f10b417e66c85efe03de">qty_t</a> executed_quantity, <a class="el" href="namespaceslick_1_1sim.html#a4e2c44f2b0c7bd4a4933ac1a5ef128ad">time_t</a> timestamp)</td></tr>
@@ -264,7 +267,7 @@ template&lt;size_t N&gt; </div>
 
 <p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00317">slick::sim::Order::avg_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00318">slick::sim::Order::cum_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00319">slick::sim::Order::cum_value</a>, <a class="el" href="common_2order_8hpp_source.html#l00320">slick::sim::Order::last_fill_price</a>, <a class="el" href="common_2order_8hpp_source.html#l00321">slick::sim::Order::last_fill_qty</a>, <a class="el" href="common_2order_8hpp_source.html#l00329">slick::sim::Order::last_fill_time</a>, <a class="el" href="common_2order_8hpp_source.html#l00328">slick::sim::Order::last_update_time</a>, <a class="el" href="common_2order_8hpp_source.html#l00316">slick::sim::Order::leaves_quantity</a>, and <a class="el" href="common_2order_8hpp_source.html#l00322">slick::sim::Order::num_fills</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00189">slick::sim::OrderBook::executeOrder()</a>, and <a class="el" href="fifo__matching__engine_8cpp_source.html#l00150">match()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00189">slick::sim::OrderBook::executeOrder()</a>, and <a class="el" href="match__common_8hpp_source.html#l00288">slick::sim::engine::detail::fillResting()</a>.</p>
 
 </div>
 </div>
@@ -473,7 +476,7 @@ template&lt;size_t N&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="timestamp_8hpp_source.html#l00093">93</a> of file <a class="el" href="timestamp_8hpp_source.html">timestamp.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00300">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00082">slick::sim::exch::Symbol::cancelOrder()</a>, <a class="el" href="exchange_8cpp_source.html#l00253">slick::sim::exch::Exchange::handleModifyOrderRequest()</a>, <a class="el" href="symbol_8cpp_source.html#l00051">slick::sim::exch::Symbol::modifyOrder()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00185">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00287">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, <a class="el" href="coinbase__exchange_8cpp_source.html#l00217">slick::sim::exch::CoinbaseExchange::processSequencedEvents()</a>, <a class="el" href="exchange_8cpp_source.html#l00416">slick::sim::exch::Exchange::rejectCancelOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00388">slick::sim::exch::Exchange::rejectModifyOrderRequest()</a>, and <a class="el" href="exchange_8cpp_source.html#l00364">slick::sim::exch::Exchange::rejectNewOrderRequest()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00300">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="symbol_8cpp_source.html#l00089">slick::sim::exch::Symbol::cancelOrder()</a>, <a class="el" href="exchange_8cpp_source.html#l00287">slick::sim::exch::Exchange::handleModifyOrderRequest()</a>, <a class="el" href="symbol_8cpp_source.html#l00058">slick::sim::exch::Symbol::modifyOrder()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00185">slick::sim::exch::CoinbaseExchange::onLevel2Updates()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00287">slick::sim::exch::CoinbaseExchange::onMarketTrades()</a>, <a class="el" href="coinbase__exchange_8cpp_source.html#l00211">slick::sim::exch::CoinbaseExchange::processSequencedEvents()</a>, <a class="el" href="exchange_8cpp_source.html#l00450">slick::sim::exch::Exchange::rejectCancelOrderRequest()</a>, <a class="el" href="exchange_8cpp_source.html#l00422">slick::sim::exch::Exchange::rejectModifyOrderRequest()</a>, and <a class="el" href="exchange_8cpp_source.html#l00398">slick::sim::exch::Exchange::rejectNewOrderRequest()</a>.</p>
 
 </div>
 </div>
@@ -653,6 +656,53 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 </div>
 </div>
+<a id="a41184c1b24b50c3c4cdb18a0c7ecfbe2" name="a41184c1b24b50c3c4cdb18a0c7ecfbe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41184c1b24b50c3c4cdb18a0c7ecfbe2">&#9670;&#160;</a></span>mul_div_floor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t slick::sim::utils::mul_div_floor </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>c</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>floor(a * b / c), with the product held at 128 bits. </p>
+<p>Fixed-point quantities carry a 1e8 scale, so the product of two of them overflows 64 bits. Requires b &lt;= c: the result is then at most a and always fits, which is also _udiv128's precondition (it faults on a quotient over 64 bits). MSVC x64 and GCC/Clang take the first two branches; the boost fallback (32-bit MSVC, compilers without __int128) is not built by any CI job. </p>
+
+<p class="definition">Definition at line <a class="el" href="math_8hpp_source.html#l00019">19</a> of file <a class="el" href="math_8hpp_source.html">math.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a3ecda281a1b70afaf46bea72c8ceac5e" name="a3ecda281a1b70afaf46bea72c8ceac5e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3ecda281a1b70afaf46bea72c8ceac5e">&#9670;&#160;</a></span>nextOrderId()</h2>
 
@@ -678,7 +728,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="utils_2order_8hpp_source.html#l00010">10</a> of file <a class="el" href="utils_2order_8hpp_source.html">order.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00300">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00091">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exchange_8cpp_source.html#l00614">slick::sim::exch::Exchange::reconcilePhantomQty()</a>, and <a class="el" href="exchange_8cpp_source.html#l00760">slick::sim::exch::Exchange::replayMarketTrade()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="order__book_8hpp_source.html#l00300">slick::sim::OrderBook::allocateOrder()</a>, <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00091">slick::sim::exch::CoinbaseExchange::onLevel2Snapshot()</a>, <a class="el" href="exchange_8cpp_source.html#l00648">slick::sim::exch::Exchange::reconcilePhantomQty()</a>, and <a class="el" href="exchange_8cpp_source.html#l00794">slick::sim::exch::Exchange::replayMarketTrade()</a>.</p>
 
 </div>
 </div>
@@ -814,7 +864,7 @@ template&lt;<a class="el" href="namespaceslick_1_1sim.html#a2ff671868618aeab6ba2
 
 <p class="definition">Definition at line <a class="el" href="timestamp_8hpp_source.html#l00099">99</a> of file <a class="el" href="timestamp_8hpp_source.html">timestamp.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="coinbase__exchange_8cpp_source.html#l00217">slick::sim::exch::CoinbaseExchange::processSequencedEvents()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="coinbase__exchange_8cpp_source.html#l00211">slick::sim::exch::CoinbaseExchange::processSequencedEvents()</a>.</p>
 
 </div>
 </div>

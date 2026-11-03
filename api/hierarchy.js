@@ -1,6 +1,7 @@
 var hierarchy =
 [
     [ "slick::sim::AddOrderMessage", "structslick_1_1sim_1_1AddOrderMessage.html", null ],
+    [ "slick::sim::engine::ProRataMatchingEngine::Allocation", "structslick_1_1sim_1_1engine_1_1ProRataMatchingEngine_1_1Allocation.html", null ],
     [ "slick::sim::BookSnapshot", "structslick_1_1sim_1_1BookSnapshot.html", null ],
     [ "slick::sim::CancelOrderMessage", "structslick_1_1sim_1_1CancelOrderMessage.html", null ],
     [ "slick::sim::order_gateway::ClOrdIdIndex< Key, Hash, Eq >", "classslick_1_1sim_1_1order__gateway_1_1ClOrdIdIndex.html", null ],
@@ -42,8 +43,11 @@ var hierarchy =
     [ "slick::sim::MarketDataUpdate", "structslick_1_1sim_1_1MarketDataUpdate.html", null ],
     [ "slick::sim::exch::MarketOrderEvent", "structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html", null ],
     [ "slick::sim::exch::MarketTradeEvent", "structslick_1_1sim_1_1exch_1_1MarketTradeEvent.html", null ],
+    [ "slick::sim::engine::detail::MatchContext", "structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html", null ],
+    [ "slick::sim::engine::MatchingConfig", "structslick_1_1sim_1_1engine_1_1MatchingConfig.html", null ],
     [ "slick::sim::engine::MatchingEngine", "classslick_1_1sim_1_1engine_1_1MatchingEngine.html", [
-      [ "slick::sim::engine::FifoMatchingEngine", "classslick_1_1sim_1_1engine_1_1FifoMatchingEngine.html", null ]
+      [ "slick::sim::engine::FifoMatchingEngine", "classslick_1_1sim_1_1engine_1_1FifoMatchingEngine.html", null ],
+      [ "slick::sim::engine::ProRataMatchingEngine", "classslick_1_1sim_1_1engine_1_1ProRataMatchingEngine.html", null ]
     ] ],
     [ "slick::sim::MDBookUpdate", "structslick_1_1sim_1_1MDBookUpdate.html", null ],
     [ "slick::sim::md_feed::MDFeed", "classslick_1_1sim_1_1md__feed_1_1MDFeed.html", [
@@ -91,6 +95,7 @@ var hierarchy =
     [ "slick::sim::order_gateway::PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", null ],
     [ "slick::sim::exch::Exchange::PhantomReduction", "structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html", null ],
     [ "slick::sim::order_gateway::PostRequestData", "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html", null ],
+    [ "slick::sim::engine::ProRataConfig", "structslick_1_1sim_1_1engine_1_1ProRataConfig.html", null ],
     [ "slick::sim::ProxiedHttpResponse", "structslick_1_1sim_1_1ProxiedHttpResponse.html", null ],
     [ "slick::queue_traits", null, [
       [ "slick::sim::md_feed::packet_feed_traits", "structslick_1_1sim_1_1md__feed_1_1packet__feed__traits.html", null ]

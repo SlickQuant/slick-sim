@@ -1918,7 +1918,9 @@ shared memory, a reader built with a different <code>int_fast64_t</code> width w
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="n">F_NOT_IN_BOOK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">   </span><span class="c1">// MDTrade only: this print was never applied to the book</span>
 <a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p">};</span>
 </code></pre></div>
-<p><code>F_END_EVENT</code> maps to slick-orderbook's <code>ChangeFlag::LastInBatch</code>, set in <code>Symbol::onPriceLevelUpdate</code>.</p>
+<p><code>F_END_EVENT</code> maps to slick-orderbook's <code>ChangeFlag::LastInBatch</code>, set in <code>Symbol::onPriceLevelUpdate</code>.
+<code>Symbol::addOrder</code> also sets it on the last level update of an order that does not rest, since its
+last book change (a fill that left it short, or an SMP cancel) was flagged mid-batch.</p>
 <p><code>F_NOT_IN_BOOK</code> is set only on trades seeded from a venue's own trade snapshot, and is what
 <a href="#the-recent-trade-snapshot">splits the subscribe-time trade snapshot</a>.</p>
 <h3 id="mdsubscriptionrejectreason"><code>MDSubscriptionRejectReason</code><a class="headerlink" href="#mdsubscriptionrejectreason" title="Permanent link">&para;</a></h3>

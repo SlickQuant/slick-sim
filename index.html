@@ -925,7 +925,8 @@ matching engine fills their orders without risking capital.</p>
 <li><strong>Historical replay</strong> — planned, not yet implemented.</li>
 </ul>
 <p>See <a href="architecture/#operating-modes">Operating modes</a>.</p>
-<p>Two venues are implemented today, and they differ in how order results get back to you:</p>
+<p>CME and ICE are built out of tree. The two venues in this repository differ in how order results get
+back to you:</p>
 <ul>
 <li><strong><a href="integration-coinbase/">Coinbase</a></strong> — you submit orders over <strong>REST</strong>, but acks, fills and
   cancels arrive on a <strong>separate WebSocket</strong> (<code>user</code> channel). The REST call returns only a
@@ -955,7 +956,7 @@ matching engine fills their orders without risking capital.</p>
 </tr>
 <tr>
 <td><a href="matching-engine/">Matching engine</a></td>
-<td>FIFO price/time priority, time-in-force handling, self-match prevention, trade summaries, fixed-point arithmetic</td>
+<td>FIFO and pro-rata matching, time-in-force handling, self-match prevention, trade summaries, fixed-point arithmetic</td>
 </tr>
 <tr>
 <td><a href="order-book/">Order book</a></td>

@@ -1231,13 +1231,14 @@ identical in every case; only the source of the resting liquidity changes.</p>
 </table>
 <h3 id="shadowing-matching-against-the-live-market">Shadowing — matching against the live market<a class="headerlink" href="#shadowing-matching-against-the-live-market" title="Permanent link">&para;</a></h3>
 <p><code>slick-sim</code> subscribes to a venue's live public market data and reconstructs its book locally.
-Client orders enter that book and match against the quoted liquidity through a local FIFO engine.</p>
+Client orders enter that book and match against the quoted liquidity through a local matching
+engine: FIFO, or <a href="../matching-engine/#pro-rata">pro-rata</a> on a venue that enables it.</p>
 <p>Prices and trades are therefore real; fills are simulated. Nothing is ever sent upstream except
 market-data subscriptions and — for Hyperliquid — read-only <code>/info</code> metadata queries.</p>
 <h3 id="self-contained-a-conventional-exchange-simulator">Self-contained — a conventional exchange simulator<a class="headerlink" href="#self-contained-a-conventional-exchange-simulator" title="Permanent link">&para;</a></h3>
 <p>With no feed configured, the same machinery behaves like a conventional exchange simulator: books
 start empty and the only liquidity is what clients themselves submit. Orders rest, match against each
-other under the same FIFO price/time priority, and produce the same execution reports and
+other under the same matching rules, and produce the same execution reports and
 venue-native market data. This mode supports deterministic tests and client order-entry tests without an internet connection.
 With multiple clients, you control both sides of every trade.</p>
 <p>Both adapters gate this on an internal <code>use_live_feed_</code> flag, set only when <code>md_feeds</code> contains an
@@ -1294,7 +1295,7 @@ unchanged and the book holds only client orders.</p>
         EX["Exchange&lt;br/&gt;CoinbaseExchange / HyperliquidExchange"]
         SYM["Symbol&lt;br/&gt;one per instrument"]
         BOOK["OrderBook (L3)&lt;br/&gt;simulator orders&lt;br/&gt;+ phantom orders if a feed is configured"]
-        ME["FifoMatchingEngine"]
+        ME["MatchingEngine&lt;br/&gt;FIFO or pro-rata"]
         OG["order_gateway&lt;br/&gt;REST / WebSocket"]
         MDP["market_data_publisher&lt;br/&gt;WebSocket"]
     end
@@ -1357,7 +1358,7 @@ linked against a handful of static libraries.</p>
 <tr>
 <td><code>matching_engine</code></td>
 <td><code>src/matching_engine/</code></td>
-<td><code>MatchingEngine</code> interface, <code>FifoMatchingEngine</code>, and the four order-lifecycle publish helpers</td>
+<td><code>MatchingEngine</code> interface, <code>FifoMatchingEngine</code>, <code>ProRataMatchingEngine</code>, and the four order-lifecycle publish helpers</td>
 </tr>
 <tr>
 <td><code>order_gateway</code></td>
@@ -1444,7 +1445,7 @@ This path needs no locking.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>Exchange::processRequest</code>, <code>handleNewOrderRequest</code>, <code>Symbol::addOrder</code>, <code>FifoMatchingEngine::match</code>, all <code>publish*</code></td>
+<td><code>Exchange::processRequest</code>, <code>handleNewOrderRequest</code>, <code>Symbol::addOrder</code>, <code>MatchingEngine::match</code>, all <code>publish*</code></td>
 <td>Exchange thread</td>
 <td>The only thread that mutates an <code>OrderBook</code></td>
 </tr>
@@ -1555,8 +1556,8 @@ is a <strong>process-wide singleton</strong>, not per-exchange:</p>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">exch</span><span class="o">::</span><span class="n">Symbol</span><span class="o">*</span><span class="w"> </span><span class="nf">createSymbol</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">sym</span><span class="p">,</span><span class="w"> </span><span class="n">Venue</span><span class="w"> </span><span class="n">venue</span><span class="p">);</span>
 </code></pre></div>
 <p>Symbols are created lazily, on the first market-data subscription for that instrument, by the
-adapter's <code>addSymbol()</code>. Creation assigns a <code>symid_t</code>, attaches the shared <code>FifoMatchingEngine</code> for
-that venue, and calls <code>createOrderBook&lt;OrderBookType::L2&gt;()</code>.</p>
+adapter's <code>addSymbol()</code>. Creation assigns a <code>symid_t</code>, attaches the venue's shared matching engine
+through <code>assignMatching</code>, and calls <code>createOrderBook&lt;OrderBookType::L2&gt;()</code>.</p>
 <p>There are two limitations:</p>
 <ul>
 <li><strong>Keyed by name across all venues.</strong> <code>symbols_by_name_</code> is a flat <code>unordered_map&lt;std::string,

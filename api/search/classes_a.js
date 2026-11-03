@@ -6,5 +6,7 @@ var searchData=
   ['persocketdata_3',['persocketdata',['../structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html',1,'slick::sim::md_publisher::PerSocketData'],['../structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html',1,'slick::sim::order_gateway::PerSocketData']]],
   ['phantomreduction_4',['PhantomReduction',['../structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html',1,'slick::sim::exch::Exchange']]],
   ['postrequestdata_5',['PostRequestData',['../structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html',1,'slick::sim::order_gateway']]],
-  ['proxiedhttpresponse_6',['ProxiedHttpResponse',['../structslick_1_1sim_1_1ProxiedHttpResponse.html',1,'slick::sim']]]
+  ['prorataconfig_6',['ProRataConfig',['../structslick_1_1sim_1_1engine_1_1ProRataConfig.html',1,'slick::sim::engine']]],
+  ['proratamatchingengine_7',['ProRataMatchingEngine',['../classslick_1_1sim_1_1engine_1_1ProRataMatchingEngine.html',1,'slick::sim::engine']]],
+  ['proxiedhttpresponse_8',['ProxiedHttpResponse',['../structslick_1_1sim_1_1ProxiedHttpResponse.html',1,'slick::sim']]]
 ];
