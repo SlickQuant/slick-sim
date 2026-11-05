@@ -48,7 +48,7 @@ var searchData=
   ['operator_5b_5d_45',['operator[]',['../classslick_1_1sim_1_1utils_1_1RingBuffer.html#a6c2987153b39b87ff34c29b26cb2b009',1,'slick::sim::utils::RingBuffer']]],
   ['opposite_5fside_46',['opposite_side',['../namespaceslick_1_1sim.html#a0aeee9634a28148bf8b2f622a670c0c0',1,'slick::sim::opposite_side()'],['../namespaceslick_1_1sim.html#a9430a98beb912a9374d4d615e6919933',1,'slick::sim::opposite_side(Side side)']]],
   ['order_47',['order',['../structslick_1_1sim_1_1Order.html#ab2d9592e6111e363fd44cf839eff7953',1,'slick::sim::Order::Order()'],['../structslick_1_1sim_1_1engine_1_1ProRataMatchingEngine_1_1Allocation.html#a4a661d76af094bacf8c79a5b81563d8c',1,'slick::sim::engine::ProRataMatchingEngine::Allocation::order'],['../namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11ab49400a2fca0c7c2728b60b0d44ade65',1,'slick::sim::ORDER'],['../structslick_1_1sim_1_1Order.html',1,'slick::sim::Order'],['../structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a10792fc6fb4e560598c81ef8c5209a61',1,'slick::sim::order_gateway::ParseResult::order']]],
-  ['order_2ehpp_48',['order.hpp',['../utils_2order_8hpp.html',1,'(Global Namespace)'],['../common_2order_8hpp.html',1,'(Global Namespace)']]],
+  ['order_2ehpp_48',['order.hpp',['../common_2order_8hpp.html',1,'(Global Namespace)'],['../utils_2order_8hpp.html',1,'(Global Namespace)']]],
   ['order_5fbook_2ehpp_49',['order_book.hpp',['../order__book_8hpp.html',1,'']]],
   ['order_5fbook_5f_50',['order_book_',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a8ae3a2bd3ba8cf94b862bb3e946cfc7f',1,'slick::sim::exch::Symbol']]],
   ['order_5fbuffer_5f_51',['order_buffer_',['../classslick_1_1sim_1_1OrderBook.html#a7d5c00f412eb166f5beab896193bb5cf',1,'slick::sim::OrderBook']]],
