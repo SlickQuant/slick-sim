@@ -330,7 +330,8 @@ bool fillResting(MatchContext& ctx, Order* order, uint64_t book_order_id, Order*
 template<Side SIDE>
 bool fillRestingFromFeed(MatchContext& ctx, uint64_t aggressor_id, uint64_t book_order_id, price_t price,
                          qty_t trade_qty, qty_t& qty) {
-    LOG_TRACE("  Matching with {} book order {} for qty {} at price {}", aggressor_id, book_order_id, trade_qty, price);
+    LOG_TRACE("  {} Matching {} with book order {} for qty {} at price {}", ctx.book.symbolName(),
+        aggressor_id, book_order_id, trade_qty, price);
 
     auto* our_order = ctx.book.findOrder(book_order_id);
 
