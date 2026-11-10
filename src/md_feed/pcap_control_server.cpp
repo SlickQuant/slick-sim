@@ -2,7 +2,7 @@
 #include <slick/logger.hpp>
 #include <cstring>
 
-namespace slick::sim::order_gateway {
+namespace slick::sim::md_feed {
 
 PcapControlServer::PcapControlServer(std::string name, const slick::socket::TCPServerConfig &config)
     : Server(name, config)
@@ -101,4 +101,4 @@ void PcapControlServer::onPoll() {
     }
 }
 
-}   // namespace slick::sim::order_gateway
+}   // namespace slick::sim::md_feed

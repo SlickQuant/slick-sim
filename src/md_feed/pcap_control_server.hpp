@@ -11,7 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace slick::sim::order_gateway {
+namespace slick::sim::md_feed {
 
 /// The channel between a pcap replay and its clients, apart from the market data
 /// (multicast) and the orders (the TCP order gateway), neither of which can say that
@@ -77,4 +77,4 @@ private:
     std::unordered_map<int, std::vector<uint8_t>> partial_;
 };
 
-}   // namespace slick::sim::order_gateway
+}   // namespace slick::sim::md_feed

@@ -7,7 +7,7 @@
 #include <common/control_messages.hpp>
 #include <common/types.hpp>
 #include <nlohmann/json.hpp>
-#include <order_gateway/pcap_control_server.hpp>
+#include "pcap_control_server.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -126,7 +126,7 @@ private:
     PcapFeedConfig config_;
     std::shared_ptr<ReplayGate> gate_;
     PcapReplaySource source_;
-    order_gateway::PcapControlServer control_;
+    PcapControlServer control_;
     ReplayPacer pacer_;
 
     bool start_requested_ = false;

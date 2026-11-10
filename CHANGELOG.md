@@ -6,7 +6,7 @@
   `begin`..`end` window, builds the venue's book from the snapshot capture, and holds it until a client
   sends START. Then it replays at the capture's pace (`speed`: `1` real time, `N` times faster, `0` as fast
   as it can). It stamps the published market data with the wall clock. See `docs/pcap-replay.md`.
-- A TCP **control channel** (`order_gateway/pcap_control_server`, `common/control_messages.hpp`) carries
+- A TCP **control channel** (`md_feed/pcap_control_server`, `common/control_messages.hpp`) carries
   `FEED_STATUS` (`LOADING`, `SYNCING`, `READY`, `REPLAYING`, `FINISHED`, `ERROR`, with progress and the capture
   time reached) to clients, and their one request back, `START`, which replays every loaded instrument.
 - `PcapReader` reads classic pcap and pcapng, over Ethernet or raw IP, and streams `.zst` and `.gz` files

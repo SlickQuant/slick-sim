@@ -27,15 +27,15 @@ endif()
 
 # The pcap replay feed base (state machine, pacing, control channel). Venues derive from
 # it and add slick_sim_pcap_feed to their DEPENDS. Needs libpcap and the TCP gateway's
-# slick-socket, so it only exists when both are there.
+# slick-socket for the control channel's TCP server, so it only exists when both are there.
 if(TARGET slick_sim_pcap AND SLICK_SIM_ENABLE_TCP_GATEWAY)
-    add_library(slick_sim_pcap_feed STATIC pcap_feed.cpp)
+    add_library(slick_sim_pcap_feed STATIC pcap_feed.cpp pcap_control_server.cpp)
     add_library(slick::sim_pcap_feed ALIAS slick_sim_pcap_feed)
     # Venue code that offers a pcap feed is compiled under this, so it still builds without one.
     target_compile_definitions(slick_sim_pcap_feed PUBLIC SLICK_SIM_HAS_PCAP_FEED=1)
     target_link_libraries(slick_sim_pcap_feed PUBLIC
         md_feed
-        order_gateway
         slick_sim_pcap
+        slick::socket
     )
 endif()
