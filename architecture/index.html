@@ -305,6 +305,8 @@
       
         
       
+        
+      
     
     
     
@@ -451,10 +453,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#historical-replay-planned" class="md-nav__link">
+  <a href="#historical-replay" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Historical replay — planned
+        Historical replay
       
     </span>
   </a>
@@ -707,6 +709,34 @@
     
   
     Market data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pcap-replay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCAP replay
   
 
     
@@ -1021,10 +1051,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#historical-replay-planned" class="md-nav__link">
+  <a href="#historical-replay" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Historical replay — planned
+        Historical replay
       
     </span>
   </a>
@@ -1223,9 +1253,9 @@ identical in every case; only the source of the resting liquidity changes.</p>
 </tr>
 <tr>
 <td><strong>Historical replay</strong></td>
-<td>A historical feed</td>
-<td>Recorded market data, replayed</td>
-<td><strong>Not implemented</strong></td>
+<td>A pcap feed (<code>cme_mdp3_pcap</code>, <code>ice_impact_pcap</code>)</td>
+<td>Recorded multicast captures, replayed on a client's START</td>
+<td>CME and ICE; see <a href="../pcap-replay/">PCAP replay</a></td>
 </tr>
 </tbody>
 </table>
@@ -1251,17 +1281,15 @@ creates them. Even in self-contained mode a client must subscribe to the symbol'
 before sending orders for it, or they are rejected with <code>UNKNOWN_CONTRACT</code>. The subscription
 simply returns an empty book instead of a live snapshot.</p>
 </div>
-<h3 id="historical-replay-planned">Historical replay — planned<a class="headerlink" href="#historical-replay-planned" title="Permanent link">&para;</a></h3>
-<p>A historical feed would implement the same <code>MDFeed</code> interface and drive the book from recorded data
-rather than a live socket, so clients' orders match against a past market at whatever rate the replay
-runs. Everything downstream is unchanged: the same phantom-order model, the same matching engine, the
-same venue-native output.</p>
-<p>Nothing implements this yet — <code>alpaca_historical_data_feed.hpp</code> is a zero-byte placeholder and
-<code>md_feed</code>'s <code>CMakeLists.txt</code> compiles only the Hyperliquid live feed. See
-<a href="../known-gaps/#the-historical-data-feed-does-not-exist">Known gaps</a> and, for what a feed has to
-provide, <a href="../extending/#3-implement-the-feed-optional">Adding an exchange</a>.</p>
+<h3 id="historical-replay">Historical replay<a class="headerlink" href="#historical-replay" title="Permanent link">&para;</a></h3>
+<p>CME and ICE can drive the book from recorded multicast captures instead of live sockets: the
+<code>cme_mdp3_pcap</code> and <code>ice_impact_pcap</code> feeds. They run the same protocol handlers as the live feeds, so
+everything downstream is unchanged: the same phantom-order model, the same matching engine, the same
+venue-native output. The sim loads the window, builds the book from the snapshot capture, and holds it
+until a client sends START over a control channel. See <a href="../pcap-replay/">PCAP replay</a>.</p>
+<p>Coinbase and Hyperliquid have no replay feed.</p>
 <h2 id="phantom-orders-and-simulator-orders">Phantom orders and simulator orders<a class="headerlink" href="#phantom-orders-and-simulator-orders" title="Permanent link">&para;</a></h2>
-<p>Whenever a feed <em>is</em> driving the book — live today, historical later — the book holds two kinds of
+<p>Whenever a feed <em>is</em> driving the book — live or replayed — the book holds two kinds of
 liquidity:</p>
 <ul>
 <li><strong>Phantom orders</strong> — synthesised from the market-data feed to represent the market's resting

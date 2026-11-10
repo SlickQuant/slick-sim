@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['l2diff_0',['L2Diff',['../structslick_1_1sim_1_1md__publisher_1_1L2Diff.html',1,'slick::sim::md_publisher']]]
+  ['jsonparser_0',['JsonParser',['../classslick_1_1sim_1_1order__gateway_1_1JsonParser.html',1,'slick::sim::order_gateway']]]
 ];

@@ -6,12 +6,14 @@ var searchData=
   ['session_5freject_3',['SESSION_REJECT',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a67469e2035d4498129fce1e5e40fb255',1,'slick::sim']]],
   ['smp_4',['SMP',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337aedb3c4d18c4d80ab94156b7df8669c17',1,'slick::sim']]],
   ['spot_5',['SPOT',['../namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026ba5bac85a0c611ddef64ab0dfb383056f4',1,'slick::sim']]],
-  ['stock_6',['STOCK',['../namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04a1ae15bfe46e04cf8f7283caacffce17f',1,'slick::sim']]],
-  ['stop_7',['STOP',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba615a46af313786fc4e349f34118be111',1,'slick::sim']]],
-  ['stop_5flimit_8',['STOP_LIMIT',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566bad0accbbf57627cf21325b732eb98fde6',1,'slick::sim']]],
-  ['stop_5fprice_5fmust_5fbe_5fabove_5flast_5ftrade_5fprice_9',['stop_price_must_be_above_last_trade_price',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337aad801d1e2fdb686c3653e636627de7d7',1,'slick::sim::STOP_PRICE_MUST_BE_ABOVE_LAST_TRADE_PRICE'],['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562aad801d1e2fdb686c3653e636627de7d7',1,'slick::sim::STOP_PRICE_MUST_BE_ABOVE_LAST_TRADE_PRICE']]],
-  ['stop_5fprice_5fmust_5fbe_5fbelow_5flast_5ftrade_5fprice_10',['stop_price_must_be_below_last_trade_price',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337afeaa914d00698c44f5a10906bae54017',1,'slick::sim::STOP_PRICE_MUST_BE_BELOW_LAST_TRADE_PRICE'],['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562afeaa914d00698c44f5a10906bae54017',1,'slick::sim::STOP_PRICE_MUST_BE_BELOW_LAST_TRADE_PRICE']]],
-  ['stopped_11',['STOPPED',['../namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a09d4d696b4e935115b9313e3c412509a',1,'slick::sim']]],
-  ['sub_5fresponse_12',['SUB_RESPONSE',['../namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11ad4156d48a454a77a4455687c9fb77cae',1,'slick::sim']]],
-  ['suspended_13',['SUSPENDED',['../namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a0cb707127aebaa0023eb38363993843a',1,'slick::sim']]]
+  ['start_6',['START',['../namespaceslick_1_1sim.html#ae133dcbc362b11dd3220b1d371a760d2ab078ffd28db767c502ac367053f6e0ac',1,'slick::sim']]],
+  ['stock_7',['STOCK',['../namespaceslick_1_1sim.html#a2e99a148afa0fe8ce39517deb691df04a1ae15bfe46e04cf8f7283caacffce17f',1,'slick::sim']]],
+  ['stop_8',['STOP',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba615a46af313786fc4e349f34118be111',1,'slick::sim']]],
+  ['stop_5flimit_9',['STOP_LIMIT',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566bad0accbbf57627cf21325b732eb98fde6',1,'slick::sim']]],
+  ['stop_5fprice_5fmust_5fbe_5fabove_5flast_5ftrade_5fprice_10',['stop_price_must_be_above_last_trade_price',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337aad801d1e2fdb686c3653e636627de7d7',1,'slick::sim::STOP_PRICE_MUST_BE_ABOVE_LAST_TRADE_PRICE'],['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562aad801d1e2fdb686c3653e636627de7d7',1,'slick::sim::STOP_PRICE_MUST_BE_ABOVE_LAST_TRADE_PRICE']]],
+  ['stop_5fprice_5fmust_5fbe_5fbelow_5flast_5ftrade_5fprice_11',['stop_price_must_be_below_last_trade_price',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337afeaa914d00698c44f5a10906bae54017',1,'slick::sim::STOP_PRICE_MUST_BE_BELOW_LAST_TRADE_PRICE'],['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562afeaa914d00698c44f5a10906bae54017',1,'slick::sim::STOP_PRICE_MUST_BE_BELOW_LAST_TRADE_PRICE']]],
+  ['stopped_12',['STOPPED',['../namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a09d4d696b4e935115b9313e3c412509a',1,'slick::sim']]],
+  ['sub_5fresponse_13',['SUB_RESPONSE',['../namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11ad4156d48a454a77a4455687c9fb77cae',1,'slick::sim']]],
+  ['suspended_14',['SUSPENDED',['../namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8a0cb707127aebaa0023eb38363993843a',1,'slick::sim']]],
+  ['syncing_15',['SYNCING',['../namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8af0be1f77b2d12fe3d6424fbf9eecc109',1,'slick::sim']]]
 ];

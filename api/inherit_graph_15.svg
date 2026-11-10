@@ -11,10 +11,10 @@
 <!-- Node0 -->
 <g id="Node000000" class="node">
 <title>Node0</title>
-<g id="a_Node000000"><a xlink:href="structslick_1_1sim_1_1exch_1_1MarketTradeEvent.html" target="_top" xlink:title="One trade the venue reports, with the side that crossed the spread.">
+<g id="a_Node000000"><a xlink:href="structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html" target="_top" xlink:title="One of the venue&#39;s own orders entering, changing or leaving the book, from an order&#45;by&#45;order feed,...">
 <polygon fill="white" stroke="#666666" points="132,-30 0,-30 0,0 132,0 132,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::exch::Market</text>
-<text text-anchor="middle" x="66" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">TradeEvent</text>
+<text text-anchor="middle" x="66" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">OrderEvent</text>
 </a>
 </g>
 </g>

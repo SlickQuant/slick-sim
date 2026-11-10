@@ -5,6 +5,7 @@ var hierarchy =
     [ "slick::sim::BookSnapshot", "structslick_1_1sim_1_1BookSnapshot.html", null ],
     [ "slick::sim::CancelOrderMessage", "structslick_1_1sim_1_1CancelOrderMessage.html", null ],
     [ "slick::sim::order_gateway::ClOrdIdIndex< Key, Hash, Eq >", "classslick_1_1sim_1_1order__gateway_1_1ClOrdIdIndex.html", null ],
+    [ "slick::sim::ControlHeader", "structslick_1_1sim_1_1ControlHeader.html", null ],
     [ "slick::sim::Empty", "structslick_1_1sim_1_1Empty.html", null ],
     [ "std::enable_shared_from_this", null, [
       [ "slick::sim::OrderBook", "classslick_1_1sim_1_1OrderBook.html", [
@@ -16,6 +17,7 @@ var hierarchy =
       [ "slick::sim::exch::HyperliquidExchange", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html", null ]
     ] ],
     [ "slick::sim::exch::ExchangeRegistry", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry.html", null ],
+    [ "slick::sim::FeedStatusMessage", "structslick_1_1sim_1_1FeedStatusMessage.html", null ],
     [ "slick::sim::Fill", "structslick_1_1sim_1_1Fill.html", null ],
     [ "slick::sim::utils::fixed_string< N >", "classslick_1_1sim_1_1utils_1_1fixed__string.html", null ],
     [ "slick::sim::utils::fixed_string< 32 >", "classslick_1_1sim_1_1utils_1_1fixed__string.html", null ],
@@ -33,6 +35,7 @@ var hierarchy =
       [ "slick::sim::OrderBook", "classslick_1_1sim_1_1OrderBook.html", null ],
       [ "slick::sim::exch::OrderBookObserver", "structslick_1_1sim_1_1exch_1_1OrderBookObserver.html", null ]
     ] ],
+    [ "slick::sim::md_feed::PcapReplaySource::Item", "structslick_1_1sim_1_1md__feed_1_1PcapReplaySource_1_1Item.html", null ],
     [ "slick::sim::md_publisher::L2Diff", "structslick_1_1sim_1_1md__publisher_1_1L2Diff.html", null ],
     [ "slick::sim::md_publisher::MarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html", [
       [ "slick::sim::md_publisher::WebsocketMarketDataPublisher", "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html", [
@@ -52,7 +55,8 @@ var hierarchy =
     [ "slick::sim::MDBookUpdate", "structslick_1_1sim_1_1MDBookUpdate.html", null ],
     [ "slick::sim::md_feed::MDFeed", "classslick_1_1sim_1_1md__feed_1_1MDFeed.html", [
       [ "slick::sim::md_feed::CoinbaseLiveWSFeed", "classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html", null ],
-      [ "slick::sim::md_feed::HyperliquidLiveWSFeed", "classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html", null ]
+      [ "slick::sim::md_feed::HyperliquidLiveWSFeed", "classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html", null ],
+      [ "slick::sim::md_feed::PcapFeedBase", "classslick_1_1sim_1_1md__feed_1_1PcapFeedBase.html", null ]
     ] ],
     [ "slick::sim::MDLevel", "structslick_1_1sim_1_1MDLevel.html", null ],
     [ "slick::sim::MDLevelUpdate", "structslick_1_1sim_1_1MDLevelUpdate.html", null ],
@@ -90,6 +94,11 @@ var hierarchy =
     [ "slick::sim::OrderResponse", "structslick_1_1sim_1_1OrderResponse.html", null ],
     [ "slick::sim::order_gateway::OrderStore", "classslick_1_1sim_1_1order__gateway_1_1OrderStore.html", null ],
     [ "slick::sim::order_gateway::ParseResult", "structslick_1_1sim_1_1order__gateway_1_1ParseResult.html", null ],
+    [ "slick::sim::md_feed::PcapFeedConfig", "structslick_1_1sim_1_1md__feed_1_1PcapFeedConfig.html", null ],
+    [ "slick::sim::md_feed::PcapLine", "structslick_1_1sim_1_1md__feed_1_1PcapLine.html", null ],
+    [ "slick::sim::md_feed::PcapPacket", "structslick_1_1sim_1_1md__feed_1_1PcapPacket.html", null ],
+    [ "slick::sim::md_feed::PcapReader", "classslick_1_1sim_1_1md__feed_1_1PcapReader.html", null ],
+    [ "slick::sim::md_feed::PcapReplaySource", "classslick_1_1sim_1_1md__feed_1_1PcapReplaySource.html", null ],
     [ "slick::sim::order_gateway::PendingResponses", "classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html", null ],
     [ "slick::sim::md_publisher::PerSocketData", "structslick_1_1sim_1_1md__publisher_1_1PerSocketData.html", null ],
     [ "slick::sim::order_gateway::PerSocketData", "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html", null ],
@@ -100,12 +109,16 @@ var hierarchy =
     [ "slick::queue_traits", null, [
       [ "slick::sim::md_feed::packet_feed_traits", "structslick_1_1sim_1_1md__feed_1_1packet__feed__traits.html", null ]
     ] ],
+    [ "slick::sim::md_feed::ReplayGate", "classslick_1_1sim_1_1md__feed_1_1ReplayGate.html", null ],
+    [ "slick::sim::md_feed::ReplayGateView", "classslick_1_1sim_1_1md__feed_1_1ReplayGateView.html", null ],
+    [ "slick::sim::md_feed::ReplayPacer", "classslick_1_1sim_1_1md__feed_1_1ReplayPacer.html", null ],
     [ "slick::sim::Request", "structslick_1_1sim_1_1Request.html", null ],
     [ "slick::sim::order_gateway::RetransmitRing< MessageCapacity >", "classslick_1_1sim_1_1order__gateway_1_1RetransmitRing.html", null ],
     [ "slick::sim::utils::RingBuffer< T >", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", null ],
     [ "slick::sim::utils::RingBuffer< slick::sim::MDTrade >", "classslick_1_1sim_1_1utils_1_1RingBuffer.html", null ],
     [ "slick::sim::md_publisher::SequencedMessage", "classslick_1_1sim_1_1md__publisher_1_1SequencedMessage.html", null ],
     [ "slick::sim::order_gateway::RetransmitRing< MessageCapacity >::Slot", "structslick_1_1sim_1_1order__gateway_1_1RetransmitRing_1_1Slot.html", null ],
+    [ "slick::sim::StartMessage", "structslick_1_1sim_1_1StartMessage.html", null ],
     [ "slick::sim::utils::StringViewEq", "structslick_1_1sim_1_1utils_1_1StringViewEq.html", null ],
     [ "slick::sim::utils::StringViewHash", "structslick_1_1sim_1_1utils_1_1StringViewHash.html", null ],
     [ "slick::sim::md_publisher::HyperliquidPerSocketData::SubInfo", "structslick_1_1sim_1_1md__publisher_1_1HyperliquidPerSocketData_1_1SubInfo.html", null ],
@@ -115,6 +128,7 @@ var hierarchy =
     [ "slick::sim::SymbolKeyHash", "structslick_1_1sim_1_1SymbolKeyHash.html", null ],
     [ "slick::sim::SymbolManager", "classslick_1_1sim_1_1SymbolManager.html", null ],
     [ "slick::socket::TCPServerBase", null, [
+      [ "slick::sim::md_feed::PcapControlServer", "classslick_1_1sim_1_1md__feed_1_1PcapControlServer.html", null ],
       [ "slick::sim::order_gateway::TcpOrderGateway", "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html", null ]
     ] ],
     [ "slick::sim::Trade", "structslick_1_1sim_1_1Trade.html", null ],

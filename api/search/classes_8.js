@@ -1,25 +1,4 @@
 var searchData=
 [
-  ['marketdatapublisher_0',['MarketDataPublisher',['../classslick_1_1sim_1_1md__publisher_1_1MarketDataPublisher.html',1,'slick::sim::md_publisher']]],
-  ['marketdataupdate_1',['MarketDataUpdate',['../structslick_1_1sim_1_1MarketDataUpdate.html',1,'slick::sim']]],
-  ['marketorderevent_2',['MarketOrderEvent',['../structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html',1,'slick::sim::exch']]],
-  ['markettradeevent_3',['MarketTradeEvent',['../structslick_1_1sim_1_1exch_1_1MarketTradeEvent.html',1,'slick::sim::exch']]],
-  ['matchcontext_4',['MatchContext',['../structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html',1,'slick::sim::engine::detail']]],
-  ['matchingconfig_5',['MatchingConfig',['../structslick_1_1sim_1_1engine_1_1MatchingConfig.html',1,'slick::sim::engine']]],
-  ['matchingengine_6',['MatchingEngine',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html',1,'slick::sim::engine']]],
-  ['mdbookupdate_7',['MDBookUpdate',['../structslick_1_1sim_1_1MDBookUpdate.html',1,'slick::sim']]],
-  ['mdfeed_8',['MDFeed',['../classslick_1_1sim_1_1md__feed_1_1MDFeed.html',1,'slick::sim::md_feed']]],
-  ['mdlevel_9',['MDLevel',['../structslick_1_1sim_1_1MDLevel.html',1,'slick::sim']]],
-  ['mdlevelupdate_10',['MDLevelUpdate',['../structslick_1_1sim_1_1MDLevelUpdate.html',1,'slick::sim']]],
-  ['mdorder_11',['MDOrder',['../structslick_1_1sim_1_1MDOrder.html',1,'slick::sim']]],
-  ['mdorderupdate_12',['MDOrderUpdate',['../structslick_1_1sim_1_1MDOrderUpdate.html',1,'slick::sim']]],
-  ['mdsubscriptionmessage_13',['MDSubscriptionMessage',['../structslick_1_1sim_1_1MDSubscriptionMessage.html',1,'slick::sim']]],
-  ['mdsubscriptionresponse_14',['MDSubscriptionResponse',['../structslick_1_1sim_1_1MDSubscriptionResponse.html',1,'slick::sim']]],
-  ['mdtrade_15',['MDTrade',['../structslick_1_1sim_1_1MDTrade.html',1,'slick::sim']]],
-  ['mdtradesnapshotresponse_16',['MDTradeSnapshotResponse',['../structslick_1_1sim_1_1MDTradeSnapshotResponse.html',1,'slick::sim']]],
-  ['mdtradeupdate_17',['MDTradeUpdate',['../structslick_1_1sim_1_1MDTradeUpdate.html',1,'slick::sim']]],
-  ['messageparser_18',['MessageParser',['../classslick_1_1sim_1_1order__gateway_1_1MessageParser.html',1,'slick::sim::order_gateway']]],
-  ['messageparserfactory_19',['MessageParserFactory',['../classslick_1_1sim_1_1order__gateway_1_1MessageParserFactory.html',1,'slick::sim::order_gateway']]],
-  ['modifyordermessage_20',['ModifyOrderMessage',['../structslick_1_1sim_1_1ModifyOrderMessage.html',1,'slick::sim']]],
-  ['multicastpacketfeed_21',['MulticastPacketFeed',['../classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html',1,'slick::sim::md_feed']]]
+  ['l2diff_0',['L2Diff',['../structslick_1_1sim_1_1md__publisher_1_1L2Diff.html',1,'slick::sim::md_publisher']]]
 ];

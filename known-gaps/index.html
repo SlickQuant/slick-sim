@@ -301,6 +301,8 @@
       
         
       
+        
+      
     
     
     
@@ -473,6 +475,34 @@
     
   
     Market data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pcap-replay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCAP replay
   
 
     
@@ -834,10 +864,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#the-historical-data-feed-does-not-exist" class="md-nav__link">
+  <a href="#only-cme-and-ice-can-replay-history" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The historical-data feed does not exist
+        Only CME and ICE can replay history
       
     </span>
   </a>
@@ -1056,10 +1086,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#the-historical-data-feed-does-not-exist" class="md-nav__link">
+  <a href="#only-cme-and-ice-can-replay-history" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The historical-data feed does not exist
+        Only CME and ICE can replay history
       
     </span>
   </a>
@@ -1215,16 +1245,10 @@ minimum allocation, FIFO percentage and FIFO leftover. It does not implement top
 leveling or LMM allocations, and only CME and ICE can select it.</p>
 <p><strong>What it means:</strong> CME's Allocation, Threshold Pro-Rata and LMM algorithms are approximated by plain
 pro-rata.</p>
-<h3 id="the-historical-data-feed-does-not-exist">The historical-data feed does not exist<a class="headerlink" href="#the-historical-data-feed-does-not-exist" title="Permanent link">&para;</a></h3>
-<p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/alpaca_historical_data_feed.hpp"><code>alpaca_historical_data_feed.hpp</code></a>
-is a <strong>zero-byte file</strong>. <code>src/md_feed/</code> now holds only the <code>MDFeed</code> interface — every implementation
-lives with its venue under <code>src/venues/</code> — so a replay feed would be a new venue-independent
-implementation of that same two-method interface.</p>
-<p><strong>What it means:</strong> historical replay is an intended
-<a href="../architecture/#historical-replay-planned">operating mode</a> — matching client orders against
-recorded market data — but no feed implements it. Live WebSocket feeds are the only source of market
-data today.</p>
-<p>An unrecognised <code>md_feeds[].type</code> is silently ignored, leaving the venue
+<h3 id="only-cme-and-ice-can-replay-history">Only CME and ICE can replay history<a class="headerlink" href="#only-cme-and-ice-can-replay-history" title="Permanent link">&para;</a></h3>
+<p><a href="../pcap-replay/">PCAP replay</a> drives CME and ICE from recorded multicast captures. Coinbase and
+Hyperliquid have no replay feed: their live WebSocket feeds are their only source of market data.</p>
+<p>An unrecognised <code>md_feeds[].type</code> is silently ignored by Coinbase and Hyperliquid, leaving the venue
 <a href="../architecture/#self-contained-a-conventional-exchange-simulator">self-contained</a>. If you expected
 live data but see an empty book, check the feed type and startup log.</p>
 <h3 id="exchangeprocessmddata-and-the-market-data-thread-are-commented-out"><code>Exchange::processMdData()</code> and the market-data thread are commented out<a class="headerlink" href="#exchangeprocessmddata-and-the-market-data-thread-are-commented-out" title="Permanent link">&para;</a></h3>

@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.5.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.6.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -91,7 +91,8 @@ $(document).ready(function(){initNavTree('namespaceslick_1_1sim_1_1md__feed.html
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">slick::sim::md_feed Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -112,7 +113,200 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1md__feed_1_1packet__feed__traits.html">packet_feed_traits</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the queue bytes a receiver overwrote before the exchange thread drained them.  <a href="structslick_1_1sim_1_1md__feed_1_1packet__feed__traits.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1PcapControlServer.html">PcapControlServer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The channel between a pcap replay and its clients, apart from the market data (multicast) and the orders (the TCP order gateway), neither of which can say that the book is still loading or ask for the replay to begin.  <a href="classslick_1_1sim_1_1md__feed_1_1PcapControlServer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1PcapFeedBase.html">PcapFeedBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A venue's market data replayed from captured multicast, behind a control channel.  <a href="classslick_1_1sim_1_1md__feed_1_1PcapFeedBase.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1md__feed_1_1PcapFeedConfig.html">PcapFeedConfig</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">What a pcap feed's config entry says, beyond its venue's multicast groups.  <a href="structslick_1_1sim_1_1md__feed_1_1PcapFeedConfig.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1md__feed_1_1PcapLine.html">PcapLine</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One multicast group of a replay, as the venue knows it (an enum value below <a class="el" href="classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a7c1ad57006414167fda196242b0cfb99">MulticastPacketFeed::MAX_LINES</a>, like the live feeds).  <a href="structslick_1_1sim_1_1md__feed_1_1PcapLine.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1md__feed_1_1PcapPacket.html">PcapPacket</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One UDP datagram read from a capture.  <a href="structslick_1_1sim_1_1md__feed_1_1PcapPacket.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1PcapReader.html">PcapReader</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads UDP payloads, in capture order, out of one pcap or pcapng file.  <a href="classslick_1_1sim_1_1md__feed_1_1PcapReader.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1PcapReplaySource.html">PcapReplaySource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replays several captured multicast groups as one packet stream in capture-time order.  <a href="classslick_1_1sim_1_1md__feed_1_1PcapReplaySource.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1ReplayGate.html">ReplayGate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a pcap replay has been started.  <a href="classslick_1_1sim_1_1md__feed_1_1ReplayGate.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1ReplayGateView.html">ReplayGateView</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A publisher channel's view of the gate: whether it may publish yet, for the md_queue frame it is working on.  <a href="classslick_1_1sim_1_1md__feed_1_1ReplayGateView.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1ReplayPacer.html">ReplayPacer</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decides when a packet captured at some time is due, on the wall clock.  <a href="classslick_1_1sim_1_1md__feed_1_1ReplayPacer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a42f270bfc451673b42b0f9e4eb7b917d" id="r_a42f270bfc451673b42b0f9e4eb7b917d"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__feed.html#a42f270bfc451673b42b0f9e4eb7b917d">parse_utc_time_ns</a> (const std::string &amp;text)</td></tr>
+<tr class="memdesc:a42f270bfc451673b42b0f9e4eb7b917d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses a UTC "YYYY-MM-DDTHH:MM:SS[.fraction][Z]" into nanoseconds since the epoch.  <br /></td></tr>
+<tr class="separator:a42f270bfc451673b42b0f9e4eb7b917d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f5d0e5a179ad2ccec3694f0ef096e87" id="r_a4f5d0e5a179ad2ccec3694f0ef096e87"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structslick_1_1sim_1_1md__feed_1_1PcapLine.html">PcapLine</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__feed.html#a4f5d0e5a179ad2ccec3694f0ef096e87">parse_pcap_lines</a> (const nlohmann::json &amp;config, std::span&lt; const std::pair&lt; const char *, uint8_t &gt; &gt; keys)</td></tr>
+<tr class="memdesc:a4f5d0e5a179ad2ccec3694f0ef096e87"><td class="mdescLeft">&#160;</td><td class="mdescRight">The multicast groups of a pcap feed's config: for each <code>{key, line}</code> that the config names, <code>{ "address", "port" }</code> and optionally <code>"path"</code> (one capture file, used instead of the root directory's layout) or <code>"paths"</code> (several, oldest first).  <br /></td></tr>
+<tr class="separator:a4f5d0e5a179ad2ccec3694f0ef096e87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd933d2c94703a30d78b87d656962a7d" id="r_acd933d2c94703a30d78b87d656962a7d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__feed.html#acd933d2c94703a30d78b87d656962a7d">parse_ipv4</a> (const std::string &amp;text)</td></tr>
+<tr class="memdesc:acd933d2c94703a30d78b87d656962a7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packs a dotted quad such as "224.0.31.1" into host byte order, the form <a class="el" href="structslick_1_1sim_1_1md__feed_1_1PcapPacket.html#a45f476181ab47787b3f735a8a4959f6c" title="IPv4 destination, host byte order.">PcapPacket::dst_addr</a> uses.  <br /></td></tr>
+<tr class="separator:acd933d2c94703a30d78b87d656962a7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac538a92d03dda68601edf3bf055e4b77" id="r_ac538a92d03dda68601edf3bf055e4b77"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1md__feed.html#ac538a92d03dda68601edf3bf055e4b77">resolve_pcap_files</a> (const std::string &amp;root, const std::string &amp;address, uint16_t port, uint64_t begin_ns, uint64_t end_ns)</td></tr>
+<tr class="memdesc:ac538a92d03dda68601edf3bf055e4b77"><td class="mdescLeft">&#160;</td><td class="mdescRight">The capture files of group <code>address:port</code> that can hold packets in [begin_ns, end_ns].  <br /></td></tr>
+<tr class="separator:ac538a92d03dda68601edf3bf055e4b77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="acd933d2c94703a30d78b87d656962a7d" name="acd933d2c94703a30d78b87d656962a7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd933d2c94703a30d78b87d656962a7d">&#9670;&#160;</a></span>parse_ipv4()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t slick::sim::md_feed::parse_ipv4 </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Packs a dotted quad such as "224.0.31.1" into host byte order, the form <a class="el" href="structslick_1_1sim_1_1md__feed_1_1PcapPacket.html#a45f476181ab47787b3f735a8a4959f6c" title="IPv4 destination, host byte order.">PcapPacket::dst_addr</a> uses. </p>
+<p>Throws on anything else. </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__reader_8hpp_source.html#l00032">32</a> of file <a class="el" href="pcap__reader_8hpp_source.html">pcap_reader.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a4f5d0e5a179ad2ccec3694f0ef096e87" name="a4f5d0e5a179ad2ccec3694f0ef096e87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f5d0e5a179ad2ccec3694f0ef096e87">&#9670;&#160;</a></span>parse_pcap_lines()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structslick_1_1sim_1_1md__feed_1_1PcapLine.html">PcapLine</a> &gt; slick::sim::md_feed::parse_pcap_lines </td>
+          <td>(</td>
+          <td class="paramtype">const nlohmann::json &amp;&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const std::pair&lt; const char *, uint8_t &gt; &gt;&#160;</td>
+          <td class="paramname"><em>keys</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The multicast groups of a pcap feed's config: for each <code>{key, line}</code> that the config names, <code>{ "address", "port" }</code> and optionally <code>"path"</code> (one capture file, used instead of the root directory's layout) or <code>"paths"</code> (several, oldest first). </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__feed_8cpp_source.html#l00105">105</a> of file <a class="el" href="pcap__feed_8cpp_source.html">pcap_feed.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="pcap__replay__source_8hpp_source.html#l00032">slick::sim::md_feed::PcapLine::address</a>, <a class="el" href="pcap__replay__source_8hpp_source.html#l00031">slick::sim::md_feed::PcapLine::line</a>, <a class="el" href="pcap__replay__source_8hpp_source.html#l00036">slick::sim::md_feed::PcapLine::paths</a>, and <a class="el" href="pcap__replay__source_8hpp_source.html#l00033">slick::sim::md_feed::PcapLine::port</a>.</p>
+
+</div>
+</div>
+<a id="a42f270bfc451673b42b0f9e4eb7b917d" name="a42f270bfc451673b42b0f9e4eb7b917d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42f270bfc451673b42b0f9e4eb7b917d">&#9670;&#160;</a></span>parse_utc_time_ns()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t slick::sim::md_feed::parse_utc_time_ns </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses a UTC "YYYY-MM-DDTHH:MM:SS[.fraction][Z]" into nanoseconds since the epoch. </p>
+<p>Throws std::runtime_error when <code>text</code> is anything else. </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__feed_8cpp_source.html#l00038">38</a> of file <a class="el" href="pcap__feed_8cpp_source.html">pcap_feed.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ac538a92d03dda68601edf3bf055e4b77" name="ac538a92d03dda68601edf3bf055e4b77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac538a92d03dda68601edf3bf055e4b77">&#9670;&#160;</a></span>resolve_pcap_files()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; slick::sim::md_feed::resolve_pcap_files </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>port</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>begin_ns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>end_ns</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The capture files of group <code>address:port</code> that can hold packets in [begin_ns, end_ns]. </p>
+<p>The recorded layout is <code>&lt;root&gt;/&lt;YYYY-MM-DD&gt;/&lt;address&gt;:&lt;port&gt;/&lt;address&gt;:&lt;port&gt;.pcap.zst</code>, one file per group per day. A day's file starts in the evening before its date, so the dates from the day before <code>begin_ns</code> to the day after <code>end_ns</code> (UTC) are all candidates. Days with no file are skipped; the packets inside a file are filtered by timestamp. </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__replay__source_8hpp_source.html#l00045">45</a> of file <a class="el" href="pcap__replay__source_8hpp_source.html">pcap_replay_source.hpp</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -12,7 +12,9 @@ var namespaceslick_1_1sim =
     [ "AddOrderMessage", "structslick_1_1sim_1_1AddOrderMessage.html", "structslick_1_1sim_1_1AddOrderMessage" ],
     [ "BookSnapshot", "structslick_1_1sim_1_1BookSnapshot.html", "structslick_1_1sim_1_1BookSnapshot" ],
     [ "CancelOrderMessage", "structslick_1_1sim_1_1CancelOrderMessage.html", "structslick_1_1sim_1_1CancelOrderMessage" ],
+    [ "ControlHeader", "structslick_1_1sim_1_1ControlHeader.html", "structslick_1_1sim_1_1ControlHeader" ],
     [ "Empty", "structslick_1_1sim_1_1Empty.html", null ],
+    [ "FeedStatusMessage", "structslick_1_1sim_1_1FeedStatusMessage.html", "structslick_1_1sim_1_1FeedStatusMessage" ],
     [ "Fill", "structslick_1_1sim_1_1Fill.html", "structslick_1_1sim_1_1Fill" ],
     [ "MarketDataUpdate", "structslick_1_1sim_1_1MarketDataUpdate.html", "structslick_1_1sim_1_1MarketDataUpdate" ],
     [ "MDBookUpdate", "structslick_1_1sim_1_1MDBookUpdate.html", "structslick_1_1sim_1_1MDBookUpdate" ],
@@ -33,6 +35,7 @@ var namespaceslick_1_1sim =
     [ "OrderResponse", "structslick_1_1sim_1_1OrderResponse.html", "structslick_1_1sim_1_1OrderResponse" ],
     [ "ProxiedHttpResponse", "structslick_1_1sim_1_1ProxiedHttpResponse.html", "structslick_1_1sim_1_1ProxiedHttpResponse" ],
     [ "Request", "structslick_1_1sim_1_1Request.html", "structslick_1_1sim_1_1Request" ],
+    [ "StartMessage", "structslick_1_1sim_1_1StartMessage.html", "structslick_1_1sim_1_1StartMessage" ],
     [ "SymbolKey", "structslick_1_1sim_1_1SymbolKey.html", "structslick_1_1sim_1_1SymbolKey" ],
     [ "SymbolKeyHash", "structslick_1_1sim_1_1SymbolKeyHash.html", "structslick_1_1sim_1_1SymbolKeyHash" ],
     [ "SymbolManager", "classslick_1_1sim_1_1SymbolManager.html", "classslick_1_1sim_1_1SymbolManager" ],
@@ -56,6 +59,10 @@ var namespaceslick_1_1sim =
       [ "UNKNOWN", "namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a696b031073e74bf2cb98e5ef201d4aa3", null ],
       [ "UNKNOWN_SECURITY_ID", "namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a553b8a8c32a25052bf495721cd233a3f", null ],
       [ "DUPLICATE_REQUEST_ID", "namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a971578f294a88d61c51a82a800e5047a", null ]
+    ] ],
+    [ "ControlMessageType", "namespaceslick_1_1sim.html#ae133dcbc362b11dd3220b1d371a760d2", [
+      [ "FEED_STATUS", "namespaceslick_1_1sim.html#ae133dcbc362b11dd3220b1d371a760d2a8a1d5e1c9b881c17122ffd93075f91ea", null ],
+      [ "START", "namespaceslick_1_1sim.html#ae133dcbc362b11dd3220b1d371a760d2ab078ffd28db767c502ac367053f6e0ac", null ]
     ] ],
     [ "CxlRejectReason", "namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562", [
       [ "NONE", "namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562ab50339a10e1de285ac99d4c3990b8693", null ],
@@ -112,6 +119,15 @@ var namespaceslick_1_1sim =
       [ "NEWS", "namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7aff4e2dc4962dc25a1512353299992c8d", null ],
       [ "RETRANSMIT_REQUEST", "namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a1116843be0bb0cec082f9ff308036488", null ],
       [ "RETRANSMIT_RESPONSE", "namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7af5d5493c7fa9928b042a84f0159ce6cb", null ]
+    ] ],
+    [ "FeedState", "namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8", [
+      [ "IDLE", "namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8aa5daf7f2ebbba4975d61dab1c40188c7", null ],
+      [ "LOADING", "namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8af9f6955ebca09a484157c05f80acd65e", null ],
+      [ "SYNCING", "namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8af0be1f77b2d12fe3d6424fbf9eecc109", null ],
+      [ "READY", "namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8a2baa69eafc7204f3bd8648eba580c489", null ],
+      [ "REPLAYING", "namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8a50dbec1b3fc5ed30a0749aff023bf935", null ],
+      [ "FINISHED", "namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8a2c616b2713e2e0aed04b4c4752c88133", null ],
+      [ "ERROR", "namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8abb1ca97ec761fc37101737ba0aa2e7c5", null ]
     ] ],
     [ "MDSubscriptionRejectReason", "namespaceslick_1_1sim.html#a0a9f0bd1a7d704fe4599a7420d34e1d3", [
       [ "NONE", "namespaceslick_1_1sim.html#a0a9f0bd1a7d704fe4599a7420d34e1d3a85f539001467e885c9539c6d39233b4f", null ],
@@ -268,6 +284,7 @@ var namespaceslick_1_1sim =
     [ "to_string", "namespaceslick_1_1sim.html#a4a9beb593429df5794a68b6547f1e637", null ],
     [ "to_string", "namespaceslick_1_1sim.html#a70370cf402e906a5d9300f02e7c3928d", null ],
     [ "to_string", "namespaceslick_1_1sim.html#afef5dc56c5b716637c157f16984f7807", null ],
+    [ "to_string", "namespaceslick_1_1sim.html#ace57e5d398b0382eb73d6afcc51edc13", null ],
     [ "to_string", "namespaceslick_1_1sim.html#aa6e75f7b95b05d860ac06f0c66d44281", null ],
     [ "to_string", "namespaceslick_1_1sim.html#abbc30d72eec9acbd616097b76f8e064e", null ],
     [ "to_string", "namespaceslick_1_1sim.html#a0858966aa246f58e935160b926e91dee", null ],

@@ -25,7 +25,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.5.1</span>
+   <div id="projectname">Slick Sim<span id="projectnumber">&#160;0.6.0</span>
    </div>
    <div id="projectbrief">Exchange simulator that shadows real venues for risk-free strategy testing</div>
   </td>
@@ -170,10 +170,32 @@ Functions</h2></td></tr>
 <tr class="memitem:ad140223292b6072952ee962d834a2144" id="r_ad140223292b6072952ee962d834a2144"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#ad140223292b6072952ee962d834a2144">group_key</a> (const nlohmann::json &amp;group)</td></tr>
 <tr class="memdesc:ad140223292b6072952ee962d834a2144"><td class="mdescLeft">&#160;</td><td class="mdescRight">"address:port" of a <code>{ "address", "port" }</code> multicast group config, as claimed.  <br /></td></tr>
 <tr class="separator:ad140223292b6072952ee962d834a2144"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6586e65bfe0c86ac2a6044964e23e41" id="r_af6586e65bfe0c86ac2a6044964e23e41"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#af6586e65bfe0c86ac2a6044964e23e41">is_enabled_feed</a> (const nlohmann::json &amp;feed, std::string_view type)</td></tr>
+<tr class="memdesc:af6586e65bfe0c86ac2a6044964e23e41"><td class="mdescLeft">&#160;</td><td class="mdescRight">True for a <code>md_feeds</code> entry of <code>type</code> that is not disabled.  <br /></td></tr>
+<tr class="separator:af6586e65bfe0c86ac2a6044964e23e41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38a3c600a4478dfd2dce63e0ea40c5f7" id="r_a38a3c600a4478dfd2dce63e0ea40c5f7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#a38a3c600a4478dfd2dce63e0ea40c5f7">has_enabled_feed</a> (const nlohmann::json &amp;instance, std::string_view type)</td></tr>
+<tr class="memdesc:a38a3c600a4478dfd2dce63e0ea40c5f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the instance's <code>md_feeds</code> has an enabled feed of <code>type</code>.  <br /></td></tr>
+<tr class="separator:a38a3c600a4478dfd2dce63e0ea40c5f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac60ec11c59ee9839e0222b6348b4f13a" id="r_ac60ec11c59ee9839e0222b6348b4f13a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#ac60ec11c59ee9839e0222b6348b4f13a">claim_pcap_control_ports</a> (std::unordered_map&lt; uint16_t, std::string &gt; &amp;ports, const nlohmann::json &amp;instance, std::string_view feed_type, const std::string &amp;owner, std::string_view venue)</td></tr>
+<tr class="memdesc:ac60ec11c59ee9839e0222b6348b4f13a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Claims the TCP control port of each enabled pcap feed of <code>instance</code> for <code>owner</code>.  <br /></td></tr>
+<tr class="separator:ac60ec11c59ee9839e0222b6348b4f13a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cb4bb0c6fc34b7a7970e8815445d860" id="r_a8cb4bb0c6fc34b7a7970e8815445d860"><td class="memTemplParams" colspan="2">template&lt;typename Queue &gt; </td></tr>
+<tr class="memitem:a8cb4bb0c6fc34b7a7970e8815445d860"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classslick_1_1sim_1_1md__feed_1_1ReplayGate.html">md_feed::ReplayGate</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#a8cb4bb0c6fc34b7a7970e8815445d860">make_replay_gate</a> (const nlohmann::json &amp;instance, std::string_view feed_type, Queue &amp;md_queue)</td></tr>
+<tr class="memdesc:a8cb4bb0c6fc34b7a7970e8815445d860"><td class="mdescLeft">&#160;</td><td class="mdescRight">The gate a replaying instance's publisher waits on, or null when its config has no enabled feed of <code>feed_type</code>.  <br /></td></tr>
+<tr class="separator:a8cb4bb0c6fc34b7a7970e8815445d860"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff84285ecec7ac954205acdb19ee392e" id="r_aff84285ecec7ac954205acdb19ee392e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#aff84285ecec7ac954205acdb19ee392e">reject_pcap_with_live_feeds</a> (bool has_pcap_feed, size_t live_feeds, std::string_view venue, std::string_view kind, const std::string &amp;name)</td></tr>
+<tr class="memdesc:aff84285ecec7ac954205acdb19ee392e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Throws when a replay and live feeds would both write the one book.  <br /></td></tr>
+<tr class="separator:aff84285ecec7ac954205acdb19ee392e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26f90d2ca3dd0d4bb406ed64f70d5293" id="r_a26f90d2ca3dd0d4bb406ed64f70d5293"><td class="memTemplParams" colspan="2">template&lt;typename Event , typename Feed &gt; </td></tr>
+<tr class="memitem:a26f90d2ca3dd0d4bb406ed64f70d5293"><td class="memTemplItemLeft" align="right" valign="top">Event&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceslick_1_1sim_1_1exch.html#a26f90d2ca3dd0d4bb406ed64f70d5293">replay_stamped</a> (Event event, const Feed *feed)</td></tr>
+<tr class="memdesc:a26f90d2ca3dd0d4bb406ed64f70d5293"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code>event</code> with its time set from the replay: a replay is stamped on the wall clock, not with the capture's own time.  <br /></td></tr>
+<tr class="separator:a26f90d2ca3dd0d4bb406ed64f70d5293"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Helpers for a venue whose one config entry describes several independent exchange instances, such as CME's market segments or ICE's silos. </p>
-<p>Each instance becomes its own <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html">Exchange</a>, on its own thread. </p>
+<p>What a venue's exchange instance (CME segment, ICE silo) does for a pcap feed, the same way for every venue.</p>
+<p>Each instance becomes its own <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html">Exchange</a>, on its own thread.</p>
+<p>None of it needs libpcap: a config that names a pcap feed has to be understood, and refused, in every build. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
 <a id="a1412b06a2c4a308366a8a129301f64f6" name="a1412b06a2c4a308366a8a129301f64f6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1412b06a2c4a308366a8a129301f64f6">&#9670;&#160;</a></span>WebSocketClient</h2>
@@ -305,6 +327,69 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="instance__expansion_8hpp_source.html#l00071">71</a> of file <a class="el" href="instance__expansion_8hpp_source.html">instance_expansion.hpp</a>.</p>
 
+<p class="reference">Referenced by <a class="el" href="pcap__exchange_8hpp_source.html#l00038">claim_pcap_control_ports()</a>.</p>
+
+</div>
+</div>
+<a id="ac60ec11c59ee9839e0222b6348b4f13a" name="ac60ec11c59ee9839e0222b6348b4f13a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac60ec11c59ee9839e0222b6348b4f13a">&#9670;&#160;</a></span>claim_pcap_control_ports()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void slick::sim::exch::claim_pcap_control_ports </td>
+          <td>(</td>
+          <td class="paramtype">std::unordered_map&lt; uint16_t, std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ports</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const nlohmann::json &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>feed_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>owner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>venue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Claims the TCP control port of each enabled pcap feed of <code>instance</code> for <code>owner</code>. </p>
+<p>Port 0 asks the OS for a free one, so any number of feeds may use it. </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__exchange_8hpp_source.html#l00038">38</a> of file <a class="el" href="pcap__exchange_8hpp_source.html">pcap_exchange.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="instance__expansion_8hpp_source.html#l00071">claim()</a>, and <a class="el" href="pcap__exchange_8hpp_source.html#l00022">is_enabled_feed()</a>.</p>
+
 </div>
 </div>
 <a id="a4beedf3404a7bbaeb43a742c82c208c1" name="a4beedf3404a7bbaeb43a742c82c208c1"></a>
@@ -385,6 +470,92 @@ template&lt;typename DefaultName &gt; </div>
 
 </div>
 </div>
+<a id="a38a3c600a4478dfd2dce63e0ea40c5f7" name="a38a3c600a4478dfd2dce63e0ea40c5f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38a3c600a4478dfd2dce63e0ea40c5f7">&#9670;&#160;</a></span>has_enabled_feed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool slick::sim::exch::has_enabled_feed </td>
+          <td>(</td>
+          <td class="paramtype">const nlohmann::json &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the instance's <code>md_feeds</code> has an enabled feed of <code>type</code>. </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__exchange_8hpp_source.html#l00027">27</a> of file <a class="el" href="pcap__exchange_8hpp_source.html">pcap_exchange.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="pcap__exchange_8hpp_source.html#l00022">is_enabled_feed()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="pcap__exchange_8hpp_source.html#l00053">make_replay_gate()</a>.</p>
+
+</div>
+</div>
+<a id="af6586e65bfe0c86ac2a6044964e23e41" name="af6586e65bfe0c86ac2a6044964e23e41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6586e65bfe0c86ac2a6044964e23e41">&#9670;&#160;</a></span>is_enabled_feed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool slick::sim::exch::is_enabled_feed </td>
+          <td>(</td>
+          <td class="paramtype">const nlohmann::json &amp;&#160;</td>
+          <td class="paramname"><em>feed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True for a <code>md_feeds</code> entry of <code>type</code> that is not disabled. </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__exchange_8hpp_source.html#l00022">22</a> of file <a class="el" href="pcap__exchange_8hpp_source.html">pcap_exchange.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="pcap__exchange_8hpp_source.html#l00038">claim_pcap_control_ports()</a>, and <a class="el" href="pcap__exchange_8hpp_source.html#l00027">has_enabled_feed()</a>.</p>
+
+</div>
+</div>
 <a id="aae6409ac12fb7d0a72d671196d987fa8" name="aae6409ac12fb7d0a72d671196d987fa8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aae6409ac12fb7d0a72d671196d987fa8">&#9670;&#160;</a></span>make_exchanges()</h2>
 
@@ -408,6 +579,142 @@ template&lt;typename T , typename Base  = Exchange&gt; </div>
 <p>Base is always <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html">Exchange</a>. It is a parameter only to make the vector's type dependent: unique_ptr's destructor is constexpr in C++23, and clang instantiates a constexpr destructor as soon as it sees a non-dependent use of it, so a plain vector&lt;unique_ptr&lt;Exchange&gt;&gt; local would need <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html">Exchange</a> complete wherever this header is included. Dependent, it waits for instantiation, where T is complete. </p>
 
 <p class="definition">Definition at line <a class="el" href="exchange__registry_8hpp_source.html#l00074">74</a> of file <a class="el" href="exchange__registry_8hpp_source.html">exchange_registry.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a8cb4bb0c6fc34b7a7970e8815445d860" name="a8cb4bb0c6fc34b7a7970e8815445d860"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cb4bb0c6fc34b7a7970e8815445d860">&#9670;&#160;</a></span>make_replay_gate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Queue &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classslick_1_1sim_1_1md__feed_1_1ReplayGate.html">md_feed::ReplayGate</a> &gt; slick::sim::exch::make_replay_gate </td>
+          <td>(</td>
+          <td class="paramtype">const nlohmann::json &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>feed_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Queue &amp;&#160;</td>
+          <td class="paramname"><em>md_queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The gate a replaying instance's publisher waits on, or null when its config has no enabled feed of <code>feed_type</code>. </p>
+<p><code>md_queue</code> is the one the publisher reads. </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__exchange_8hpp_source.html#l00053">53</a> of file <a class="el" href="pcap__exchange_8hpp_source.html">pcap_exchange.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="pcap__exchange_8hpp_source.html#l00027">has_enabled_feed()</a>.</p>
+
+</div>
+</div>
+<a id="aff84285ecec7ac954205acdb19ee392e" name="aff84285ecec7ac954205acdb19ee392e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff84285ecec7ac954205acdb19ee392e">&#9670;&#160;</a></span>reject_pcap_with_live_feeds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void slick::sim::exch::reject_pcap_with_live_feeds </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>has_pcap_feed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>live_feeds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>venue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Throws when a replay and live feeds would both write the one book. </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__exchange_8hpp_source.html#l00062">62</a> of file <a class="el" href="pcap__exchange_8hpp_source.html">pcap_exchange.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a26f90d2ca3dd0d4bb406ed64f70d5293" name="a26f90d2ca3dd0d4bb406ed64f70d5293"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26f90d2ca3dd0d4bb406ed64f70d5293">&#9670;&#160;</a></span>replay_stamped()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Event , typename Feed &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">Event slick::sim::exch::replay_stamped </td>
+          <td>(</td>
+          <td class="paramtype">Event&#160;</td>
+          <td class="paramname"><em>event</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Feed *&#160;</td>
+          <td class="paramname"><em>feed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><code>event</code> with its time set from the replay: a replay is stamped on the wall clock, not with the capture's own time. </p>
+<p><code>feed</code> is the instance's pcap feed (null: the event as it is). </p>
+
+<p class="definition">Definition at line <a class="el" href="pcap__exchange_8hpp_source.html#l00072">72</a> of file <a class="el" href="pcap__exchange_8hpp_source.html">pcap_exchange.hpp</a>.</p>
 
 </div>
 </div>

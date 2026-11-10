@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['reach_0',['Reach',['../namespaceslick_1_1sim_1_1engine_1_1detail.html#a046114254ee3c8ba7a5e1665092fe781',1,'slick::sim::engine::detail']]]
+  ['producttype_0',['ProductType',['../namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026b',1,'slick::sim']]],
+  ['protocoltype_1',['ProtocolType',['../namespaceslick_1_1sim_1_1order__gateway.html#a21eaf560f68e2e781d35e64080dc0615',1,'slick::sim::order_gateway']]]
 ];

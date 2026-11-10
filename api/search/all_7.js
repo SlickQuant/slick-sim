@@ -1,15 +1,16 @@
 var searchData=
 [
-  ['get_5fcurrent_5ftime_5fns_0',['get_current_time_ns',['../namespaceslick_1_1sim_1_1utils.html#ab973c672ea8ff8355bc6eee320d3a3cf',1,'slick::sim::utils']]],
-  ['get_5fprotocol_5ftype_1',['get_protocol_type',['../classslick_1_1sim_1_1order__gateway_1_1FixParser.html#a6ae084e8ac48198646b59de9b49c84f4',1,'slick::sim::order_gateway::FixParser::get_protocol_type()'],['../classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#a5acb79c734c0dcbd0d1c547be5426923',1,'slick::sim::order_gateway::JsonParser::get_protocol_type()'],['../classslick_1_1sim_1_1order__gateway_1_1MessageParser.html#a1203e2456d31ba566a33b6b8158c7c72',1,'slick::sim::order_gateway::MessageParser::get_protocol_type()']]],
-  ['get_5frequest_5fqueue_2',['get_request_queue',['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html#a57fa2f508bc8a12c5a8ae4c176a4abdd',1,'slick::sim::order_gateway::OrderGateway']]],
-  ['get_5fresponse_5fqueue_3',['get_response_queue',['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html#abfd6523b650444d0bf6fa73986881e80',1,'slick::sim::order_gateway::OrderGateway']]],
-  ['getclient_4',['getClient',['../classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#a83edb7ab40257b31771ebb85cab4f36c',1,'slick::sim::md_feed::CoinbaseLiveWSFeed']]],
-  ['getinfo_5',['getInfo',['../classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html#a00a079c0612a0cf6804febbaef109460',1,'slick::sim::md_feed::HyperliquidLiveWSFeed']]],
-  ['getmdlevelqty_6',['getMDLevelQty',['../classslick_1_1sim_1_1OrderBook.html#a246c1b7340456916b785ca78a03b1c94',1,'slick::sim::OrderBook']]],
-  ['getsymbol_7',['getsymbol',['../classslick_1_1sim_1_1SymbolManager.html#a5a7a262fd997641be94d6467dd238a7f',1,'slick::sim::SymbolManager::getSymbol(std::string_view sym, Venue venue) const'],['../classslick_1_1sim_1_1SymbolManager.html#a6573a9ed0ef849ba318868db5a328cf9',1,'slick::sim::SymbolManager::getSymbol(symid_t sid)']]],
-  ['good_5ftill_5fcancel_8',['GOOD_TILL_CANCEL',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a0ac4638d73e5d5ee08d7cefbeeefd8ef',1,'slick::sim']]],
-  ['good_5ftill_5fcrossing_9',['GOOD_TILL_CROSSING',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ac85a71b961f3461331e457d5dd8e4323',1,'slick::sim']]],
-  ['good_5ftill_5fdate_10',['GOOD_TILL_DATE',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ad283b3e8aafad68b9e3a6ca11a241f83',1,'slick::sim']]],
-  ['group_5fkey_11',['group_key',['../namespaceslick_1_1sim_1_1exch.html#ad140223292b6072952ee962d834a2144',1,'slick::sim::exch']]]
+  ['gated_0',['gated',['../classslick_1_1sim_1_1md__feed_1_1ReplayGateView.html#ab1c2909009a2ba09c593d67cbaa815f5',1,'slick::sim::md_feed::ReplayGateView']]],
+  ['get_5fcurrent_5ftime_5fns_1',['get_current_time_ns',['../namespaceslick_1_1sim_1_1utils.html#ab973c672ea8ff8355bc6eee320d3a3cf',1,'slick::sim::utils']]],
+  ['get_5fprotocol_5ftype_2',['get_protocol_type',['../classslick_1_1sim_1_1order__gateway_1_1FixParser.html#a6ae084e8ac48198646b59de9b49c84f4',1,'slick::sim::order_gateway::FixParser::get_protocol_type()'],['../classslick_1_1sim_1_1order__gateway_1_1JsonParser.html#a5acb79c734c0dcbd0d1c547be5426923',1,'slick::sim::order_gateway::JsonParser::get_protocol_type()'],['../classslick_1_1sim_1_1order__gateway_1_1MessageParser.html#a1203e2456d31ba566a33b6b8158c7c72',1,'slick::sim::order_gateway::MessageParser::get_protocol_type()']]],
+  ['get_5frequest_5fqueue_3',['get_request_queue',['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html#a57fa2f508bc8a12c5a8ae4c176a4abdd',1,'slick::sim::order_gateway::OrderGateway']]],
+  ['get_5fresponse_5fqueue_4',['get_response_queue',['../classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html#abfd6523b650444d0bf6fa73986881e80',1,'slick::sim::order_gateway::OrderGateway']]],
+  ['getclient_5',['getClient',['../classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html#a83edb7ab40257b31771ebb85cab4f36c',1,'slick::sim::md_feed::CoinbaseLiveWSFeed']]],
+  ['getinfo_6',['getInfo',['../classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html#a00a079c0612a0cf6804febbaef109460',1,'slick::sim::md_feed::HyperliquidLiveWSFeed']]],
+  ['getmdlevelqty_7',['getMDLevelQty',['../classslick_1_1sim_1_1OrderBook.html#a246c1b7340456916b785ca78a03b1c94',1,'slick::sim::OrderBook']]],
+  ['getsymbol_8',['getsymbol',['../classslick_1_1sim_1_1SymbolManager.html#a5a7a262fd997641be94d6467dd238a7f',1,'slick::sim::SymbolManager::getSymbol(std::string_view sym, Venue venue) const'],['../classslick_1_1sim_1_1SymbolManager.html#a6573a9ed0ef849ba318868db5a328cf9',1,'slick::sim::SymbolManager::getSymbol(symid_t sid)']]],
+  ['good_5ftill_5fcancel_9',['GOOD_TILL_CANCEL',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55a0ac4638d73e5d5ee08d7cefbeeefd8ef',1,'slick::sim']]],
+  ['good_5ftill_5fcrossing_10',['GOOD_TILL_CROSSING',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ac85a71b961f3461331e457d5dd8e4323',1,'slick::sim']]],
+  ['good_5ftill_5fdate_11',['GOOD_TILL_DATE',['../namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55ad283b3e8aafad68b9e3a6ca11a241f83',1,'slick::sim']]],
+  ['group_5fkey_12',['group_key',['../namespaceslick_1_1sim_1_1exch.html#ad140223292b6072952ee962d834a2144',1,'slick::sim::exch']]]
 ];

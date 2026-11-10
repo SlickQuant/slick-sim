@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['orderbooktype_0',['OrderBookType',['../namespaceslick_1_1sim.html#a86368e1b2521bcca08b07a124195b85d',1,'slick::sim']]],
-  ['orderstatus_1',['OrderStatus',['../namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8',1,'slick::sim']]],
-  ['ordertype_2',['OrderType',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566b',1,'slick::sim']]],
-  ['ordrejectreason_3',['OrdRejectReason',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337',1,'slick::sim']]]
+  ['mdsubscriptionrejectreason_0',['MDSubscriptionRejectReason',['../namespaceslick_1_1sim.html#a0a9f0bd1a7d704fe4599a7420d34e1d3',1,'slick::sim']]],
+  ['mdupdateaction_1',['MDUpdateAction',['../namespaceslick_1_1sim.html#ab1e934b8e03a21e64365d200420af2b7',1,'slick::sim']]],
+  ['mdupdatetype_2',['MDUpdateType',['../namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11',1,'slick::sim']]],
+  ['messagetype_3',['MessageType',['../namespaceslick_1_1sim.html#a77a6fca48956c6f98d257c78f08f1685',1,'slick::sim']]]
 ];

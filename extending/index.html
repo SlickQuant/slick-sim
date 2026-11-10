@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://slickquant.github.io/slick-sim/extending/">
       
       
-        <link rel="prev" href="../market-data/">
+        <link rel="prev" href="../pcap-replay/">
       
       
         <link rel="next" href="../configuration/">
@@ -305,6 +305,8 @@
       
         
       
+        
+      
     
     
     
@@ -477,6 +479,34 @@
     
   
     Market data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pcap-replay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCAP replay
   
 
     
@@ -1428,8 +1458,10 @@ against each other. Gate the feed-specific paths on a <code>use_live_feed_</code
 existing adapters do, so the same adapter serves both modes.</p>
 <p>A <strong>historical replay</strong> feed implements this same interface — <code>start()</code> begins replaying recorded
 data and <code>stop()</code> halts it — and drives the book through exactly the same phantom-order calls
-described below. Nothing downstream needs to know the data is not live. None exists yet; see
-<a href="../known-gaps/#the-historical-data-feed-does-not-exist">Known gaps</a>.</p>
+described below. Nothing downstream needs to know the data is not live. CME and ICE have one, which
+replays recorded multicast captures through their live handlers; see <a href="../pcap-replay/">PCAP replay</a>.
+<code>PcapFeedBase</code> supplies the loading, pacing and control channel, so a binary-feed venue only adds how a
+packet reaches its handler.</p>
 <h2 id="4-implement-the-order-gateway">4. Implement the order gateway<a class="headerlink" href="#4-implement-the-order-gateway" title="Permanent link">&para;</a></h2>
 <p>For an HTTP/WebSocket venue, subclass
 <a href="https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/rest_ws_order_gateway.hpp"><code>RestWsOrderGateway</code></a>,

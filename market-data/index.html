@@ -16,7 +16,7 @@
         <link rel="prev" href="../order-book/">
       
       
-        <link rel="next" href="../extending/">
+        <link rel="next" href="../pcap-replay/">
       
       
         
@@ -292,6 +292,8 @@
   
     
     
+      
+        
       
         
       
@@ -832,6 +834,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pcap-replay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCAP replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1445,9 +1475,8 @@ drive the book. The <code>md_queue_</code> and publisher still work as described
 <h2 id="feeds">Feeds<a class="headerlink" href="#feeds" title="Permanent link">&para;</a></h2>
 <p><code>MDFeed</code>
 (<a href="https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/md_feed.hpp"><code>md_feed.hpp</code></a>)
-is a two-method interface — <code>start()</code> and <code>stop()</code>. Two implementations exist, both live; a
-historical replay feed would slot in at the same interface but
-<a href="../known-gaps/#the-historical-data-feed-does-not-exist">does not exist yet</a>.</p>
+is a two-method interface — <code>start()</code> and <code>stop()</code>. The two implementations here are live. CME and
+ICE also have a replay feed behind the same interface; see <a href="../pcap-replay/">PCAP replay</a>.</p>
 <h3 id="coinbaselivewsfeed"><code>CoinbaseLiveWSFeed</code><a class="headerlink" href="#coinbaselivewsfeed" title="Permanent link">&para;</a></h3>
 <p>A thin wrapper over <code>coinbase::WebSocketClient</code>. On <code>start()</code> it subscribes the configured symbols to
 the <code>LEVEL2</code> and <code>MARKET_TRADES</code> channels. Callbacks are delivered to the <code>CoinbaseExchange</code> (which
@@ -1470,8 +1499,8 @@ than calling back on its own thread; the exchange thread pumps them with
 less bandwidth. <code>addCoin()</code> allows subscribing more coins after <code>start()</code>.</p>
 <p>Config selects it by <code>"type": "hyperliquid_live_ws"</code>, and unlike Coinbase the feed object is built in
 the constructor from the <code>coins</code> array, so those coins are subscribed at startup.</p>
-<p>Any other <code>type</code> value is silently ignored. The
-<a href="../known-gaps/#the-historical-data-feed-does-not-exist">Alpaca historical feed does not exist</a>.</p>
+<p>Any other <code>type</code> value is silently ignored. Neither venue has a replay feed
+(<a href="../known-gaps/#only-cme-and-ice-can-replay-history">known gaps</a>).</p>
 <h2 id="coinbase-time-ordered-event-sequencing">Coinbase: time-ordered event sequencing<a class="headerlink" href="#coinbase-time-ordered-event-sequencing" title="Permanent link">&para;</a></h2>
 <p>Coinbase delivers <code>l2_data</code> and <code>market_trades</code> on separate channels with independent latency, so
 messages can arrive out of order relative to their exchange timestamps. Applying them in arrival

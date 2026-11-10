@@ -6,5 +6,6 @@ var searchData=
   ['coinbaselivewsfeed_3',['CoinbaseLiveWSFeed',['../classslick_1_1sim_1_1md__feed_1_1CoinbaseLiveWSFeed.html',1,'slick::sim::md_feed']]],
   ['coinbasepublisher_4',['CoinbasePublisher',['../classslick_1_1sim_1_1md__publisher_1_1CoinbasePublisher.html',1,'slick::sim::md_publisher']]],
   ['coinbaserestordergateway_5',['CoinbaseRestOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html',1,'slick::sim::order_gateway']]],
-  ['coinbasewebsocketordergateway_6',['CoinbaseWebsocketOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway.html',1,'slick::sim::order_gateway']]]
+  ['coinbasewebsocketordergateway_6',['CoinbaseWebsocketOrderGateway',['../classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway.html',1,'slick::sim::order_gateway']]],
+  ['controlheader_7',['ControlHeader',['../structslick_1_1sim_1_1ControlHeader.html',1,'slick::sim']]]
 ];

@@ -14,5 +14,6 @@ var searchData=
   ['coinbase_5ftrade_5fencoder_2ehpp_11',['coinbase_trade_encoder.hpp',['../coinbase__trade__encoder_8hpp.html',1,'']]],
   ['coinbase_5fvenue_2ecpp_12',['coinbase_venue.cpp',['../coinbase__venue_8cpp.html',1,'']]],
   ['coinbase_5fws_5forder_5fgateway_2ecpp_13',['coinbase_ws_order_gateway.cpp',['../coinbase__ws__order__gateway_8cpp.html',1,'']]],
-  ['coinbase_5fws_5forder_5fgateway_2ehpp_14',['coinbase_ws_order_gateway.hpp',['../coinbase__ws__order__gateway_8hpp.html',1,'']]]
+  ['coinbase_5fws_5forder_5fgateway_2ehpp_14',['coinbase_ws_order_gateway.hpp',['../coinbase__ws__order__gateway_8hpp.html',1,'']]],
+  ['control_5fmessages_2ehpp_15',['control_messages.hpp',['../control__messages_8hpp.html',1,'']]]
 ];
