@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(ExchangeSimulator VERSION 0.5.1 LANGUAGES CXX)
+project(ExchangeSimulator VERSION 0.6.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,6 +17,7 @@ option(SLICK_SIM_ENABLE_HYPERLIQUID "Build the Hyperliquid venue adapter" ON)
 # The transport base for venues on a binary session protocol (TcpOrderGateway, over
 # slick-socket). Needs nothing but slick-socket.
 option(SLICK_SIM_ENABLE_TCP_GATEWAY "Build the TCP order gateway base" ON)
+option(SLICK_SIM_ENABLE_PCAP_FEED "Build the pcap replay feed support (needs libpcap)" ON)
 
 # The generic FIX/JSON message parsers. Nothing constructs them at runtime, and they
 # are the only reason QuickFIX would be a dependency, so they are off by default.
@@ -48,7 +49,7 @@ endif()
 
 include(FetchContent)
 
-set(SLICK_QUEUE_MIN_VERSION 2.3.0)
+set(SLICK_QUEUE_MIN_VERSION 2.4.0)
 set(SLICK_LOGGER_MIN_VERSION 2.4.0)
 set(SLICK_OBJECT_POOL_MIN_VERSION 0.2.0)
 set(SLICK_ORDERBOOK_MIN_VERSION 1.1.0)
@@ -89,6 +90,10 @@ if (NOT slick-queue_FOUND)
         OVERRIDE_FIND_PACKAGE
     )
     FetchContent_MakeAvailable(slick-queue)
+    # An older slick-queue installed beside it (vcpkg) is on the include path ahead of this one,
+    # and a translation unit that reaches both fails on the definitions they share. Put the
+    # fetched headers first so that every <slick/queue.hpp> is this one.
+    include_directories(BEFORE SYSTEM ${slick-queue_SOURCE_DIR}/include)
 else()
     message(STATUS "Found slick-queue ${slick-queue_VERSION}: ${slick-queue_DIR}")
 endif()

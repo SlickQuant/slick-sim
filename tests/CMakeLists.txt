@@ -68,6 +68,19 @@ if(SLICK_SIM_ENABLE_TCP_GATEWAY)
     )
 endif()
 
+if(TARGET slick_sim_pcap)
+    list(APPEND SLICK_SIM_TEST_SOURCES
+        unit/md_feed/test_pcap_reader.cpp
+        unit/md_feed/test_pcap_replay_source.cpp
+    )
+endif()
+
+if(TARGET slick_sim_pcap_feed)
+    list(APPEND SLICK_SIM_TEST_SOURCES
+        unit/md_feed/test_pcap_feed.cpp
+    )
+endif()
+
 if(TARGET slick_sim_venue_coinbase)
     list(APPEND SLICK_SIM_TEST_SOURCES
         unit/venues/coinbase/test_coinbase_exchange.cpp
@@ -104,6 +117,12 @@ target_link_libraries(slick_sim_tests
         GTest::gtest
         GTest::gtest_main
 )
+if(TARGET slick_sim_pcap)
+    target_link_libraries(slick_sim_tests PRIVATE slick_sim_pcap)
+endif()
+if(TARGET slick_sim_pcap_feed)
+    target_link_libraries(slick_sim_tests PRIVATE slick_sim_pcap_feed)
+endif()
 # Same helper the executable uses, so the two binaries cannot end up with
 # different venue sets. Each venue's PUBLIC dependencies come with it, which is how
 # the Hyperliquid info-proxy suite gets slick::net::Http - a library that only the

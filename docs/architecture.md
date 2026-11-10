@@ -39,17 +39,15 @@ entry whose `type` the adapter recognises. Omit `md_feeds` entirely, or give it 
     before sending orders for it, or they are rejected with `UNKNOWN_CONTRACT`. The subscription
     simply returns an empty book instead of a live snapshot.
 
-### Historical replay — planned
+### Historical replay
 
-A historical feed would implement the same `MDFeed` interface and drive the book from recorded data
-rather than a live socket, so clients' orders match against a past market at whatever rate the replay
-runs. Everything downstream is unchanged: the same phantom-order model, the same matching engine, the
-same venue-native output.
+CME and ICE can drive the book from recorded multicast captures instead of live sockets: the
+`cme_mdp3_pcap` and `ice_impact_pcap` feeds. They run the same protocol handlers as the live feeds, so
+everything downstream is unchanged: the same phantom-order model, the same matching engine, the same
+venue-native output. The sim loads the window, builds the book from the snapshot capture, and holds it
+until a client sends START over a control channel. See [PCAP replay](pcap-replay.md).
 
-Nothing implements this yet — `alpaca_historical_data_feed.hpp` is a zero-byte placeholder and
-`md_feed`'s `CMakeLists.txt` compiles only the Hyperliquid live feed. See
-[Known gaps](known-gaps.md#the-historical-data-feed-does-not-exist) and, for what a feed has to
-provide, [Adding an exchange](extending.md#3-implement-the-feed-optional).
+Coinbase and Hyperliquid have no replay feed.
 
 ## Phantom orders and simulator orders
 

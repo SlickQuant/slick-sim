@@ -94,19 +94,12 @@ leveling or LMM allocations, and only CME and ICE can select it.
 **What it means:** CME's Allocation, Threshold Pro-Rata and LMM algorithms are approximated by plain
 pro-rata.
 
-### The historical-data feed does not exist
+### Only CME and ICE can replay history
 
-[`alpaca_historical_data_feed.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/alpaca_historical_data_feed.hpp)
-is a **zero-byte file**. `src/md_feed/` now holds only the `MDFeed` interface — every implementation
-lives with its venue under `src/venues/` — so a replay feed would be a new venue-independent
-implementation of that same two-method interface.
+[PCAP replay](pcap-replay.md) drives CME and ICE from recorded multicast captures. Coinbase and
+Hyperliquid have no replay feed: their live WebSocket feeds are their only source of market data.
 
-**What it means:** historical replay is an intended
-[operating mode](architecture.md#historical-replay-planned) — matching client orders against
-recorded market data — but no feed implements it. Live WebSocket feeds are the only source of market
-data today.
-
-An unrecognised `md_feeds[].type` is silently ignored, leaving the venue
+An unrecognised `md_feeds[].type` is silently ignored by Coinbase and Hyperliquid, leaving the venue
 [self-contained](architecture.md#self-contained-a-conventional-exchange-simulator). If you expected
 live data but see an empty book, check the feed type and startup log.
 

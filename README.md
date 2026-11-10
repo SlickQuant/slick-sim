@@ -85,7 +85,7 @@ Library targets:
 | `matching_engine` | FIFO (`FifoMatchingEngine`) and pro-rata (`ProRataMatchingEngine`) matching, and order lifecycle notifications (ack, fill, modify, cancel) |
 | `order_gateway` | Order-entry bases: `RestWsOrderGateway` for HTTP/WebSocket venues and `TcpOrderGateway`, the TCP transport base for venues on a binary session protocol, with `RetransmitRing` and `ClOrdIdIndex` for their sessions |
 | `market_data_publisher` | Publishes book updates and executed trades in each venue's own WebSocket wire format |
-| `md_feed` | Ingests each venue's live public market data feed; `MulticastPacketFeed` receives a binary feed's multicast groups |
+| `md_feed` | Ingests each venue's live public market data feed; `MulticastPacketFeed` receives a binary feed's multicast groups; `PcapFeedBase` replays recorded captures behind a control channel ([PCAP replay](docs/pcap-replay.md)) |
 | `common`, `order_book`, `utils` | Header-only: shared types (`Order`, `Request`, `Venue`, fixed-point price/qty helpers), `OrderBook` (wraps the external `slick-orderbook` L3 book), and misc helpers |
 
 ## Prerequisites

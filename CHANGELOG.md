@@ -1,3 +1,26 @@
+# v0.6.0 - 11-09-2026
+
+## Added
+
+- **PCAP replay** for binary-feed venues. `PcapFeedBase` loads recorded multicast captures for a
+  `begin`..`end` window, builds the venue's book from the snapshot capture, and holds it until a client
+  sends START. Then it replays at the capture's pace (`speed`: `1` real time, `N` times faster, `0` as fast
+  as it can). It stamps the published market data with the wall clock. See `docs/pcap-replay.md`.
+- A TCP **control channel** (`order_gateway/pcap_control_server`, `common/control_messages.hpp`) carries
+  `FEED_STATUS` (`LOADING`, `SYNCING`, `READY`, `REPLAYING`, `FINISHED`, `ERROR`, with progress and the capture
+  time reached) to clients, and their one request back, `START`, which replays every loaded instrument.
+- `PcapReader` reads classic pcap and pcapng, over Ethernet or raw IP, and streams `.zst` and `.gz` files
+  through `zstd` and `gzip`. `PcapReplaySource` merges the groups of a channel by capture time on a
+  reader thread, and skips the daily files a later one already covers. `ReplayPacer` and
+  `ReplayGate` hold the pacing and whether the publisher may send yet.
+- `exchange/pcap_exchange.hpp` holds what a venue's exchange instance does for a pcap feed (the gate, the
+  control port claim, the live-feed conflict check, the wall-clock stamp), and `ReplayGateView` what its
+  publisher channel does with the gate, so CME and ICE share them.
+- The capture reader hands batches to the exchange thread through a lock-free `slick::spsc_queue`. Needs
+  slick-queue 2.4.0 or later.
+- `SLICK_SIM_ENABLE_PCAP_FEED` (on by default when libpcap is found) builds the `slick_sim_pcap` and
+  `slick_sim_pcap_feed` targets. Venues compile their pcap feed under `SLICK_SIM_HAS_PCAP_FEED`.
+
 # v0.5.1 - 11-03-2026
 
 ## Added

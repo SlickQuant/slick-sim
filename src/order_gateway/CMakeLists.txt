@@ -18,6 +18,7 @@
 if(SLICK_SIM_ENABLE_TCP_GATEWAY)
     add_library(order_gateway STATIC
         tcp_order_gateway.cpp
+        pcap_control_server.cpp
     )
     target_include_directories(order_gateway PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     # PUBLIC: tcp_order_gateway.hpp includes the slick-socket server it derives from.
