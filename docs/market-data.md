@@ -22,9 +22,8 @@ flowchart LR
 
 `MDFeed`
 ([`md_feed.hpp`](https://github.com/SlickQuant/slick-sim/blob/main/src/md_feed/md_feed.hpp))
-is a two-method interface — `start()` and `stop()`. Two implementations exist, both live; a
-historical replay feed would slot in at the same interface but
-[does not exist yet](known-gaps.md#the-historical-data-feed-does-not-exist).
+is a two-method interface — `start()` and `stop()`. The two implementations here are live. CME and
+ICE also have a replay feed behind the same interface; see [PCAP replay](pcap-replay.md).
 
 ### `CoinbaseLiveWSFeed`
 
@@ -59,8 +58,8 @@ less bandwidth. `addCoin()` allows subscribing more coins after `start()`.
 Config selects it by `"type": "hyperliquid_live_ws"`, and unlike Coinbase the feed object is built in
 the constructor from the `coins` array, so those coins are subscribed at startup.
 
-Any other `type` value is silently ignored. The
-[Alpaca historical feed does not exist](known-gaps.md#the-historical-data-feed-does-not-exist).
+Any other `type` value is silently ignored. Neither venue has a replay feed
+([known gaps](known-gaps.md#only-cme-and-ice-can-replay-history)).
 
 ## Coinbase: time-ordered event sequencing
 

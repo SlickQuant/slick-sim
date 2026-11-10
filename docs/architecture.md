@@ -10,7 +10,7 @@ identical in every case; only the source of the resting liquidity changes.
 | --- | --- | --- | --- |
 | **Shadowing** | A live feed (`coinbase_live_ws` / `hyperliquid_live_ws`) | Real venue quotes, mirrored continuously | Implemented |
 | **Self-contained** | Omitted, or no recognised `type` | Only the orders clients send | Implemented |
-| **Historical replay** | A historical feed | Recorded market data, replayed | **Not implemented** |
+| **Historical replay** | A pcap feed (`cme_mdp3_pcap`, `ice_impact_pcap`) | Recorded multicast captures, replayed on a client's START | CME and ICE; see [PCAP replay](pcap-replay.md) |
 
 ### Shadowing — matching against the live market
 
@@ -51,7 +51,7 @@ Coinbase and Hyperliquid have no replay feed.
 
 ## Phantom orders and simulator orders
 
-Whenever a feed *is* driving the book — live today, historical later — the book holds two kinds of
+Whenever a feed *is* driving the book — live or replayed — the book holds two kinds of
 liquidity:
 
 - **Phantom orders** — synthesised from the market-data feed to represent the market's resting

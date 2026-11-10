@@ -198,8 +198,10 @@ existing adapters do, so the same adapter serves both modes.
 
 A **historical replay** feed implements this same interface — `start()` begins replaying recorded
 data and `stop()` halts it — and drives the book through exactly the same phantom-order calls
-described below. Nothing downstream needs to know the data is not live. None exists yet; see
-[Known gaps](known-gaps.md#the-historical-data-feed-does-not-exist).
+described below. Nothing downstream needs to know the data is not live. CME and ICE have one, which
+replays recorded multicast captures through their live handlers; see [PCAP replay](pcap-replay.md).
+`PcapFeedBase` supplies the loading, pacing and control channel, so a binary-feed venue only adds how a
+packet reaches its handler.
 
 ## 4. Implement the order gateway
 
