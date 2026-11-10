@@ -41,22 +41,6 @@
             "md_publisher": {
                 "port": 5001
             }
-        },
-        "cme": {
-            "enabled": false,
-            "md_feeds": [
-                {
-                    "type": "mbo_live_feed",
-                    "address": "",
-                    "port": ""
-                }
-            ],
-            "order_gateway": {
-                "port": 4003
-            },
-            "md_publisher": {
-                "port": 5002
-            }
         }
     }
 }
