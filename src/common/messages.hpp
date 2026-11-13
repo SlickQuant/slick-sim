@@ -96,6 +96,7 @@ enum class OrdRejectReason : uint16_t {
     INVALID_MIN_QTY,
     CLIENT_ORDER_ID_ALREADY_EXISTS,
     FOK_CANNOT_FILL,
+    LICENSE_REQUIRED,
 };
 
 inline std::string to_string(OrdRejectReason reject)
@@ -145,6 +146,8 @@ inline std::string to_string(OrdRejectReason reject)
             return "CLIENT_ORDER_ID_ALREADY_EXISTS";
         case OrdRejectReason::FOK_CANNOT_FILL:
             return "FOK_CANNOT_FILL";
+        case OrdRejectReason::LICENSE_REQUIRED:
+            return "LICENSE_REQUIRED";
     }
     return std::format("UNHANDLED OrdRejectReason ({0})", static_cast<std::underlying_type<OrdRejectReason>::type>(reject));
 }

@@ -46,6 +46,9 @@ public:
     }
     
 protected:
+    // Venue admission check for new and modify requests, run again when a queued
+    // request reaches the book. Cancels and session recovery skip it.
+    virtual OrdRejectReason newOrderAdmission() const noexcept { return OrdRejectReason::NONE; }
     void processRequest();
     void handleNewOrderRequest(const Request &request);
     void handleModifyOrderRequest(const Request &request);

@@ -96,26 +96,28 @@ The fixed-size fields limit `client_order_id` and `order_id` to 37 bytes each (U
 
 [`handleNewOrderRequest`](https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L95-L149):
 
-1. Look up the `Symbol` by name; reject with `UNKNOWN_CONTRACT` if absent. A symbol only exists once
+1. Ask the venue's `newOrderAdmission()`. Anything but `NONE` rejects the request with that reason.
+   The base class always returns `NONE`.
+2. Look up the `Symbol` by name; reject with `UNKNOWN_CONTRACT` if absent. A symbol only exists once
    something has subscribed to its market data, so **orders for an instrument nobody has subscribed
    to are always rejected**.
-2. If `client_order_id` is non-empty and already maps to a live order, reject with
+3. If `client_order_id` is non-empty and already maps to a live order, reject with
    `CLIENT_ORDER_ID_ALREADY_EXISTS`.
-3. `allocateOrder()` from the book's object pool — this assigns a fresh `uint64_t id`, a random UUID
+4. `allocateOrder()` from the book's object pool. This assigns a fresh `uint64_t id`, a random UUID
    `order_id`, and `created_time`.
-4. Copy the request fields in, set `status = PENDING_NEW`, and send the pending-new report.
-5. `Symbol::addOrder(order, request_time)`, which runs the matching engine and, if anything is left
+5. Copy the request fields in, set `status = PENDING_NEW`, and send the pending-new report.
+6. `Symbol::addOrder(order, request_time)`, which runs the matching engine and, if anything is left
    and the TIF permits, rests the remainder on the book.
-6. Publish any trade summaries and cached level updates to `md_queue_`.
-7. Reject if the engine returned a reason **other than** `FOK_CANNOT_FILL` — an unfillable FOK has
+7. Publish any trade summaries and cached level updates to `md_queue_`.
+8. Reject if the engine returned a reason **other than** `FOK_CANNOT_FILL`. An unfillable FOK has
    already been cancelled, so turning it into a reject too would double-report.
 
 ### 4. Modify
 
-`handleModifyOrderRequest` looks up the order by `client_order_id` if present, otherwise by
-`order_id`; rejects with `UNKNOWN_ORDER` if neither finds it. It sets `PENDING_REPLACE`, sends the
-pending-replace report, then calls `Symbol::modifyOrder`, which re-enters the matching engine with
-the new price and quantity. See
+`handleModifyOrderRequest` runs the same `newOrderAdmission()` check first, then looks up the order
+by `client_order_id` if present, otherwise by `order_id`; rejects with `UNKNOWN_ORDER` if neither
+finds it. It sets `PENDING_REPLACE`, sends the pending-replace report, then calls
+`Symbol::modifyOrder`, which re-enters the matching engine with the new price and quantity. See
 [Matching engine](matching-engine.md#modifies-re-enter-the-matching-loop) for what happens to queue
 priority.
 
@@ -237,7 +239,7 @@ The code produces these statuses: `PENDING_NEW`, `NEW`, `PARTIALLY_FILLED`, `FIL
 
 ### `OrdRejectReason`
 
-Twenty-two values are declared. These are the ones actually raised:
+Twenty-three values are declared. These are the ones actually raised:
 
 | Reason | Raised by |
 | --- | --- |
@@ -246,6 +248,7 @@ Twenty-two values are declared. These are the ones actually raised:
 | `CLIENT_ORDER_ID_ALREADY_EXISTS` | New order whose `client_order_id` is already live |
 | `SMP` | `FifoMatchingEngine` under `CANCEL_NEWEST` when a self-match is detected |
 | `FOK_CANNOT_FILL` | FOK pre-check failure. Returned to `Symbol` but deliberately *not* turned into a client reject |
+| `LICENSE_REQUIRED` | `newOrderAdmission()` overrides on licensed venues. The core never raises it |
 
 The remaining values — `MARKET_CLOSED`, `MARKET_HALTED`, `INVALID_TICK_SIZE`, `INVALID_QTY`,
 `FAK_MUST_BE_LIMIT`, the iceberg and stop-price reasons, and so on — are declared and stringified but

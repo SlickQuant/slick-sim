@@ -90,6 +90,13 @@ joins the exchange thread — in that order, joining the thread **before** touch
 exchange and `~Exchange()` stops it again, so the second pass returns immediately rather than
 unsubscribing a feed twice.
 
+### Refusing new orders
+
+Override `newOrderAdmission()` to refuse new and modify requests across the whole venue. The
+exchange calls it on its own thread before any other check. Any value other than
+`OrdRejectReason::NONE` becomes the reject reason. Cancels skip it, so clients can always pull their
+orders. It is `const noexcept` and runs for every request, so keep it to a few atomic loads.
+
 ### Symbol creation
 
 ```cpp

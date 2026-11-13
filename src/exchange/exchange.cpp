@@ -229,6 +229,11 @@ void Exchange::assignMatching(Symbol *symbol)
 
 void Exchange::handleNewOrderRequest(const Request &request)
 {
+    if (const auto reason = newOrderAdmission(); reason != OrdRejectReason::NONE)
+    {
+        rejectNewOrderRequest(request, reason);
+        return;
+    }
     auto *symbol = symbol_mgr.getSymbol(request.symbol, venue_);
     if (!symbol)
     {
@@ -286,6 +291,11 @@ void Exchange::handleNewOrderRequest(const Request &request)
 
 void Exchange::handleModifyOrderRequest(const Request &request)
 {
+    if (const auto reason = newOrderAdmission(); reason != OrdRejectReason::NONE)
+    {
+        rejectModifyOrderRequest(request, reason);
+        return;
+    }
     auto *symbol = symbol_mgr.getSymbol(request.symbol, venue_);
     if (!symbol)
     {

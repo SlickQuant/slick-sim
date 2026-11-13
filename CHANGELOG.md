@@ -1,3 +1,13 @@
+# v0.6.1 - 11-13-2026
+
+## Added
+
+- `Exchange::newOrderAdmission()`, a protected virtual that lets a venue refuse new and modify
+  requests. The exchange calls it first when it pulls a request off the queue and rejects with
+  whatever reason it returns. Cancels skip it. The default returns `NONE`, so venues that don't
+  override it behave as before.
+- `OrdRejectReason::LICENSE_REQUIRED`, for a venue that only trades under a license.
+
 # v0.6.0 - 11-09-2026
 
 ## Added
