@@ -17,6 +17,7 @@ var classslick_1_1sim_1_1exch_1_1Exchange =
     [ "markMarketChanged", "classslick_1_1sim_1_1exch_1_1Exchange.html#a6793bd60ebc5c28e00cdbde152cf2c67", null ],
     [ "matchingConfig", "classslick_1_1sim_1_1exch_1_1Exchange.html#a205432fc827d12db16b0d6f62ab84d45", null ],
     [ "md_queue", "classslick_1_1sim_1_1exch_1_1Exchange.html#a62c158a5e7e28c807017ec2aa1eb0da8", null ],
+    [ "newOrderAdmission", "classslick_1_1sim_1_1exch_1_1Exchange.html#a9debdc4b86db91f037badbe8126bfd86", null ],
     [ "nextVenueTradeId", "classslick_1_1sim_1_1exch_1_1Exchange.html#a21d9d0718b643b607b92da55a57caa7d", null ],
     [ "poll", "classslick_1_1sim_1_1exch_1_1Exchange.html#a43fe926cfdaf3b774d1f69fce4b36012", null ],
     [ "processRequest", "classslick_1_1sim_1_1exch_1_1Exchange.html#af4c6b812544b7568e57df4be92013736", null ],

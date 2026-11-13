@@ -632,6 +632,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#refusing-new-orders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refusing new orders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#symbol-creation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1095,6 +1106,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#refusing-new-orders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refusing new orders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#symbol-creation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1360,6 +1382,11 @@ joins the exchange thread — in that order, joining the thread <strong>before</
 <code>poll()</code> and <code>handleMdUnsubscription</code> both run on it. It is also idempotent: <code>main()</code> stops each
 exchange and <code>~Exchange()</code> stops it again, so the second pass returns immediately rather than
 unsubscribing a feed twice.</p>
+<h3 id="refusing-new-orders">Refusing new orders<a class="headerlink" href="#refusing-new-orders" title="Permanent link">&para;</a></h3>
+<p>Override <code>newOrderAdmission()</code> to refuse new and modify requests across the whole venue. The
+exchange calls it on its own thread before any other check. Any value other than
+<code>OrdRejectReason::NONE</code> becomes the reject reason. Cancels skip it, so clients can always pull their
+orders. It is <code>const noexcept</code> and runs for every request, so keep it to a few atomic loads.</p>
 <h3 id="symbol-creation">Symbol creation<a class="headerlink" href="#symbol-creation" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">Symbol</span><span class="o">*</span><span class="w"> </span><span class="nf">KrakenExchange::addSymbol</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="w"> </span><span class="n">symbol</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">sym</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SymbolManager</span><span class="o">::</span><span class="n">instance</span><span class="p">().</span><span class="n">createSymbol</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span><span class="w"> </span><span class="n">Venue</span><span class="o">::</span><span class="n">KRAKEN</span><span class="p">);</span>

@@ -1,9 +1,10 @@
 var searchData=
 [
   ['name_0',['name',['../classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#ac263f4840f06059fcb1bdc1a674ffe52',1,'slick::sim::md_feed::MulticastPacketFeed::name()'],['../classslick_1_1sim_1_1md__feed_1_1PcapFeedBase.html#a21ca09d501c7e9a395e6368c3b07c71e',1,'slick::sim::md_feed::PcapFeedBase::name()']]],
-  ['next_1',['next',['../classslick_1_1sim_1_1md__feed_1_1PcapReader.html#a978d6916fa908091f3b22884114e444b',1,'slick::sim::md_feed::PcapReader']]],
-  ['nextorderid_2',['nextOrderId',['../namespaceslick_1_1sim_1_1utils.html#a3ecda281a1b70afaf46bea72c8ceac5e',1,'slick::sim::utils']]],
-  ['nextorderpriority_3',['nextOrderPriority',['../classslick_1_1sim_1_1OrderBook.html#a204ee867d178b29a4a379cf29b129160',1,'slick::sim::OrderBook']]],
-  ['nexttradeid_4',['nextTradeId',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#ab19d9873ddc8982c1ddab45b953ceed5',1,'slick::sim::engine::MatchingEngine']]],
-  ['nextvenuetradeid_5',['nextVenueTradeId',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a21d9d0718b643b607b92da55a57caa7d',1,'slick::sim::exch::Exchange']]]
+  ['neworderadmission_1',['newOrderAdmission',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a9debdc4b86db91f037badbe8126bfd86',1,'slick::sim::exch::Exchange']]],
+  ['next_2',['next',['../classslick_1_1sim_1_1md__feed_1_1PcapReader.html#a978d6916fa908091f3b22884114e444b',1,'slick::sim::md_feed::PcapReader']]],
+  ['nextorderid_3',['nextOrderId',['../namespaceslick_1_1sim_1_1utils.html#a3ecda281a1b70afaf46bea72c8ceac5e',1,'slick::sim::utils']]],
+  ['nextorderpriority_4',['nextOrderPriority',['../classslick_1_1sim_1_1OrderBook.html#a204ee867d178b29a4a379cf29b129160',1,'slick::sim::OrderBook']]],
+  ['nexttradeid_5',['nextTradeId',['../classslick_1_1sim_1_1engine_1_1MatchingEngine.html#ab19d9873ddc8982c1ddab45b953ceed5',1,'slick::sim::engine::MatchingEngine']]],
+  ['nextvenuetradeid_6',['nextVenueTradeId',['../classslick_1_1sim_1_1exch_1_1Exchange.html#a21d9d0718b643b607b92da55a57caa7d',1,'slick::sim::exch::Exchange']]]
 ];

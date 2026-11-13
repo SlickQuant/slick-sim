@@ -1358,25 +1358,27 @@ a packed struct with a union payload:</p>
 <h3 id="3-new-order">3. New order<a class="headerlink" href="#3-new-order" title="Permanent link">&para;</a></h3>
 <p><a href="https://github.com/SlickQuant/slick-sim/blob/main/src/exchange/exchange.cpp#L95-L149"><code>handleNewOrderRequest</code></a>:</p>
 <ol>
+<li>Ask the venue's <code>newOrderAdmission()</code>. Anything but <code>NONE</code> rejects the request with that reason.
+   The base class always returns <code>NONE</code>.</li>
 <li>Look up the <code>Symbol</code> by name; reject with <code>UNKNOWN_CONTRACT</code> if absent. A symbol only exists once
    something has subscribed to its market data, so <strong>orders for an instrument nobody has subscribed
    to are always rejected</strong>.</li>
 <li>If <code>client_order_id</code> is non-empty and already maps to a live order, reject with
    <code>CLIENT_ORDER_ID_ALREADY_EXISTS</code>.</li>
-<li><code>allocateOrder()</code> from the book's object pool — this assigns a fresh <code>uint64_t id</code>, a random UUID
+<li><code>allocateOrder()</code> from the book's object pool. This assigns a fresh <code>uint64_t id</code>, a random UUID
    <code>order_id</code>, and <code>created_time</code>.</li>
 <li>Copy the request fields in, set <code>status = PENDING_NEW</code>, and send the pending-new report.</li>
 <li><code>Symbol::addOrder(order, request_time)</code>, which runs the matching engine and, if anything is left
    and the TIF permits, rests the remainder on the book.</li>
 <li>Publish any trade summaries and cached level updates to <code>md_queue_</code>.</li>
-<li>Reject if the engine returned a reason <strong>other than</strong> <code>FOK_CANNOT_FILL</code> — an unfillable FOK has
+<li>Reject if the engine returned a reason <strong>other than</strong> <code>FOK_CANNOT_FILL</code>. An unfillable FOK has
    already been cancelled, so turning it into a reject too would double-report.</li>
 </ol>
 <h3 id="4-modify">4. Modify<a class="headerlink" href="#4-modify" title="Permanent link">&para;</a></h3>
-<p><code>handleModifyOrderRequest</code> looks up the order by <code>client_order_id</code> if present, otherwise by
-<code>order_id</code>; rejects with <code>UNKNOWN_ORDER</code> if neither finds it. It sets <code>PENDING_REPLACE</code>, sends the
-pending-replace report, then calls <code>Symbol::modifyOrder</code>, which re-enters the matching engine with
-the new price and quantity. See
+<p><code>handleModifyOrderRequest</code> runs the same <code>newOrderAdmission()</code> check first, then looks up the order
+by <code>client_order_id</code> if present, otherwise by <code>order_id</code>; rejects with <code>UNKNOWN_ORDER</code> if neither
+finds it. It sets <code>PENDING_REPLACE</code>, sends the pending-replace report, then calls
+<code>Symbol::modifyOrder</code>, which re-enters the matching engine with the new price and quantity. See
 <a href="../matching-engine/#modifies-re-enter-the-matching-loop">Matching engine</a> for what happens to queue
 priority.</p>
 <h3 id="5-cancel">5. Cancel<a class="headerlink" href="#5-cancel" title="Permanent link">&para;</a></h3>
@@ -1616,7 +1618,7 @@ any price".</p>
 <p>The code produces these statuses: <code>PENDING_NEW</code>, <code>NEW</code>, <code>PARTIALLY_FILLED</code>, <code>FILLED</code>, <code>PENDING_REPLACE</code>,
 <code>REPLACED</code>, <code>PENDING_CANCEL</code>, <code>CANCELED</code>, <code>REJECTED</code>.</p>
 <h3 id="ordrejectreason"><code>OrdRejectReason</code><a class="headerlink" href="#ordrejectreason" title="Permanent link">&para;</a></h3>
-<p>Twenty-two values are declared. These are the ones actually raised:</p>
+<p>Twenty-three values are declared. These are the ones actually raised:</p>
 <table>
 <thead>
 <tr>
@@ -1644,6 +1646,10 @@ any price".</p>
 <tr>
 <td><code>FOK_CANNOT_FILL</code></td>
 <td>FOK pre-check failure. Returned to <code>Symbol</code> but deliberately <em>not</em> turned into a client reject</td>
+</tr>
+<tr>
+<td><code>LICENSE_REQUIRED</code></td>
+<td><code>newOrderAdmission()</code> overrides on licensed venues. The core never raises it</td>
 </tr>
 </tbody>
 </table>

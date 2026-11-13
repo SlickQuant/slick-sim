@@ -5,10 +5,11 @@ var searchData=
   ['l3_2',['L3',['../namespaceslick_1_1sim.html#a86368e1b2521bcca08b07a124195b85da842ce6eb510f7e7047da883915ec90e0',1,'slick::sim']]],
   ['level_3',['level',['../namespaceslick_1_1sim_1_1engine_1_1detail.html#a046114254ee3c8ba7a5e1665092fe781aa0db49ba470c1c9ae2128c3470339153',1,'slick::sim::engine::detail::Level'],['../namespaceslick_1_1sim.html#ad1b99a9a1b8e271f9197953c4b44ae11ac56a104b2dad38f31cf71b5c61463e73',1,'slick::sim::LEVEL']]],
   ['level_5fupdate_4',['LEVEL_UPDATE',['../namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a7d3d2ab47ce9fd37525aa4edfdf9ccec',1,'slick::sim::exch']]],
-  ['limit_5',['LIMIT',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba3d49b5cb41d88e381beb0d887d7023a2',1,'slick::sim']]],
-  ['liquidation_6',['LIQUIDATION',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba0be41ffc415fb247092a83c59ac57dd2',1,'slick::sim']]],
-  ['loading_7',['LOADING',['../namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8af9f6955ebca09a484157c05f80acd65e',1,'slick::sim']]],
-  ['logon_5freject_8',['LOGON_REJECT',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a7aeff389ed16ff9ffc718c5abfbc1e83',1,'slick::sim']]],
-  ['logon_5freply_9',['LOGON_REPLY',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a1fa1a9650f4f6f0e119982c9b1de3fbd',1,'slick::sim']]],
-  ['logon_5frequest_10',['LOGON_REQUEST',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a1ec952798e0c8cf522571a629d700a55',1,'slick::sim']]]
+  ['license_5frequired_5',['LICENSE_REQUIRED',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a092ea8b245441d3d598f55386cc8143c',1,'slick::sim']]],
+  ['limit_6',['LIMIT',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba3d49b5cb41d88e381beb0d887d7023a2',1,'slick::sim']]],
+  ['liquidation_7',['LIQUIDATION',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba0be41ffc415fb247092a83c59ac57dd2',1,'slick::sim']]],
+  ['loading_8',['LOADING',['../namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8af9f6955ebca09a484157c05f80acd65e',1,'slick::sim']]],
+  ['logon_5freject_9',['LOGON_REJECT',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a7aeff389ed16ff9ffc718c5abfbc1e83',1,'slick::sim']]],
+  ['logon_5freply_10',['LOGON_REPLY',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a1fa1a9650f4f6f0e119982c9b1de3fbd',1,'slick::sim']]],
+  ['logon_5frequest_11',['LOGON_REQUEST',['../namespaceslick_1_1sim.html#aed5a70c1121d843355ce2dde709167d7a1ec952798e0c8cf522571a629d700a55',1,'slick::sim']]]
 ];

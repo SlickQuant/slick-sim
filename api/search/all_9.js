@@ -4,7 +4,7 @@ var searchData=
   ['iceberg_5fmust_5fbe_5fday_5for_5fgtc_1',['ICEBERG_MUST_BE_DAY_OR_GTC',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a495f3b983dcfe1fb44f3d83b2d811485',1,'slick::sim']]],
   ['iceberg_5fmust_5fbe_5flimit_2',['ICEBERG_MUST_BE_LIMIT',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a48a4c1acac89544db3f7c5248fa5c31e',1,'slick::sim']]],
   ['iceberg_5frequest_5fon_5fnon_5ficeberg_3',['ICEBERG_REQUEST_ON_NON_ICEBERG',['../namespaceslick_1_1sim.html#a803d0095c5e6453f6609fb091f8b5562a6f6f358c5b1e4e49380f99eb84f4b12c',1,'slick::sim']]],
-  ['id_4',['id',['../structslick_1_1sim_1_1Order.html#ab8475e7611721df58d5a9b5ef44913a2',1,'slick::sim::Order::id'],['../classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#aec7bcec7be860388520346b3af8ac953',1,'slick::sim::order_gateway::PendingResponses::Id']]],
+  ['id_4',['id',['../classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#aec7bcec7be860388520346b3af8ac953',1,'slick::sim::order_gateway::PendingResponses::Id'],['../structslick_1_1sim_1_1Order.html#ab8475e7611721df58d5a9b5ef44913a2',1,'slick::sim::Order::id']]],
   ['id_5f_5',['id_',['../structslick_1_1sim_1_1exch_1_1Symbol.html#a1eb73056e70c34ee4e4020a9d64c05af',1,'slick::sim::exch::Symbol']]],
   ['idle_6',['IDLE',['../namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8aa5daf7f2ebbba4975d61dab1c40188c7',1,'slick::sim']]],
   ['iequals_7',['iequals',['../namespaceslick_1_1sim_1_1detail.html#a484703f311b6f7b35aa3dc63941a14ca',1,'slick::sim::detail']]],

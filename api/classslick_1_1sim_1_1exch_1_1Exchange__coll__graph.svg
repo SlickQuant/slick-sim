@@ -99,26 +99,26 @@ var sectionId = 'dynsection-1';
 <text text-anchor="start" x="1638.5" y="-171.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="1651.5" y="-171.5" font-family="Helvetica,sans-Serif" font-size="10.00">md_queue()</text>
 <text text-anchor="start" x="1638.5" y="-156.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-156.5" font-family="Helvetica,sans-Serif" font-size="10.00">processRequest()</text>
+<text text-anchor="start" x="1651.5" y="-156.5" font-family="Helvetica,sans-Serif" font-size="10.00">newOrderAdmission()</text>
 <text text-anchor="start" x="1638.5" y="-141.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-141.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleNewOrderRequest()</text>
+<text text-anchor="start" x="1651.5" y="-141.5" font-family="Helvetica,sans-Serif" font-size="10.00">processRequest()</text>
 <text text-anchor="start" x="1638.5" y="-126.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-126.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleModifyOrderRequest()</text>
+<text text-anchor="start" x="1651.5" y="-126.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleNewOrderRequest()</text>
 <text text-anchor="start" x="1638.5" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleCancelOrderRequest()</text>
+<text text-anchor="start" x="1651.5" y="-111.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleModifyOrderRequest()</text>
 <text text-anchor="start" x="1638.5" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectMdSubscription()</text>
+<text text-anchor="start" x="1651.5" y="-96.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleCancelOrderRequest()</text>
 <text text-anchor="start" x="1638.5" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectNewOrderRequest()</text>
+<text text-anchor="start" x="1651.5" y="-81.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectMdSubscription()</text>
 <text text-anchor="start" x="1638.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectModifyOrderRequest()</text>
+<text text-anchor="start" x="1651.5" y="-66.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectNewOrderRequest()</text>
 <text text-anchor="start" x="1638.5" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectCancelOrderRequest()</text>
+<text text-anchor="start" x="1651.5" y="-51.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectModifyOrderRequest()</text>
 <text text-anchor="start" x="1638.5" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderNewPending()</text>
+<text text-anchor="start" x="1651.5" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectCancelOrderRequest()</text>
 <text text-anchor="start" x="1638.5" y="-21.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="1651.5" y="-21.5" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderReplacePending()</text>
-<text text-anchor="start" x="1651.5" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 21 more...</text>
+<text text-anchor="start" x="1651.5" y="-21.5" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderNewPending()</text>
+<text text-anchor="start" x="1651.5" y="-6.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 22 more...</text>
 <polygon fill="#666666" stroke="#666666" points="1634.5,-451.5 1634.5,-451.5 1796.5,-451.5 1796.5,-451.5 1634.5,-451.5"/>
 <polygon fill="#666666" stroke="#666666" points="1634.5,-271.5 1634.5,-271.5 1649.5,-271.5 1649.5,-271.5 1634.5,-271.5"/>
 <polygon fill="#666666" stroke="#666666" points="1649.5,-271.5 1649.5,-271.5 1796.5,-271.5 1796.5,-271.5 1649.5,-271.5"/>

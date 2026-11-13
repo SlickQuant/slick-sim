@@ -92,7 +92,8 @@ var messages_8hpp =
       [ "INVALID_QTY", "messages_8hpp.html#a643229c6d27fa2c4cc2651be0a9a5337a562c18b5a287c8f3a6d894a11d811c0f", null ],
       [ "INVALID_MIN_QTY", "messages_8hpp.html#a643229c6d27fa2c4cc2651be0a9a5337a93931db7fd9d745a24c73c5acb3a1a79", null ],
       [ "CLIENT_ORDER_ID_ALREADY_EXISTS", "messages_8hpp.html#a643229c6d27fa2c4cc2651be0a9a5337a405456cc2b00b23279630ad094057290", null ],
-      [ "FOK_CANNOT_FILL", "messages_8hpp.html#a643229c6d27fa2c4cc2651be0a9a5337a4564c4e6278be5298db164b983c81709", null ]
+      [ "FOK_CANNOT_FILL", "messages_8hpp.html#a643229c6d27fa2c4cc2651be0a9a5337a4564c4e6278be5298db164b983c81709", null ],
+      [ "LICENSE_REQUIRED", "messages_8hpp.html#a643229c6d27fa2c4cc2651be0a9a5337a092ea8b245441d3d598f55386cc8143c", null ]
     ] ],
     [ "SessionRejectReason", "messages_8hpp.html#a297ba608de53df48468a6d44a907f989", [
       [ "NONE", "messages_8hpp.html#a297ba608de53df48468a6d44a907f989ab50339a10e1de285ac99d4c3990b8693", null ],

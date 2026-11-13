@@ -139,26 +139,26 @@ var sectionId = 'dynsection-0';
 <text text-anchor="start" x="4" y="-478" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text text-anchor="start" x="17" y="-478" font-family="Helvetica,sans-Serif" font-size="10.00">md_queue()</text>
 <text text-anchor="start" x="4" y="-463" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-463" font-family="Helvetica,sans-Serif" font-size="10.00">processRequest()</text>
+<text text-anchor="start" x="17" y="-463" font-family="Helvetica,sans-Serif" font-size="10.00">newOrderAdmission()</text>
 <text text-anchor="start" x="4" y="-448" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-448" font-family="Helvetica,sans-Serif" font-size="10.00">handleNewOrderRequest()</text>
+<text text-anchor="start" x="17" y="-448" font-family="Helvetica,sans-Serif" font-size="10.00">processRequest()</text>
 <text text-anchor="start" x="4" y="-433" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-433" font-family="Helvetica,sans-Serif" font-size="10.00">handleModifyOrderRequest()</text>
+<text text-anchor="start" x="17" y="-433" font-family="Helvetica,sans-Serif" font-size="10.00">handleNewOrderRequest()</text>
 <text text-anchor="start" x="4" y="-418" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-418" font-family="Helvetica,sans-Serif" font-size="10.00">handleCancelOrderRequest()</text>
+<text text-anchor="start" x="17" y="-418" font-family="Helvetica,sans-Serif" font-size="10.00">handleModifyOrderRequest()</text>
 <text text-anchor="start" x="4" y="-403" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-403" font-family="Helvetica,sans-Serif" font-size="10.00">rejectMdSubscription()</text>
+<text text-anchor="start" x="17" y="-403" font-family="Helvetica,sans-Serif" font-size="10.00">handleCancelOrderRequest()</text>
 <text text-anchor="start" x="4" y="-388" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-388" font-family="Helvetica,sans-Serif" font-size="10.00">rejectNewOrderRequest()</text>
+<text text-anchor="start" x="17" y="-388" font-family="Helvetica,sans-Serif" font-size="10.00">rejectMdSubscription()</text>
 <text text-anchor="start" x="4" y="-373" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-373" font-family="Helvetica,sans-Serif" font-size="10.00">rejectModifyOrderRequest()</text>
+<text text-anchor="start" x="17" y="-373" font-family="Helvetica,sans-Serif" font-size="10.00">rejectNewOrderRequest()</text>
 <text text-anchor="start" x="4" y="-358" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-358" font-family="Helvetica,sans-Serif" font-size="10.00">rejectCancelOrderRequest()</text>
+<text text-anchor="start" x="17" y="-358" font-family="Helvetica,sans-Serif" font-size="10.00">rejectModifyOrderRequest()</text>
 <text text-anchor="start" x="4" y="-343" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-343" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderNewPending()</text>
+<text text-anchor="start" x="17" y="-343" font-family="Helvetica,sans-Serif" font-size="10.00">rejectCancelOrderRequest()</text>
 <text text-anchor="start" x="4" y="-328" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text text-anchor="start" x="17" y="-328" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderReplacePending()</text>
-<text text-anchor="start" x="17" y="-313" font-family="Helvetica,sans-Serif" font-size="10.00">and 21 more...</text>
+<text text-anchor="start" x="17" y="-328" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderNewPending()</text>
+<text text-anchor="start" x="17" y="-313" font-family="Helvetica,sans-Serif" font-size="10.00">and 22 more...</text>
 <polygon fill="#666666" stroke="#666666" points="0,-743 0,-743 162,-743 162,-743 0,-743"/>
 <polygon fill="#666666" stroke="#666666" points="0,-578 0,-578 15,-578 15,-578 0,-578"/>
 <polygon fill="#666666" stroke="#666666" points="15,-578 15,-578 162,-578 162,-578 15,-578"/>
