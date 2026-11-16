@@ -53,7 +53,7 @@ set(SLICK_QUEUE_MIN_VERSION 2.4.0)
 set(SLICK_LOGGER_MIN_VERSION 2.4.0)
 set(SLICK_OBJECT_POOL_MIN_VERSION 0.2.0)
 set(SLICK_ORDERBOOK_MIN_VERSION 1.1.0)
-set(SLICK_SOCKET_MIN_VERSION 1.2.0)
+set(SLICK_SOCKET_MIN_VERSION 1.4.0)
 
 # slick_sim_core links slick::queue by name, so it is resolved here rather than left
 # to arrive through slick-logger. Arriving that way only works while slick-logger

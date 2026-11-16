@@ -1,3 +1,16 @@
+# v0.6.2 - 11-15-2026
+
+## Changed
+
+- Needs slick-socket 1.4.0 or later (was 1.2.0) for its multicast receiver fixes. The live feeds
+  (`cme_mdp3_live`, `ice_impact_live`) get them through `MulticastPacketFeed`.
+- On Linux a feed line now receives only the group it joined. A socket bound to `0.0.0.0` used to get
+  every group joined on the host with the same port. A CME channel usually puts its incremental and
+  snapshot groups on one port, so those two lines read each other's packets.
+- Linux and macOS receivers also bind their group now, so unicast or broadcast sent to a feed's port no
+  longer reaches it. slick-sim doesn't expose `bind_to_group`, so this can't be switched off. Windows
+  behaves as before.
+
 # v0.6.1 - 11-13-2026
 
 ## Added
