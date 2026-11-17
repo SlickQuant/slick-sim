@@ -47,45 +47,21 @@ void PcapControlServer::onClientConnected(int client_id, const std::string &clie
 void PcapControlServer::onClientDisconnected(int client_id) {
     LOG_INFO("{} control channel: connection {} closed", name_, client_id);
     clients_.erase(client_id);
-    partial_.erase(client_id);
+    streams_.erase(client_id);
 }
 
 void PcapControlServer::onClientData(int client_id, const uint8_t *data, size_t length) {
-    auto &buffer = partial_[client_id];
-    size_t consumed;
-    if (buffer.empty()) {
-        consumed = parse(data, length);
-        if (consumed != SIZE_MAX && consumed < length) {
-            buffer.assign(data + consumed, data + length);
+    const bool ok = streams_.feed(client_id, data, length, [this](const ControlHeader &header, const uint8_t *) {
+        if (header.type != ControlMessageType::START || header.length != sizeof(StartMessage)) {
+            return false;
         }
-    } else {
-        buffer.insert(buffer.end(), data, data + length);
-        consumed = parse(buffer.data(), buffer.size());
-        if (consumed != SIZE_MAX) {
-            buffer.erase(buffer.begin(), buffer.begin() + static_cast<std::ptrdiff_t>(consumed));
-        }
-    }
-    if (consumed == SIZE_MAX) {
+        start_requested_.store(true, std::memory_order_release);
+        return true;
+    });
+    if (!ok) {
         LOG_WARN("{} control channel: malformed message from connection {}, closing it", name_, client_id);
         Server::disconnect_client(client_id);
     }
-}
-
-size_t PcapControlServer::parse(const uint8_t *data, size_t size) {
-    size_t used = 0;
-    while (size - used >= sizeof(ControlHeader)) {
-        ControlHeader header;
-        std::memcpy(&header, data + used, sizeof(header));
-        if (header.type != ControlMessageType::START || header.length != sizeof(StartMessage)) {
-            return SIZE_MAX;
-        }
-        if (size - used < sizeof(StartMessage)) {
-            break;
-        }
-        start_requested_.store(true, std::memory_order_release);
-        used += sizeof(StartMessage);
-    }
-    return used;
 }
 
 void PcapControlServer::onPoll() {

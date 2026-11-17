@@ -20,6 +20,10 @@
 #include <market_data_publisher/market_data_publisher.hpp>
 #include "market_events.hpp"
 
+namespace slick::sim::cli {
+class CliEndpoint;
+}
+
 namespace slick::sim::exch {
 
 struct Symbol;
@@ -44,7 +48,13 @@ public:
     queue<uint8_t>& md_queue() noexcept {
         return md_queue_;
     }
-    
+
+    /// Where the CLI reaches this exchange's commands (cli/cli_endpoint.hpp), each named
+    /// `<venue>/<instance>[/...]`, and served on whichever thread owns what they change
+    /// (for CME and ICE, the order gateways'). Empty for a venue with no commands. Valid
+    /// for the exchange's lifetime.
+    virtual std::vector<cli::CliEndpoint *> cliEndpoints() { return {}; }
+
 protected:
     // Venue admission check for new and modify requests, run again when a queued
     // request reaches the book. Cancels and session recovery skip it.

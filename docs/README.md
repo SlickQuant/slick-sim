@@ -43,6 +43,7 @@ Read in this order if you are new to the codebase.
 | Page | What it covers |
 | --- | --- |
 | [Configuration](configuration.md) | Every configuration key the code actually reads, with defaults and source references |
+| [CLI](cli.md) | The command port for changing a running simulator, with its Python client and wire format |
 | [Coinbase](integration-coinbase.md) | Implemented REST routes, order-entry WebSocket channels, market-data channels, worked examples |
 | [Hyperliquid](integration-hyperliquid.md) | `/exchange` actions, the `/info` upstream proxy, market-data channels, worked examples |
 

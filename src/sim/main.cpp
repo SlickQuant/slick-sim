@@ -11,6 +11,10 @@
 #include <exchange/exchange.hpp>
 #include <exchange/exchange_registry.hpp>
 #include <common/messages.hpp>
+#include <cli/cli_endpoint.hpp>
+#ifdef SLICK_SIM_HAS_CLI
+#include <cli/cli_server.hpp>
+#endif
 // #include <market_data_publisher/market_data_publisher.hpp>
 #ifdef SLICK_SIM_HAS_SLICK_NET
 // slick::net belongs to the venue adapters that speak HTTP/WebSocket, not to the
@@ -21,6 +25,7 @@
 #include <slick/net/logging.hpp>
 #endif
 #include <exception>
+#include <format>
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -43,6 +48,38 @@ namespace
     {
         run.store(false, std::memory_order_release);
         // exit(signum); // Terminate the program
+    }
+
+    /// The `sim` target's commands, on the main thread: what belongs to the process
+    /// rather than to a venue.
+    bool serve_sim_command(const cli::Command &command, std::string &out)
+    {
+        auto &logger = slick::logger::Logger::instance();
+        switch (command.command)
+        {
+        case CliCommandType::SET_LOG_LEVEL:
+            if (!command.arg_view().empty())
+            {
+                try
+                {
+                    logger.set_level(slick::logger::to_log_level(command.arg_view()));
+                }
+                catch (const std::invalid_argument &)
+                {
+                    out = std::format("unknown log level '{}'", command.arg_view());
+                    return false;
+                }
+            }
+            out = std::format("log level {}", slick::logger::to_string(logger.get_level()));
+            return true;
+        case CliCommandType::SHUTDOWN:
+            run.store(false, std::memory_order_release);
+            out = "stopping";
+            return true;
+        default:
+            out = std::format("{} is not served here", to_string(command.command));
+            return false;
+        }
     }
 }
 
@@ -127,6 +164,8 @@ int main(int argc, char *argv[])
 
     auto &exch_coinfig = config["exchanges"];
     std::vector<std::unique_ptr<Exchange>> exchanges;
+    // The CLI endpoints of each venue config key's exchanges, which that key addresses.
+    std::vector<std::pair<std::string, std::vector<cli::CliEndpoint *>>> cli_groups;
     for (auto it = exch_coinfig.begin(); it != exch_coinfig.end(); ++it)
     {
         // Checked BEFORE the registry lookup, deliberately: the committed sample
@@ -166,19 +205,66 @@ int main(int argc, char *argv[])
             LOG_ERROR("exchanges.\"{}\": {}", it.key(), ex.what());
             return EXIT_FAILURE;
         }
+        auto &group = cli_groups.emplace_back(it.key(), std::vector<cli::CliEndpoint *>{}).second;
         for (auto &exchange : created)
         {
             exchanges.emplace_back(std::move(exchange));
             exchanges.back()->start();
+            auto endpoints = exchanges.back()->cliEndpoints();
+            group.insert(group.end(), endpoints.begin(), endpoints.end());
         }
+    }
+
+    // Declared after `exchanges`, so destroyed first: the server reads the endpoints
+    // the exchanges' gateways own.
+    cli::CliEndpoint sim_cli("sim");
+    bool cli_running = false;
+#ifdef SLICK_SIM_HAS_CLI
+    std::unique_ptr<cli::CliServer> cli_server;
+#endif
+    if (config.contains("cli") && config["cli"].value("enabled", true))
+    {
+#ifdef SLICK_SIM_HAS_CLI
+        const auto &cli_config = config["cli"];
+        slick::socket::TCPServerConfig tcp;
+        tcp.port = cli_config.value("port", cli::CliServer::DEFAULT_PORT);
+        tcp.max_connections = cli_config.value("max_connections", 4);
+        tcp.idle_timeout = std::chrono::seconds(
+            cli_config.value("idle_timeout", cli::CliServer::DEFAULT_IDLE_TIMEOUT.count()));
+        cli_server = std::make_unique<cli::CliServer>(tcp);
+        cli_server->add_endpoints("sim", {&sim_cli});
+        for (const auto &[key, endpoints] : cli_groups)
+        {
+            cli_server->add_endpoints(key, endpoints);
+        }
+        if (!cli_server->start())
+        {
+            std::cerr << "CLI failed to start on port " << tcp.port << "\n";
+            return EXIT_FAILURE;
+        }
+        cli_running = true;
+#else
+        LOG_WARN("\"cli\" is configured, but this build has no CLI: it needs SLICK_SIM_ENABLE_TCP_GATEWAY");
+#endif
     }
 
     // Wait for user input to stop
     LOG_INFO("Press Ctrl+C to stop the server...");
     while (run.load(std::memory_order_relaxed))
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        sim_cli.serve(serve_sim_command);
+        std::this_thread::sleep_for(cli_running ? std::chrono::milliseconds(10) : std::chrono::milliseconds(1000));
     }
+
+#ifdef SLICK_SIM_HAS_CLI
+    if (cli_server)
+    {
+        // Lets the answer to a SHUTDOWN go out, then stops the server before the
+        // exchanges, whose gateways own its endpoints.
+        cli_server->flush(std::chrono::milliseconds(500));
+        cli_server->stop();
+    }
+#endif
 
     for (auto &exch : exchanges)
     {

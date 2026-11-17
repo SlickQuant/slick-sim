@@ -1,3 +1,25 @@
+# v0.7.0 - 11-16-2026
+
+## Added
+
+- A CLI port for changing a running simulator, turned on by a top-level `cli` block
+  ([docs/cli.md](docs/cli.md)). Its server runs on its own thread and passes each command through a
+  lock-free queue to the thread that owns what it changes: the main thread for `sim`, and a venue's
+  order gateway threads for that venue's, so the matching loop never handles a command.
+- `tools/slick_sim_cli.py`, its Python client, for one command or a prompt.
+- `sim log-level` and `sim shutdown`.
+- `Exchange::cliEndpoints()`, for a venue to offer commands, and `cli/reject_commands.hpp`, the per-ID
+  `reject_logon` and `reject_new_orders` switches CME and ICE serve from slick-sim-cme and
+  slick-sim-ice 0.5.0.
+- `CLI_REQUEST` and `CLI_REPLY` control message types.
+
+## Changed
+
+- `PcapControlServer` frames its stream with the shared `ControlStreams` (`common/control_stream.hpp`),
+  with no change in behavior.
+- `common/control_messages.hpp` undefines Windows' `ERROR` macro, which broke `FeedState::ERROR`
+  wherever `windows.h` was included first.
+
 # v0.6.2 - 11-15-2026
 
 ## Changed

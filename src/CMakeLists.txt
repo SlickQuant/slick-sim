@@ -24,11 +24,15 @@ add_subdirectory(exchange)
 add_subdirectory(matching_engine)
 add_subdirectory(order_gateway)
 add_subdirectory(market_data_publisher)
+add_subdirectory(cli)
 # After exchange/: every venue target links it.
 add_subdirectory(venues)
 
 add_executable(slick-sim sim/main.cpp)
 target_link_libraries(slick-sim PRIVATE exchange)
+if(TARGET slick_sim_cli)
+    target_link_libraries(slick-sim PRIVATE slick_sim_cli)
+endif()
 # Adds the enabled venue objects, and with them whatever networking stack each one
 # declared - plus SLICK_SIM_HAS_SLICK_NET for main.cpp's log bridge, but only if
 # some enabled venue actually speaks slick::net.
