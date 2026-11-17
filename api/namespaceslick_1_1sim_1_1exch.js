@@ -1,16 +1,16 @@
 var namespaceslick_1_1sim_1_1exch =
 [
-    [ "CoinbaseExchange", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange" ],
     [ "Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html", "classslick_1_1sim_1_1exch_1_1Exchange" ],
     [ "ExchangeRegistry", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry.html", "classslick_1_1sim_1_1exch_1_1ExchangeRegistry" ],
-    [ "HyperliquidExchange", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange" ],
     [ "MarketOrderEvent", "structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html", "structslick_1_1sim_1_1exch_1_1MarketOrderEvent" ],
     [ "MarketTradeEvent", "structslick_1_1sim_1_1exch_1_1MarketTradeEvent.html", "structslick_1_1sim_1_1exch_1_1MarketTradeEvent" ],
     [ "OrderBookObserver", "structslick_1_1sim_1_1exch_1_1OrderBookObserver.html", "structslick_1_1sim_1_1exch_1_1OrderBookObserver" ],
-    [ "Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", "structslick_1_1sim_1_1exch_1_1Symbol" ],
     [ "TradedCredit", "structslick_1_1sim_1_1exch_1_1TradedCredit.html", "structslick_1_1sim_1_1exch_1_1TradedCredit" ],
+    [ "Symbol", "structslick_1_1sim_1_1exch_1_1Symbol.html", "structslick_1_1sim_1_1exch_1_1Symbol" ],
+    [ "CoinbaseExchange", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange.html", "classslick_1_1sim_1_1exch_1_1CoinbaseExchange" ],
+    [ "HyperliquidExchange", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html", "classslick_1_1sim_1_1exch_1_1HyperliquidExchange" ],
     [ "MultiInstanceVenue", "conceptslick_1_1sim_1_1exch_1_1MultiInstanceVenue.html", null ],
-    [ "WebSocketClient", "namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6", null ],
+    [ "WebSocketClient", "namespaceslick_1_1sim_1_1exch.html#a6dc4d5cf9ee6aeb7c63b6166d4bfcb7d", null ],
     [ "EventType", "namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929", [
       [ "LEVEL_UPDATE", "namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a7d3d2ab47ce9fd37525aa4edfdf9ccec", null ],
       [ "TRADE", "namespaceslick_1_1sim_1_1exch.html#aaeabff7f3f29d93d7ac5a578b8acf929a3a5373f7c1598b9e251273833f5bca21", null ]

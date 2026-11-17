@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['websocketclient_0',['WebSocketClient',['../namespaceslick_1_1sim_1_1exch.html#a1412b06a2c4a308366a8a129301f64f6',1,'slick::sim::exch']]]
+  ['websocketclient_0',['WebSocketClient',['../namespaceslick_1_1sim_1_1exch.html#a6dc4d5cf9ee6aeb7c63b6166d4bfcb7d',1,'slick::sim::exch']]]
 ];

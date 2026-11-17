@@ -7,5 +7,6 @@ var searchData=
   ['filled_5fprice_4',['filled_price',['../structslick_1_1sim_1_1Fill.html#a21e930f561199e9f1e6d31a807629f33',1,'slick::sim::Fill']]],
   ['filled_5fqty_5',['filled_qty',['../structslick_1_1sim_1_1Fill.html#acdfb126f012c391d6b9f5faf6689c6ff',1,'slick::sim::Fill']]],
   ['filled_5fvalue_6',['filled_value',['../structslick_1_1sim_1_1Order.html#a210031149f7046e1f346eba44e25c825',1,'slick::sim::Order']]],
-  ['flags_7',['flags',['../structslick_1_1sim_1_1MDLevel.html#a1d77c4d7eb452c094b2ca8f34e689dc9',1,'slick::sim::MDLevel::flags'],['../structslick_1_1sim_1_1MDTrade.html#adeff5e1ddffe16d0d347cacabb102d62',1,'slick::sim::MDTrade::flags']]]
+  ['flag_7',['flag',['../structslick_1_1sim_1_1cli_1_1Command.html#a7a06bbb62928afd8b8d4aec4d78048d6',1,'slick::sim::cli::Command::flag'],['../structslick_1_1sim_1_1CliRequestMessage.html#a70f4967a91446bb1b839965bf79f913c',1,'slick::sim::CliRequestMessage::flag']]],
+  ['flags_8',['flags',['../structslick_1_1sim_1_1MDLevel.html#a1d77c4d7eb452c094b2ca8f34e689dc9',1,'slick::sim::MDLevel::flags'],['../structslick_1_1sim_1_1MDTrade.html#adeff5e1ddffe16d0d347cacabb102d62',1,'slick::sim::MDTrade::flags']]]
 ];

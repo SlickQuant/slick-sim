@@ -800,6 +800,8 @@
       
         
       
+        
+      
     
     
     
@@ -860,6 +862,34 @@
     
   
     Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
   
 
     
@@ -1516,6 +1546,11 @@ This path needs no locking.</p>
 <td><code>CoinbasePublisher::handle_message</code>, <code>HyperliquidPublisher::handle_message</code></td>
 <td>Publisher's uWS loop thread</td>
 <td>Client <code>subscribe</code>/<code>unsubscribe</code> — writes <code>MD_SUBSCRIPTION</code> to <code>request_queue</code></td>
+</tr>
+<tr>
+<td><code>CliServer</code></td>
+<td>Its own slick-socket thread</td>
+<td>Passes each <a href="../cli/">CLI</a> command through a <code>CliEndpoint</code>'s lock-free queues to the thread that owns what it changes: the main thread for <code>sim</code>, a venue's gateway threads for its own</td>
 </tr>
 </tbody>
 </table>

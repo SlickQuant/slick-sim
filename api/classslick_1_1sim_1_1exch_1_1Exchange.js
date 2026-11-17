@@ -5,6 +5,7 @@ var classslick_1_1sim_1_1exch_1_1Exchange =
     [ "~Exchange", "classslick_1_1sim_1_1exch_1_1Exchange.html#ab3f0e1bd6582726fb3c2d682d39dec7d", null ],
     [ "applyMarketOrder", "classslick_1_1sim_1_1exch_1_1Exchange.html#a238caba9318fd4ff043ac379b28e5adb", null ],
     [ "assignMatching", "classslick_1_1sim_1_1exch_1_1Exchange.html#aaae4f194dab763323154df94c203013a", null ],
+    [ "cliEndpoints", "classslick_1_1sim_1_1exch_1_1Exchange.html#ae2b148fe5c36fc8c7ae29e4e1292118d", null ],
     [ "clientIdFor", "classslick_1_1sim_1_1exch_1_1Exchange.html#aa8c35237fb44e488777b7756a7214d0b", null ],
     [ "configureMatching", "classslick_1_1sim_1_1exch_1_1Exchange.html#a339905a87d6f49bc24851664e81ba836", null ],
     [ "flushMarketDataCaches", "classslick_1_1sim_1_1exch_1_1Exchange.html#a24a008adaa4f3b989857fd5a03b92a72", null ],

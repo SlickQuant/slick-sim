@@ -1,5 +1,6 @@
 var files_dup =
 [
+    [ "cli", "dir_2990d7c532eb7441b74916b8f5365141.html", "dir_2990d7c532eb7441b74916b8f5365141" ],
     [ "common", "dir_bdd9a5d540de89e9fe90efdfc6973a4f.html", "dir_bdd9a5d540de89e9fe90efdfc6973a4f" ],
     [ "exchange", "dir_18c2db3339033395e94aff555c74038f.html", "dir_18c2db3339033395e94aff555c74038f" ],
     [ "market_data_publisher", "dir_eebeb9c522d9fc362434c47f70ba57c9.html", "dir_eebeb9c522d9fc362434c47f70ba57c9" ],

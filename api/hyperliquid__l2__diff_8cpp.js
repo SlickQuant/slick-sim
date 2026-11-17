@@ -1,6 +1,6 @@
 var hyperliquid__l2__diff_8cpp =
 [
-    [ "compute_l2_diff", "hyperliquid__l2__diff_8cpp.html#ac2064c7329f8e8b126c07a4119b6c200", null ],
-    [ "encode_l2_diff", "hyperliquid__l2__diff_8cpp.html#a1bbbf4e9cde2be4f4f1b6d3075f6fe3d", null ],
-    [ "split_book_snapshot", "hyperliquid__l2__diff_8cpp.html#a1e42a976146c6654aa40ecb106979781", null ]
+    [ "slick::sim::md_publisher::compute_l2_diff", "namespaceslick_1_1sim_1_1md__publisher.html#ac2064c7329f8e8b126c07a4119b6c200", null ],
+    [ "slick::sim::md_publisher::encode_l2_diff", "namespaceslick_1_1sim_1_1md__publisher.html#a1bbbf4e9cde2be4f4f1b6d3075f6fe3d", null ],
+    [ "slick::sim::md_publisher::split_book_snapshot", "namespaceslick_1_1sim_1_1md__publisher.html#a1e42a976146c6654aa40ecb106979781", null ]
 ];

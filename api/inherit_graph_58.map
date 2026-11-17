@@ -1,3 +1,19 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html" title=" " alt="" coords="5,5,195,45"/>
+<area shape="rect" id="Node000000" href="$classslick_1_1sim_1_1order__gateway_1_1OrderGateway.html" title=" " alt="" coords="15,109,203,154"/>
+<area shape="rect" id="Node000001" href="$classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html" title=" " alt="" coords="261,75,449,119"/>
+<area shape="poly" id="edge17_Node000000_Node000001" title=" " alt="" coords="218,114,262,109,258,112,220,119"/>
+<area shape="rect" id="Node000005" href="$classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html" title="The transport half of a binary order&#45;entry gateway: a TCP server that hands a venue&#39;s protocol whole ..." alt="" coords="261,144,449,189"/>
+<area shape="poly" id="edge21_Node000000_Node000005" title=" " alt="" coords="218,144,263,152,257,154,219,150"/>
+<area shape="rect" id="Node000002" href="$classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html" title=" " alt="" coords="518,5,730,50"/>
+<area shape="poly" id="edge18_Node000001_Node000002" title=" " alt="" coords="458,68,537,50,532,52,460,73"/>
+<area shape="rect" id="Node000003" href="$classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway.html" title=" " alt="" coords="497,75,750,119"/>
+<area shape="poly" id="edge19_Node000001_Node000003" title=" " alt="" coords="464,94,499,96,494,98,465,100"/>
+<area shape="rect" id="Node000004" href="$classslick_1_1sim_1_1order__gateway_1_1HyperliquidRestOrderGateway.html" title=" " alt="" coords="510,144,737,189"/>
+<area shape="poly" id="edge20_Node000001_Node000004" title=" " alt="" coords="459,121,537,143,532,144,459,127"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="5,212,213,240"/>
+<area shape="poly" id="edge24_Node000006_Node000005" title=" " alt="" coords="182,206,263,188,258,190,184,211"/>
+<area shape="rect" id="Node000007" href="$classslick_1_1sim_1_1cli_1_1CliServer.html" title="The simulator&#39;s command port: a small TCP server on its own thread that takes CliRequestMessages (com..." alt="" coords="268,212,442,240"/>
+<area shape="poly" id="edge22_Node000006_Node000007" title=" " alt="" coords="228,224,270,226,265,227,228,229"/>
+<area shape="rect" id="Node000008" href="$classslick_1_1sim_1_1md__feed_1_1PcapControlServer.html" title="The channel between a pcap replay and its clients, apart from the market data (multicast) and the ord..." alt="" coords="280,264,430,309"/>
+<area shape="poly" id="edge23_Node000006_Node000008" title=" " alt="" coords="183,242,282,267,277,269,183,247"/>
 </map>
