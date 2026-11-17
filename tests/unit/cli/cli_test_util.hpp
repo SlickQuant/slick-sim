@@ -1,9 +1,7 @@
 #pragma once
 
 #include <cli/cli_endpoint.hpp>
-#include <algorithm>
 #include <chrono>
-#include <cstring>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -19,7 +17,8 @@ struct CliAnswer {
 /// A command to `cli::Command`, ticket and all.
 inline cli::Command cli_command(uint64_t ticket, CliCommandType type, uint8_t flag = 0, std::string_view arg = {}) {
     cli::Command command{ticket, type, flag, {}};
-    std::memcpy(command.arg, arg.data(), std::min(arg.size(), sizeof(command.arg)));
+    // Not memcpy: an empty view's data() can be null, which memcpy may not take.
+    arg.copy(command.arg, sizeof(command.arg));
     return command;
 }
 

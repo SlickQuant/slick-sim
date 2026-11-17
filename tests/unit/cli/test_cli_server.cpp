@@ -119,8 +119,8 @@ public:
         message.request_id = request_id;
         message.command = command;
         message.flag = flag;
-        std::memcpy(message.target, target.data(), std::min(target.size(), sizeof(message.target)));
-        std::memcpy(message.arg, arg.data(), std::min(arg.size(), sizeof(message.arg)));
+        target.copy(message.target, sizeof(message.target));   // As cli_command(): an empty view
+        arg.copy(message.arg, sizeof(message.arg));             // can have a null data().
         std::vector<uint8_t> bytes(sizeof(message));
         std::memcpy(bytes.data(), &message, sizeof(message));
         return bytes;
