@@ -1,3 +1,30 @@
+# Unreleased
+
+## Changed
+
+- `MulticastPacketFeed` reads all its groups with one thread on slick-socket's `PolledMulticastReceiver`,
+  instead of one `MulticastReceiverBase` thread per group. The old receiver sized its per-datagram read
+  buffer from `receive_buffer_size` and zero-filled the whole buffer after every packet (4 MB at the old
+  default). That kept the thread busy enough to fall behind in bursts, and the kernel dropped datagrams.
+  `receive_buffer_size` now sets only `SO_RCVBUF`, and its default is 64 MiB (was 4 MiB). On Linux the
+  kernel caps it at `net.core.rmem_max`, so raise that to get the full size.
+- `MulticastPacketFeed::set_joined` hands a leave or rejoin to the receiver thread, which owns the
+  sockets, and returns at once. Later polls collect the answer, so a descheduled receiver can't hold up
+  the exchange thread. `change_membership()` can now return `MEMBERSHIP_PENDING` while a change is under
+  way. If the venue stops wanting a change before the thread has taken it, the change is withdrawn and
+  never runs. A rejoin opens a new socket instead of re-adding the group on the old one.
+- A socket read error on a live feed is now logged, at most once a second per line, and counted in
+  `MulticastPacketFeed::receive_error_count()`. The loop used to treat it as an empty socket.
+- Calling `MulticastPacketFeed::start()` on a running feed logs a warning instead of terminating, and
+  `add_line()` on a started feed returns false.
+
+## Added
+
+- `receiver_cpu` on the live feeds (`cme_mdp3_live`, `ice_impact_live`) pins the receiver thread to a
+  core. A pinned thread busy-polls, and an unpinned one sleeps 50 µs between empty sweeps. If the pin
+  fails (no such core, or a core outside the process's cpuset), the failure is logged and the thread
+  sleeps instead of spinning. A `receiver_cpu` that is not a number fails at construction.
+
 # v0.6.2 - 11-15-2026
 
 ## Changed
