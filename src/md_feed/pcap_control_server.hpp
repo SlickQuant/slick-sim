@@ -1,15 +1,14 @@
 #pragma once
 
 #include <common/control_messages.hpp>
+#include <common/control_stream.hpp>
 #include <slick/queue.hpp>
 #include <slick/socket/tcp_server.h>
 #include <atomic>
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <unordered_set>
-#include <vector>
 
 namespace slick::sim::md_feed {
 
@@ -62,10 +61,6 @@ private:
         uint8_t bytes[sizeof(FeedStatusMessage)];
     };
 
-    /// Consumes the whole frames at the front of `data`; returns the bytes used, or
-    /// SIZE_MAX when the stream is malformed.
-    size_t parse(const uint8_t *data, size_t size);
-
     std::string name_;
     slick::queue<StatusSlot> outbox_{QUEUE_SLOTS};   // exchange thread -> server thread
     std::atomic<bool> start_requested_{false};       // server thread -> exchange thread
@@ -74,7 +69,7 @@ private:
     uint64_t outbox_cursor_ = 0;
     std::optional<StatusSlot> last_status_;
     std::unordered_set<int> clients_;
-    std::unordered_map<int, std::vector<uint8_t>> partial_;
+    ControlStreams streams_{sizeof(StartMessage)};
 };
 
 }   // namespace slick::sim::md_feed

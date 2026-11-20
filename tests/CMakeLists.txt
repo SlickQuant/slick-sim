@@ -56,6 +56,9 @@ set(SLICK_SIM_TEST_SOURCES
 
     # Priority 7: Market Data Publisher Tests
     unit/market_data_publisher/test_sequenced_message.cpp
+
+    # Priority 8: CLI endpoints (header-only)
+    unit/cli/test_cli_endpoint.cpp
 )
 
 # One block per venue, gated on the TARGET rather than the option so a venue
@@ -65,6 +68,12 @@ set(SLICK_SIM_TEST_SOURCES
 if(SLICK_SIM_ENABLE_TCP_GATEWAY)
     list(APPEND SLICK_SIM_TEST_SOURCES
         unit/md_feed/test_multicast_packet_feed.cpp
+    )
+endif()
+
+if(TARGET slick_sim_cli)
+    list(APPEND SLICK_SIM_TEST_SOURCES
+        unit/cli/test_cli_server.cpp
     )
 endif()
 
@@ -122,6 +131,9 @@ if(TARGET slick_sim_pcap)
 endif()
 if(TARGET slick_sim_pcap_feed)
     target_link_libraries(slick_sim_tests PRIVATE slick_sim_pcap_feed)
+endif()
+if(TARGET slick_sim_cli)
+    target_link_libraries(slick_sim_tests PRIVATE slick_sim_cli)
 endif()
 # Same helper the executable uses, so the two binaries cannot end up with
 # different venue sets. Each venue's PUBLIC dependencies come with it, which is how

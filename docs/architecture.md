@@ -225,6 +225,7 @@ This path needs no locking.
 | REST route handlers, WS message handlers | That gateway's uWS loop thread | Write to `request_queue`, poll `response_queue` |
 | `CoinbasePublisher::publish_*`, `HyperliquidPublisher::publish_*` | Publisher's uWS loop thread | Read `md_queue`, write to client sockets |
 | `CoinbasePublisher::handle_message`, `HyperliquidPublisher::handle_message` | Publisher's uWS loop thread | Client `subscribe`/`unsubscribe` — writes `MD_SUBSCRIPTION` to `request_queue` |
+| `CliServer` | Its own slick-socket thread | Passes each [CLI](cli.md) command through a `CliEndpoint`'s lock-free queues to the thread that owns what it changes: the main thread for `sim`, a venue's gateway threads for its own |
 
 The gateway threads deserve a closer look. `POST /api/v3/brokerage/orders` publishes a request and
 then **blocks its uWS loop thread**, polling `response_queue` every 100 µs for up to 5 seconds waiting

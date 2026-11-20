@@ -86,6 +86,7 @@ Library targets:
 | `order_gateway` | Order-entry bases: `RestWsOrderGateway` for HTTP/WebSocket venues and `TcpOrderGateway`, the TCP transport base for venues on a binary session protocol, with `RetransmitRing` and `ClOrdIdIndex` for their sessions |
 | `market_data_publisher` | Publishes book updates and executed trades in each venue's own WebSocket wire format |
 | `md_feed` | Ingests each venue's live public market data feed; `MulticastPacketFeed` receives a binary feed's multicast groups; `PcapFeedBase` replays recorded captures behind a control channel ([PCAP replay](docs/pcap-replay.md)) |
+| `slick_sim_cli` | The [CLI](docs/cli.md) port: a TCP server that passes commands through lock-free queues to the main thread and the venues' gateway threads. `tools/slick_sim_cli.py` is its client |
 | `common`, `order_book`, `utils` | Header-only: shared types (`Order`, `Request`, `Venue`, fixed-point price/qty helpers), `OrderBook` (wraps the external `slick-orderbook` L3 book), and misc helpers |
 
 ## Prerequisites
@@ -324,6 +325,7 @@ slick-sim/
 │   └── slick_sim.json          # sample runtime configuration
 ├── docs/                        # published documentation sources
 ├── src/
+│   ├── cli/                    # the CLI port: CliServer, CliEndpoint, the reject commands
 │   ├── common/                 # shared types: Order, Request, Venue, price/qty helpers (header-only)
 │   ├── exchange/                # Exchange base, venue registry, Symbol, market mirror events, instance expansion
 │   ├── market_data_publisher/  # market data publisher bases
@@ -337,6 +339,8 @@ slick-sim/
 │   └── utils/                   # order id / timestamp / price / decimal / fixed-width string helpers (header-only)
 ├── tests/
 │   └── unit/                    # GoogleTest suite (slick_sim_tests)
+├── tools/
+│   └── slick_sim_cli.py         # CLI client
 ├── LICENSE
 └── README.md
 ```

@@ -20,6 +20,7 @@ The supported keys and their defaults are listed below, with source references. 
 | --- | --- | --- | --- |
 | `log_level` | string | `"info"` | No |
 | `exchanges` | object | — | **Yes** |
+| `cli` | object | *(none)* | No. The [CLI](cli.md) port, off without it |
 
 `log_level` accepts `trace`, `debug`, `info`, `warn`, `error`, `fatal` (parsed by
 `slick::logger::to_log_level`). An unrecognised value falls back to the logger's default rather than
@@ -296,6 +297,7 @@ unchanged.
 | Coinbase market data | 5000 | 5000 |
 | Hyperliquid REST order entry (`/exchange`, `/info`) | 4003 | **4002** |
 | Hyperliquid market data (+ `/info`) | 5001 | 5001 |
+| [CLI](cli.md) | 17400 | *(off)* |
 
 The sample's disabled `cme` block is a placeholder that reserves 4003 for an order gateway and 5002
 for a market data publisher. The out-of-tree CME venue has its own config layout, documented in its
