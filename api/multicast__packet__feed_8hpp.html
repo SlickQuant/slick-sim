@@ -95,9 +95,10 @@ $(function(){initNavTree('multicast__packet__feed_8hpp.html','',''); });
 <div class="textblock"><code>#include &lt;nlohmann/json.hpp&gt;</code><br />
 <code>#include &lt;slick/logger.hpp&gt;</code><br />
 <code>#include &lt;slick/queue.hpp&gt;</code><br />
-<code>#include &lt;slick/socket/multicast_receiver.h&gt;</code><br />
+<code>#include &lt;slick/socket/polled_multicast_receiver.h&gt;</code><br />
 <code>#include &lt;array&gt;</code><br />
 <code>#include &lt;atomic&gt;</code><br />
+<code>#include &lt;chrono&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;cerrno&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
@@ -106,6 +107,8 @@ $(function(){initNavTree('multicast__packet__feed_8hpp.html','',''); });
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;stdexcept&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;thread&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for multicast_packet_feed.hpp:</div>
@@ -120,7 +123,7 @@ Classes</h2></td></tr>
 <tr class="memitem:slick_3A_3Asim_3A_3Amd_5Ffeed_3A_3Apacket_5Ffeed_5Ftraits" id="r_slick_3A_3Asim_3A_3Amd_5Ffeed_3A_3Apacket_5Ffeed_5Ftraits"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structslick_1_1sim_1_1md__feed_1_1packet__feed__traits.html">slick::sim::md_feed::packet_feed_traits</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the queue bytes a receiver overwrote before the exchange thread drained them.  <a href="structslick_1_1sim_1_1md__feed_1_1packet__feed__traits.html#details">More...</a><br /></td></tr>
 <tr class="memitem:slick_3A_3Asim_3A_3Amd_5Ffeed_3A_3AMulticastPacketFeed" id="r_slick_3A_3Asim_3A_3Amd_5Ffeed_3A_3AMulticastPacketFeed"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html">slick::sim::md_feed::MulticastPacketFeed</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The transport half of a live multicast feed: one receiver thread per joined group ("line"), all handing their packets to the exchange thread through one lock-free queue.  <a href="classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The transport half of a live multicast feed: one receiver thread that polls every joined group ("line"), handing the packets to the exchange thread through one lock-free queue.  <a href="classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>

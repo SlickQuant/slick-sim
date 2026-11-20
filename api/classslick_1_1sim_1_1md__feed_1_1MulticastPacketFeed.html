@@ -93,14 +93,14 @@ $(function(){initNavTree('classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.h
 </div><!--header-->
 <div class="contents">
 
-<p>The transport half of a live multicast feed: one receiver thread per joined group ("line"), all handing their packets to the exchange thread through one lock-free queue.  
+<p>The transport half of a live multicast feed: one receiver thread that polls every joined group ("line"), handing the packets to the exchange thread through one lock-free queue.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="multicast__packet__feed_8hpp_source.html">md_feed/multicast_packet_feed.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for slick::sim::md_feed::MulticastPacketFeed:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed__coll__graph.svg" width="199" height="458"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed__coll__graph.svg" width="199" height="435"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -127,6 +127,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac263f4840f06059fcb1bdc1a674ffe52" id="r_ac263f4840f06059fcb1bdc1a674ffe52"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac263f4840f06059fcb1bdc1a674ffe52">name</a> () const noexcept</td></tr>
 <tr class="memitem:a83930a55a2563fc0daa8d8b6c5685a86" id="r_a83930a55a2563fc0daa8d8b6c5685a86"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83930a55a2563fc0daa8d8b6c5685a86">loss_count</a> () const noexcept</td></tr>
 <tr class="memdesc:a83930a55a2563fc0daa8d8b6c5685a86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue bytes a receiver overwrote before this thread drained them, each lost packet counting its size plus the line byte.  <br /></td></tr>
+<tr class="memitem:a1c24a28b723909d59592e3200c350b11" id="r_a1c24a28b723909d59592e3200c350b11"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c24a28b723909d59592e3200c350b11">receive_error_count</a> () const noexcept</td></tr>
+<tr class="memdesc:a1c24a28b723909d59592e3200c350b11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a socket reported as failed, across every line.  <br /></td></tr>
 <tr class="memitem:a35f301d7d985acb827b4134a5d5c8325" id="r_a35f301d7d985acb827b4134a5d5c8325"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35f301d7d985acb827b4134a5d5c8325">oversized_count</a> () const noexcept</td></tr>
 <tr class="memdesc:a35f301d7d985acb827b4134a5d5c8325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Packets refused for being larger than the queue. Only the first is logged.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -135,21 +137,34 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:a7c1ad57006414167fda196242b0cfb99" id="r_a7c1ad57006414167fda196242b0cfb99"><td class="memItemLeft" align="right" valign="top">static constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c1ad57006414167fda196242b0cfb99">MAX_LINES</a> = 32</td></tr>
 <tr class="memitem:a08363de693d82f07b46decaac0b970e4" id="r_a08363de693d82f07b46decaac0b970e4"><td class="memItemLeft" align="right" valign="top">static constexpr uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08363de693d82f07b46decaac0b970e4">MEMBERSHIP_RETRY_NS</a> = 100'000'000</td></tr>
 <tr class="memdesc:a08363de693d82f07b46decaac0b970e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">How long a failed join or leave waits before <a class="el" href="#a8f2818bfc4d1cd9ff4e0e3423e0bf75b" title="Exchange thread, from poll().">set_joined()</a> tries it again.  <br /></td></tr>
+<tr class="memitem:acf882e7797dc8c8cfaf2efbb49b0956d" id="r_acf882e7797dc8c8cfaf2efbb49b0956d"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf882e7797dc8c8cfaf2efbb49b0956d">MAX_DATAGRAM</a> = 1u &lt;&lt; 16</td></tr>
+<tr class="memdesc:acf882e7797dc8c8cfaf2efbb49b0956d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The receiver thread's read buffer: above any UDP payload a venue sends.  <br /></td></tr>
+<tr class="memitem:ae5677ac685ad257d9d9fd9b386db9287" id="r_ae5677ac685ad257d9d9fd9b386db9287"><td class="memItemLeft" align="right" valign="top">static constexpr std::chrono::microseconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5677ac685ad257d9d9fd9b386db9287">RECEIVER_IDLE_SLEEP</a> {50}</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a589470f81505515e36cdd6ca70aea9b7" id="r_a589470f81505515e36cdd6ca70aea9b7"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a589470f81505515e36cdd6ca70aea9b7">change_membership</a> (uint8_t line, bool join)</td></tr>
 <tr class="memdesc:a589470f81505515e36cdd6ca70aea9b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Joins or leaves <span class="tt">line</span>'s group.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-static-attribs" class="groupheader"><a id="pro-static-attribs" name="pro-static-attribs"></a>
+Static Protected Attributes</h2></td></tr>
+<tr class="memitem:a846f6b1a2cf754696f0f470fd6ca67d6" id="r_a846f6b1a2cf754696f0f470fd6ca67d6"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a846f6b1a2cf754696f0f470fd6ca67d6">MEMBERSHIP_PENDING</a> = -1</td></tr>
+<tr class="memdesc:a846f6b1a2cf754696f0f470fd6ca67d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">What <a class="el" href="#a589470f81505515e36cdd6ca70aea9b7" title="Joins or leaves line&#39;s group.">change_membership()</a> returns while the receiver thread has not yet answered.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a627f0e97a0d85722399c1092da986261" id="r_a627f0e97a0d85722399c1092da986261"><td class="memItemLeft" align="right" valign="top">struct&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a627f0e97a0d85722399c1092da986261">MulticastPacketFeedTestAccess</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The transport half of a live multicast feed: one receiver thread per joined group ("line"), all handing their packets to the exchange thread through one lock-free queue. </p>
+<div class="textblock"><p>The transport half of a live multicast feed: one receiver thread that polls every joined group ("line"), handing the packets to the exchange thread through one lock-free queue. </p>
 <p>Nothing here takes a lock. Only the exchange thread touches the book, as it drains the queue into the venue's protocol handler.</p>
 <p>A line is a small integer below MAX_LINES that the venue chooses (its enum). The venue can leave a line's group while it has no use for it, such as a snapshot loop while the book is live, and rejoin it on a gap (set_joined).</p>
 <p>Header-only, so the <a class="el" href="namespaceslick_1_1sim_1_1md__feed.html">md_feed</a> target stays free of slick-socket: a venue that includes this links slick::socket itself.</p>
 <p>Config keys, read from the feed's config entry: <span class="tt">queue_size</span> (bytes, default 16 MiB), <span class="tt">max_packets_per_poll</span> (256), <span class="tt">interface</span> and <span class="tt">receive_buffer_size</span> for every receiver. Each line's group is <span class="tt">{ "address", "port" }</span> under its key.</p>
+<p><span class="tt">receive_buffer_size</span> (bytes, default 64 MiB) is each socket's SO_RCVBUF: what the kernel holds while the receiver thread is descheduled. The kernel drops a burst beyond it, so size it for the stall, not for one packet. The read buffer is separate and fixed (MAX_DATAGRAM). The kernel caps it at <span class="tt">net.core.rmem_max</span> (Linux), so raise that too. <span class="tt">receiver_cpu</span> (default -1) pins the receiver thread to that core. It busy-polls its sockets, so a pinned thread keeps the core at 100%; an unpinned one sleeps RECEIVER_IDLE_SLEEP between empty sweeps instead. A pin that cannot be made (no such core, outside the process's cpuset, an unsupported platform) is logged and leaves the thread unpinned, so it sleeps too rather than spin on a core it does not own. A <span class="tt">receiver_cpu</span> that is not a number throws from the constructor, like <span class="tt">queue_size</span>.</p>
 <p>The queue is fixed and lossy, like every slick::queue: should the exchange thread fall far enough behind, a receiver overwrites packets nobody has drained, and <a class="el" href="#a83930a55a2563fc0daa8d8b6c5685a86" title="Queue bytes a receiver overwrote before this thread drained them, each lost packet counting its size ...">loss_count()</a> counts their bytes. The venue's own sequence numbers are what turn that into a gap it can recover from. A packet is also held back from the queue until the receiver that reserved its slot has copied it in, so one stalled copy delays the packets behind it - never reorders them. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00053">53</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00080">80</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9772b7228a3abf6f2c197113966b9291" name="a9772b7228a3abf6f2c197113966b9291"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9772b7228a3abf6f2c197113966b9291">&#9670;&#160;</a></span>MulticastPacketFeed() <span class="overload">[1/2]</span></h2>
@@ -178,9 +193,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00059">59</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00089">89</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00221">name()</a>.</p>
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00276">name()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="#a66e033ec04051d80452ebd20dc7cc40c">MulticastPacketFeed()</a>, and <a class="el" href="#a3bc59f6259654e3ed954682ee6ea5f39">operator=()</a>.</p>
 
@@ -209,9 +224,9 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00073">73</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00104">104</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00116">stop()</a>.</p>
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00160">stop()</a>.</p>
 
 </div>
 </div>
@@ -238,7 +253,7 @@ Protected Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00059">MulticastPacketFeed()</a>.</p>
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00089">MulticastPacketFeed()</a>.</p>
 
 </div>
 </div>
@@ -273,9 +288,9 @@ Protected Member Functions</h2></td></tr>
 <p>Joins the group under <span class="tt">key</span>, if the config names one, as <span class="tt">line</span>. </p>
 <p>Call before <a class="el" href="#a6316714b4d09052061f6f31cc4d8e2dc">start()</a>. Returns whether a receiver was added. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00083">83</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00114">114</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00055">MAX_LINES</a>.</p>
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00082">MAX_LINES</a>.</p>
 
 </div>
 </div>
@@ -307,11 +322,14 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Joins or leaves <span class="tt">line</span>'s group. </p>
-<p>Returns 0, or the socket error. Virtual so a test can make it fail; only called when the membership has to change. </p>
+<p>Returns 0 once the socket is as asked, an error, or MEMBERSHIP_PENDING: the change is under way and the same call is to be made again. Virtual so a test can make it fail; only called when the membership has to change, or a change handed to the receiver thread is still in flight.</p>
+<p>A socket is only ever touched by the receiver thread, so the change is handed to it, and each call looks for its answer without waiting, so the exchange thread cannot be held up by a receiver that is descheduled. A change that was handed over and is no longer wanted is withdrawn if the thread has not taken it yet, so it is never made behind the caller's back; one the thread has begun is waited out across calls, then followed by the one now wanted. EIO is a join the thread could not make; slick-socket logs the socket error behind it. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00234">234</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00308">308</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00173">set_joined()</a>.</p>
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00294">MEMBERSHIP_PENDING</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00222">set_joined()</a>.</p>
 
 </div>
 </div>
@@ -351,9 +369,9 @@ Protected Member Functions</h2></td></tr>
 <p>Any thread. False when the packet is dropped: the line is muted, or the packet cannot fit the queue.</p>
 <p>The second case has to be refused here. slick::queue::reserve() throws above the queue's size, and this runs on a receiver thread, where an escaping exception is std::terminate - a <span class="tt">queue_size</span> smaller than one datagram would otherwise take the process down. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00130">130</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00178">178</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00055">MAX_LINES</a>.</p>
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00082">MAX_LINES</a>.</p>
 
 </div>
 </div>
@@ -385,7 +403,7 @@ template&lt;typename OnPacket&gt; </div>
 <p><a class="el" href="main_8cpp.html#ac60f8b1361d1ed0c465d2ea9bcbfaee8">Exchange</a> thread. </p>
 <p>Hands at most <span class="tt">max_packets_per_poll</span> packets to <span class="tt">on_packet(line, data, size)</span>, pointing into the queue's memory. The cap keeps a busy feed from starving client requests. Returns how many it handed over. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00206">206</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00261">261</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
 </div>
 </div>
@@ -414,7 +432,7 @@ template&lt;typename OnPacket&gt; </div>
 
 <p>True when the config names a group for <span class="tt">key</span>. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00079">79</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00110">110</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
 </div>
 </div>
@@ -444,7 +462,7 @@ template&lt;typename OnPacket&gt; </div>
 <p>Queue bytes a receiver overwrote before this thread drained them, each lost packet counting its size plus the line byte. </p>
 <p>Non-zero means packets were lost, and the venue's sequence numbers are the only thing that can repair the gap. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00226">226</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00281">281</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
 </div>
 </div>
@@ -477,11 +495,11 @@ template&lt;typename OnPacket&gt; </div>
 
 <p>Drops <span class="tt">line</span>'s packets on arrival while muted. Any thread. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00154">154</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00202">202</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00055">MAX_LINES</a>.</p>
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00082">MAX_LINES</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00173">set_joined()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00222">set_joined()</a>.</p>
 
 </div>
 </div>
@@ -508,9 +526,9 @@ template&lt;typename OnPacket&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00221">221</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00276">276</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00059">MulticastPacketFeed()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00089">MulticastPacketFeed()</a>, and <a class="el" href="multicast__packet__feed_8hpp_source.html#l00350">MulticastPacketFeedTestAccess</a>.</p>
 
 </div>
 </div>
@@ -537,7 +555,7 @@ template&lt;typename OnPacket&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00059">MulticastPacketFeed()</a>.</p>
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00089">MulticastPacketFeed()</a>.</p>
 
 </div>
 </div>
@@ -566,7 +584,37 @@ template&lt;typename OnPacket&gt; </div>
 
 <p>Packets refused for being larger than the queue. Only the first is logged. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00229">229</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00290">290</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a1c24a28b723909d59592e3200c350b11" name="a1c24a28b723909d59592e3200c350b11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c24a28b723909d59592e3200c350b11">&#9670;&#160;</a></span>receive_error_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t slick::sim::md_feed::MulticastPacketFeed::receive_error_count </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reads a socket reported as failed, across every line. </p>
+<p>Logged at most once a second per line, so a non-zero count that grows is a socket that is broken, not a quiet feed. </p>
+
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00285">285</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
 </div>
 </div>
@@ -603,11 +651,11 @@ template&lt;typename OnPacket&gt; </div>
 </div><div class="memdoc">
 
 <p><a class="el" href="main_8cpp.html#ac60f8b1361d1ed0c465d2ea9bcbfaee8">Exchange</a> thread, from poll(). </p>
-<p>Leaves or rejoins <span class="tt">line</span>'s group, so the network stops sending what nobody reads. A line not wanted is muted at once, which also drops what is already in the socket buffer. The membership counts as changed only once the socket call succeeds: a failed one is logged once and tried again every MEMBERSHIP_RETRY_NS until it does, so recovery never waits on a group that was not rejoined. The receiver thread keeps running on its open socket, since stopping it would block here for up to its receive timeout. Two compares when nothing is pending, so it is cheap to call every poll. Before <a class="el" href="#a6316714b4d09052061f6f31cc4d8e2dc">start()</a>, or for a line with no group, only the mute changes. </p>
+<p>Leaves or rejoins <span class="tt">line</span>'s group, so the network stops sending what nobody reads. A line not wanted is muted at once, which also drops what is already in the socket buffer. The membership counts as changed only once the socket call succeeds: a failed one is logged once and tried again every MEMBERSHIP_RETRY_NS until it does, so recovery never waits on a group that was not rejoined. The receiver thread makes the change itself, as its sockets are its own: this hands it over and returns, then finds the answer on a later call (see change_membership), so the exchange thread never waits for it. Two compares when nothing is pending, so it is cheap to call every poll. Before <a class="el" href="#a6316714b4d09052061f6f31cc4d8e2dc">start()</a>, or for a line with no group, only the mute changes. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00173">173</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00222">222</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00234">change_membership()</a>, <a class="el" href="multicast__packet__feed_8hpp_source.html#l00055">MAX_LINES</a>, <a class="el" href="multicast__packet__feed_8hpp_source.html#l00057">MEMBERSHIP_RETRY_NS</a>, and <a class="el" href="multicast__packet__feed_8hpp_source.html#l00154">mute()</a>.</p>
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00308">change_membership()</a>, <a class="el" href="multicast__packet__feed_8hpp_source.html#l00082">MAX_LINES</a>, <a class="el" href="multicast__packet__feed_8hpp_source.html#l00294">MEMBERSHIP_PENDING</a>, <a class="el" href="multicast__packet__feed_8hpp_source.html#l00084">MEMBERSHIP_RETRY_NS</a>, and <a class="el" href="multicast__packet__feed_8hpp_source.html#l00202">mute()</a>.</p>
 
 </div>
 </div>
@@ -634,7 +682,7 @@ template&lt;typename OnPacket&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00102">102</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00134">134</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
 </div>
 </div>
@@ -661,13 +709,68 @@ template&lt;typename OnPacket&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00116">116</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00160">160</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00073">~MulticastPacketFeed()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00104">~MulticastPacketFeed()</a>.</p>
+
+</div>
+</div>
+<a name="doc-related-members" id="doc-related-members"></a><h2 id="header-doc-related-members" class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="a627f0e97a0d85722399c1092da986261" name="a627f0e97a0d85722399c1092da986261"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a627f0e97a0d85722399c1092da986261">&#9670;&#160;</a></span>MulticastPacketFeedTestAccess</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend struct MulticastPacketFeedTestAccess</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel friend">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00350">350</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="multicast__packet__feed_8hpp_source.html#l00350">MulticastPacketFeedTestAccess</a>, and <a class="el" href="multicast__packet__feed_8hpp_source.html#l00276">name()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00350">MulticastPacketFeedTestAccess</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="acf882e7797dc8c8cfaf2efbb49b0956d" name="acf882e7797dc8c8cfaf2efbb49b0956d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf882e7797dc8c8cfaf2efbb49b0956d">&#9670;&#160;</a></span>MAX_DATAGRAM</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t slick::sim::md_feed::MulticastPacketFeed::MAX_DATAGRAM = 1u &lt;&lt; 16</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The receiver thread's read buffer: above any UDP payload a venue sends. </p>
+
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00086">86</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a7c1ad57006414167fda196242b0cfb99" name="a7c1ad57006414167fda196242b0cfb99"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7c1ad57006414167fda196242b0cfb99">&#9670;&#160;</a></span>MAX_LINES</h2>
 
@@ -688,9 +791,37 @@ template&lt;typename OnPacket&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00055">55</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00082">82</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00083">add_line()</a>, <a class="el" href="multicast__packet__feed_8hpp_source.html#l00130">deliver()</a>, <a class="el" href="multicast__packet__feed_8hpp_source.html#l00154">mute()</a>, and <a class="el" href="multicast__packet__feed_8hpp_source.html#l00173">set_joined()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00114">add_line()</a>, <a class="el" href="multicast__packet__feed_8hpp_source.html#l00178">deliver()</a>, <a class="el" href="multicast__packet__feed_8hpp_source.html#l00202">mute()</a>, and <a class="el" href="multicast__packet__feed_8hpp_source.html#l00222">set_joined()</a>.</p>
+
+</div>
+</div>
+<a id="a846f6b1a2cf754696f0f470fd6ca67d6" name="a846f6b1a2cf754696f0f470fd6ca67d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a846f6b1a2cf754696f0f470fd6ca67d6">&#9670;&#160;</a></span>MEMBERSHIP_PENDING</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int slick::sim::md_feed::MulticastPacketFeed::MEMBERSHIP_PENDING = -1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>What <a class="el" href="#a589470f81505515e36cdd6ca70aea9b7" title="Joins or leaves line&#39;s group.">change_membership()</a> returns while the receiver thread has not yet answered. </p>
+
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00294">294</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00308">change_membership()</a>, and <a class="el" href="multicast__packet__feed_8hpp_source.html#l00222">set_joined()</a>.</p>
 
 </div>
 </div>
@@ -716,9 +847,33 @@ template&lt;typename OnPacket&gt; </div>
 
 <p>How long a failed join or leave waits before <a class="el" href="#a8f2818bfc4d1cd9ff4e0e3423e0bf75b" title="Exchange thread, from poll().">set_joined()</a> tries it again. </p>
 
-<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00057">57</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00084">84</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00173">set_joined()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="multicast__packet__feed_8hpp_source.html#l00222">set_joined()</a>.</p>
+
+</div>
+</div>
+<a id="ae5677ac685ad257d9d9fd9b386db9287" name="ae5677ac685ad257d9d9fd9b386db9287"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5677ac685ad257d9d9fd9b386db9287">&#9670;&#160;</a></span>RECEIVER_IDLE_SLEEP</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::chrono::microseconds slick::sim::md_feed::MulticastPacketFeed::RECEIVER_IDLE_SLEEP {50}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="multicast__packet__feed_8hpp_source.html#l00087">87</a> of file <a class="el" href="multicast__packet__feed_8hpp_source.html">multicast_packet_feed.hpp</a>.</p>
 
 </div>
 </div>

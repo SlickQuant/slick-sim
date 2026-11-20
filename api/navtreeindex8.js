@@ -1,5 +1,15 @@
 var NAVTREEINDEX8 =
 {
+"structslick_1_1sim_1_1Order.html#a8c8269f0f4a6ce78371591ba1f733f9a":[0,0,1,0,35,1],
+"structslick_1_1sim_1_1Order.html#a8c8269f0f4a6ce78371591ba1f733f9a":[2,0,0,0,34,1],
+"structslick_1_1sim_1_1Order.html#a9bd9ddcbfc3bdaf16f89c035df48ac74":[0,0,1,0,35,7],
+"structslick_1_1sim_1_1Order.html#a9bd9ddcbfc3bdaf16f89c035df48ac74":[2,0,0,0,34,7],
+"structslick_1_1sim_1_1Order.html#a9d6a68848751915f362819145604846d":[0,0,1,0,35,25],
+"structslick_1_1sim_1_1Order.html#a9d6a68848751915f362819145604846d":[2,0,0,0,34,25],
+"structslick_1_1sim_1_1Order.html#a9e2f2d055bb852c6f964a09d25f374e2":[0,0,1,0,35,5],
+"structslick_1_1sim_1_1Order.html#a9e2f2d055bb852c6f964a09d25f374e2":[2,0,0,0,34,5],
+"structslick_1_1sim_1_1Order.html#a9e86a04569bc6baddc99eec633e1ba78":[0,0,1,0,35,34],
+"structslick_1_1sim_1_1Order.html#a9e86a04569bc6baddc99eec633e1ba78":[2,0,0,0,34,34],
 "structslick_1_1sim_1_1Order.html#aa646b437cff4a1afb0e15deb5a84f9da":[0,0,1,0,35,32],
 "structslick_1_1sim_1_1Order.html#aa646b437cff4a1afb0e15deb5a84f9da":[2,0,0,0,34,32],
 "structslick_1_1sim_1_1Order.html#aa83185f29b91a18f3abc0638ae7f3779":[0,0,1,0,35,8],
@@ -239,15 +249,5 @@ var NAVTREEINDEX8 =
 "structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#ab11c2930122bd3c6071c93b332ce53c5":[0,0,1,0,4,0,0,1],
 "structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#ab11c2930122bd3c6071c93b332ce53c5":[2,0,0,0,3,0,0,1],
 "structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html":[0,0,1,0,2,0,0],
-"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html":[2,0,0,0,1,0,0],
-"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#aaf1f0a9c58022cf5310e90a4cad82459":[0,0,1,0,2,0,0,1],
-"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#aaf1f0a9c58022cf5310e90a4cad82459":[2,0,0,0,1,0,0,1],
-"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#ae6101ea9e137a3996b894e0b029d00b7":[0,0,1,0,2,0,0,0],
-"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#ae6101ea9e137a3996b894e0b029d00b7":[2,0,0,0,1,0,0,0],
-"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#af6032781b65361bc519e744a8f14604c":[0,0,1,0,2,0,0,2],
-"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#af6032781b65361bc519e744a8f14604c":[2,0,0,0,1,0,0,2],
-"structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html":[0,0,1,0,2,2],
-"structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html":[2,0,0,0,1,2],
-"structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html#a38e7c1259118c438338ba8d68b7f66f3":[0,0,1,0,2,2,1],
-"structslick_1_1sim_1_1exch_1_1MarketOrderEvent.html#a38e7c1259118c438338ba8d68b7f66f3":[2,0,0,0,1,2,1]
+"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html":[2,0,0,0,1,0,0]
 };

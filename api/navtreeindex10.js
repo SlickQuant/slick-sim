@@ -1,5 +1,15 @@
 var NAVTREEINDEX10 =
 {
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aba6941df6d29bb75fc4eb46055b53e71":[0,0,1,0,6,14,3],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aba6941df6d29bb75fc4eb46055b53e71":[2,0,0,0,5,13,3],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aeb2c3ffbc5521792314219aea0548cae":[0,0,1,0,6,14,4],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aeb2c3ffbc5521792314219aea0548cae":[2,0,0,0,5,13,4],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#af377bcc3d9288577c3cdf00854cf03cc":[0,0,1,0,6,14,1],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#af377bcc3d9288577c3cdf00854cf03cc":[2,0,0,0,5,13,1],
+"structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html":[0,0,1,0,6,16],
+"structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html":[2,0,0,0,5,15],
+"structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html#a1a209c1949d794af4891add05d9a82a0":[0,0,1,0,6,16,1],
+"structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html#a1a209c1949d794af4891add05d9a82a0":[2,0,0,0,5,15,1],
 "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html#a60e5097e8f05df16a9a07cd763cd32a2":[0,0,1,0,6,16,0],
 "structslick_1_1sim_1_1order__gateway_1_1PostRequestData.html#a60e5097e8f05df16a9a07cd763cd32a2":[2,0,0,0,5,15,0],
 "structslick_1_1sim_1_1order__gateway_1_1RetransmitRing_1_1Slot.html":[0,0,1,0,6,11,0],

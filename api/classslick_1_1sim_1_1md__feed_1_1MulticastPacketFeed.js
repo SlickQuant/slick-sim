@@ -13,9 +13,14 @@ var classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed =
     [ "name", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#ac263f4840f06059fcb1bdc1a674ffe52", null ],
     [ "operator=", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a3bc59f6259654e3ed954682ee6ea5f39", null ],
     [ "oversized_count", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a35f301d7d985acb827b4134a5d5c8325", null ],
+    [ "receive_error_count", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a1c24a28b723909d59592e3200c350b11", null ],
     [ "set_joined", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a8f2818bfc4d1cd9ff4e0e3423e0bf75b", null ],
     [ "start", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a6316714b4d09052061f6f31cc4d8e2dc", null ],
     [ "stop", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a1e1d36d7f078671a1ebb7dc740e71ae4", null ],
+    [ "MulticastPacketFeedTestAccess", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a627f0e97a0d85722399c1092da986261", null ],
+    [ "MAX_DATAGRAM", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#acf882e7797dc8c8cfaf2efbb49b0956d", null ],
     [ "MAX_LINES", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a7c1ad57006414167fda196242b0cfb99", null ],
-    [ "MEMBERSHIP_RETRY_NS", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a08363de693d82f07b46decaac0b970e4", null ]
+    [ "MEMBERSHIP_PENDING", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a846f6b1a2cf754696f0f470fd6ca67d6", null ],
+    [ "MEMBERSHIP_RETRY_NS", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a08363de693d82f07b46decaac0b970e4", null ],
+    [ "RECEIVER_IDLE_SLEEP", "classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#ae5677ac685ad257d9d9fd9b386db9287", null ]
 ];

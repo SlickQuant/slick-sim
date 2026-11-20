@@ -1,5 +1,15 @@
 var NAVTREEINDEX7 =
 {
+"structslick_1_1sim_1_1AddOrderMessage.html#ae40047151de333b1c2a2106596f11831":[0,0,1,0,25,8],
+"structslick_1_1sim_1_1AddOrderMessage.html#ae40047151de333b1c2a2106596f11831":[2,0,0,0,24,8],
+"structslick_1_1sim_1_1AddOrderMessage.html#afcad4f23e912854f1941d607a40d957c":[0,0,1,0,25,7],
+"structslick_1_1sim_1_1AddOrderMessage.html#afcad4f23e912854f1941d607a40d957c":[2,0,0,0,24,7],
+"structslick_1_1sim_1_1BookSnapshot.html":[0,0,1,0,21],
+"structslick_1_1sim_1_1BookSnapshot.html":[2,0,0,0,20],
+"structslick_1_1sim_1_1BookSnapshot.html#a01c2a11326a2b375d22e839655571526":[0,0,1,0,21,1],
+"structslick_1_1sim_1_1BookSnapshot.html#a01c2a11326a2b375d22e839655571526":[2,0,0,0,20,1],
+"structslick_1_1sim_1_1BookSnapshot.html#a03511ac9da6277be81f29d4eae1cbba5":[0,0,1,0,21,2],
+"structslick_1_1sim_1_1BookSnapshot.html#a03511ac9da6277be81f29d4eae1cbba5":[2,0,0,0,20,2],
 "structslick_1_1sim_1_1BookSnapshot.html#a2afd63e6395da44ef841882d3e0a5fa3":[0,0,1,0,21,0],
 "structslick_1_1sim_1_1BookSnapshot.html#a2afd63e6395da44ef841882d3e0a5fa3":[2,0,0,0,20,0],
 "structslick_1_1sim_1_1CancelOrderMessage.html":[0,0,1,0,27],
@@ -239,15 +249,5 @@ var NAVTREEINDEX7 =
 "structslick_1_1sim_1_1Order.html#a7b1074fe04bfa4c2e3324374ee6c910e":[0,0,1,0,35,26],
 "structslick_1_1sim_1_1Order.html#a7b1074fe04bfa4c2e3324374ee6c910e":[2,0,0,0,34,26],
 "structslick_1_1sim_1_1Order.html#a86865e8e34583d114773574f30e559b3":[0,0,1,0,35,36],
-"structslick_1_1sim_1_1Order.html#a86865e8e34583d114773574f30e559b3":[2,0,0,0,34,36],
-"structslick_1_1sim_1_1Order.html#a8c8269f0f4a6ce78371591ba1f733f9a":[0,0,1,0,35,1],
-"structslick_1_1sim_1_1Order.html#a8c8269f0f4a6ce78371591ba1f733f9a":[2,0,0,0,34,1],
-"structslick_1_1sim_1_1Order.html#a9bd9ddcbfc3bdaf16f89c035df48ac74":[0,0,1,0,35,7],
-"structslick_1_1sim_1_1Order.html#a9bd9ddcbfc3bdaf16f89c035df48ac74":[2,0,0,0,34,7],
-"structslick_1_1sim_1_1Order.html#a9d6a68848751915f362819145604846d":[0,0,1,0,35,25],
-"structslick_1_1sim_1_1Order.html#a9d6a68848751915f362819145604846d":[2,0,0,0,34,25],
-"structslick_1_1sim_1_1Order.html#a9e2f2d055bb852c6f964a09d25f374e2":[0,0,1,0,35,5],
-"structslick_1_1sim_1_1Order.html#a9e2f2d055bb852c6f964a09d25f374e2":[2,0,0,0,34,5],
-"structslick_1_1sim_1_1Order.html#a9e86a04569bc6baddc99eec633e1ba78":[0,0,1,0,35,34],
-"structslick_1_1sim_1_1Order.html#a9e86a04569bc6baddc99eec633e1ba78":[2,0,0,0,34,34]
+"structslick_1_1sim_1_1Order.html#a86865e8e34583d114773574f30e559b3":[2,0,0,0,34,36]
 };

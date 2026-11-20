@@ -1,5 +1,15 @@
 var NAVTREEINDEX4 =
 {
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a760e95109e2b3057633325630bbaf995":[0,0,1,0,6,12,8],
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a760e95109e2b3057633325630bbaf995":[2,0,0,0,5,11,8],
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a87eb7529a12c6314cd5a8054872e9e92":[0,0,1,0,6,12,1],
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a87eb7529a12c6314cd5a8054872e9e92":[2,0,0,0,5,11,1],
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a8c39288638605ad50df4c163b9a905ae":[0,0,1,0,6,12,14],
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a8c39288638605ad50df4c163b9a905ae":[2,0,0,0,5,11,14],
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a8ffa1734a3dcb46583806b47fe716ae6":[0,0,1,0,6,12,0],
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a8ffa1734a3dcb46583806b47fe716ae6":[2,0,0,0,5,11,0],
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a9e40776077301021c3c4c10dc8065bcd":[0,0,1,0,6,12,5],
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a9e40776077301021c3c4c10dc8065bcd":[2,0,0,0,5,11,5],
 "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#ac9476b37e513f051ebb41b6d04f43d46":[0,0,1,0,6,12,10],
 "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#ac9476b37e513f051ebb41b6d04f43d46":[2,0,0,0,5,11,10],
 "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#aca52d0fd2c84a621d03c53589da69b4a":[0,0,1,0,6,12,13],
@@ -239,15 +249,5 @@ var NAVTREEINDEX4 =
 "functions_vars_m.html":[2,3,2,10],
 "functions_vars_n.html":[2,3,2,11],
 "functions_vars_o.html":[2,3,2,12],
-"functions_vars_p.html":[2,3,2,13],
-"functions_vars_q.html":[2,3,2,14],
-"functions_vars_r.html":[2,3,2,15],
-"functions_vars_s.html":[2,3,2,16],
-"functions_vars_t.html":[2,3,2,17],
-"functions_vars_u.html":[2,3,2,18],
-"functions_vars_v.html":[2,3,2,19],
-"functions_vars_w.html":[2,3,2,20],
-"functions_w.html":[2,3,0,23],
-"functions_~.html":[2,3,0,24],
-"globals.html":[3,1,0]
+"functions_vars_p.html":[2,3,2,13]
 };
