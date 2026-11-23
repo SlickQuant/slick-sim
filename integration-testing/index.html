@@ -1257,7 +1257,9 @@ clients to reproduce, so the tests start and monitor the simulator process as we
 <ul>
 <li>Live feeds require the venue and internet access. Feed sequencing has separate unit tests in
   <code>tests/unit/venues/coinbase/</code>.</li>
-<li>Hyperliquid, CME, ICE and PCAP replay are outside the Coinbase suite's scope.</li>
+<li>Hyperliquid, CME, ICE and PCAP replay are outside the Coinbase suite's scope. CME's out-of-process
+  suite lives in the <code>slick-sim-cme</code> repository, in <code>tests/integration/</code>, and runs through the same
+  <code>INTEGRATION_TESTS</code> hook; it is registered as <code>cme_integration</code> and <code>cme_regression</code> in CTest.</li>
 <li>The suite exercises shutdown through the portable CLI path, without testing SIGINT. The signal
   handler stores an atomic flag, and the CLI takes the same exit path without a signal.</li>
 <li>The SDK reads <code>reject_Reason</code> (capital <code>R</code>) but the wire field is <code>reject_reason</code>. It also discards
