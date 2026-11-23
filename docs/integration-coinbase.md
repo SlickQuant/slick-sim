@@ -96,6 +96,7 @@ Four `order_configuration` variants are recognised:
 | `market_market_ioc` | `MARKET` | `IMMEDIATE_OR_CANCEL` | `base_size` |
 | `sor_limit_ioc` | `LIMIT` | `IMMEDIATE_OR_CANCEL` | `base_size`, `limit_price` |
 | `market_market_fok` | `LIMIT` if `limit_price` present, else `MARKET` | `FILL_OR_KILL` | `base_size`, optional `limit_price` |
+| `limit_limit_fok` | `LIMIT` | `FILL_OR_KILL` | `base_size`, `limit_price` |
 
 Anything else returns `400` with `"Unsupported order_configuration type"`. Notably absent:
 `limit_limit_gtd`, `stop_limit_stop_limit_gtc`, `trigger_bracket_gtc`, and quote-denominated sizing
@@ -197,9 +198,20 @@ queue priority; changing only the size keeps it.
 
 ### `GET /api/v3/brokerage/orders/historical/batch`
 
-Authenticates, then **returns nothing**. The handler builds an empty `{"orders": []}` object and never
-writes it to the response — the HTTP request hangs until your client times out. Treat this route as
-unimplemented.
+Authenticates, then returns the orders this gateway has observed on the execution-report stream since
+it started:
+
+```json
+{ "orders": [ … ], "sequence": "0", "has_next": false, "cursor": "" }
+```
+
+`product_id`, `order_side`, `order_status` and `limit` query parameters are honoured; `order_status`
+accepts the Coinbase names and `OPEN`, which covers every state an order can sit in with quantity
+outstanding. The whole filtered result is one page, so paging terminates after the first response.
+
+The store is held in memory and is lost on restart. It contains only orders the gateway reported.
+An order rejected before creation, for example with `UNKNOWN_CONTRACT`, has no order id and does
+not appear.
 
 ### `GET /api/v3/brokerage/transaction_summary`
 
@@ -271,14 +283,19 @@ Differences from the real Coinbase feed worth planning around:
 - `PENDING_NEW` reports are filtered out, so the first thing you see for an order is its `NEW` ack.
 - Numeric fields use `std::to_string`, which gives fixed six-decimal formatting (`"60000.000000"`),
   not Coinbase's variable precision.
-- `total_fees` is display-only — no fee is ever applied to the order. The rate comes from a single
-  unguarded `CoinbaseRestClient::get_taker_fee_rate()` call in the gateway constructor, which
-  **unconditionally overwrites** the `fee_rate_ = 0.0012` member initialiser — so that value is a
-  declaration default, not a fallback, and whatever the call returns on failure is what you get.
-  (The source comment beside it reads "1.2%"; 0.0012 is 0.12%.)
-- `completion_percentage` divides by the raw fixed-point `qty`, not the scaled value, so the number is
-  wrong by a factor of 1e8.
-- `number_of_fills` is derived as `cum_qty / last_qty` rather than the tracked `num_fills`.
+- A partly filled order is reported as `OPEN`. Its `completion_percentage` and `leaves_quantity`
+  describe the fill progress. Coinbase has no partially-filled status; reporting `FILLED` would
+  tell clients the order had finished while quantity was still live.
+- `time_in_force` uses Coinbase's spelling, `GOOD_UNTIL_CANCELLED` and `GOOD_UNTIL_DATE_TIME`.
+  The simulator uses FIX names internally.
+- `number_of_fills` counts the fill reports the gateway has observed for the order in its order
+  store. The quantity ratio `cum_qty / last_qty` gives that count only when every fill has the
+  same size.
+- `total_fees` is for display only; no fee is applied to the order. The rate comes from
+  `order_gateway.ws.fee_rate` when configured, or from one unguarded
+  `CoinbaseRestClient::get_taker_fee_rate()` call in the gateway constructor (skipped when
+  `COINBASE_API_SECRET` is unset). Whatever that call returns on failure is what you get; `0.0012` is
+  0.12%, despite the source comment reading "1.2%".
 
 ### Heartbeats
 

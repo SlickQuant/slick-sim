@@ -214,8 +214,9 @@ TEST(OrderIdentityTest, SetOrderIdentityFillsAllFourFields) {
     EXPECT_STREQ(response.order_id, "11111111-2222-3333-4444-555555555555");
 }
 
-// The copy writes exactly the identity header and stops: error_message sits
-// immediately after it and must survive untouched.
+// The identity copy stops before error_message. Clear the first byte because readers treat the
+// field as a C string; a recycled slot could otherwise put the previous report's text into the JSON
+// listing. All remaining bytes must stay untouched.
 TEST(OrderIdentityTest, SetOrderIdentityDoesNotOverrunIntoErrorMessage) {
     Order order;
     order.symbol = "ETH-USD";
@@ -228,7 +229,8 @@ TEST(OrderIdentityTest, SetOrderIdentityDoesNotOverrunIntoErrorMessage) {
 
     setOrderIdentity(response, order);
 
-    for (size_t i = 0; i < sizeof(response.error_message); ++i) {
+    EXPECT_EQ(response.error_message[0], '\0') << "the field is read as a C string";
+    for (size_t i = 1; i < sizeof(response.error_message); ++i) {
         ASSERT_EQ(static_cast<unsigned char>(response.error_message[i]), 0xABu)
             << "identity copy ran past its block at error_message[" << i << "]";
     }

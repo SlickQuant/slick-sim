@@ -4,6 +4,7 @@
 #include <coinbase/rest.hpp>
 #include <coinbase/order.hpp>
 #include "coinbase_common.hpp"
+#include <cstdlib>
 
 using CoinbaseRestClient = coinbase::CoinbaseRestClient;
 using namespace slick::sim::order_gateway;
@@ -20,10 +21,41 @@ namespace {
             case slick::sim::OrderStatus::REPLACED: return ::coinbase::OrderStatus::OPEN;
             case slick::sim::OrderStatus::CANCELED: return ::coinbase::OrderStatus::CANCELLED;
             case slick::sim::OrderStatus::FILLED: return ::coinbase::OrderStatus::FILLED;
-            case slick::sim::OrderStatus::PARTIALLY_FILLED: return ::coinbase::OrderStatus::FILLED;
+            // Coinbase has no partially-filled status. Keep the order OPEN while quantity remains
+            // live; `completion_percentage` reports its progress. The old FILLED mapping told
+            // clients the order had finished.
+            case slick::sim::OrderStatus::PARTIALLY_FILLED: return ::coinbase::OrderStatus::OPEN;
             case slick::sim::OrderStatus::EXPIRED: return ::coinbase::OrderStatus::EXPIRED;
             case slick::sim::OrderStatus::REJECTED: return ::coinbase::OrderStatus::FAILED;
             default: return ::coinbase::OrderStatus::UNKNOWN_ORDER_STATUS;
+        }
+    }
+
+    /// Whether the environment carries the secret `generate_coinbase_jwt` needs.
+    /// _dupenv_s on Windows: plain getenv trips MSVC's C4996.
+    bool hasCoinbaseCredentials() {
+#if defined(_WIN32)
+        char *value = nullptr;
+        size_t size = 0;
+        const bool present = _dupenv_s(&value, &size, "COINBASE_API_SECRET") == 0 && value != nullptr && value[0] != '\0';
+        std::free(value);
+        return present;
+#else
+        const char *value = std::getenv("COINBASE_API_SECRET");
+        return value != nullptr && value[0] != '\0';
+#endif
+    }
+
+    /// Translate the simulator's FIX time-in-force names to Coinbase's spellings. Otherwise clients
+    /// that parse Coinbase values see UNKNOWN_TIME_IN_FORCE for GTC orders.
+    std::string_view to_coinbase_time_in_force(slick::sim::TimeInForce tif) {
+        using slick::sim::TimeInForce;
+        switch (tif) {
+            case TimeInForce::GOOD_TILL_CANCEL: return "GOOD_UNTIL_CANCELLED";
+            case TimeInForce::GOOD_TILL_DATE: return "GOOD_UNTIL_DATE_TIME";
+            case TimeInForce::IMMEDIATE_OR_CANCEL: return "IMMEDIATE_OR_CANCEL";
+            case TimeInForce::FILL_OR_KILL: return "FILL_OR_KILL";
+            default: return "UNKNOWN_TIME_IN_FORCE";
         }
     }
 }
@@ -37,8 +69,23 @@ CoinbaseWebsocketOrderGateway::CoinbaseWebsocketOrderGateway(const json& config,
     , ping_interval_ms_(config.value("ping_interval", 30) * 1000)
     , pong_timeout_(config.value("pong_timeout", 60))
 {
-    auto rest_api = CoinbaseRestClient();
-    fee_rate_ = rest_api.get_taker_fee_rate();
+    // fee_rate_ is used only to display total_fees on the user channel. Fetching it requires an
+    // authenticated startup round trip, also fetches products, and needs COINBASE_API_KEY/SECRET.
+    // For offline startup without a live feed, skip the call when `fee_rate` is configured or the
+    // secret is absent.
+    if (config.contains("fee_rate")) {
+        fee_rate_ = config["fee_rate"].get<double>();
+    } else if (!hasCoinbaseCredentials()) {
+        LOG_WARN("order_gateway.ws has no fee_rate and COINBASE_API_SECRET is unset; "
+                 "using the default taker fee rate {} without calling Coinbase", fee_rate_);
+    } else {
+        try {
+            auto rest_api = CoinbaseRestClient(config.value("base_url", "https://api.coinbase.com"));
+            fee_rate_ = rest_api.get_taker_fee_rate();
+        } catch (const std::exception &ex) {
+            LOG_WARN("Could not fetch the Coinbase taker fee rate ({}); using {}", ex.what(), fee_rate_);
+        }
+    }
 }
 
 void CoinbaseWebsocketOrderGateway::setup_routes(uWS::App &app) {
@@ -56,6 +103,9 @@ void CoinbaseWebsocketOrderGateway::setup_routes(uWS::App &app) {
             // Initialize connection timestamp
             ws->getUserData()->last_pong = std::chrono::steady_clock::now();
             ws->getUserData()->authenticated = false;
+            // The sequence is per socket and starts at zero: a client resets its
+            // continuity check on connect and expects the first message to be 0.
+            ws->getUserData()->seq_num = 0;
             LOG_INFO("WebSocket client connected");
         },
 
@@ -171,7 +221,7 @@ void CoinbaseWebsocketOrderGateway::handle_message(wsT *ws, std::string_view mes
                                 }}
                             }}}
                         };
-                        ws->send(response.dump(), uWS::OpCode::TEXT);
+                        ws->send(coinbase::dump_json(response), uWS::OpCode::TEXT);
                     }
                     {
                         json response = {
@@ -357,6 +407,15 @@ void CoinbaseWebsocketOrderGateway::handle_order_response(const OrderResponse &r
     auto filled_value = to_price_double(response.avg_fill_price) * to_qty_double(response.cum_qty);
     auto fees = filled_value * fee_rate_;
     auto *user_data = ws->getUserData();
+    // process_all_responses applies this report to the order store before calling here. The store
+    // tracks the fill count because OrderResponse has no count field. The ratio cum_qty/last_qty
+    // gives the count only when all fills have the same size.
+    const auto order_id_view =
+        std::string_view(response.order_id, strnlen(response.order_id, sizeof(response.order_id)));
+    const auto *tracked = orders_.find(order_id_view);
+    const auto fill_count = tracked != nullptr ? tracked->num_fills : 0u;
+    const auto completion =
+        response.qty > 0 ? (to_qty_double(response.cum_qty) / to_qty_double(response.qty)) * 100.0 : 0.0;
     json response_json = {
         {"channel", "user"},
         {"client_id", ""},
@@ -369,13 +428,13 @@ void CoinbaseWebsocketOrderGateway::handle_order_response(const OrderResponse &r
                     json::object({
                         {"avg_price", to_price_string(response.avg_fill_price)},
                         {"client_order_id", std::string(response.client_order_id)},
-                        {"completion_percentage", std::to_string(response.qty > 0 ? (to_qty_double(response.cum_qty) / response.qty) * 100 : 0.0)},
+                        {"completion_percentage", std::to_string(completion)},
                         {"contract_expiry_type", "UNKNOWN_CONTRACT_EXPIRY_TYPE"},
                         {"cumulative_quantity", to_qty_string(response.cum_qty)},
                         {"filled_value", std::to_string(filled_value)},
                         {"leaves_quantity", to_qty_string(response.leaves_qty)},
                         {"limit_price", to_price_string(response.price)},
-                        {"number_of_fills", std::to_string(response.last_qty > 0 ? response.cum_qty / response.last_qty : 0)},
+                        {"number_of_fills", std::to_string(fill_count)},
                         {"order_id", std::string(response.order_id)},
                         {"order_side", response.side == Side::BUY ? "BUY" : "SELL"},
                         {"order_type", to_string(response.order_type)},
@@ -383,7 +442,7 @@ void CoinbaseWebsocketOrderGateway::handle_order_response(const OrderResponse &r
                         {"product_id", std::string(response.symbol)},
                         {"reject_reason", to_string(response.reject_reason)},
                         {"status", to_string(to_coinbase_order_status(response.order_status))},
-                        {"time_in_force", to_string(response.time_in_force)},
+                        {"time_in_force", std::string(to_coinbase_time_in_force(response.time_in_force))},
                         {"total_fees", std::to_string(fees)},
                         {"total_value_after_fees", std::to_string(filled_value - fees)},
                         {"trigger_status", "INVALID_ORDER_TYPE"},

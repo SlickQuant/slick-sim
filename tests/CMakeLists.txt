@@ -95,6 +95,7 @@ if(TARGET slick_sim_venue_coinbase)
         unit/venues/coinbase/test_coinbase_exchange.cpp
         unit/venues/coinbase/test_self_match_prevention.cpp
         unit/venues/coinbase/test_coinbase_trade_encoder.cpp
+        unit/venues/coinbase/test_coinbase_routing.cpp
     )
 endif()
 
@@ -112,6 +113,12 @@ endif()
 # out-of-tree venues. They include the shared fixtures as "unit/test_helpers.hpp".
 get_property(_slick_sim_venue_tests GLOBAL PROPERTY SLICK_SIM_VENUE_TESTS)
 list(APPEND SLICK_SIM_TEST_SOURCES ${_slick_sim_venue_tests})
+
+# End-to-end suites spawn slick-sim and drive its ports from a separate executable. Only builds with
+# the Coinbase venue target include the Coinbase client and test.
+if(TARGET slick_sim_venue_coinbase AND SLICK_SIM_BUILD_INTEGRATION_TESTS)
+    add_subdirectory(integration)
+endif()
 
 add_executable(slick_sim_tests ${SLICK_SIM_TEST_SOURCES})
 

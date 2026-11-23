@@ -143,10 +143,17 @@ void Exchange::stop()
 
 void Exchange::processRequest()
 {
-    // Process order requests
-    auto [request, size] = request_queue_.read(order_request_cursor_);
-    if (request)
+    // Process a bounded burst per event-loop iteration. Processing one request per poll+read cycle
+    // made latency grow with queue depth even when the book could handle requests back to back. The
+    // limit leaves time for poll() to process venue market data and for the CLI to run.
+    constexpr int max_batch = 1024;
+    for (int processed = 0; processed < max_batch; ++processed)
     {
+        auto [request, size] = request_queue_.read(order_request_cursor_);
+        if (!request)
+        {
+            return;
+        }
         switch (request->msg_type)
         {
         case MessageType::NEW_ORDER_SINGLE:
@@ -405,6 +412,20 @@ void Exchange::rejectMdSubscription(const Request &request, MDSubscriptionReject
     md_queue_.publish(index, sz);
 }
 
+void Exchange::publishMdSubscriptionResponse(const symbol_name_t &symbol, uint8_t channel)
+{
+    auto sz = static_cast<uint32_t>(sizeof(MarketDataUpdate) + sizeof(MDSubscriptionResponse));
+    auto index = md_queue_.reserve(sz);
+    auto *update = reinterpret_cast<MarketDataUpdate *>(md_queue_[index]);
+    update->type = MDUpdateType::SUB_RESPONSE;
+    update->venue = venue_;
+    std::memcpy(update->symbol, symbol.data(), sizeof(update->symbol));
+    auto *rsp = reinterpret_cast<MDSubscriptionResponse *>(update->data);
+    rsp->channel = channel;
+    rsp->reject_reason = MDSubscriptionRejectReason::NONE;
+    md_queue_.publish(index, sz);
+}
+
 void Exchange::rejectNewOrderRequest(const Request &request, OrdRejectReason reason)
 {
     auto index = response_queue_.reserve();
@@ -413,6 +434,9 @@ void Exchange::rejectNewOrderRequest(const Request &request, OrdRejectReason rea
     std::memcpy(response.user_id, request.add_order.user_id, sizeof(response.user_id));
     std::memcpy(response.client_order_id, request.add_order.client_order_id, sizeof(response.client_order_id));
     std::memset(response.order_id, 0, sizeof(response.order_id));
+    // This reject has no free-text message. Clear the recycled slot so C-string readers cannot read
+    // past text left by the previous report.
+    response.error_message[0] = '\0';
     response.order_num = 0;
     response.request_tag = request.request_tag;
     response.aggressor = false;
@@ -441,6 +465,7 @@ void Exchange::rejectModifyOrderRequest(const Request &request, OrdRejectReason 
     std::memcpy(response.user_id, msg.user_id, sizeof(response.user_id));
     std::memcpy(response.client_order_id, msg.client_order_id, sizeof(response.client_order_id));
     std::memcpy(response.order_id, msg.order_id, sizeof(response.order_id));
+    response.error_message[0] = '\0';
     response.order_num = 0;
     response.request_tag = request.request_tag;
     response.aggressor = false;
@@ -468,6 +493,7 @@ void Exchange::rejectCancelOrderRequest(const Request &request, OrdRejectReason 
     std::memcpy(response.user_id, msg.user_id, sizeof(response.user_id));
     std::memcpy(response.client_order_id, msg.client_order_id, sizeof(response.client_order_id));
     std::memcpy(response.order_id, msg.order_id, sizeof(response.order_id));
+    response.error_message[0] = '\0';
     response.order_num = 0;
     response.request_tag = request.request_tag;
     response.aggressor = false;
@@ -894,9 +920,10 @@ void Exchange::sendOrderCancelPending(const Order *order, time_t request_time)
     response.last_fill_price = order->last_fill_price;
     response.last_qty = order->last_fill_qty;
     response.qty = order->quantity;
-    response.cum_qty = 0;
+    response.cum_qty = order->cum_quantity;
     response.leaves_qty = order->leaves_quantity;
-    assert(response.leaves_qty == response.qty);
+    // After a partial fill, leaves_qty is less than the original quantity. The old qty == leaves
+    // assert aborted the exchange thread and process when the client cancelled the remainder.
     response.timestamp = order->created_time;
     response.side = order->side;
     response.post_only = order->post_only;

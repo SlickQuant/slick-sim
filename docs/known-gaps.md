@@ -40,30 +40,23 @@ register itself, which is what the `ExchangeRegistryTest` suite guards against.
 
 ## Order and market-data plumbing
 
-### REST order handlers block the gateway's event loop
+### REST order handlers no longer block the event loop
 
-Every REST handler that needs a reply from the matching engine waits for it by polling
-`response_queue_` in a loop with a 100 microsecond sleep, up to a 5 second timeout. That loop runs
-on the gateway's **only** uWebSockets event-loop thread, so while one request waits, no other
-client's request on that gateway is served at all - not even one that would answer instantly.
+REST handlers that needed a matching-engine reply used to poll `response_queue_` with a
+100 microsecond sleep on the gateway's only uWebSockets event-loop thread. Batch handlers polled
+once per entry: a five-order batch could hold the loop for a second, and a single unanswered order
+stalled other clients for five seconds. The integration suite made this behavior testable.
 
-Batch handlers poll once per entry, which compounds the delay:
-[`handle_batch_cancel`](https://github.com/SlickQuant/slick-sim/blob/main/src/venues/coinbase/coinbase_rest_order_gateway.cpp#L638)
-and Hyperliquid's
-[`process_order_action`](https://github.com/SlickQuant/slick-sim/blob/main/src/venues/hyperliquid/hyperliquid_rest_order_gateway.cpp#L263)
-wait inside the loop over the batch, so a ten-order batch can hold the loop for ten separate
-timeouts.
+Handlers now publish the request, register a waiter with
+[`PendingResponses`](https://github.com/SlickQuant/slick-sim/blob/main/src/order_gateway/pending_responses.hpp)
+and return. A repeating timer (`order_gateway.rest.response_poll_ms`, default 1 ms) drains the report
+stream, completes the matching `HttpResponse`, and expires waiters after their timeout. An aborted
+connection abandons its waiters instead of leaving them to write to a dead socket.
 
-**What it means:** REST throughput is one in-flight request per gateway, and a single order that the
-engine never answers stalls every other client for five seconds. It is not a correctness problem -
-requests are still served first-come-first-served, since the request and response queues are both
-FIFO and the exchange thread is single-threaded - but it puts a hard ceiling on concurrency.
-
-`order_gateway::PendingResponses` is the correlation half of the fix: a handler registers what it is
-waiting for and returns, and the reply completes the HTTP response when it arrives. The uWebSockets
-half - holding an `HttpResponse` past handler return, cancelling on abort, and the per-request
-timeout timer - is deliberately not done yet, because nothing exercises the REST gateway over HTTP
-and those are precisely the parts that fail as a use-after-free rather than a wrong answer.
+The report queue has no notification mechanism, so the poll interval sets the minimum completion
+latency. Adjust `response_poll_ms` to change it; `1` is a uWS timer's granularity. The integration
+suite checks that a five-id batch completes well inside 500 ms, which the old per-order poll could
+not meet.
 
 ### `MDUpdateType::ORDER` is published only on opt-in
 

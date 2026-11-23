@@ -1,5 +1,24 @@
 # Unreleased
 
+## Added
+
+- `receiver_cpu` on the live feeds (`cme_mdp3_live`, `ice_impact_live`) pins the receiver thread to a
+  core. A pinned thread busy-polls, and an unpinned one sleeps 50 µs between empty sweeps. If the pin
+  fails (no such core, or a core outside the process's cpuset), the failure is logged and the thread
+  sleeps instead of spinning. A `receiver_cpu` that is not a number fails at construction.
+- End-to-end integration tests (`tests/integration/`, `coinbase_integration` in CTest,
+  [docs/integration-testing.md](docs/integration-testing.md)). The suite spawns the real `slick-sim`
+  and drives it over its ports with three separate client processes running the real
+  coinbase-advanced-cpp SDK. It covers startup, REST products/auth/validation, FIFO and TIF matching,
+  cancel/edit/batch-cancel, the historical listing, the user and market-data channels, sequence
+  numbering, heartbeats, self-match prevention, the CLI and graceful shutdown.
+- `config/coinbase_self_contained.json`: a Coinbase-only, feed-free sample config that the suite
+  exercises, with an inline product list so startup makes no outbound call.
+- `SLICK_SIM_BUILD_INTEGRATION_TESTS` (default `ON`) to leave the end-to-end suites out of a
+  test-only build.
+- `order_gateway.ws.fee_rate` and `base_url`: setting the display-only taker fee rate explicitly
+  skips the startup call to Coinbase.
+
 ## Changed
 
 - `MulticastPacketFeed` reads all its groups with one thread on slick-socket's `PolledMulticastReceiver`,
@@ -17,13 +36,75 @@
   `MulticastPacketFeed::receive_error_count()`. The loop used to treat it as an empty socket.
 - Calling `MulticastPacketFeed::start()` on a running feed logs a warning instead of terminating, and
   `add_line()` on a started feed returns false.
+- Coinbase REST handlers no longer block the gateway's only uWebSockets event-loop thread. A create,
+  cancel or edit publishes its request, registers a waiter with `PendingResponses`, and returns; a
+  one-shot timer (`order_gateway.rest.response_poll_ms`, default 1 ms, armed only while something is
+  in flight) drains the report stream and completes the HTTP response. Aborted connections abandon
+  their waiters, and the timer is closed on stop so the loop can exit.
+- `batch_cancel` publishes every cancel before awaiting any of them, instead of waiting 200 ms per
+  order; a five-order batch no longer holds the loop for a second.
+- The exchange drains up to 1024 queued requests per event-loop iteration instead of one, so burst
+  latency no longer grows with queue depth.
+- Product specs used for order validation are parsed once at construction and reused for each order.
+- `order_id_to_symbol_` entries are dropped when an order reaches a terminal state; they used to
+  leak for every filled or rejected order.
 
-## Added
+## Fixed
 
-- `receiver_cpu` on the live feeds (`cme_mdp3_live`, `ice_impact_live`) pins the receiver thread to a
-  core. A pinned thread busy-polls, and an unpinned one sleeps 50 µs between empty sweeps. If the pin
-  fails (no such core, or a core outside the process's cpuset), the failure is logged and the thread
-  sleeps instead of spinning. A `receiver_cpu` that is not a number fails at construction.
+- The order-entry WebSocket gateway no longer contacts the real Coinbase API (and throws or hangs)
+  when started without credentials. `fee_rate` skips the call; an unset `COINBASE_API_SECRET` skips
+  it with a warning, so a feed-less simulator starts offline.
+- A partially filled order is reported on the user channel as `OPEN`; it was reported as `FILLED`
+  while quantity was still live.
+- `completion_percentage` is scaled correctly (it divided a fixed-point quantity by the raw one, off
+  by 1e8), and `number_of_fills` is the tracked fill count instead of `cum_qty / last_qty`.
+- `time_in_force` on the user channel uses Coinbase's names (`GOOD_UNTIL_CANCELLED`,
+  `GOOD_UNTIL_DATE_TIME`) instead of the FIX ones.
+- The per-socket `sequence_num` on both WebSocket servers starts at zero instead of being
+  uninitialized, which clients reported as a sequence gap on their first message.
+- A market-data subscribe without `product_ids` returns an error instead of throwing out of the uWS
+  callback.
+- Cancelling a partly filled order aborted the process: `sendOrderCancelPending` asserted
+  `leaves_qty == qty`, which is false after any fill. The report now carries the real cumulative and
+  remaining quantities.
+- The REST gateway accepts `limit_limit_fok`, the configuration coinbase-advanced-cpp sends for a
+  limit order with `FILL_OR_KILL`; it used to reject it as unsupported before the engine saw it.
+- A `ticker` market-data subscription is confirmed with its empty snapshot as documented. The
+  exchange published no response for the channel at all, so a ticker-only subscriber waited forever
+  and the subscription never completed its bookkeeping.
+- A rejected order could abort the process. `rejectNewOrderRequest` and its modify/cancel siblings
+  never initialized `error_message`, and the REST handler read that field as a C string: a recycled
+  queue slot put 256 bytes of whatever the previous report had written into a `std::string`, and the
+  copy ran off the end of the buffer. All three paths now terminate the field.
+- `GET /orders/historical/batch` stopped answering after a cancel, and the simulator then hung on
+  shutdown. Cancel reports carried recycled `error_message` bytes into the order store, the listing
+  put them into JSON, and `dump()` threw on the invalid UTF-8 inside a uWebSockets callback. The
+  REST gateway's only loop thread never ran again. `setOrderIdentity`, which every report builder
+  goes through, now clears the field; the store copies it with a bounded read; and the gateways'
+  JSON dumps replace invalid bytes instead of throwing.
+- A malformed `batch_cancel` could write a second HTTP response. `order_ids` entries were
+  converted one by one while the cancels were being published, so `{"order_ids":["<id>",123]}`
+  registered a waiter for the first entry, threw on the second, answered 400, then
+  wrote the batch response on the same connection. Every entry is validated before anything is submitted, and a
+  batch answers once whatever happens afterwards.
+- A rejected amendment made its order uncancellable. The report stream's routing cleanup treated
+  `REJECTED` as terminal, but a rejected amendment or cancel names an order that is still working;
+  cancelling it afterwards answered `UNKNOWN_ORDER`. Routing is now learned while the report stream
+  is drained and only `FILLED`, `CANCELED` and `EXPIRED` retire it.
+- An order whose client disconnected mid-request could never be cancelled. Its routing was recorded
+  from the create handler's completion, which is abandoned when the connection drops, and the report
+  poll ran only while an HTTP waiter existed. The accepted order's report stayed unread, and
+  the order answered `UNKNOWN_ORDER` until some later request happened to drain the stream. Routing
+  is now learned while the report stream is drained, the poll keeps running for as long as a
+  published request still owes a report (`expected_reports_`, recorded before the request is
+  published), and the cancel and edit paths drain before they look routing up. The regression test
+  runs with the response poll at one second, so the lookup cannot be served by the timer.
+- Abandoned requests kept their timeout records: `PendingResponses::abandon` drops the completion,
+  which was the only thing that would have untracked the waiter, so `expireWaiters` matched nothing
+  and the poll timer stayed armed for the life of the process. Abandoning a request now drops its
+  timeout records with its waiters.
+- Docs: `GET /orders/historical/batch` is implemented (it returned the order store but was
+  documented as hanging).
 
 # v0.7.0 - 11-16-2026
 

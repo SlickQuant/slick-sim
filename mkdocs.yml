@@ -54,6 +54,7 @@ nav:
       - CLI: cli.md
       - Coinbase: integration-coinbase.md
       - Hyperliquid: integration-hyperliquid.md
+      - Integration tests: integration-testing.md
   - Known gaps: known-gaps.md
   # Absolute URL: the Doxygen output is copied into site/api/ after the MkDocs
   # build, so it does not exist under docs_dir and a relative path would warn.

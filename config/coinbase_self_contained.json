@@ -1,0 +1,32 @@
+{
+    "log_level": "info",
+    "exchanges": {
+        "coinbase": {
+            "enabled": true,
+            "request_queue_size": 1048576,
+            "response_queue_size": 1048576,
+            "md_queue_size": 16777216,
+            "self_match_prevention": "none",
+            "order_gateway": {
+                "rest": {
+                    "port": 14000,
+                    "initial_products": "{\"products\":[{\"product_id\":\"BTC-USD\",\"base_currency_id\":\"BTC\",\"quote_currency_id\":\"USD\",\"base_name\":\"Bitcoin\",\"base_display_symbol\":\"BTC\",\"quote_name\":\"US Dollar\",\"quote_display_symbol\":\"USD\",\"display_name\":\"BTC-USD\",\"status\":\"online\",\"product_type\":\"SPOT\",\"price\":\"60000\",\"price_increment\":\"0.01\",\"quote_increment\":\"0.01\",\"base_increment\":\"0.00000001\",\"base_min_size\":\"0.00000001\",\"base_max_size\":\"340\",\"quote_min_size\":\"1\",\"quote_max_size\":\"1000000\",\"watched\":false,\"is_disabled\":false,\"new\":false,\"cancel_only\":false,\"limit_only\":false,\"post_only\":false,\"trading_disabled\":false,\"auction_mode\":false,\"view_only\":false,\"alias\":\"\",\"product_venue\":\"\"},{\"product_id\":\"ETH-USD\",\"base_currency_id\":\"ETH\",\"quote_currency_id\":\"USD\",\"base_name\":\"Ether\",\"base_display_symbol\":\"ETH\",\"quote_name\":\"US Dollar\",\"quote_display_symbol\":\"USD\",\"display_name\":\"ETH-USD\",\"status\":\"online\",\"product_type\":\"SPOT\",\"price\":\"3000\",\"price_increment\":\"0.01\",\"quote_increment\":\"0.01\",\"base_increment\":\"0.00000001\",\"base_min_size\":\"0.00000001\",\"base_max_size\":\"10000\",\"quote_min_size\":\"1\",\"quote_max_size\":\"1000000\",\"watched\":false,\"is_disabled\":false,\"new\":false,\"cancel_only\":false,\"limit_only\":false,\"post_only\":false,\"trading_disabled\":false,\"auction_mode\":false,\"view_only\":false,\"alias\":\"\",\"product_venue\":\"\"},{\"product_id\":\"SOL-USD\",\"base_currency_id\":\"SOL\",\"quote_currency_id\":\"USD\",\"base_name\":\"SOL\",\"base_display_symbol\":\"SOL\",\"quote_name\":\"US Dollar\",\"quote_display_symbol\":\"USD\",\"display_name\":\"SOL-USD\",\"status\":\"online\",\"product_type\":\"SPOT\",\"price\":\"150\",\"price_increment\":\"0.01\",\"quote_increment\":\"0.01\",\"base_increment\":\"0.00000001\",\"base_min_size\":\"0.00000001\",\"base_max_size\":\"340\",\"quote_min_size\":\"1\",\"quote_max_size\":\"1000000\",\"watched\":false,\"is_disabled\":false,\"new\":false,\"cancel_only\":false,\"limit_only\":false,\"post_only\":false,\"trading_disabled\":false,\"auction_mode\":false,\"view_only\":false,\"alias\":\"\",\"product_venue\":\"\"},{\"product_id\":\"LTC-USD\",\"base_currency_id\":\"LTC\",\"quote_currency_id\":\"USD\",\"base_name\":\"LTC\",\"base_display_symbol\":\"LTC\",\"quote_name\":\"US Dollar\",\"quote_display_symbol\":\"USD\",\"display_name\":\"LTC-USD\",\"status\":\"online\",\"product_type\":\"SPOT\",\"price\":\"80\",\"price_increment\":\"0.01\",\"quote_increment\":\"0.01\",\"base_increment\":\"0.00000001\",\"base_min_size\":\"0.00000001\",\"base_max_size\":\"340\",\"quote_min_size\":\"1\",\"quote_max_size\":\"1000000\",\"watched\":false,\"is_disabled\":false,\"new\":false,\"cancel_only\":false,\"limit_only\":false,\"post_only\":false,\"trading_disabled\":false,\"auction_mode\":false,\"view_only\":false,\"alias\":\"\",\"product_venue\":\"\"}]}"
+                },
+                "ws": {
+                    "port": 14001,
+                    "ping_interval": 5,
+                    "pong_timeout": 30,
+                    "fee_rate": 0.0012
+                }
+            },
+            "md_publisher": {
+                "port": 15000
+            }
+        }
+    },
+    "cli": {
+        "port": 14002,
+        "max_connections": 8,
+        "idle_timeout": 60
+    }
+}

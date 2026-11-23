@@ -158,6 +158,7 @@ means no order-entry WebSocket, and therefore no fills or execution reports reac
 | `port` | int | `3000` | HTTP listen port |
 | `initial_products` | string | *(none)* | A raw JSON string served verbatim from the products routes. Use this to avoid an outbound call at startup |
 | `base_url` | string | `"https://api.coinbase.com"` | Only used when `initial_products` is absent: the gateway fetches `/api/v3/brokerage/market/products` from here at construction time |
+| `response_poll_ms` | int | `1` | How often the gateway's event loop checks for reports to complete in-flight HTTP requests. `1` is a uWS timer's granularity; raise it to trade latency for fewer wakeups |
 
 Without `initial_products`, **`slick-sim` makes a live HTTP call to Coinbase during construction**.
 If it fails, a warning is logged and the product list stays empty — which then causes every order to
@@ -170,6 +171,14 @@ fail validation with `INVALID_PRODUCT_ID`.
 | `port` | int | `3001` | WebSocket listen port |
 | `ping_interval` | int (seconds) | `30` | Heartbeat timer period; multiplied by 1000 internally |
 | `pong_timeout` | int (seconds) | `60` | Disconnect a client that has not ponged within this window |
+| `fee_rate` | number | *(none)* | Taker fee rate used for the display-only `total_fees` field. Set it to skip the startup call to Coinbase entirely |
+| `base_url` | string | `"https://api.coinbase.com"` | Where the fee rate is read from when `fee_rate` is absent |
+
+Without `fee_rate`, the order-entry gateway calls `CoinbaseRestClient::get_taker_fee_rate()` at
+startup. The client also fetches the product list, and signing requires
+`COINBASE_API_KEY`/`COINBASE_API_SECRET`. If the secret is unset, the gateway logs a warning, skips
+the call and uses the default `0.0012`. A simulator without a live feed can therefore start without
+credentials or network access, including in an air-gapped environment.
 
 ### `md_publisher`
 

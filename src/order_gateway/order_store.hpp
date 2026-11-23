@@ -128,13 +128,21 @@ public:
                            * to_qty_double(response.cum_qty);
 
         if (response.order_status == OrderStatus::REJECTED) {
-            order.reject_message = response.error_message;
+            order.reject_message = error_message_of(response);
         } else if (response.order_status == OrderStatus::CANCELED) {
-            order.cancel_message = response.error_message;
+            order.cancel_message = error_message_of(response);
         }
     }
 
 private:
+    /// The fixed 256-byte wire field may lack a terminator. Producers clear its first byte when no
+    /// message is present, but an older writer or torn report can leave it full. Bound the copy so
+    /// the store and its JSON listing cannot include bytes beyond the field.
+    static std::string error_message_of(const OrderResponse &response) {
+        return std::string(response.error_message,
+                           strnlen(response.error_message, sizeof(response.error_message)));
+    }
+
     slick::queue<OrderResponse> *response_queue_ = nullptr;
     uint64_t cursor_ = 0;
 

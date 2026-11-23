@@ -102,6 +102,11 @@ void CoinbaseExchange::handleMdSubscription(const Request &request)
             }
             case coinbase::WebSocketChannel::HEARTBEATS:
                 break;
+            case coinbase::WebSocketChannel::TICKER:
+                // No independent ticker quote is mirrored; confirm the channel with an
+                // empty snapshot so its subscriber bookkeeping completes.
+                publishMdSubscriptionResponse(symbol->symbol_, msg.channel);
+                break;
             default:
                 LOG_WARN("Unsupported channel {} for symbol {}", static_cast<int>(msg.channel), sym);
                 return;
@@ -127,6 +132,10 @@ void CoinbaseExchange::handleMdSubscription(const Request &request)
                 break;
             }
             case coinbase::WebSocketChannel::HEARTBEATS:
+                break;
+            case coinbase::WebSocketChannel::TICKER:
+                // Same as above: an empty snapshot is the whole ticker channel.
+                publishMdSubscriptionResponse(symbol->symbol_, msg.channel);
                 break;
             default:
                 LOG_WARN("Unsupported channel {} for symbol {}", static_cast<int>(msg.channel), sym);
@@ -168,6 +177,11 @@ void CoinbaseExchange::handleMdSubscription(const Request &request)
         break;
     }
     case coinbase::WebSocketChannel::TICKER:
+    {
+        // An already-created symbol answers ticker subscriptions the same way.
+        publishMdSubscriptionResponse(symbol->symbol_, msg.channel);
+        break;
+    }
     default:
         break;
     }

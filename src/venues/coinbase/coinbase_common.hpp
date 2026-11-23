@@ -8,6 +8,48 @@ using json = nlohmann::json;
 
 namespace slick::sim::order_gateway::coinbase {
 
+/// What an execution report means for the order-id -> symbol routing table.
+enum class RoutingEffect {
+    Learn,   ///< The order exists: remember which symbol its id belongs to.
+    Forget,  ///< The order is gone: drop its routing.
+    Ignore,  ///< Says nothing about routing.
+};
+
+/// Terminal reports retire routing. A REJECTED new order has no order id, so there is nothing to
+/// forget. A REJECTED amendment or cancel names an order that is still working; forgetting its
+/// routing prevented later cancels and amendments. Classify every status explicitly so new statuses
+/// require a decision here.
+constexpr RoutingEffect routing_effect(OrderStatus status) {
+    switch (status) {
+    case OrderStatus::FILLED:
+    case OrderStatus::CANCELED:
+    case OrderStatus::EXPIRED:
+    case OrderStatus::DONE_FOR_DAY:
+        return RoutingEffect::Forget;
+    case OrderStatus::REJECTED:
+        return RoutingEffect::Ignore;
+    case OrderStatus::NEW:
+    case OrderStatus::PARTIALLY_FILLED:
+    case OrderStatus::REPLACED:
+    case OrderStatus::PENDING_CANCEL:
+    case OrderStatus::PENDING_NEW:
+    case OrderStatus::PENDING_REPLACE:
+    case OrderStatus::STOPPED:
+    case OrderStatus::SUSPENDED:
+    case OrderStatus::CALCULATED:
+    case OrderStatus::ACCEPTED_FOR_BIDDING:
+        return RoutingEffect::Learn;
+    }
+    return RoutingEffect::Learn;
+}
+
+/// nlohmann's dump() throws on invalid UTF-8. These payloads include client ids and reject/cancel
+/// text copied from fixed-size wire fields. Invalid bytes could throw inside a uWebSockets callback
+/// and stop the gateway loop thread. Replace them to keep the JSON well formed.
+inline std::string dump_json(const json &value) {
+    return value.dump(-1, ' ', false, json::error_handler_t::replace);
+}
+
 inline std::string_view to_coinbase_string(TimeInForce tif) {
     switch(tif) {
     case TimeInForce::GOOD_TILL_DATE:

@@ -372,6 +372,10 @@ inline void setOrderIdentity(OrderResponse &response, const Order &order) noexce
     response.order_num = order.id;
     response.request_tag = order.request_tag;
     response.aggressor = false;
+    // Readers copy error_message as a C string on rejects and cancels. Clear it because recycled
+    // response slots can retain reject text without a NUL terminator. Invalid text in the REST/WS
+    // JSON payload can make dump() throw and stop the gateway thread.
+    response.error_message[0] = '\0';
 }
 
 struct TradeSummaryInfo {

@@ -120,6 +120,9 @@ void CoinbasePublisher::setup_routes(uWS::App &app) {
         .open = [this](auto *ws) {
             // Initialize connection timestamp
             ws->getUserData()->last_pong = std::chrono::steady_clock::now();
+            // Start each socket at sequence_num zero. An uninitialized counter gave the first
+            // market-data message an arbitrary number, causing continuity checks to report a gap.
+            ws->getUserData()->seq_num = 0;
             clients_.emplace(ws);
             LOG_INFO("CoinbasePublisher WebSocket client connected");
         },
@@ -225,6 +228,14 @@ void CoinbasePublisher::handle_message(wsT *ws, std::string_view message) {
             }
 
             auto &channel = msg["channel"].get_ref<std::string&>();
+
+            const bool carries_products = channel == "level2" || channel == "market_trades" || channel == "ticker";
+            if (carries_products && (!msg.contains("product_ids") || !msg["product_ids"].is_array())) {
+                // Check product_ids before indexing msg["product_ids"]. An omitted field otherwise
+                // throws out of the uWS subscribe callback.
+                send_error(ws, std::format("channel `{}` requires product_ids", channel));
+                return;
+            }
 
             if (channel == "level2") {
                 for (auto &prod : msg["product_ids"]) {

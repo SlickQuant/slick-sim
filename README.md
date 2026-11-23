@@ -125,6 +125,7 @@ This builds the `slick-sim` executable and, by default, the `slick_sim_tests` te
 ```bash
 cmake -S . -B build -DENABLE_ASAN=ON                     # AddressSanitizer (MSVC needs VS2022 17.7+; auto-disabled otherwise)
 cmake -S . -B build -DBUILD_EXCH_SIMULATOR_TESTING=OFF    # skip building unit tests (default: ON)
+cmake -S . -B build -DSLICK_SIM_BUILD_INTEGRATION_TESTS=OFF  # skip the end-to-end suites (default: ON)
 cmake -S . -B build -DENABLE_NATIVE_ARCH=ON               # -march=native in Release (default: OFF)
 ```
 
@@ -256,6 +257,16 @@ so they run in the same test binary.
 cmake -S . -B build
 cmake --build build
 ctest --test-dir build
+```
+
+The end-to-end tests in `tests/integration/` start `slick-sim` and drive it through its ports.
+For Coinbase, three separate clients use the venue SDK to build a market and trade against each
+other without a live feed or network access. CTest registers the suite as `coinbase_integration`.
+See [Integration tests](https://slickquant.github.io/slick-sim/integration-testing/).
+
+```bash
+ctest --test-dir build -R coinbase_integration --output-on-failure
+cmake -S . -B build -DSLICK_SIM_BUILD_INTEGRATION_TESTS=OFF   # leave them out
 ```
 
 ## Building the documentation locally

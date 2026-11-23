@@ -2,6 +2,7 @@
 #include <order_gateway/order_store.hpp>
 #include <common/messages.hpp>
 #include <common/order.hpp>
+#include <cstring>
 #include <memory>
 #include <string>
 #include "../test_helpers.hpp"
@@ -168,6 +169,21 @@ TEST_F(OrderStoreTest, RejectAndCancelMessagesAreRetained) {
     utils::copy_wire_field(canceled.error_message, "user requested");
     store_->apply(canceled);
     EXPECT_EQ(store_->find("ord-2")->cancel_message, "user requested");
+}
+
+// Some writers leave the fixed 256-byte wire field unterminated. An unbounded C-string copy could
+// include bytes beyond the slot in the stored order and JSON listing, where invalid UTF-8 made
+// dump() throw in a uWebSockets callback. Keep the read inside the field.
+TEST_F(OrderStoreTest, AMessageFieldWithNoTerminatorIsReadWithinItsBuffer) {
+    auto canceled = makeResponse("ord-1", "alice", "BTC-USD",
+                                 ExecType::CANCELED, OrderStatus::CANCELED);
+    std::memset(canceled.error_message, 0xAB, sizeof(canceled.error_message));
+
+    store_->apply(canceled);
+
+    const Order *order = store_->find("ord-1");
+    ASSERT_NE(order, nullptr);
+    EXPECT_EQ(order->cancel_message.size(), sizeof(canceled.error_message));
 }
 
 // drain() is how the gateway actually feeds the store, and its cursor must advance

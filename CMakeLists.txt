@@ -9,6 +9,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
 
+# End-to-end suites spawn the simulator and drive its ports. They can be disabled while working on
+# unit tests. The Coinbase suite also requires the Coinbase adapter.
+option(SLICK_SIM_BUILD_INTEGRATION_TESTS "Build the end-to-end integration suites" ON)
+
 # Each venue builds as a separate target under src/venues/<name>/.
 # Disabling one removes its sources, tests and vendor SDK. Both default to ON.
 option(SLICK_SIM_ENABLE_COINBASE    "Build the Coinbase venue adapter"    ON)

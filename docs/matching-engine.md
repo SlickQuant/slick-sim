@@ -146,10 +146,11 @@ return incoming->client_id == book_order->client_id;
 
 ### `CANCEL_NEWEST` decides before it touches anything
 
-The check runs at the top of `match()`, ahead of the order ack, ahead of the
-`PENDING_REPLACE` mutation, and ahead of the FOK pre-validation. `wouldSelfMatch` walks the opposing
-side as far as the incoming quantity could actually reach and asks whether any of it is the order's
-own.
+The check runs at the top of `match()`, ahead of the engine's `NEW` acknowledgement, ahead of the
+`PENDING_REPLACE` mutation, and ahead of the FOK pre-validation. The REST gateway has already
+returned its `PENDING_NEW` acknowledgement at this point, so a REST client sees a 200 before the
+user channel reports `REJECTED`. The `wouldSelfMatch` scan walks the opposing side as far as the
+incoming quantity can reach and checks for the order's own liquidity.
 
 The check must precede mutation. On entering the matching loop, an amendment updates the stored
 `Order` and reports `REPLACED`; a new order is acknowledged. Rejecting a self-match at that point

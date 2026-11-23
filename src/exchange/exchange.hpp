@@ -64,6 +64,10 @@ protected:
     void handleModifyOrderRequest(const Request &request);
     void handleCancelOrderRequest(const Request &request);
     void rejectMdSubscription(const Request &request, MDSubscriptionRejectReason reason);
+    /// Publishes an accepted subscription response without a snapshot payload. The publisher's
+    /// channel handler interprets the empty response; ticker subscriptions use it to confirm an
+    /// empty snapshot.
+    void publishMdSubscriptionResponse(const symbol_name_t &symbol, uint8_t channel);
     void rejectNewOrderRequest(const Request &request, OrdRejectReason reason);
     void rejectModifyOrderRequest(const Request &request, OrdRejectReason reason);
     void rejectCancelOrderRequest(const Request &request, OrdRejectReason reason);
