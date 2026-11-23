@@ -426,6 +426,27 @@ slick_sim_add_venue(kraken
 )
 ```
 
+`TESTS` adds sources to `slick_sim_tests`, the unit test binary. For a suite that starts
+`slick-sim` and drives its ports, use `INTEGRATION_TESTS` with a directory whose
+`CMakeLists.txt` defines the executable and its CTest entries:
+
+```cmake
+slick_sim_add_venue(kraken
+    SOURCES kraken_exchange.cpp kraken_venue.cpp ...
+    DEPENDS slick::socket
+    TESTS             tests/test_kraken_exchange.cpp
+    INTEGRATION_TESTS tests/integration
+)
+```
+
+`slick-sim`'s `tests/CMakeLists.txt` adds that directory when `SLICK_SIM_BUILD_INTEGRATION_TESTS` is
+on. The suite registers its cases with `add_test()` without changes to slick-sim's test list.
+The executable takes `--sim $<TARGET_FILE:slick-sim>` and any config path it needs. Link
+`GTest::gtest_main`, `slick::sim_core` (the CLI control messages and the `src/` include root) and
+whatever networking library the client side needs; add `add_dependencies(... slick-sim)` so `ctest`
+can never run a stale binary. Label the entries `integration` and make them `RUN_SERIAL`, as
+`tests/integration/CMakeLists.txt` does for Coinbase.
+
 Point slick-sim at it when configuring. No file in slick-sim changes:
 
 ```bash

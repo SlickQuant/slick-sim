@@ -120,6 +120,18 @@ if(TARGET slick_sim_venue_coinbase AND SLICK_SIM_BUILD_INTEGRATION_TESTS)
     add_subdirectory(integration)
 endif()
 
+# Add out-of-process suites declared by out-of-tree venues through
+# slick_sim_add_venue(... INTEGRATION_TESTS ...). Each directory defines its
+# executable and add_test() entries, as tests/integration/ does for Coinbase.
+if(SLICK_SIM_BUILD_INTEGRATION_TESTS)
+    get_property(_slick_sim_venue_integration_dirs GLOBAL PROPERTY SLICK_SIM_VENUE_INTEGRATION_TESTS)
+    foreach(_dir IN LISTS _slick_sim_venue_integration_dirs)
+        # Use the path hash to give each suite a distinct binary directory.
+        string(SHA1 _key "${_dir}")
+        add_subdirectory("${_dir}" "${CMAKE_CURRENT_BINARY_DIR}/venue-integration-${_key}")
+    endforeach()
+endif()
+
 add_executable(slick_sim_tests ${SLICK_SIM_TEST_SOURCES})
 
 # slick::logger, slick::queue, slick::object-pool, slick::orderbook,

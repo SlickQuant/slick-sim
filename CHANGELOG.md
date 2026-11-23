@@ -12,6 +12,10 @@
   coinbase-advanced-cpp SDK. It covers startup, REST products/auth/validation, FIFO and TIF matching,
   cancel/edit/batch-cancel, the historical listing, the user and market-data channels, sequence
   numbering, heartbeats, self-match prevention, the CLI and graceful shutdown.
+- `slick_sim_add_venue(... INTEGRATION_TESTS <dir>)` lets an out-of-tree venue register an
+  out-of-process suite. `tests/CMakeLists.txt` adds it when `SLICK_SIM_BUILD_INTEGRATION_TESTS` is
+  on. Each suite defines its executable and CTest entries without changes to slick-sim's test list.
+  The CME suite in slick-sim-cme is the first to use this hook.
 - `config/coinbase_self_contained.json`: a Coinbase-only, feed-free sample config that the suite
   exercises, with an inline product list so startup makes no outbound call.
 - `SLICK_SIM_BUILD_INTEGRATION_TESTS` (default `ON`) to leave the end-to-end suites out of a

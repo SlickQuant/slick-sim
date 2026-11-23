@@ -87,8 +87,14 @@ endfunction()
 # TESTS lists GoogleTest sources to compile into slick_sim_tests. This lets
 # out-of-tree venues bring tests through SLICK_SIM_EXTERNAL_VENUES without
 # editing tests/CMakeLists.txt. Relative paths use the calling directory.
+#
+# INTEGRATION_TESTS names a directory that defines an out-of-process suite in its
+# CMakeLists.txt. The suite starts slick-sim and drives its ports, as
+# tests/integration/ does for Coinbase. tests/CMakeLists.txt enables CTest and adds
+# the directory when SLICK_SIM_BUILD_INTEGRATION_TESTS is on. The suite defines its
+# executable and add_test() entries there.
 function(slick_sim_add_venue name)
-    cmake_parse_arguments(SSV "" "" "SOURCES;DEPENDS;TESTS" ${ARGN})
+    cmake_parse_arguments(SSV "" "" "SOURCES;DEPENDS;TESTS;INTEGRATION_TESTS" ${ARGN})
     set(target slick_sim_venue_${name})
 
     add_library(${target} OBJECT ${SSV_SOURCES})
@@ -113,6 +119,15 @@ function(slick_sim_add_venue name)
     foreach(test_source IN LISTS SSV_TESTS)
         cmake_path(ABSOLUTE_PATH test_source BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
         set_property(GLOBAL APPEND PROPERTY SLICK_SIM_VENUE_TESTS "${test_source}")
+    endforeach()
+
+    foreach(integration_dir IN LISTS SSV_INTEGRATION_TESTS)
+        cmake_path(ABSOLUTE_PATH integration_dir BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+        if(NOT EXISTS "${integration_dir}/CMakeLists.txt")
+            message(FATAL_ERROR
+                "${name}: INTEGRATION_TESTS ${integration_dir} has no CMakeLists.txt")
+        endif()
+        set_property(GLOBAL APPEND PROPERTY SLICK_SIM_VENUE_INTEGRATION_TESTS "${integration_dir}")
     endforeach()
 endfunction()
 
