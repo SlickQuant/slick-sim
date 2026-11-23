@@ -93,12 +93,121 @@ $(function(){initNavTree('namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.ht
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a23ddf7923a4f0fc87b3a8b2923131d5d" id="r_a23ddf7923a4f0fc87b3a8b2923131d5d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23ddf7923a4f0fc87b3a8b2923131d5d">RoutingEffect</a> { <a class="el" href="#a23ddf7923a4f0fc87b3a8b2923131d5da2f1a3e62508d88ddc31f1aa72a8334d4">Learn</a>
+, <a class="el" href="#a23ddf7923a4f0fc87b3a8b2923131d5da7cb5f8b4a50c32d395c50b98f0ca2464">Forget</a>
+, <a class="el" href="#a23ddf7923a4f0fc87b3a8b2923131d5dafd038fc7f319e48f3115d92bf5bdbef9">Ignore</a>
+ }</td></tr>
+<tr class="memdesc:a23ddf7923a4f0fc87b3a8b2923131d5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">What an execution report means for the order-id -&gt; symbol routing table.  <a href="#a23ddf7923a4f0fc87b3a8b2923131d5d">More...</a><br /></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:aa70d70cf5276df773c6287cebc8e20c3" id="r_aa70d70cf5276df773c6287cebc8e20c3"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="#a23ddf7923a4f0fc87b3a8b2923131d5d">RoutingEffect</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa70d70cf5276df773c6287cebc8e20c3">routing_effect</a> (<a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8">OrderStatus</a> status)</td></tr>
+<tr class="memdesc:aa70d70cf5276df773c6287cebc8e20c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminal reports retire routing.  <br /></td></tr>
+<tr class="memitem:a2d17680cd825b3bf1a21883713423a7d" id="r_a2d17680cd825b3bf1a21883713423a7d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d17680cd825b3bf1a21883713423a7d">dump_json</a> (const <a class="el" href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;value)</td></tr>
+<tr class="memdesc:a2d17680cd825b3bf1a21883713423a7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">nlohmann's dump() throws on invalid UTF-8.  <br /></td></tr>
 <tr class="memitem:a3f5338485bd169e5dcb3821f4b854e65" id="r_a3f5338485bd169e5dcb3821f4b854e65"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f5338485bd169e5dcb3821f4b854e65">to_coinbase_string</a> (<a class="el" href="namespaceslick_1_1sim.html#a9abd8ed6a1eecc7e9662db5ee26a5b55">TimeInForce</a> tif)</td></tr>
 <tr class="memitem:ad52e6c536bbdde31370c540c4853dfff" id="r_ad52e6c536bbdde31370c540c4853dfff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad52e6c536bbdde31370c540c4853dfff">to_json</a> (const <a class="el" href="structslick_1_1sim_1_1Order.html">Order</a> &amp;order)</td></tr>
 </table>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="a23ddf7923a4f0fc87b3a8b2923131d5d" name="a23ddf7923a4f0fc87b3a8b2923131d5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23ddf7923a4f0fc87b3a8b2923131d5d">&#9670;&#160;</a></span>RoutingEffect</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#a23ddf7923a4f0fc87b3a8b2923131d5d">slick::sim::order_gateway::coinbase::RoutingEffect</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>What an execution report means for the order-id -&gt; symbol routing table. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a23ddf7923a4f0fc87b3a8b2923131d5da2f1a3e62508d88ddc31f1aa72a8334d4" name="a23ddf7923a4f0fc87b3a8b2923131d5da2f1a3e62508d88ddc31f1aa72a8334d4"></a>Learn&#160;</td><td class="fielddoc"><p>The order exists: remember which symbol its id belongs to. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a23ddf7923a4f0fc87b3a8b2923131d5da7cb5f8b4a50c32d395c50b98f0ca2464" name="a23ddf7923a4f0fc87b3a8b2923131d5da7cb5f8b4a50c32d395c50b98f0ca2464"></a>Forget&#160;</td><td class="fielddoc"><p>The order is gone: drop its routing. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a23ddf7923a4f0fc87b3a8b2923131d5dafd038fc7f319e48f3115d92bf5bdbef9" name="a23ddf7923a4f0fc87b3a8b2923131d5dafd038fc7f319e48f3115d92bf5bdbef9"></a>Ignore&#160;</td><td class="fielddoc"><p>Says nothing about routing. </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="coinbase__common_8hpp_source.html#l00012">12</a> of file <a class="el" href="coinbase__common_8hpp_source.html">coinbase_common.hpp</a>.</p>
+
+</div>
+</div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a2d17680cd825b3bf1a21883713423a7d" name="a2d17680cd825b3bf1a21883713423a7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d17680cd825b3bf1a21883713423a7d">&#9670;&#160;</a></span>dump_json()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string slick::sim::order_gateway::coinbase::dump_json </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>nlohmann's dump() throws on invalid UTF-8. </p>
+<p>These payloads include client ids and reject/cancel text copied from fixed-size wire fields. Invalid bytes could throw inside a uWebSockets callback and stop the gateway loop thread. Replace them to keep the JSON well formed. </p>
+
+<p class="definition">Definition at line <a class="el" href="coinbase__common_8hpp_source.html#l00049">49</a> of file <a class="el" href="coinbase__common_8hpp_source.html">coinbase_common.hpp</a>.</p>
+
+</div>
+</div>
+<a id="aa70d70cf5276df773c6287cebc8e20c3" name="aa70d70cf5276df773c6287cebc8e20c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa70d70cf5276df773c6287cebc8e20c3">&#9670;&#160;</a></span>routing_effect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a23ddf7923a4f0fc87b3a8b2923131d5d">RoutingEffect</a> slick::sim::order_gateway::coinbase::routing_effect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceslick_1_1sim.html#a7acd497cb034f1f328fb2f541eb6e4b8">OrderStatus</a></td>          <td class="paramname"><span class="paramname"><em>status</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Terminal reports retire routing. </p>
+<p>A REJECTED new order has no order id, so there is nothing to forget. A REJECTED amendment or cancel names an order that is still working; forgetting its routing prevented later cancels and amendments. Classify every status explicitly so new statuses require a decision here. </p>
+
+<p class="definition">Definition at line <a class="el" href="coinbase__common_8hpp_source.html#l00022">22</a> of file <a class="el" href="coinbase__common_8hpp_source.html">coinbase_common.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00163">slick::sim::ACCEPTED_FOR_BIDDING</a>, <a class="el" href="common_2order_8hpp_source.html#l00161">slick::sim::CALCULATED</a>, <a class="el" href="common_2order_8hpp_source.html#l00154">slick::sim::CANCELED</a>, <a class="el" href="common_2order_8hpp_source.html#l00153">slick::sim::DONE_FOR_DAY</a>, <a class="el" href="common_2order_8hpp_source.html#l00162">slick::sim::EXPIRED</a>, <a class="el" href="common_2order_8hpp_source.html#l00152">slick::sim::FILLED</a>, <a class="el" href="coinbase__common_8hpp_source.html#l00014">Forget</a>, <a class="el" href="coinbase__common_8hpp_source.html#l00015">Ignore</a>, <a class="el" href="coinbase__common_8hpp_source.html#l00013">Learn</a>, <a class="el" href="common_2order_8hpp_source.html#l00150">slick::sim::NEW</a>, <a class="el" href="common_2order_8hpp_source.html#l00151">slick::sim::PARTIALLY_FILLED</a>, <a class="el" href="common_2order_8hpp_source.html#l00156">slick::sim::PENDING_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00160">slick::sim::PENDING_NEW</a>, <a class="el" href="common_2order_8hpp_source.html#l00164">slick::sim::PENDING_REPLACE</a>, <a class="el" href="common_2order_8hpp_source.html#l00158">slick::sim::REJECTED</a>, <a class="el" href="common_2order_8hpp_source.html#l00155">slick::sim::REPLACED</a>, <a class="el" href="common_2order_8hpp_source.html#l00157">slick::sim::STOPPED</a>, and <a class="el" href="common_2order_8hpp_source.html#l00159">slick::sim::SUSPENDED</a>.</p>
+
+</div>
+</div>
 <a id="a3f5338485bd169e5dcb3821f4b854e65" name="a3f5338485bd169e5dcb3821f4b854e65"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3f5338485bd169e5dcb3821f4b854e65">&#9670;&#160;</a></span>to_coinbase_string()</h2>
 
@@ -122,11 +231,11 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="coinbase__common_8hpp_source.html#l00011">11</a> of file <a class="el" href="coinbase__common_8hpp_source.html">coinbase_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="coinbase__common_8hpp_source.html#l00053">53</a> of file <a class="el" href="coinbase__common_8hpp_source.html">coinbase_common.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00208">slick::sim::FILL_OR_KILL</a>, <a class="el" href="common_2order_8hpp_source.html#l00205">slick::sim::GOOD_TILL_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00210">slick::sim::GOOD_TILL_DATE</a>, and <a class="el" href="common_2order_8hpp_source.html#l00207">slick::sim::IMMEDIATE_OR_CANCEL</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="coinbase__common_8hpp_source.html#l00026">to_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="coinbase__common_8hpp_source.html#l00068">to_json()</a>.</p>
 
 </div>
 </div>
@@ -153,9 +262,9 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="coinbase__common_8hpp_source.html#l00026">26</a> of file <a class="el" href="coinbase__common_8hpp_source.html">coinbase_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="coinbase__common_8hpp_source.html#l00068">68</a> of file <a class="el" href="coinbase__common_8hpp_source.html">coinbase_common.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00317">slick::sim::Order::avg_fill_price</a>, <a class="el" href="fixed__string_8hpp_source.html#l00071">slick::sim::utils::fixed_string&lt; N &gt;::c_str()</a>, <a class="el" href="common_2order_8hpp_source.html#l00334">slick::sim::Order::cancel_message</a>, <a class="el" href="common_2order_8hpp_source.html#l00291">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00370">slick::sim::Order::cum_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00318">slick::sim::Order::cum_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00336">slick::sim::Order::edit_history</a>, <a class="el" href="common_2order_8hpp_source.html#l00323">slick::sim::Order::fee</a>, <a class="el" href="common_2order_8hpp_source.html#l00208">slick::sim::FILL_OR_KILL</a>, <a class="el" href="common_2order_8hpp_source.html#l00324">slick::sim::Order::filled_value</a>, <a class="el" href="timestamp_8hpp_source.html#l00009">slick::sim::utils::format_timestamp_iso8601()</a>, <a class="el" href="common_2order_8hpp_source.html#l00205">slick::sim::GOOD_TILL_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00207">slick::sim::IMMEDIATE_OR_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00329">slick::sim::Order::last_fill_time</a>, <a class="el" href="common_2order_8hpp_source.html#l00374">slick::sim::Order::leaves_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00316">slick::sim::Order::leaves_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00065">slick::sim::LIMIT</a>, <a class="el" href="common_2order_8hpp_source.html#l00064">slick::sim::MARKET</a>, <a class="el" href="common_2order_8hpp_source.html#l00322">slick::sim::Order::num_fills</a>, <a class="el" href="common_2order_8hpp_source.html#l00292">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00311">slick::sim::Order::pending_cancel</a>, <a class="el" href="common_2order_8hpp_source.html#l00310">slick::sim::Order::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00314">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00309">slick::sim::Order::product_type</a>, <a class="el" href="common_2order_8hpp_source.html#l00366">slick::sim::Order::qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00315">slick::sim::Order::quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00333">slick::sim::Order::reject_message</a>, <a class="el" href="common_2order_8hpp_source.html#l00305">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00307">slick::sim::Order::status</a>, <a class="el" href="common_2order_8hpp_source.html#l00289">slick::sim::OrderIdentity::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::time_in_force</a>, <a class="el" href="coinbase__common_8hpp_source.html#l00011">to_coinbase_string()</a>, <a class="el" href="types_8hpp_source.html#l00107">slick::sim::to_price_string()</a>, <a class="el" href="types_8hpp_source.html#l00108">slick::sim::to_qty_string()</a>, <a class="el" href="control__messages_8hpp_source.html#l00024">slick::sim::to_string()</a>, <a class="el" href="common_2order_8hpp_source.html#l00306">slick::sim::Order::type</a>, and <a class="el" href="common_2order_8hpp_source.html#l00290">slick::sim::OrderIdentity::user_id</a>.</p>
+<p class="reference">References <a class="el" href="common_2order_8hpp_source.html#l00317">slick::sim::Order::avg_fill_price</a>, <a class="el" href="fixed__string_8hpp_source.html#l00071">slick::sim::utils::fixed_string&lt; N &gt;::c_str()</a>, <a class="el" href="common_2order_8hpp_source.html#l00334">slick::sim::Order::cancel_message</a>, <a class="el" href="common_2order_8hpp_source.html#l00291">slick::sim::OrderIdentity::client_order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00370">slick::sim::Order::cum_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00318">slick::sim::Order::cum_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00336">slick::sim::Order::edit_history</a>, <a class="el" href="common_2order_8hpp_source.html#l00323">slick::sim::Order::fee</a>, <a class="el" href="common_2order_8hpp_source.html#l00208">slick::sim::FILL_OR_KILL</a>, <a class="el" href="common_2order_8hpp_source.html#l00324">slick::sim::Order::filled_value</a>, <a class="el" href="timestamp_8hpp_source.html#l00009">slick::sim::utils::format_timestamp_iso8601()</a>, <a class="el" href="common_2order_8hpp_source.html#l00205">slick::sim::GOOD_TILL_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00207">slick::sim::IMMEDIATE_OR_CANCEL</a>, <a class="el" href="common_2order_8hpp_source.html#l00329">slick::sim::Order::last_fill_time</a>, <a class="el" href="common_2order_8hpp_source.html#l00374">slick::sim::Order::leaves_qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00316">slick::sim::Order::leaves_quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00065">slick::sim::LIMIT</a>, <a class="el" href="common_2order_8hpp_source.html#l00064">slick::sim::MARKET</a>, <a class="el" href="common_2order_8hpp_source.html#l00322">slick::sim::Order::num_fills</a>, <a class="el" href="common_2order_8hpp_source.html#l00292">slick::sim::OrderIdentity::order_id</a>, <a class="el" href="common_2order_8hpp_source.html#l00311">slick::sim::Order::pending_cancel</a>, <a class="el" href="common_2order_8hpp_source.html#l00310">slick::sim::Order::post_only</a>, <a class="el" href="common_2order_8hpp_source.html#l00314">slick::sim::Order::price</a>, <a class="el" href="common_2order_8hpp_source.html#l00309">slick::sim::Order::product_type</a>, <a class="el" href="common_2order_8hpp_source.html#l00366">slick::sim::Order::qty_double()</a>, <a class="el" href="common_2order_8hpp_source.html#l00315">slick::sim::Order::quantity</a>, <a class="el" href="common_2order_8hpp_source.html#l00333">slick::sim::Order::reject_message</a>, <a class="el" href="common_2order_8hpp_source.html#l00305">slick::sim::Order::side</a>, <a class="el" href="common_2order_8hpp_source.html#l00307">slick::sim::Order::status</a>, <a class="el" href="common_2order_8hpp_source.html#l00289">slick::sim::OrderIdentity::symbol</a>, <a class="el" href="common_2order_8hpp_source.html#l00308">slick::sim::Order::time_in_force</a>, <a class="el" href="coinbase__common_8hpp_source.html#l00053">to_coinbase_string()</a>, <a class="el" href="types_8hpp_source.html#l00107">slick::sim::to_price_string()</a>, <a class="el" href="types_8hpp_source.html#l00108">slick::sim::to_qty_string()</a>, <a class="el" href="control__messages_8hpp_source.html#l00024">slick::sim::to_string()</a>, <a class="el" href="common_2order_8hpp_source.html#l00306">slick::sim::Order::type</a>, and <a class="el" href="common_2order_8hpp_source.html#l00290">slick::sim::OrderIdentity::user_id</a>.</p>
 
 </div>
 </div>

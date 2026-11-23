@@ -59,42 +59,42 @@ var sectionId = 'dynsection-1';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="none" points="1166.38,-301.5 1003.62,-301.5 1003.62,0 1166.38,0 1166.38,-301.5"/>
-<text xml:space="preserve" text-anchor="start" x="1021.62" y="-288" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::exch::Coinbase</text>
-<text xml:space="preserve" text-anchor="start" x="1061.38" y="-275.25" font-family="Helvetica,sans-Serif" font-size="10.00">Exchange</text>
-<text xml:space="preserve" text-anchor="start" x="1083.5" y="-258.5" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-241.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-241.75" font-family="Helvetica,sans-Serif" font-size="10.00">CoinbaseExchange()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">~CoinbaseExchange()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">onMarketDataConnected()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">onMarketDataDisconnected()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">onUserDataConnected()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">onUserDataDisconnected()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">onLevel2Snapshot()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">onLevel2Updates()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">onMarketTradesSnapshot()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">onMarketTrades()</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">and 12 more...</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdSubscription()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdUnsubscription()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">poll()</text>
-<text xml:space="preserve" text-anchor="start" x="1007.62" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="1019.88" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">processSequencedEvents()</text>
-<polygon fill="#666666" stroke="#666666" points="1003.62,-270 1003.62,-270 1166.38,-270 1166.38,-270 1003.62,-270"/>
-<polygon fill="#666666" stroke="#666666" points="1003.62,-253.25 1003.62,-253.25 1166.38,-253.25 1166.38,-253.25 1003.62,-253.25"/>
-<polygon fill="none" stroke="#666666" points="1003.62,0 1003.62,-301.5 1166.38,-301.5 1166.38,0 1003.62,0"/>
+<polygon fill="#999999" stroke="none" points="1176.38,-301.5 1013.62,-301.5 1013.62,0 1176.38,0 1176.38,-301.5"/>
+<text xml:space="preserve" text-anchor="start" x="1031.62" y="-288" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::exch::Coinbase</text>
+<text xml:space="preserve" text-anchor="start" x="1071.38" y="-275.25" font-family="Helvetica,sans-Serif" font-size="10.00">Exchange</text>
+<text xml:space="preserve" text-anchor="start" x="1093.5" y="-258.5" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-241.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-241.75" font-family="Helvetica,sans-Serif" font-size="10.00">CoinbaseExchange()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">~CoinbaseExchange()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">onMarketDataConnected()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">onMarketDataDisconnected()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">onUserDataConnected()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">onUserDataDisconnected()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">onLevel2Snapshot()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">onLevel2Updates()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">onMarketTradesSnapshot()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">onMarketTrades()</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">and 12 more...</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdSubscription()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdUnsubscription()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">poll()</text>
+<text xml:space="preserve" text-anchor="start" x="1017.62" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="1029.88" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">processSequencedEvents()</text>
+<polygon fill="#666666" stroke="#666666" points="1013.62,-270 1013.62,-270 1176.38,-270 1176.38,-270 1013.62,-270"/>
+<polygon fill="#666666" stroke="#666666" points="1013.62,-253.25 1013.62,-253.25 1176.38,-253.25 1176.38,-253.25 1013.62,-253.25"/>
+<polygon fill="none" stroke="#666666" points="1013.62,0 1013.62,-301.5 1176.38,-301.5 1176.38,0 1013.62,0"/>
 </a>
 </g>
 </g>
@@ -102,73 +102,73 @@ var sectionId = 'dynsection-1';
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="classslick_1_1sim_1_1exch_1_1Exchange.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="none" points="1030.25,-878.5 869.75,-878.5 869.75,-338.5 1030.25,-338.5 1030.25,-878.5"/>
+<polygon fill="white" stroke="none" points="1042.62,-878.5 857.38,-878.5 857.38,-338.5 1042.62,-338.5 1042.62,-878.5"/>
 <text xml:space="preserve" text-anchor="start" x="885.5" y="-865" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::exch::Exchange</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-848.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-848.25" font-family="Helvetica,sans-Serif" font-size="10.00">venue_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-831.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-831.5" font-family="Helvetica,sans-Serif" font-size="10.00">request_queue_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-814.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-814.75" font-family="Helvetica,sans-Serif" font-size="10.00">response_queue_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-798" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-798" font-family="Helvetica,sans-Serif" font-size="10.00">md_queue_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-781.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-781.25" font-family="Helvetica,sans-Serif" font-size="10.00">run_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-764.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-764.5" font-family="Helvetica,sans-Serif" font-size="10.00">order_request_cursor_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-747.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-747.75" font-family="Helvetica,sans-Serif" font-size="10.00">enabled_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-731" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-731" font-family="Helvetica,sans-Serif" font-size="10.00">publish_order_updates_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-714.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-714.25" font-family="Helvetica,sans-Serif" font-size="10.00">next_trade_id_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-697.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-697.5" font-family="Helvetica,sans-Serif" font-size="10.00">smp_mode_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-680.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-680.75" font-family="Helvetica,sans-Serif" font-size="10.00">matching_keys_unread_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-664" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-664" font-family="Helvetica,sans-Serif" font-size="10.00">next_client_id_</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-647.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-647.25" font-family="Helvetica,sans-Serif" font-size="10.00">Exchange()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-630.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-630.5" font-family="Helvetica,sans-Serif" font-size="10.00">~Exchange()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-613.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-613.75" font-family="Helvetica,sans-Serif" font-size="10.00">start()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-597" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-597" font-family="Helvetica,sans-Serif" font-size="10.00">stop()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-580.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-580.25" font-family="Helvetica,sans-Serif" font-size="10.00">request_queue()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-563.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-563.5" font-family="Helvetica,sans-Serif" font-size="10.00">response_queue()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-546.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-546.75" font-family="Helvetica,sans-Serif" font-size="10.00">md_queue()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-530" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-530" font-family="Helvetica,sans-Serif" font-size="10.00">cliEndpoints()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-513.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-513.25" font-family="Helvetica,sans-Serif" font-size="10.00">newOrderAdmission()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-496.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-496.5" font-family="Helvetica,sans-Serif" font-size="10.00">processRequest()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-479.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-479.75" font-family="Helvetica,sans-Serif" font-size="10.00">handleNewOrderRequest()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-463" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-463" font-family="Helvetica,sans-Serif" font-size="10.00">handleModifyOrderRequest()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-446.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-446.25" font-family="Helvetica,sans-Serif" font-size="10.00">handleCancelOrderRequest()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-429.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-429.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectMdSubscription()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-412.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-412.75" font-family="Helvetica,sans-Serif" font-size="10.00">rejectNewOrderRequest()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-396" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-396" font-family="Helvetica,sans-Serif" font-size="10.00">rejectModifyOrderRequest()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-379.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-379.25" font-family="Helvetica,sans-Serif" font-size="10.00">rejectCancelOrderRequest()</text>
-<text xml:space="preserve" text-anchor="start" x="873.75" y="-362.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-362.5" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderNewPending()</text>
-<text xml:space="preserve" text-anchor="start" x="886" y="-345.75" font-family="Helvetica,sans-Serif" font-size="10.00">and 22 more...</text>
-<polygon fill="#666666" stroke="#666666" points="869.75,-859.75 869.75,-859.75 1030.25,-859.75 1030.25,-859.75 869.75,-859.75"/>
-<polygon fill="#666666" stroke="#666666" points="869.75,-658.75 869.75,-658.75 884,-658.75 884,-658.75 869.75,-658.75"/>
-<polygon fill="#666666" stroke="#666666" points="884,-658.75 884,-658.75 1030.25,-658.75 1030.25,-658.75 884,-658.75"/>
-<polygon fill="none" stroke="#666666" points="869.75,-338.5 869.75,-878.5 1030.25,-878.5 1030.25,-338.5 869.75,-338.5"/>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-848.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-848.25" font-family="Helvetica,sans-Serif" font-size="10.00">venue_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-831.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-831.5" font-family="Helvetica,sans-Serif" font-size="10.00">request_queue_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-814.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-814.75" font-family="Helvetica,sans-Serif" font-size="10.00">response_queue_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-798" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-798" font-family="Helvetica,sans-Serif" font-size="10.00">md_queue_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-781.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-781.25" font-family="Helvetica,sans-Serif" font-size="10.00">run_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-764.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-764.5" font-family="Helvetica,sans-Serif" font-size="10.00">order_request_cursor_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-747.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-747.75" font-family="Helvetica,sans-Serif" font-size="10.00">enabled_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-731" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-731" font-family="Helvetica,sans-Serif" font-size="10.00">publish_order_updates_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-714.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-714.25" font-family="Helvetica,sans-Serif" font-size="10.00">next_trade_id_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-697.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-697.5" font-family="Helvetica,sans-Serif" font-size="10.00">smp_mode_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-680.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-680.75" font-family="Helvetica,sans-Serif" font-size="10.00">matching_keys_unread_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-664" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-664" font-family="Helvetica,sans-Serif" font-size="10.00">next_client_id_</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-647.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-647.25" font-family="Helvetica,sans-Serif" font-size="10.00">Exchange()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-630.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-630.5" font-family="Helvetica,sans-Serif" font-size="10.00">~Exchange()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-613.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-613.75" font-family="Helvetica,sans-Serif" font-size="10.00">start()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-597" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-597" font-family="Helvetica,sans-Serif" font-size="10.00">stop()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-580.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-580.25" font-family="Helvetica,sans-Serif" font-size="10.00">request_queue()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-563.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-563.5" font-family="Helvetica,sans-Serif" font-size="10.00">response_queue()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-546.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-546.75" font-family="Helvetica,sans-Serif" font-size="10.00">md_queue()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-530" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-530" font-family="Helvetica,sans-Serif" font-size="10.00">cliEndpoints()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-513.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-513.25" font-family="Helvetica,sans-Serif" font-size="10.00">newOrderAdmission()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-496.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-496.5" font-family="Helvetica,sans-Serif" font-size="10.00">processRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-479.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-479.75" font-family="Helvetica,sans-Serif" font-size="10.00">handleNewOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-463" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-463" font-family="Helvetica,sans-Serif" font-size="10.00">handleModifyOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-446.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-446.25" font-family="Helvetica,sans-Serif" font-size="10.00">handleCancelOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-429.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-429.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectMdSubscription()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-412.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-412.75" font-family="Helvetica,sans-Serif" font-size="10.00">publishMdSubscriptionResponse()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-396" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-396" font-family="Helvetica,sans-Serif" font-size="10.00">rejectNewOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-379.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-379.25" font-family="Helvetica,sans-Serif" font-size="10.00">rejectModifyOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="861.38" y="-362.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-362.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectCancelOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="873.62" y="-345.75" font-family="Helvetica,sans-Serif" font-size="10.00">and 23 more...</text>
+<polygon fill="#666666" stroke="#666666" points="857.38,-859.75 857.38,-859.75 1042.62,-859.75 1042.62,-859.75 857.38,-859.75"/>
+<polygon fill="#666666" stroke="#666666" points="857.38,-658.75 857.38,-658.75 871.62,-658.75 871.62,-658.75 857.38,-658.75"/>
+<polygon fill="#666666" stroke="#666666" points="871.62,-658.75 871.62,-658.75 1042.62,-658.75 1042.62,-658.75 871.62,-658.75"/>
+<polygon fill="none" stroke="#666666" points="857.38,-338.5 857.38,-878.5 1042.62,-878.5 1042.62,-338.5 857.38,-338.5"/>
 </a>
 </g>
 </g>
@@ -176,8 +176,8 @@ var sectionId = 'dynsection-1';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1032.86,-327.77C1035.52,-318.8 1038.14,-309.94 1040.72,-301.25"/>
-<polygon fill="none" stroke="#63b8ff" points="1029.52,-326.73 1030.03,-337.31 1036.23,-328.72 1029.52,-326.73"/>
+<path fill="none" stroke="#63b8ff" d="M1038.9,-328.06C1041.79,-318.99 1044.64,-310.03 1047.44,-301.25"/>
+<polygon fill="none" stroke="#63b8ff" points="1035.66,-326.73 1035.96,-337.32 1042.33,-328.85 1035.66,-326.73"/>
 </a>
 </g>
 </g>
@@ -201,8 +201,8 @@ var sectionId = 'dynsection-1';
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node3&#45;&gt;Node2</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1276.74,-1589.29C1275.5,-1462.89 1268.91,-1006.4 1238,-950 1218.49,-914.41 1201.62,-911.72 1164,-896.5 1115.42,-876.84 1086.11,-909.61 1040.08,-878.1"/>
-<polygon fill="none" stroke="#63b8ff" points="1040.22,-878.21 1033.03,-877.73 1030.7,-870.91 1037.9,-871.39 1040.22,-878.21"/>
+<path fill="none" stroke="#63b8ff" d="M1276.74,-1589.29C1275.5,-1462.89 1268.91,-1006.4 1238,-950 1218.49,-914.41 1201.5,-912.03 1164,-896.5 1120.79,-878.6 1094.99,-905.84 1052.65,-877.73"/>
+<polygon fill="none" stroke="#63b8ff" points="1052.78,-877.83 1045.58,-877.44 1043.16,-870.65 1050.37,-871.03 1052.78,-877.83"/>
 </a>
 </g>
 <text xml:space="preserve" text-anchor="start" x="1262.5" y="-1074.75" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#md_feed_</text>
@@ -492,11 +492,11 @@ var sectionId = 'dynsection-1';
 <g id="edge6_Node000002_Node000007" class="edge">
 <title>Node7&#45;&gt;Node2</title>
 <g id="a_edge6_Node000002_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1160.28,-1209.92C1168.41,-1128.27 1181.93,-942.14 1142,-896.5 1113.85,-864.33 1080.1,-901.81 1040.55,-877.94"/>
-<polygon fill="none" stroke="#63b8ff" points="1040.48,-877.89 1033.28,-877.54 1030.82,-870.76 1038.03,-871.11 1040.48,-877.89"/>
+<path fill="none" stroke="#63b8ff" d="M1160.2,-1209.99C1168.16,-1128.49 1181.37,-942.63 1142,-896.5 1117.79,-868.14 1088.65,-898.62 1052.86,-877.39"/>
+<polygon fill="none" stroke="#63b8ff" points="1053.03,-877.51 1045.82,-877.23 1043.32,-870.46 1050.52,-870.75 1053.03,-877.51"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="start" x="1172.2" y="-997.12" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#md_feeds_</text>
+<text xml:space="preserve" text-anchor="start" x="1171.89" y="-997.12" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#md_feeds_</text>
 </g>
 <!-- Node8&#45;&gt;Node7 -->
 <g id="edge8_Node000007_Node000008" class="edge">
@@ -659,12 +659,12 @@ var sectionId = 'dynsection-1';
 <g id="edge10_Node000002_Node000009" class="edge">
 <title>Node9&#45;&gt;Node2</title>
 <g id="a_edge10_Node000002_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1306.54,-973.47C1301.83,-949.33 1290.91,-914.38 1266,-896.5 1227.62,-868.95 1097.75,-904.37 1040.97,-877.59"/>
-<polygon fill="none" stroke="#63b8ff" points="1041.03,-877.63 1033.82,-877.91 1030.8,-871.36 1038,-871.08 1041.03,-877.63"/>
+<path fill="none" stroke="#63b8ff" d="M1306.52,-973.49C1301.8,-949.38 1290.86,-914.44 1266,-896.5 1229.95,-870.48 1108.4,-902.26 1053.41,-877.19"/>
+<polygon fill="none" stroke="#63b8ff" points="1053.55,-877.27 1046.35,-877.66 1043.22,-871.17 1050.42,-870.78 1053.55,-877.27"/>
 </a>
 </g>
-<text xml:space="preserve" text-anchor="start" x="1296.3" y="-919.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#md_thread_</text>
-<text xml:space="preserve" text-anchor="start" x="1296.3" y="-902.75" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#thread_</text>
+<text xml:space="preserve" text-anchor="start" x="1296.27" y="-919.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#md_thread_</text>
+<text xml:space="preserve" text-anchor="start" x="1296.27" y="-902.75" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#thread_</text>
 </g>
 <!-- Node10 -->
 <g id="Node000010" class="node">
@@ -688,8 +688,8 @@ var sectionId = 'dynsection-1';
 <g id="edge11_Node000002_Node000010" class="edge">
 <title>Node10&#45;&gt;Node2</title>
 <g id="a_edge11_Node000002_Node000010"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M675.57,-1197.21C669.93,-1136.27 666.66,-1032.58 696.25,-950 730.86,-853.42 802.82,-761.23 861.3,-697.19"/>
-<polygon fill="none" stroke="#63b8ff" points="861.07,-697.43 862.2,-690.31 869.21,-688.61 868.08,-695.73 861.07,-697.43"/>
+<path fill="none" stroke="#63b8ff" d="M675.57,-1197.21C669.93,-1136.27 666.66,-1032.58 696.25,-950 728.48,-860.06 793.11,-773.91 849.07,-710.78"/>
+<polygon fill="none" stroke="#63b8ff" points="849.01,-710.85 850.03,-703.71 857.01,-701.91 855.99,-709.05 849.01,-710.85"/>
 </a>
 </g>
 <text xml:space="preserve" text-anchor="start" x="699.25" y="-997.12" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#matching_engines_</text>
@@ -999,8 +999,8 @@ var sectionId = 'dynsection-1';
 <g id="edge21_Node000002_Node000017" class="edge">
 <title>Node17&#45;&gt;Node2</title>
 <g id="a_edge21_Node000002_Node000017"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M439.58,-1210.22C461.74,-1150.74 509.7,-1034.42 573.5,-950 656.05,-840.77 777.06,-738.72 859.46,-675.36"/>
-<polygon fill="none" stroke="#63b8ff" points="859.56,-675.28 861.9,-668.45 869.09,-667.99 866.76,-674.81 859.56,-675.28"/>
+<path fill="none" stroke="#63b8ff" d="M439.58,-1210.22C461.74,-1150.74 509.7,-1034.42 573.5,-950 652.18,-845.89 765.81,-748.3 847.62,-684.52"/>
+<polygon fill="none" stroke="#63b8ff" points="847.49,-684.62 849.79,-677.78 856.98,-677.27 854.69,-684.1 847.49,-684.62"/>
 </a>
 </g>
 <text xml:space="preserve" text-anchor="start" x="576.5" y="-997.12" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#order_gateways_</text>
@@ -1061,8 +1061,8 @@ var sectionId = 'dynsection-1';
 <g id="edge26_Node000002_Node000020" class="edge">
 <title>Node20&#45;&gt;Node2</title>
 <g id="a_edge26_Node000002_Node000020"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M177.72,-1582.79C192.4,-1492.71 237.67,-1265.01 340,-1105.25 473.52,-896.79 724.1,-734.84 858.81,-658.15"/>
-<polygon fill="none" stroke="#63b8ff" points="858.66,-658.24 861.91,-651.8 869.1,-652.33 865.85,-658.77 858.66,-658.24"/>
+<path fill="none" stroke="#63b8ff" d="M177.72,-1582.79C192.4,-1492.71 237.67,-1265.01 340,-1105.25 469.62,-902.88 709.57,-744.33 846.72,-665.09"/>
+<polygon fill="none" stroke="#63b8ff" points="846.44,-665.24 849.66,-658.79 856.85,-659.27 853.64,-665.73 846.44,-665.24"/>
 </a>
 </g>
 <text xml:space="preserve" text-anchor="start" x="365.74" y="-1074.75" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#md_publisher_</text>
@@ -1948,8 +1948,8 @@ var sectionId = 'dynsection-1';
 <g id="edge69_Node000002_Node000054" class="edge">
 <title>Node54&#45;&gt;Node2</title>
 <g id="a_edge69_Node000002_Node000054"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1393.81,-1947.14C1405.19,-1913.66 1417.87,-1871.76 1425,-1833.25 1442,-1741.44 1439,-1717 1439,-1623.62 1439,-1623.62 1439,-1623.62 1439,-999.25 1439,-943.99 1417.13,-923.65 1369,-896.5 1308.16,-862.18 1117.28,-917.23 1041.02,-878.05"/>
-<polygon fill="none" stroke="#63b8ff" points="1041.13,-878.12 1033.93,-878.3 1030.98,-871.72 1038.19,-871.53 1041.13,-878.12"/>
+<path fill="none" stroke="#63b8ff" d="M1393.81,-1947.14C1405.19,-1913.66 1417.87,-1871.76 1425,-1833.25 1442,-1741.44 1439,-1717 1439,-1623.62 1439,-1623.62 1439,-1623.62 1439,-999.25 1439,-943.99 1417.1,-923.7 1369,-896.5 1310.7,-863.53 1128.73,-914.52 1053.48,-877.55"/>
+<polygon fill="none" stroke="#63b8ff" points="1053.4,-877.5 1046.19,-877.83 1043.12,-871.3 1050.33,-870.98 1053.4,-877.5"/>
 </a>
 </g>
 <text xml:space="preserve" text-anchor="start" x="1442" y="-1246.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="grey">#client_ids_</text>
@@ -1968,14 +1968,14 @@ var sectionId = 'dynsection-1';
 <g id="Node000056" class="node">
 <title>Node56</title>
 <g id="a_Node000056"><a xlink:title=" ">
-<polygon fill="white" stroke="none" points="1214.12,-642 1047.88,-642 1047.88,-575 1214.12,-575 1214.12,-642"/>
-<text xml:space="preserve" text-anchor="start" x="1051.88" y="-628.5" font-family="Helvetica,sans-Serif" font-size="10.00">coinbase::UserThreadWebsocket</text>
-<text xml:space="preserve" text-anchor="start" x="1107.38" y="-615.75" font-family="Helvetica,sans-Serif" font-size="10.00">Callbacks</text>
-<text xml:space="preserve" text-anchor="start" x="1129.5" y="-599" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text xml:space="preserve" text-anchor="start" x="1129.5" y="-582.25" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<polygon fill="#666666" stroke="#666666" points="1047.88,-610.5 1047.88,-610.5 1214.12,-610.5 1214.12,-610.5 1047.88,-610.5"/>
-<polygon fill="#666666" stroke="#666666" points="1047.88,-593.75 1047.88,-593.75 1214.12,-593.75 1214.12,-593.75 1047.88,-593.75"/>
-<polygon fill="none" stroke="#666666" points="1047.88,-575 1047.88,-642 1214.12,-642 1214.12,-575 1047.88,-575"/>
+<polygon fill="white" stroke="none" points="1227.12,-642 1060.88,-642 1060.88,-575 1227.12,-575 1227.12,-642"/>
+<text xml:space="preserve" text-anchor="start" x="1064.88" y="-628.5" font-family="Helvetica,sans-Serif" font-size="10.00">coinbase::UserThreadWebsocket</text>
+<text xml:space="preserve" text-anchor="start" x="1120.38" y="-615.75" font-family="Helvetica,sans-Serif" font-size="10.00">Callbacks</text>
+<text xml:space="preserve" text-anchor="start" x="1142.5" y="-599" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="1142.5" y="-582.25" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<polygon fill="#666666" stroke="#666666" points="1060.88,-610.5 1060.88,-610.5 1227.12,-610.5 1227.12,-610.5 1060.88,-610.5"/>
+<polygon fill="#666666" stroke="#666666" points="1060.88,-593.75 1060.88,-593.75 1227.12,-593.75 1227.12,-593.75 1060.88,-593.75"/>
+<polygon fill="none" stroke="#666666" points="1060.88,-575 1060.88,-642 1227.12,-642 1227.12,-575 1060.88,-575"/>
 </a>
 </g>
 </g>
@@ -1983,8 +1983,8 @@ var sectionId = 'dynsection-1';
 <g id="edge73_Node000001_Node000056" class="edge">
 <title>Node56&#45;&gt;Node1</title>
 <g id="a_edge73_Node000001_Node000056"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1126.59,-563.79C1120.53,-503.79 1109.34,-392.93 1100.09,-301.3"/>
-<polygon fill="none" stroke="#63b8ff" points="1123.09,-563.99 1127.58,-573.58 1130.05,-563.28 1123.09,-563.99"/>
+<path fill="none" stroke="#63b8ff" d="M1139.3,-563.79C1132.85,-503.79 1120.93,-392.93 1111.08,-301.3"/>
+<polygon fill="none" stroke="#63b8ff" points="1135.8,-564.02 1140.35,-573.58 1142.76,-563.27 1135.8,-564.02"/>
 </a>
 </g>
 </g>

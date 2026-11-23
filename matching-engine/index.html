@@ -852,6 +852,8 @@
       
         
       
+        
+      
     
     
     
@@ -996,6 +998,34 @@
     
   
     Hyperliquid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration tests
   
 
     
@@ -1479,10 +1509,11 @@ dropped.</p>
 </tbody>
 </table>
 <h3 id="cancel_newest-decides-before-it-touches-anything"><code>CANCEL_NEWEST</code> decides before it touches anything<a class="headerlink" href="#cancel_newest-decides-before-it-touches-anything" title="Permanent link">&para;</a></h3>
-<p>The check runs at the top of <code>match()</code>, ahead of the order ack, ahead of the
-<code>PENDING_REPLACE</code> mutation, and ahead of the FOK pre-validation. <code>wouldSelfMatch</code> walks the opposing
-side as far as the incoming quantity could actually reach and asks whether any of it is the order's
-own.</p>
+<p>The check runs at the top of <code>match()</code>, ahead of the engine's <code>NEW</code> acknowledgement, ahead of the
+<code>PENDING_REPLACE</code> mutation, and ahead of the FOK pre-validation. The REST gateway has already
+returned its <code>PENDING_NEW</code> acknowledgement at this point, so a REST client sees a 200 before the
+user channel reports <code>REJECTED</code>. The <code>wouldSelfMatch</code> scan walks the opposing side as far as the
+incoming quantity can reach and checks for the order's own liquidity.</p>
 <p>The check must precede mutation. On entering the matching loop, an amendment updates the stored
 <code>Order</code> and reports <code>REPLACED</code>; a new order is acknowledged. Rejecting a self-match at that point
 would leave an amendment partly applied and send conflicting reports. With the pre-check, the client

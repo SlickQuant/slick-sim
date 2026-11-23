@@ -1,5 +1,7 @@
 var NAVTREEINDEX2 =
 {
+"classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html#af9489615ce3d0a58017af3c2b0377891":[0,0,1,0,5,15,5],
+"classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html#af9489615ce3d0a58017af3c2b0377891":[2,0,0,0,4,15,5],
 "classslick_1_1sim_1_1md__feed_1_1MDFeed.html":[0,0,1,0,5,0],
 "classslick_1_1sim_1_1md__feed_1_1MDFeed.html":[2,0,0,0,4,0],
 "classslick_1_1sim_1_1md__feed_1_1MDFeed.html#a5ecef6d738974c4f107369a2cd845dbc":[0,0,1,0,5,0,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX2 =
 "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a7622b209fb33d55abfdb941c8ba91e09":[0,0,1,0,3,2,17],
 "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a7622b209fb33d55abfdb941c8ba91e09":[2,0,0,0,2,2,17],
 "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa5317d1599e1ed530e62484c2f4bfd54":[0,0,1,0,3,2,15],
-"classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa5317d1599e1ed530e62484c2f4bfd54":[2,0,0,0,2,2,15],
-"classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff":[0,0,1,0,3,2,1],
-"classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff":[2,0,0,0,2,2,1]
+"classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa5317d1599e1ed530e62484c2f4bfd54":[2,0,0,0,2,2,15]
 };

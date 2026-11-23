@@ -13,5 +13,6 @@ var searchData=
   ['finished_10',['FINISHED',['../namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8a2c616b2713e2e0aed04b4c4752c88133',1,'slick::sim']]],
   ['fix_11',['FIX',['../namespaceslick_1_1sim_1_1order__gateway.html#a21eaf560f68e2e781d35e64080dc0615a6aaac758332a8320840ac0e5f8fc28e2',1,'slick::sim::order_gateway']]],
   ['fok_5fcannot_5ffill_12',['FOK_CANNOT_FILL',['../namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337a4564c4e6278be5298db164b983c81709',1,'slick::sim']]],
-  ['future_13',['FUTURE',['../namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026bafa4cec41dc4b368db740c5cb2300b7a3',1,'slick::sim']]]
+  ['forget_13',['Forget',['../namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a23ddf7923a4f0fc87b3a8b2923131d5da7cb5f8b4a50c32d395c50b98f0ca2464',1,'slick::sim::order_gateway::coinbase']]],
+  ['future_14',['FUTURE',['../namespaceslick_1_1sim.html#a2824308414d59748ad7da1d51511026bafa4cec41dc4b368db740c5cb2300b7a3',1,'slick::sim']]]
 ];

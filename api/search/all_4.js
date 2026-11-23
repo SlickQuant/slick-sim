@@ -20,5 +20,6 @@ var searchData=
   ['dst_5faddr_17',['dst_addr',['../structslick_1_1sim_1_1md__feed_1_1PcapPacket.html#a45f476181ab47787b3f735a8a4959f6c',1,'slick::sim::md_feed::PcapPacket']]],
   ['dst_5fport_18',['dst_port',['../structslick_1_1sim_1_1md__feed_1_1PcapPacket.html#ad5b22d15b361c457cd8cebdbed6b254c',1,'slick::sim::md_feed::PcapPacket']]],
   ['due_5fns_19',['due_ns',['../classslick_1_1sim_1_1md__feed_1_1ReplayPacer.html#a72fb25dce712fc300d290f8c1b7a3817',1,'slick::sim::md_feed::ReplayPacer']]],
-  ['duplicate_5frequest_5fid_20',['DUPLICATE_REQUEST_ID',['../namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a971578f294a88d61c51a82a800e5047a',1,'slick::sim']]]
+  ['dump_5fjson_20',['dump_json',['../namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a2d17680cd825b3bf1a21883713423a7d',1,'slick::sim::order_gateway::coinbase']]],
+  ['duplicate_5frequest_5fid_21',['DUPLICATE_REQUEST_ID',['../namespaceslick_1_1sim.html#a54e839686c7635a95545c810f30ea186a971578f294a88d61c51a82a800e5047a',1,'slick::sim']]]
 ];

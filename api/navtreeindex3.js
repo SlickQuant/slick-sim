@@ -1,5 +1,7 @@
 var NAVTREEINDEX3 =
 {
+"classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff":[0,0,1,0,3,2,1],
+"classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff":[2,0,0,0,2,2,1],
 "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aacc6c45a40a6ece544f2673cc678cc86":[0,0,1,0,3,2,5],
 "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aacc6c45a40a6ece544f2673cc678cc86":[2,0,0,0,2,2,5],
 "classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#ac17f39a6e63fe82188b4fb01d45cd53c":[0,0,1,0,3,2,12],
@@ -38,8 +40,10 @@ var NAVTREEINDEX3 =
 "classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a1e13c3c083cb058fd0535e4c207d5f51":[2,0,0,0,5,12,2],
 "classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a3a26ffc4f5a0be45faa2f9e8df64dd4e":[0,0,1,0,6,13,1],
 "classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a3a26ffc4f5a0be45faa2f9e8df64dd4e":[2,0,0,0,5,12,1],
-"classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482":[0,0,1,0,6,13,3],
-"classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482":[2,0,0,0,5,12,3],
+"classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a829a67eb7a68b86e758b3533198b3446":[0,0,1,0,6,13,3],
+"classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a829a67eb7a68b86e758b3533198b3446":[2,0,0,0,5,12,3],
+"classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482":[0,0,1,0,6,13,4],
+"classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482":[2,0,0,0,5,12,4],
 "classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a":[0,0,1,0,6,13,0],
 "classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a":[2,0,0,0,5,12,0],
 "classslick_1_1sim_1_1order__gateway_1_1CoinbaseWebsocketOrderGateway.html":[0,0,1,0,6,15],
@@ -245,9 +249,5 @@ var NAVTREEINDEX3 =
 "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a5c5018fb44a1f00f3ccd642b48d4f191":[0,0,1,0,6,12,12],
 "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a5c5018fb44a1f00f3ccd642b48d4f191":[2,0,0,0,5,11,12],
 "classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a609257c3111045296f2ebc9a3e6028db":[0,0,1,0,6,12,9],
-"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a609257c3111045296f2ebc9a3e6028db":[2,0,0,0,5,11,9],
-"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a61df67003246adf7311d24ae74ef65aa":[0,0,1,0,6,12,17],
-"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a61df67003246adf7311d24ae74ef65aa":[2,0,0,0,5,11,17],
-"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a6cc646f713a75a5ec83d5674ff5ad926":[0,0,1,0,6,12,4],
-"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a6cc646f713a75a5ec83d5674ff5ad926":[2,0,0,0,5,11,4]
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a609257c3111045296f2ebc9a3e6028db":[2,0,0,0,5,11,9]
 };

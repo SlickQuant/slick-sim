@@ -1,5 +1,15 @@
 var NAVTREEINDEX9 =
 {
+"structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#a93f28e8d132785f14d5fa3bfee1fb24e":[0,0,1,0,4,0,0,6],
+"structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#a93f28e8d132785f14d5fa3bfee1fb24e":[2,0,0,0,3,0,0,6],
+"structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#a9f295868fc6a63d83c343977ca2898b7":[0,0,1,0,4,0,0,2],
+"structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#a9f295868fc6a63d83c343977ca2898b7":[2,0,0,0,3,0,0,2],
+"structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#aa132c6569e7e67c114b75d51e949b819":[0,0,1,0,4,0,0,3],
+"structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#aa132c6569e7e67c114b75d51e949b819":[2,0,0,0,3,0,0,3],
+"structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#ab11c2930122bd3c6071c93b332ce53c5":[0,0,1,0,4,0,0,1],
+"structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#ab11c2930122bd3c6071c93b332ce53c5":[2,0,0,0,3,0,0,1],
+"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html":[0,0,1,0,2,0,0],
+"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html":[2,0,0,0,1,0,0],
 "structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#aaf1f0a9c58022cf5310e90a4cad82459":[0,0,1,0,2,0,0,1],
 "structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#aaf1f0a9c58022cf5310e90a4cad82459":[2,0,0,0,1,0,0,1],
 "structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#ae6101ea9e137a3996b894e0b029d00b7":[0,0,1,0,2,0,0,0],
@@ -239,15 +249,5 @@ var NAVTREEINDEX9 =
 "structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a81c540bb48e2379d4380a7864ae941db":[0,0,1,0,6,4,0],
 "structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#a81c540bb48e2379d4380a7864ae941db":[2,0,0,0,5,3,0],
 "structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#abf0f93610b780b95bd5cc05a25abcb08":[0,0,1,0,6,4,4],
-"structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#abf0f93610b780b95bd5cc05a25abcb08":[2,0,0,0,5,3,4],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html":[0,0,1,0,6,14],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html":[2,0,0,0,5,13],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a17be6ece881e8a9b97eb584854d8699d":[0,0,1,0,6,14,2],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a17be6ece881e8a9b97eb584854d8699d":[2,0,0,0,5,13,2],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a80a38a34ca8b666a78cf92eb269967fe":[0,0,1,0,6,14,5],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a80a38a34ca8b666a78cf92eb269967fe":[2,0,0,0,5,13,5],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a84bc07bfdee736a7cd1f5c914f97e1d6":[0,0,1,0,6,14,0],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a84bc07bfdee736a7cd1f5c914f97e1d6":[2,0,0,0,5,13,0],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aae0cfe8095c62d4ba05e0ccf020826ab":[0,0,1,0,6,14,6],
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aae0cfe8095c62d4ba05e0ccf020826ab":[2,0,0,0,5,13,6]
+"structslick_1_1sim_1_1order__gateway_1_1ParseResult.html#abf0f93610b780b95bd5cc05a25abcb08":[2,0,0,0,5,3,4]
 };

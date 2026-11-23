@@ -47,7 +47,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 350;
+var viewWidth = 374;
 var viewHeight = 768;
 var sectionId = 'dynsection-0';
 </script>
@@ -59,31 +59,31 @@ var sectionId = 'dynsection-0';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="none" points="251.25,-201 89.25,-201 89.25,0 251.25,0 251.25,-201"/>
-<text xml:space="preserve" text-anchor="start" x="101.25" y="-187.5" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::exch::Hyperliquid</text>
-<text xml:space="preserve" text-anchor="start" x="146.62" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">Exchange</text>
-<text xml:space="preserve" text-anchor="start" x="168.75" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text xml:space="preserve" text-anchor="start" x="93.25" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="105.5" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">HyperliquidExchange()</text>
-<text xml:space="preserve" text-anchor="start" x="93.25" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="105.5" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">~HyperliquidExchange()</text>
-<text xml:space="preserve" text-anchor="start" x="93.25" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="105.5" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">onL2BookUpdate()</text>
-<text xml:space="preserve" text-anchor="start" x="93.25" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="105.5" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">onTradesUpdate()</text>
-<text xml:space="preserve" text-anchor="start" x="93.25" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="105.5" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">onHyperliquidDisconnected()</text>
-<text xml:space="preserve" text-anchor="start" x="93.25" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="105.5" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdSubscription()</text>
-<text xml:space="preserve" text-anchor="start" x="93.25" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="105.5" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdUnsubscription()</text>
-<text xml:space="preserve" text-anchor="start" x="93.25" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="105.5" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">poll()</text>
-<text xml:space="preserve" text-anchor="start" x="93.25" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="105.5" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">drainEventQueue()</text>
-<polygon fill="#666666" stroke="#666666" points="89.25,-169.5 89.25,-169.5 251.25,-169.5 251.25,-169.5 89.25,-169.5"/>
-<polygon fill="#666666" stroke="#666666" points="89.25,-152.75 89.25,-152.75 251.25,-152.75 251.25,-152.75 89.25,-152.75"/>
-<polygon fill="none" stroke="#666666" points="89.25,0 89.25,-201 251.25,-201 251.25,0 89.25,0"/>
+<polygon fill="#999999" stroke="none" points="269.62,-201 107.62,-201 107.62,0 269.62,0 269.62,-201"/>
+<text xml:space="preserve" text-anchor="start" x="119.62" y="-187.5" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::exch::Hyperliquid</text>
+<text xml:space="preserve" text-anchor="start" x="165" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">Exchange</text>
+<text xml:space="preserve" text-anchor="start" x="187.12" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="123.88" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">HyperliquidExchange()</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="123.88" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">~HyperliquidExchange()</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="123.88" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">onL2BookUpdate()</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="123.88" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">onTradesUpdate()</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="123.88" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">onHyperliquidDisconnected()</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="123.88" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdSubscription()</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="123.88" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">handleMdUnsubscription()</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="123.88" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">poll()</text>
+<text xml:space="preserve" text-anchor="start" x="111.62" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="123.88" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">drainEventQueue()</text>
+<polygon fill="#666666" stroke="#666666" points="107.62,-169.5 107.62,-169.5 269.62,-169.5 269.62,-169.5 107.62,-169.5"/>
+<polygon fill="#666666" stroke="#666666" points="107.62,-152.75 107.62,-152.75 269.62,-152.75 269.62,-152.75 107.62,-152.75"/>
+<polygon fill="none" stroke="#666666" points="107.62,0 107.62,-201 269.62,-201 269.62,0 107.62,0"/>
 </a>
 </g>
 </g>
@@ -91,8 +91,8 @@ var sectionId = 'dynsection-0';
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="classslick_1_1sim_1_1exch_1_1Exchange.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="none" points="160.5,-760.25 0,-760.25 0,-237 160.5,-237 160.5,-760.25"/>
-<text xml:space="preserve" text-anchor="start" x="15.75" y="-746.75" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::exch::Exchange</text>
+<polygon fill="white" stroke="none" points="185.25,-760.25 0,-760.25 0,-237 185.25,-237 185.25,-760.25"/>
+<text xml:space="preserve" text-anchor="start" x="28.12" y="-746.75" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::exch::Exchange</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-730" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-730" font-family="Helvetica,sans-Serif" font-size="10.00">venue_</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-713.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
@@ -143,18 +143,18 @@ var sectionId = 'dynsection-0';
 <text xml:space="preserve" text-anchor="start" x="4" y="-328" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-328" font-family="Helvetica,sans-Serif" font-size="10.00">rejectMdSubscription()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-311.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-311.25" font-family="Helvetica,sans-Serif" font-size="10.00">rejectNewOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-311.25" font-family="Helvetica,sans-Serif" font-size="10.00">publishMdSubscriptionResponse()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-294.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-294.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectModifyOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-294.5" font-family="Helvetica,sans-Serif" font-size="10.00">rejectNewOrderRequest()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-277.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-277.75" font-family="Helvetica,sans-Serif" font-size="10.00">rejectCancelOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-277.75" font-family="Helvetica,sans-Serif" font-size="10.00">rejectModifyOrderRequest()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-261" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-261" font-family="Helvetica,sans-Serif" font-size="10.00">sendOrderNewPending()</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-244.25" font-family="Helvetica,sans-Serif" font-size="10.00">and 22 more...</text>
-<polygon fill="#666666" stroke="#666666" points="0,-741.5 0,-741.5 160.5,-741.5 160.5,-741.5 0,-741.5"/>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-261" font-family="Helvetica,sans-Serif" font-size="10.00">rejectCancelOrderRequest()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-244.25" font-family="Helvetica,sans-Serif" font-size="10.00">and 23 more...</text>
+<polygon fill="#666666" stroke="#666666" points="0,-741.5 0,-741.5 185.25,-741.5 185.25,-741.5 0,-741.5"/>
 <polygon fill="#666666" stroke="#666666" points="0,-557.25 0,-557.25 14.25,-557.25 14.25,-557.25 0,-557.25"/>
-<polygon fill="#666666" stroke="#666666" points="14.25,-557.25 14.25,-557.25 160.5,-557.25 160.5,-557.25 14.25,-557.25"/>
-<polygon fill="none" stroke="#666666" points="0,-237 0,-760.25 160.5,-760.25 160.5,-237 0,-237"/>
+<polygon fill="#666666" stroke="#666666" points="14.25,-557.25 14.25,-557.25 185.25,-557.25 185.25,-557.25 14.25,-557.25"/>
+<polygon fill="none" stroke="#666666" points="0,-237 0,-760.25 185.25,-760.25 185.25,-237 0,-237"/>
 </a>
 </g>
 </g>
@@ -162,8 +162,8 @@ var sectionId = 'dynsection-0';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node2&#45;&gt;Node1</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M141.94,-226.11C143.92,-217.39 145.85,-208.9 147.71,-200.7"/>
-<polygon fill="none" stroke="#63b8ff" points="138.54,-225.27 139.74,-235.79 145.37,-226.82 138.54,-225.27"/>
+<path fill="none" stroke="#63b8ff" d="M158.43,-226.11C160.54,-217.39 162.6,-208.9 164.58,-200.7"/>
+<polygon fill="none" stroke="#63b8ff" points="155.03,-225.26 156.08,-235.8 161.83,-226.9 155.03,-225.26"/>
 </a>
 </g>
 </g>
@@ -171,21 +171,21 @@ var sectionId = 'dynsection-0';
 <g id="Node000003" class="node">
 <title>Node3</title>
 <g id="a_Node000003"><a xlink:href="structslick_1_1sim_1_1md__feed_1_1HyperliquidFeedCallbacks.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="none" points="341.62,-557.25 178.88,-557.25 178.88,-440 341.62,-440 341.62,-557.25"/>
-<text xml:space="preserve" text-anchor="start" x="193.88" y="-543.75" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::md_feed</text>
-<text xml:space="preserve" text-anchor="start" x="193.88" y="-531" font-family="Helvetica,sans-Serif" font-size="10.00">::HyperliquidFeedCallbacks</text>
-<text xml:space="preserve" text-anchor="start" x="258.75" y="-514.25" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text xml:space="preserve" text-anchor="start" x="182.88" y="-497.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="195.12" y="-497.5" font-family="Helvetica,sans-Serif" font-size="10.00">onL2BookUpdate()</text>
-<text xml:space="preserve" text-anchor="start" x="182.88" y="-480.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="195.12" y="-480.75" font-family="Helvetica,sans-Serif" font-size="10.00">onTradesUpdate()</text>
-<text xml:space="preserve" text-anchor="start" x="182.88" y="-464" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="195.12" y="-464" font-family="Helvetica,sans-Serif" font-size="10.00">onHyperliquidDisconnected()</text>
-<text xml:space="preserve" text-anchor="start" x="182.88" y="-447.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="195.12" y="-447.25" font-family="Helvetica,sans-Serif" font-size="10.00">~HyperliquidFeedCallbacks()</text>
-<polygon fill="#666666" stroke="#666666" points="178.88,-525.75 178.88,-525.75 341.62,-525.75 341.62,-525.75 178.88,-525.75"/>
-<polygon fill="#666666" stroke="#666666" points="178.88,-509 178.88,-509 341.62,-509 341.62,-509 178.88,-509"/>
-<polygon fill="none" stroke="#666666" points="178.88,-440 178.88,-557.25 341.62,-557.25 341.62,-440 178.88,-440"/>
+<polygon fill="white" stroke="none" points="366,-557.25 203.25,-557.25 203.25,-440 366,-440 366,-557.25"/>
+<text xml:space="preserve" text-anchor="start" x="218.25" y="-543.75" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::md_feed</text>
+<text xml:space="preserve" text-anchor="start" x="218.25" y="-531" font-family="Helvetica,sans-Serif" font-size="10.00">::HyperliquidFeedCallbacks</text>
+<text xml:space="preserve" text-anchor="start" x="283.12" y="-514.25" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="207.25" y="-497.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="219.5" y="-497.5" font-family="Helvetica,sans-Serif" font-size="10.00">onL2BookUpdate()</text>
+<text xml:space="preserve" text-anchor="start" x="207.25" y="-480.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="219.5" y="-480.75" font-family="Helvetica,sans-Serif" font-size="10.00">onTradesUpdate()</text>
+<text xml:space="preserve" text-anchor="start" x="207.25" y="-464" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="219.5" y="-464" font-family="Helvetica,sans-Serif" font-size="10.00">onHyperliquidDisconnected()</text>
+<text xml:space="preserve" text-anchor="start" x="207.25" y="-447.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="219.5" y="-447.25" font-family="Helvetica,sans-Serif" font-size="10.00">~HyperliquidFeedCallbacks()</text>
+<polygon fill="#666666" stroke="#666666" points="203.25,-525.75 203.25,-525.75 366,-525.75 366,-525.75 203.25,-525.75"/>
+<polygon fill="#666666" stroke="#666666" points="203.25,-509 203.25,-509 366,-509 366,-509 203.25,-509"/>
+<polygon fill="none" stroke="#666666" points="203.25,-440 203.25,-557.25 366,-557.25 366,-440 203.25,-440"/>
 </a>
 </g>
 </g>
@@ -193,8 +193,8 @@ var sectionId = 'dynsection-0';
 <g id="edge2_Node000001_Node000003" class="edge">
 <title>Node3&#45;&gt;Node1</title>
 <g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M244.67,-429.04C230.37,-366.11 209.02,-272.15 192.85,-200.98"/>
-<polygon fill="none" stroke="#63b8ff" points="241.2,-429.57 246.83,-438.55 248.03,-428.02 241.2,-429.57"/>
+<path fill="none" stroke="#63b8ff" d="M268,-429.04C252.75,-366.11 229.98,-272.15 212.73,-200.98"/>
+<polygon fill="none" stroke="#63b8ff" points="264.55,-429.66 270.31,-438.55 271.36,-428.01 264.55,-429.66"/>
 </a>
 </g>
 </g>

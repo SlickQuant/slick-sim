@@ -70,6 +70,8 @@ var searchData=
   ['roll_5fclose_67',['ROLL_CLOSE',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba43c3a25f4ac09f187ecd891919449f2c',1,'slick::sim']]],
   ['roll_5fopen_68',['ROLL_OPEN',['../namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566ba9287c8f04a82d7836d847247d8c893a2',1,'slick::sim']]],
   ['root_69',['root',['../structslick_1_1sim_1_1md__feed_1_1PcapFeedConfig.html#ae55292515019f356774f8d98004ce717',1,'slick::sim::md_feed::PcapFeedConfig']]],
-  ['run_5f_70',['run_',['../classslick_1_1sim_1_1exch_1_1Exchange.html#af3d98cb02c38978ab17e6a9a4ee65162',1,'slick::sim::exch::Exchange']]],
-  ['running_5f_71',['running_',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a75d761bbd5f60c11c4ec009c92596e4f',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]]
+  ['routing_5feffect_70',['routing_effect',['../namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#aa70d70cf5276df773c6287cebc8e20c3',1,'slick::sim::order_gateway::coinbase']]],
+  ['routingeffect_71',['RoutingEffect',['../namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a23ddf7923a4f0fc87b3a8b2923131d5d',1,'slick::sim::order_gateway::coinbase']]],
+  ['run_5f_72',['run_',['../classslick_1_1sim_1_1exch_1_1Exchange.html#af3d98cb02c38978ab17e6a9a4ee65162',1,'slick::sim::exch::Exchange']]],
+  ['running_5f_73',['running_',['../classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#a75d761bbd5f60c11c4ec009c92596e4f',1,'slick::sim::md_publisher::WebsocketMarketDataPublisher']]]
 ];

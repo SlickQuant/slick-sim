@@ -68,15 +68,15 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "classslick_1_1sim_1_1engine_1_1ProRataMatchingEngine.html#a8da2a20b6d80b543ca9112b6f28a5f13",
-"classslick_1_1sim_1_1md__feed_1_1MDFeed.html",
-"classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aacc6c45a40a6ece544f2673cc678cc86",
-"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a760e95109e2b3057633325630bbaf995",
-"functions_vars_q.html",
-"namespaceslick_1_1sim.html#a86368e1b2521bcca08b07a124195b85d",
-"structslick_1_1sim_1_1AddOrderMessage.html#ae40047151de333b1c2a2106596f11831",
-"structslick_1_1sim_1_1Order.html#a8c8269f0f4a6ce78371591ba1f733f9a",
-"structslick_1_1sim_1_1exch_1_1Exchange_1_1PhantomReduction.html#aaf1f0a9c58022cf5310e90a4cad82459",
-"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aba6941df6d29bb75fc4eb46055b53e71"
+"classslick_1_1sim_1_1md__feed_1_1HyperliquidLiveWSFeed.html#af9489615ce3d0a58017af3c2b0377891",
+"classslick_1_1sim_1_1md__publisher_1_1WebsocketMarketDataPublisher.html#aa6825097626d6665fc0e709d32339dff",
+"classslick_1_1sim_1_1order__gateway_1_1TcpOrderGateway.html#a61df67003246adf7311d24ae74ef65aa",
+"functions_vars_m.html",
+"namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8aa5daf7f2ebbba4975d61dab1c40188c7",
+"structslick_1_1sim_1_1AddOrderMessage.html#a7ff458a8a370cedd2719d6789ff9fd59",
+"structslick_1_1sim_1_1Order.html#a5ea7a6ec13d91272687effcf71f76a15",
+"structslick_1_1sim_1_1engine_1_1detail_1_1MatchContext.html#a93f28e8d132785f14d5fa3bfee1fb24e",
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

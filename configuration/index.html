@@ -572,6 +572,8 @@
       
         
       
+        
+      
     
     
     
@@ -946,6 +948,34 @@
     
   
     Hyperliquid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration tests
   
 
     
@@ -1565,6 +1595,12 @@ means no order-entry WebSocket, and therefore no fills or execution reports reac
 <td><code>"https://api.coinbase.com"</code></td>
 <td>Only used when <code>initial_products</code> is absent: the gateway fetches <code>/api/v3/brokerage/market/products</code> from here at construction time</td>
 </tr>
+<tr>
+<td><code>response_poll_ms</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>How often the gateway's event loop checks for reports to complete in-flight HTTP requests. <code>1</code> is a uWS timer's granularity; raise it to trade latency for fewer wakeups</td>
+</tr>
 </tbody>
 </table>
 <p>Without <code>initial_products</code>, <strong><code>slick-sim</code> makes a live HTTP call to Coinbase during construction</strong>.
@@ -1599,8 +1635,25 @@ fail validation with <code>INVALID_PRODUCT_ID</code>.</p>
 <td><code>60</code></td>
 <td>Disconnect a client that has not ponged within this window</td>
 </tr>
+<tr>
+<td><code>fee_rate</code></td>
+<td>number</td>
+<td><em>(none)</em></td>
+<td>Taker fee rate used for the display-only <code>total_fees</code> field. Set it to skip the startup call to Coinbase entirely</td>
+</tr>
+<tr>
+<td><code>base_url</code></td>
+<td>string</td>
+<td><code>"https://api.coinbase.com"</code></td>
+<td>Where the fee rate is read from when <code>fee_rate</code> is absent</td>
+</tr>
 </tbody>
 </table>
+<p>Without <code>fee_rate</code>, the order-entry gateway calls <code>CoinbaseRestClient::get_taker_fee_rate()</code> at
+startup. The client also fetches the product list, and signing requires
+<code>COINBASE_API_KEY</code>/<code>COINBASE_API_SECRET</code>. If the secret is unset, the gateway logs a warning, skips
+the call and uses the default <code>0.0012</code>. A simulator without a live feed can therefore start without
+credentials or network access, including in an air-gapped environment.</p>
 <h3 id="md_publisher"><code>md_publisher</code><a class="headerlink" href="#md_publisher" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

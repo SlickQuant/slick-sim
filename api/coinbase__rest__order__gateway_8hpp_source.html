@@ -94,82 +94,128 @@ $(function(){initNavTree('coinbase__rest__order__gateway_8hpp_source.html','',''
 <div class="contents">
 <a href="coinbase__rest__order__gateway_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;<a class="code" href="rest__ws__order__gateway_8hpp.html">order_gateway/rest_ws_order_gateway.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;<a class="code" href="order__store_8hpp.html">order_gateway/order_store.hpp</a>&gt;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;slick/net/http.hpp&gt;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// #define JWT_DISABLE_PICOJSON</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;jwt-cpp/jwt.h&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;jwt-cpp/traits/nlohmann-json/traits.h&gt;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;chrono&gt;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="pending__responses_8hpp.html">order_gateway/pending_responses.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;slick/net/http.hpp&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// #define JWT_DISABLE_PICOJSON</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;jwt-cpp/jwt.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;jwt-cpp/traits/nlohmann-json/traits.h&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">struct </span>us_listen_socket_t;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">using </span><a class="code hl_typedef" href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = nlohmann::json;</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceslick_1_1sim_1_1order__gateway.html">slick::sim::order_gateway</a> {</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html">   19</a></span><span class="keyword">class </span><a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a">CoinbaseRestOrderGateway</a> : <span class="keyword">public</span> <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#abe10419e41c6cfce3908e80e602b8fb2">RestWsOrderGateway</a> {</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="comment">// std::thread thread_;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="comment">// us_listen_socket_t* listen_socket_ = nullptr;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="comment">// uint32_t port_ = 3000;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    std::string products_;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    std::unordered_map&lt;std::string, std::string&gt; product_by_id_;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a">CoinbaseRestOrderGateway</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&amp; config, slick::queue&lt;Request&gt; &amp;request_queue, slick::queue&lt;OrderResponse&gt; &amp;response_queue);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a3a26ffc4f5a0be45faa2f9e8df64dd4e">   28</a></span>    <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a3a26ffc4f5a0be45faa2f9e8df64dd4e">~CoinbaseRestOrderGateway</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482">   30</a></span>    std::string_view <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482">type</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;REST&quot;</span>; }</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::tuple&lt;bool, std::string, std::string&gt; <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a1e13c3c083cb058fd0535e4c207d5f51">authenticate</a>(uWS::HttpRequest *req);</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="comment">// void start() override;</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="comment">// void stop() override {</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="comment">//     if (listen_socket_) {</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">//         us_listen_socket_close(0, listen_socket_);</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="comment">//     }</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">//     if (thread_.joinable()) {</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">//         thread_.join();</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="comment">//     }</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="comment">// }</span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">struct </span>OrderValidationResult {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordtype">bool</span> valid = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        std::string error_type;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        std::string error_details;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    };</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::unordered_map&lt;std::string, std::string&gt; order_id_to_symbol_;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    OrderStore orders_;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    OrderValidationResult validate_order(<span class="keyword">const</span> std::string&amp; product_id, <span class="keywordtype">double</span> price_d, <span class="keywordtype">double</span> qty_d, <a class="code hl_enumeration" href="namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566b">OrderType</a> order_type) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> setup_routes(uWS::App &amp;app) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> handle_get_product(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordtype">void</span> handle_get_orders(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span> handle_create_order(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span> handle_batch_cancel(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> handle_edit_order(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span> handle_get_transaction_summary(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">struct </span>us_listen_socket_t;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">struct </span>us_timer_t;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">using </span><a class="code hl_typedef" href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = nlohmann::json;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceslick_1_1sim_1_1order__gateway.html">slick::sim::order_gateway</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html">   24</a></span><span class="keyword">class </span><a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a">CoinbaseRestOrderGateway</a> : <span class="keyword">public</span> <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#abe10419e41c6cfce3908e80e602b8fb2">RestWsOrderGateway</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="comment">// std::thread thread_;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="comment">// us_listen_socket_t* listen_socket_ = nullptr;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="comment">// uint32_t port_ = 3000;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    std::string products_;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    std::unordered_map&lt;std::string, std::string&gt; product_by_id_;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">struct </span>ProductSpec {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordtype">double</span> price_increment = 0.0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordtype">double</span> base_increment = 0.0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordtype">double</span> base_min_size = 0.0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    };</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::unordered_map&lt;std::string, ProductSpec&gt; product_specs_;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a">CoinbaseRestOrderGateway</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>&amp; config, slick::queue&lt;Request&gt; &amp;request_queue, slick::queue&lt;OrderResponse&gt; &amp;response_queue);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a3a26ffc4f5a0be45faa2f9e8df64dd4e">   42</a></span>    <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a3a26ffc4f5a0be45faa2f9e8df64dd4e">~CoinbaseRestOrderGateway</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482">   44</a></span>    std::string_view <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482">type</a>() const noexcept<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;REST&quot;</span>; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a829a67eb7a68b86e758b3533198b3446">stop</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    std::tuple&lt;bool, std::string, std::string&gt; <a class="code hl_function" href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a1e13c3c083cb058fd0535e4c207d5f51">authenticate</a>(uWS::HttpRequest *req);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">struct </span>OrderValidationResult {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordtype">bool</span> valid = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        std::string error_type;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        std::string error_details;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    };</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::unordered_map&lt;std::string, std::string&gt; order_id_to_symbol_;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    OrderStore orders_;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">struct </span>PendingHttp {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        uWS::HttpResponse&lt;false&gt; *response = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordtype">bool</span> aborted = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        std::vector&lt;PendingResponses::Id&gt; ids;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    };</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">struct </span>TimedWaiter {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <a class="code hl_typedef" href="classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#aec7bcec7be860388520346b3af8ac953">PendingResponses::Id</a> id;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        std::chrono::steady_clock::time_point deadline;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    };</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">struct </span>ExpectedReport {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        uint64_t tag;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        std::chrono::steady_clock::time_point deadline;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    };</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    PendingResponses pending_;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::vector&lt;TimedWaiter&gt; timed_waiters_;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::vector&lt;ExpectedReport&gt; expected_reports_;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    uint64_t response_cursor_ = 0;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    us_timer_t *response_timer_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">bool</span> response_timer_armed_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    uint64_t next_request_tag_ = 0;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">int</span> response_poll_ms_ = 1;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">void</span> armResponseTimer();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_typedef" href="classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#aec7bcec7be860388520346b3af8ac953">PendingResponses::Id</a> awaitReport(uint64_t tag,</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                                     std::chrono::milliseconds timeout,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                                     <span class="keyword">const</span> std::shared_ptr&lt;PendingHttp&gt; &amp;http,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                                     std::function&lt;<span class="keywordtype">void</span>(<span class="keyword">const</span> OrderResponse *)&gt; on_report);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">void</span> abandonPending(<span class="keyword">const</span> std::shared_ptr&lt;PendingHttp&gt; &amp;http);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordtype">void</span> expectReport(uint64_t tag);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordtype">void</span> track(<a class="code hl_typedef" href="classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#aec7bcec7be860388520346b3af8ac953">PendingResponses::Id</a> <span class="keywordtype">id</span>, std::chrono::milliseconds timeout);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">void</span> untrack(<a class="code hl_typedef" href="classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#aec7bcec7be860388520346b3af8ac953">PendingResponses::Id</a> <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> drainResponses();</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">void</span> expireWaiters();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">void</span> on_listen_socket(us_listen_socket_t *listen_socket) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    OrderValidationResult validate_order(<span class="keyword">const</span> std::string&amp; product_id, <span class="keywordtype">double</span> price_d, <span class="keywordtype">double</span> qty_d, <a class="code hl_enumeration" href="namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566b">OrderType</a> order_type) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordtype">void</span> setup_routes(uWS::App &amp;app) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">void</span> handle_get_product(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">void</span> handle_get_orders(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordtype">void</span> handle_create_order(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordtype">void</span> handle_batch_cancel(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">void</span> handle_edit_order(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordtype">void</span> handle_get_transaction_summary(uWS::HttpResponse&lt;false&gt;* res, uWS::HttpRequest* req);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>};</div>
 </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
-<div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway_html_a1e13c3c083cb058fd0535e4c207d5f51"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a1e13c3c083cb058fd0535e4c207d5f51">slick::sim::order_gateway::CoinbaseRestOrderGateway::authenticate</a></div><div class="ttdeci">std::tuple&lt; bool, std::string, std::string &gt; authenticate(uWS::HttpRequest *req)</div><div class="ttdef"><b>Definition</b> <a href="coinbase__rest__order__gateway_8cpp_source.html#l00085">coinbase_rest_order_gateway.cpp:85</a></div></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>}</div>
+<div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway_html_a1e13c3c083cb058fd0535e4c207d5f51"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a1e13c3c083cb058fd0535e4c207d5f51">slick::sim::order_gateway::CoinbaseRestOrderGateway::authenticate</a></div><div class="ttdeci">std::tuple&lt; bool, std::string, std::string &gt; authenticate(uWS::HttpRequest *req)</div><div class="ttdef"><b>Definition</b> <a href="coinbase__rest__order__gateway_8cpp_source.html#l00245">coinbase_rest_order_gateway.cpp:245</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway_html_a3a26ffc4f5a0be45faa2f9e8df64dd4e"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a3a26ffc4f5a0be45faa2f9e8df64dd4e">slick::sim::order_gateway::CoinbaseRestOrderGateway::~CoinbaseRestOrderGateway</a></div><div class="ttdeci">~CoinbaseRestOrderGateway() override=default</div></div>
-<div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway_html_a8f705a35cd4a01a0d900609f050ae482"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482">slick::sim::order_gateway::CoinbaseRestOrderGateway::type</a></div><div class="ttdeci">std::string_view type() const noexcept override</div><div class="ttdef"><b>Definition</b> <a href="#l00030">coinbase_rest_order_gateway.hpp:30</a></div></div>
-<div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway_html_a9d461291872659faedbd17a0f957c85a"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a">slick::sim::order_gateway::CoinbaseRestOrderGateway::CoinbaseRestOrderGateway</a></div><div class="ttdeci">CoinbaseRestOrderGateway(const json &amp;config, slick::queue&lt; Request &gt; &amp;request_queue, slick::queue&lt; OrderResponse &gt; &amp;response_queue)</div><div class="ttdef"><b>Definition</b> <a href="coinbase__rest__order__gateway_8cpp_source.html#l00062">coinbase_rest_order_gateway.cpp:62</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway_html_a829a67eb7a68b86e758b3533198b3446"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a829a67eb7a68b86e758b3533198b3446">slick::sim::order_gateway::CoinbaseRestOrderGateway::stop</a></div><div class="ttdeci">void stop() override</div><div class="ttdoc">Closes the response timer before the base closes the listen socket.</div><div class="ttdef"><b>Definition</b> <a href="coinbase__rest__order__gateway_8cpp_source.html#l00130">coinbase_rest_order_gateway.cpp:130</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway_html_a8f705a35cd4a01a0d900609f050ae482"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a8f705a35cd4a01a0d900609f050ae482">slick::sim::order_gateway::CoinbaseRestOrderGateway::type</a></div><div class="ttdeci">std::string_view type() const noexcept override</div><div class="ttdef"><b>Definition</b> <a href="#l00044">coinbase_rest_order_gateway.hpp:44</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway_html_a9d461291872659faedbd17a0f957c85a"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html#a9d461291872659faedbd17a0f957c85a">slick::sim::order_gateway::CoinbaseRestOrderGateway::CoinbaseRestOrderGateway</a></div><div class="ttdeci">CoinbaseRestOrderGateway(const json &amp;config, slick::queue&lt; Request &gt; &amp;request_queue, slick::queue&lt; OrderResponse &gt; &amp;response_queue)</div><div class="ttdef"><b>Definition</b> <a href="coinbase__rest__order__gateway_8cpp_source.html#l00063">coinbase_rest_order_gateway.cpp:63</a></div></div>
+<div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1PendingResponses_html_aec7bcec7be860388520346b3af8ac953"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#aec7bcec7be860388520346b3af8ac953">slick::sim::order_gateway::PendingResponses::Id</a></div><div class="ttdeci">uint64_t Id</div><div class="ttdef"><b>Definition</b> <a href="pending__responses_8hpp_source.html#l00025">pending_responses.hpp:25</a></div></div>
 <div class="ttc" id="aclassslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway_html_abe10419e41c6cfce3908e80e602b8fb2"><div class="ttname"><a href="classslick_1_1sim_1_1order__gateway_1_1RestWsOrderGateway.html#abe10419e41c6cfce3908e80e602b8fb2">slick::sim::order_gateway::RestWsOrderGateway::RestWsOrderGateway</a></div><div class="ttdeci">RestWsOrderGateway(Venue venue, slick::queue&lt; Request &gt; &amp;request_queue, slick::queue&lt; OrderResponse &gt; &amp;response_queue, uint32_t port)</div><div class="ttdef"><b>Definition</b> <a href="rest__ws__order__gateway_8hpp_source.html#l00022">rest_ws_order_gateway.hpp:22</a></div></div>
 <div class="ttc" id="acommon_2order_8hpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="common_2order_8hpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="common_2order_8hpp_source.html#l00016">order.hpp:16</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_1_1order__gateway_html"><div class="ttname"><a href="namespaceslick_1_1sim_1_1order__gateway.html">slick::sim::order_gateway</a></div><div class="ttdef"><b>Definition</b> <a href="cl__ord__id__index_8hpp_source.html#l00009">cl_ord_id_index.hpp:9</a></div></div>
 <div class="ttc" id="anamespaceslick_1_1sim_html_ab9b0e5b0cc44f95f4209fd4e0cd7566b"><div class="ttname"><a href="namespaceslick_1_1sim.html#ab9b0e5b0cc44f95f4209fd4e0cd7566b">slick::sim::OrderType</a></div><div class="ttdeci">OrderType</div><div class="ttdef"><b>Definition</b> <a href="common_2order_8hpp_source.html#l00062">order.hpp:62</a></div></div>
 <div class="ttc" id="aorder__store_8hpp_html"><div class="ttname"><a href="order__store_8hpp.html">order_store.hpp</a></div></div>
+<div class="ttc" id="apending__responses_8hpp_html"><div class="ttname"><a href="pending__responses_8hpp.html">pending_responses.hpp</a></div></div>
 <div class="ttc" id="arest__ws__order__gateway_8hpp_html"><div class="ttname"><a href="rest__ws__order__gateway_8hpp.html">rest_ws_order_gateway.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

@@ -1,0 +1,1459 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Exchange simulator that shadows real venues for risk-free strategy testing">
+      
+      
+      
+        <link rel="canonical" href="https://slickquant.github.io/slick-sim/integration-testing/">
+      
+      
+        <link rel="prev" href="../integration-hyperliquid/">
+      
+      
+        <link rel="next" href="../known-gaps/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Integration tests - Slick Sim</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#integration-tests" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Slick Sim" class="md-header__button md-logo" aria-label="Slick Sim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Slick Sim
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Integration tests
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/SlickQuant/slick-sim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SlickQuant/slick-sim
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Slick Sim" class="md-nav__button md-logo" aria-label="Slick Sim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Slick Sim
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/SlickQuant/slick-sim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SlickQuant/slick-sim
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internals
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Internals
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../order-lifecycle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Order lifecycle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matching-engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matching engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../order-book/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Order book
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../market-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Market data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pcap-replay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PCAP replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding an exchange
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-coinbase/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coinbase
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../integration-hyperliquid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hyperliquid
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration tests
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-covers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it covers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What it covers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defects-the-suite-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Defects the suite found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-covered-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not covered, and why
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-a-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging a failure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-client-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The client protocol
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../known-gaps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Known gaps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://slickquant.github.io/slick-sim/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-covers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it covers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What it covers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defects-the-suite-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Defects the suite found
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-covered-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not covered, and why
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-a-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging a failure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-client-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The client protocol
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/SlickQuant/slick-sim/edit/main/docs/integration-testing.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="integration-tests">Integration tests<a class="headerlink" href="#integration-tests" title="Permanent link">&para;</a></h1>
+<p><code>tests/integration/</code> starts the shipped <code>slick-sim</code> executable and connects to the same ports as a
+trading client. The simulator parses its config file and binds the gateway and publisher sockets.
+Every order, fill and market-data message crosses a socket between processes.</p>
+<p>The Coinbase suite runs without a live feed, internet access or credentials. It covers HTTP routing
+and validation, the order-entry and market-data WebSocket protocols, the CLI port, and process
+startup and shutdown, which the unit tests cannot exercise.</p>
+<h2 id="what-runs">What runs<a class="headerlink" href="#what-runs" title="Permanent link">&para;</a></h2>
+<p>Three trading clients, each a separate process running the real
+<a href="https://github.com/SlickQuant/coinbase-advanced-cpp"><code>coinbase-advanced-cpp</code></a> SDK, plus the
+simulator:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>slick_sim_integration_tests  (gtest)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── slick-sim  config/coinbase_self_contained.json   REST, WS, MD and CLI ports
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── slick_sim_coinbase_client --user alice           SDK REST + WebSocket, JSON Lines on stdin/stdout
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── slick_sim_coinbase_client --user bob
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>└── slick_sim_coinbase_client --user carol
+</code></pre></div>
+<p>Each client needs its own process because the SDK caches <code>COINBASE_API_KEY</code> in a function-static
+local. A process can sign as only one <code>sub</code>, and the simulator routes execution reports by that
+<code>sub</code>. Three sockets in one process would therefore receive the same user's fills. Separate
+processes also match how three clients connect to a real venue.</p>
+<p>The suite starts the simulator once for the shared tests and starts a fresh instance for the tests
+that need a different configuration (short heartbeat timers, self-match prevention) or that must stop
+the process.</p>
+<h2 id="what-it-covers">What it covers<a class="headerlink" href="#what-it-covers" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Assertions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Startup</td>
+<td>Only Coinbase is instantiated; REST, WS, market-data and CLI ports listen; no live-feed capture directory; no outbound call to the real venue</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td>The checked-in template is the one under test, and it names no other venue and no <code>md_feeds</code></td>
+</tr>
+<tr>
+<td>REST products</td>
+<td>Both product routes; a single product; an unknown product → <code>INVALID_ARGUMENT</code></td>
+</tr>
+<tr>
+<td>REST authentication</td>
+<td>No header → 401; malformed JWT → 401; a decoded <code>sub</code> reaches the engine (the reject is <code>UNKNOWN_CONTRACT</code>, not 401)</td>
+</tr>
+<tr>
+<td>REST validation</td>
+<td>Unknown product, off-tick price, below-minimum size, unsupported <code>order_configuration</code>, malformed JSON; all rejected before queueing</td>
+</tr>
+<tr>
+<td>Symbol lifecycle</td>
+<td>An order for a product nobody subscribed to is rejected <code>UNKNOWN_CONTRACT</code>, on the HTTP response and on the user channel</td>
+</tr>
+<tr>
+<td>FIFO matching</td>
+<td>Two resting offers at one price fill in arrival order; a partial IOC remainder is cancelled; the completion percentage and fill count are correct</td>
+</tr>
+<tr>
+<td>TIF</td>
+<td>GTC rests; IOC cancels its remainder; FOK is rejected whole when it cannot fill; a market order sweeps two levels</td>
+</tr>
+<tr>
+<td>Cancel and edit</td>
+<td>Cancel by order id; an edit changes price and size and the order trades at the new price</td>
+</tr>
+<tr>
+<td>Batch cancel</td>
+<td>Four known ids and one unknown in one request, correct per-entry results, and a latency bound that the old per-order 200 ms poll could not meet</td>
+</tr>
+<tr>
+<td>Malformed batch</td>
+<td>A non-string id is rejected before anything is submitted, and the ids in the same request stay cancellable</td>
+</tr>
+<tr>
+<td>Rejected amendment</td>
+<td>An amendment the engine refuses with <code>SMP</code> leaves the original order working and still cancellable by id</td>
+</tr>
+<tr>
+<td>Disconnect mid-request</td>
+<td>A create sent over a raw socket that hangs up before its reply still produces an order that can be cancelled by id, with no listing in between and with the response poll slowed to 200 ms so the timer cannot mask the gap</td>
+</tr>
+<tr>
+<td>Historical listing</td>
+<td><code>GET /orders/historical/batch</code> returns the caller's own orders with their statuses, one page, <code>has_next</code> false</td>
+</tr>
+<tr>
+<td>User channel</td>
+<td>Snapshot on subscribe, own reports only, <code>PENDING_NEW</code> suppressed, <code>OPEN</code> for a partial fill, <code>GOOD_UNTIL_CANCELLED</code> for GTC</td>
+</tr>
+<tr>
+<td>Market data</td>
+<td><code>l2_data</code> snapshot and updates (including other clients' liquidity, and deletes when a level empties), <code>market_trades</code> with trade ids stable across clients, <code>ticker</code> snapshot</td>
+</tr>
+<tr>
+<td>Sequences</td>
+<td>A new socket's first market-data message is numbered zero, and no gap is reported</td>
+</tr>
+<tr>
+<td>Heartbeats</td>
+<td>A client survives several ping intervals and can still trade afterwards</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td><code>targets</code>, <code>log-level</code> get/set, <code>shutdown</code>; exit code 0; every port released</td>
+</tr>
+<tr>
+<td>Self-match prevention</td>
+<td><code>cancel_newest</code> rejects the crossing order with <code>SMP</code> and leaves the resting order working</td>
+</tr>
+</tbody>
+</table>
+<p>Each test owns a product, so the suite does not depend on test order: BTC-USD is the FIFO and
+market-data test, ETH-USD the partial-fill and edit test, SOL-USD the TIF and listing test, and
+LTC-USD is never subscribed, which is what makes it the <code>UNKNOWN_CONTRACT</code> case.</p>
+<h3 id="defects-the-suite-found">Defects the suite found<a class="headerlink" href="#defects-the-suite-found" title="Permanent link">&para;</a></h3>
+<p>The first full runs found failures that the unit tests' direct calls had missed. The suite
+reproduced them through the processes, SDK and wire formats. The following defects are fixed:</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Startup aborted with no credentials, or threw inside the venue constructor</td>
+<td>The WebSocket order gateway fetched the taker fee rate from the live API during construction. <code>order_gateway.ws.fee_rate</code> now skips the call and an unset secret skips it with a warning</td>
+</tr>
+<tr>
+<td>A rejected order killed the process</td>
+<td><code>rejectNewOrderRequest</code> and its two siblings never initialized <code>error_message</code>, and the handler read the field as a C string; 256 bytes of recycled slot were copied into a <code>std::string</code></td>
+</tr>
+<tr>
+<td>Cancelling a partly filled order aborted the process</td>
+<td><code>sendOrderCancelPending</code> asserted <code>leaves_qty == qty</code>, which is false after any fill</td>
+</tr>
+<tr>
+<td>A partial fill was reported as <code>FILLED</code>, with an absurd completion percentage</td>
+<td>The user-channel status mapping ignored the leaves; the percentage mixed fixed-point and double quantities; the fill count was derived from quantities instead of the stream</td>
+</tr>
+<tr>
+<td>A valid limit <code>FILL_OR_KILL</code> order was rejected before the engine</td>
+<td>The REST gateway did not parse <code>limit_limit_fok</code>, the configuration the SDK sends</td>
+</tr>
+<tr>
+<td>A <code>ticker</code> subscription was never confirmed</td>
+<td>The exchange published no snapshot for the channel</td>
+</tr>
+<tr>
+<td>The first message on a fresh socket reported a sequence gap</td>
+<td><code>sequence_num</code> was uninitialized instead of starting at zero</td>
+</tr>
+<tr>
+<td><code>GET /orders/historical/batch</code> stopped answering, and then shutdown hung</td>
+<td>Cancel reports carried recycled <code>error_message</code> bytes; the listing put them into JSON, <code>dump()</code> threw on the invalid UTF-8 inside the uWS callback, and that gateway's only loop thread never ran again. The field is now cleared by every report builder, the store copies it with a bounded read, and the dumps replace invalid bytes instead of throwing</td>
+</tr>
+<tr>
+<td>A five-order <code>batch_cancel</code> took a second, and shutdown could hang</td>
+<td>Each cancel blocked the gateway's only loop thread for 200 ms, and a repeating timer kept the uWS loop with an active handle forever</td>
+</tr>
+</tbody>
+</table>
+<p>The last two failures appeared as client-side timeouts. Both required a full session with three
+clients to reproduce, so the tests start and monitor the simulator process as well as its clients.</p>
+<h3 id="not-covered-and-why">Not covered, and why<a class="headerlink" href="#not-covered-and-why" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Live feeds require the venue and internet access. Feed sequencing has separate unit tests in
+  <code>tests/unit/venues/coinbase/</code>.</li>
+<li>Hyperliquid, CME, ICE and PCAP replay are outside the Coinbase suite's scope.</li>
+<li>The suite exercises shutdown through the portable CLI path, without testing SIGINT. The signal
+  handler stores an atomic flag, and the CLI takes the same exit path without a signal.</li>
+<li>The SDK reads <code>reject_Reason</code> (capital <code>R</code>) but the wire field is <code>reject_reason</code>. It also discards
+  non-2xx HTTP bodies. The suite checks reject reasons in raw HTTP responses and checks the
+  user-channel <em>status</em>.</li>
+<li>The template uses heap-backed queues. Shared-memory queues use the separate <code>*_shm_name</code>
+  configuration path.</li>
+</ul>
+<h2 id="running">Running<a class="headerlink" href="#running" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build<span class="w"> </span>-R<span class="w"> </span>coinbase_integration<span class="w"> </span>--output-on-failure
+</code></pre></div>
+<p>The test is registered with the <code>integration</code> label, runs serially, and has a 900 s timeout. It is
+built when the Coinbase adapter and GoogleTest are, and can be switched off for a fast inner loop:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DSLICK_SIM_BUILD_INTEGRATION_TESTS<span class="o">=</span>OFF
+</code></pre></div>
+<p>To run it directly, point it at the two executables (this is what CTest does):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>build/tests/integration/slick_sim_integration_tests<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--sim<span class="w"> </span>build/src/slick-sim<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span>--client<span class="w"> </span>build/tests/integration/slick_sim_coinbase_client<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span>--config<span class="w"> </span>config/coinbase_self_contained.json
+</code></pre></div>
+<h2 id="debugging-a-failure">Debugging a failure<a class="headerlink" href="#debugging-a-failure" title="Permanent link">&para;</a></h2>
+<p>Every run creates its working directories under <code>&lt;build&gt;/.integration-coinbase/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;run&gt;/config.json</code></td>
+<td>The generated config, with the free ports the run picked</td>
+</tr>
+<tr>
+<td><code>&lt;run&gt;/logs/slick-sim.log</code></td>
+<td>The simulator's own log</td>
+</tr>
+<tr>
+<td><code>&lt;run&gt;/slick-sim.out</code>, <code>.err</code></td>
+<td>Its stdout and stderr</td>
+</tr>
+<tr>
+<td><code>&lt;run&gt;/alice.events.jsonl</code></td>
+<td>Everything alice's client observed, one JSON object per line</td>
+</tr>
+<tr>
+<td><code>&lt;run&gt;/alice.err</code></td>
+<td>The SDK's own logging from that client</td>
+</tr>
+</tbody>
+</table>
+<p>A failing assertion prints the relevant event stream and the client's stderr. The first place to
+look for a startup failure is <code>slick-sim.err</code>: a venue that throws in its constructor never reaches
+the log file.</p>
+<h2 id="the-client-protocol">The client protocol<a class="headerlink" href="#the-client-protocol" title="Permanent link">&para;</a></h2>
+<p>The test client <code>slick_sim_coinbase_client</code> reads one JSON command per line on stdin and writes one
+JSON event per line on stdout. It is intended for the tests, rather than as a sample client:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span><span class="nt">"cmd"</span><span class="p">:</span><span class="s2">"md_subscribe"</span><span class="p">,</span><span class="nt">"products"</span><span class="p">:[</span><span class="s2">"BTC-USD"</span><span class="p">],</span><span class="nt">"channels"</span><span class="p">:[</span><span class="s2">"level2"</span><span class="p">,</span><span class="s2">"market_trades"</span><span class="p">,</span><span class="s2">"ticker"</span><span class="p">]}</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">{</span><span class="nt">"cmd"</span><span class="p">:</span><span class="s2">"new"</span><span class="p">,</span><span class="nt">"product"</span><span class="p">:</span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="nt">"side"</span><span class="p">:</span><span class="s2">"BUY"</span><span class="p">,</span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"LIMIT"</span><span class="p">,</span><span class="nt">"tif"</span><span class="p">:</span><span class="s2">"GTC"</span><span class="p">,</span><span class="nt">"qty"</span><span class="p">:</span><span class="mf">0.001</span><span class="p">,</span><span class="nt">"price"</span><span class="p">:</span><span class="mf">99.0</span><span class="p">,</span><span class="nt">"coid"</span><span class="p">:</span><span class="s2">"a-1"</span><span class="p">}</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="p">{</span><span class="nt">"cmd"</span><span class="p">:</span><span class="s2">"cancel"</span><span class="p">,</span><span class="nt">"order_ids"</span><span class="p">:[</span><span class="s2">"..."</span><span class="p">]}</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">{</span><span class="nt">"cmd"</span><span class="p">:</span><span class="s2">"edit"</span><span class="p">,</span><span class="nt">"order_id"</span><span class="p">:</span><span class="s2">"..."</span><span class="p">,</span><span class="nt">"product"</span><span class="p">:</span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="nt">"price"</span><span class="p">:</span><span class="mf">99.5</span><span class="p">,</span><span class="nt">"size"</span><span class="p">:</span><span class="mf">0.002</span><span class="p">}</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">{</span><span class="nt">"cmd"</span><span class="p">:</span><span class="s2">"orders"</span><span class="p">,</span><span class="nt">"product"</span><span class="p">:</span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="nt">"status"</span><span class="p">:</span><span class="s2">"OPEN"</span><span class="p">,</span><span class="nt">"limit"</span><span class="p">:</span><span class="mi">50</span><span class="p">}</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="p">{</span><span class="nt">"cmd"</span><span class="p">:</span><span class="s2">"bench"</span><span class="p">,</span><span class="nt">"product"</span><span class="p">:</span><span class="s2">"BTC-USD"</span><span class="p">,</span><span class="nt">"count"</span><span class="p">:</span><span class="mi">1000</span><span class="p">,</span><span class="nt">"threads"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="nt">"side"</span><span class="p">:</span><span class="s2">"BUY"</span><span class="p">,</span><span class="nt">"tif"</span><span class="p">:</span><span class="s2">"IOC"</span><span class="p">,</span><span class="nt">"qty"</span><span class="p">:</span><span class="mf">0.001</span><span class="p">,</span><span class="nt">"price"</span><span class="p">:</span><span class="mf">100.0</span><span class="p">}</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">{</span><span class="nt">"cmd"</span><span class="p">:</span><span class="s2">"quit"</span><span class="p">}</span>
+</code></pre></div>
+<p>Events are <code>hello</code>, <code>ready</code>, <code>md_connected</code>/<code>user_connected</code>, <code>l2</code>, <code>trades</code>, <code>ticker</code>, <code>order</code>,
+<code>user_snapshot</code>, <code>ack</code>, <code>gap</code>, <code>error</code> and <code>bye</code>. Every order event carries the order's state as the
+SDK parsed it, plus <code>latency_ms</code> on the first terminal report.</p>
+<p>The <code>bench</code> command submits <code>count</code> orders over <code>threads</code> blocking REST calls and reports round-trip
+percentiles and throughput; it is what the performance work in the CHANGELOG was measured with.</p>
+<p>A baseline, three client processes each benching 800 orders with 3 threads (2,400 orders total,
+crossing IOC orders so every one trades), Debug build, simulator on the same machine:</p>
+<table>
+<thead>
+<tr>
+<th>Client</th>
+<th>orders/s</th>
+<th>p50</th>
+<th>p90</th>
+<th>p99</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>alice</td>
+<td>150</td>
+<td>13.4 ms</td>
+<td>38.1 ms</td>
+<td>49.3 ms</td>
+<td>271 ms</td>
+</tr>
+<tr>
+<td>bob</td>
+<td>100</td>
+<td>27.9 ms</td>
+<td>38.3 ms</td>
+<td>50.6 ms</td>
+<td>57 ms</td>
+</tr>
+<tr>
+<td>carol</td>
+<td>104</td>
+<td>27.4 ms</td>
+<td>38.4 ms</td>
+<td>50.0 ms</td>
+<td>56 ms</td>
+</tr>
+</tbody>
+</table>
+<p>No request failed. A single client's p50 is about half the other two because it starts a second
+earlier and is the one that had to create the symbol; the long tail is the first burst. These are
+round-trip times of blocking HTTP calls from three processes, so they include the SDK's own
+serialization and the loop's timer poll (<code>order_gateway.rest.response_poll_ms</code>).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      MIT licensed
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/SlickQuant/slick-sim" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "navigation.tracking", "navigation.indexes", "toc.follow", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -7,5 +7,6 @@ var searchData=
   ['dispatch_4',['dispatch',['../classslick_1_1sim_1_1order__gateway_1_1PendingResponses.html#abb5b27ed69577d3e02090029da73f155',1,'slick::sim::order_gateway::PendingResponses']]],
   ['drain_5',['drain',['../classslick_1_1sim_1_1md__feed_1_1MulticastPacketFeed.html#a542433ba7c9e28a52c43143aaff9d934',1,'slick::sim::md_feed::MulticastPacketFeed::drain()'],['../classslick_1_1sim_1_1order__gateway_1_1OrderStore.html#a27d054d00bcd44dda82e802559db0854',1,'slick::sim::order_gateway::OrderStore::drain()']]],
   ['draineventqueue_6',['drainEventQueue',['../classslick_1_1sim_1_1exch_1_1HyperliquidExchange.html#a1daaa52c58c16cc5821b694ccbba8cec',1,'slick::sim::exch::HyperliquidExchange']]],
-  ['due_5fns_7',['due_ns',['../classslick_1_1sim_1_1md__feed_1_1ReplayPacer.html#a72fb25dce712fc300d290f8c1b7a3817',1,'slick::sim::md_feed::ReplayPacer']]]
+  ['due_5fns_7',['due_ns',['../classslick_1_1sim_1_1md__feed_1_1ReplayPacer.html#a72fb25dce712fc300d290f8c1b7a3817',1,'slick::sim::md_feed::ReplayPacer']]],
+  ['dump_5fjson_8',['dump_json',['../namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a2d17680cd825b3bf1a21883713423a7d',1,'slick::sim::order_gateway::coinbase']]]
 ];

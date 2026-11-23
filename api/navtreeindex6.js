@@ -1,5 +1,9 @@
 var NAVTREEINDEX6 =
 {
+"namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8aa5daf7f2ebbba4975d61dab1c40188c7":[0,0,1,0,64,0],
+"namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8abb1ca97ec761fc37101737ba0aa2e7c5":[0,0,1,0,64,6],
+"namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8af0be1f77b2d12fe3d6424fbf9eecc109":[0,0,1,0,64,2],
+"namespaceslick_1_1sim.html#a836b0a7a1a35c3ae1aad94febb2e26f8af9f6955ebca09a484157c05f80acd65e":[0,0,1,0,64,1],
 "namespaceslick_1_1sim.html#a86368e1b2521bcca08b07a124195b85d":[0,0,1,0,69],
 "namespaceslick_1_1sim.html#a86368e1b2521bcca08b07a124195b85da7e6aa2d53f6ee2b1a34b017fa403cb76":[0,0,1,0,69,0],
 "namespaceslick_1_1sim.html#a86368e1b2521bcca08b07a124195b85da842ce6eb510f7e7047da883915ec90e0":[0,0,1,0,69,1],
@@ -166,8 +170,14 @@ var NAVTREEINDEX6 =
 "namespaceslick_1_1sim_1_1order__gateway.html#a21eaf560f68e2e781d35e64080dc0615a98ad0e8750ae10ad556ed7a62affb452":[0,0,1,0,6,19,3],
 "namespaceslick_1_1sim_1_1order__gateway.html#aa5b4f2e998f73c94bc327921dbd963df":[0,0,1,0,6,18],
 "namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html":[0,0,1,0,6,0],
-"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a3f5338485bd169e5dcb3821f4b854e65":[0,0,1,0,6,0,0],
-"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#ad52e6c536bbdde31370c540c4853dfff":[0,0,1,0,6,0,1],
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a23ddf7923a4f0fc87b3a8b2923131d5d":[0,0,1,0,6,0,0],
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a23ddf7923a4f0fc87b3a8b2923131d5da2f1a3e62508d88ddc31f1aa72a8334d4":[0,0,1,0,6,0,0,0],
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a23ddf7923a4f0fc87b3a8b2923131d5da7cb5f8b4a50c32d395c50b98f0ca2464":[0,0,1,0,6,0,0,1],
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a23ddf7923a4f0fc87b3a8b2923131d5dafd038fc7f319e48f3115d92bf5bdbef9":[0,0,1,0,6,0,0,2],
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a2d17680cd825b3bf1a21883713423a7d":[0,0,1,0,6,0,1],
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#a3f5338485bd169e5dcb3821f4b854e65":[0,0,1,0,6,0,3],
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#aa70d70cf5276df773c6287cebc8e20c3":[0,0,1,0,6,0,2],
+"namespaceslick_1_1sim_1_1order__gateway_1_1coinbase.html#ad52e6c536bbdde31370c540c4853dfff":[0,0,1,0,6,0,4],
 "namespaceslick_1_1sim_1_1utils.html":[0,0,1,0,7],
 "namespaceslick_1_1sim_1_1utils.html#a08df62ee1b9aa57cabe4abef53023a0f":[0,0,1,0,7,20],
 "namespaceslick_1_1sim_1_1utils.html#a10cc090c71d83ee646f96b7cc34fe164":[0,0,1,0,7,12],
@@ -239,15 +249,5 @@ var NAVTREEINDEX6 =
 "structslick_1_1sim_1_1AddOrderMessage.html#a45e9768926bed9137e9a29e5e591233f":[0,0,1,0,25,4],
 "structslick_1_1sim_1_1AddOrderMessage.html#a45e9768926bed9137e9a29e5e591233f":[2,0,0,0,24,4],
 "structslick_1_1sim_1_1AddOrderMessage.html#a5744fbb18583fc2e3c5f5844c92d841d":[0,0,1,0,25,0],
-"structslick_1_1sim_1_1AddOrderMessage.html#a5744fbb18583fc2e3c5f5844c92d841d":[2,0,0,0,24,0],
-"structslick_1_1sim_1_1AddOrderMessage.html#a7ff458a8a370cedd2719d6789ff9fd59":[0,0,1,0,25,3],
-"structslick_1_1sim_1_1AddOrderMessage.html#a7ff458a8a370cedd2719d6789ff9fd59":[2,0,0,0,24,3],
-"structslick_1_1sim_1_1AddOrderMessage.html#a9dcc7d132040218f774c87d33d6f66c8":[0,0,1,0,25,6],
-"structslick_1_1sim_1_1AddOrderMessage.html#a9dcc7d132040218f774c87d33d6f66c8":[2,0,0,0,24,6],
-"structslick_1_1sim_1_1AddOrderMessage.html#ad1ecf5ed5ded3fa95c70582ccfc049a5":[0,0,1,0,25,2],
-"structslick_1_1sim_1_1AddOrderMessage.html#ad1ecf5ed5ded3fa95c70582ccfc049a5":[2,0,0,0,24,2],
-"structslick_1_1sim_1_1AddOrderMessage.html#ad292718def42399fb7d70eaa931e7fe3":[0,0,1,0,25,1],
-"structslick_1_1sim_1_1AddOrderMessage.html#ad292718def42399fb7d70eaa931e7fe3":[2,0,0,0,24,1],
-"structslick_1_1sim_1_1AddOrderMessage.html#ae36b0960b9c2f811bd6a6b86e7f44b6d":[0,0,1,0,25,9],
-"structslick_1_1sim_1_1AddOrderMessage.html#ae36b0960b9c2f811bd6a6b86e7f44b6d":[2,0,0,0,24,9]
+"structslick_1_1sim_1_1AddOrderMessage.html#a5744fbb18583fc2e3c5f5844c92d841d":[2,0,0,0,24,0]
 };

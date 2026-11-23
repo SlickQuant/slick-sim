@@ -1,5 +1,15 @@
 var NAVTREEINDEX10 =
 {
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html":[0,0,1,0,6,14],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html":[2,0,0,0,5,13],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a17be6ece881e8a9b97eb584854d8699d":[0,0,1,0,6,14,2],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a17be6ece881e8a9b97eb584854d8699d":[2,0,0,0,5,13,2],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a80a38a34ca8b666a78cf92eb269967fe":[0,0,1,0,6,14,5],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a80a38a34ca8b666a78cf92eb269967fe":[2,0,0,0,5,13,5],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a84bc07bfdee736a7cd1f5c914f97e1d6":[0,0,1,0,6,14,0],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#a84bc07bfdee736a7cd1f5c914f97e1d6":[2,0,0,0,5,13,0],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aae0cfe8095c62d4ba05e0ccf020826ab":[0,0,1,0,6,14,6],
+"structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aae0cfe8095c62d4ba05e0ccf020826ab":[2,0,0,0,5,13,6],
 "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aba6941df6d29bb75fc4eb46055b53e71":[0,0,1,0,6,14,3],
 "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aba6941df6d29bb75fc4eb46055b53e71":[2,0,0,0,5,13,3],
 "structslick_1_1sim_1_1order__gateway_1_1PerSocketData.html#aeb2c3ffbc5521792314219aea0548cae":[0,0,1,0,6,14,4],

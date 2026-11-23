@@ -148,21 +148,23 @@
 <g id="Node000003" class="node">
 <title>Node3</title>
 <g id="a_Node000003"><a xlink:href="classslick_1_1sim_1_1order__gateway_1_1CoinbaseRestOrderGateway.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="none" points="173.25,-125.62 0,-125.62 0,-8.37 173.25,-8.37 173.25,-125.62"/>
-<text xml:space="preserve" text-anchor="start" x="15" y="-112.12" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::order_gateway</text>
-<text xml:space="preserve" text-anchor="start" x="15" y="-99.38" font-family="Helvetica,sans-Serif" font-size="10.00">::CoinbaseRestOrderGateway</text>
-<text xml:space="preserve" text-anchor="start" x="85.12" y="-82.62" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-65.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-65.88" font-family="Helvetica,sans-Serif" font-size="10.00">CoinbaseRestOrderGateway()</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-49.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-49.12" font-family="Helvetica,sans-Serif" font-size="10.00">~CoinbaseRestOrderGateway()</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-32.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-32.38" font-family="Helvetica,sans-Serif" font-size="10.00">type()</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-15.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-15.62" font-family="Helvetica,sans-Serif" font-size="10.00">authenticate()</text>
-<polygon fill="#666666" stroke="#666666" points="0,-94.12 0,-94.12 173.25,-94.12 173.25,-94.12 0,-94.12"/>
-<polygon fill="#666666" stroke="#666666" points="0,-77.38 0,-77.38 173.25,-77.38 173.25,-77.38 0,-77.38"/>
-<polygon fill="none" stroke="#666666" points="0,-8.38 0,-125.62 173.25,-125.62 173.25,-8.38 0,-8.38"/>
+<polygon fill="white" stroke="none" points="173.25,-134 0,-134 0,0 173.25,0 173.25,-134"/>
+<text xml:space="preserve" text-anchor="start" x="15" y="-120.5" font-family="Helvetica,sans-Serif" font-size="10.00">slick::sim::order_gateway</text>
+<text xml:space="preserve" text-anchor="start" x="15" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">::CoinbaseRestOrderGateway</text>
+<text xml:space="preserve" text-anchor="start" x="85.12" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">CoinbaseRestOrderGateway()</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">~CoinbaseRestOrderGateway()</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">type()</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">stop()</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-7.25" font-family="Helvetica,sans-Serif" font-size="10.00">authenticate()</text>
+<polygon fill="#666666" stroke="#666666" points="0,-102.5 0,-102.5 173.25,-102.5 173.25,-102.5 0,-102.5"/>
+<polygon fill="#666666" stroke="#666666" points="0,-85.75 0,-85.75 173.25,-85.75 173.25,-85.75 0,-85.75"/>
+<polygon fill="none" stroke="#666666" points="0,0 0,-134 173.25,-134 173.25,0 0,0"/>
 </a>
 </g>
 </g>
@@ -170,7 +172,7 @@
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M215.53,-240.42C186.36,-201.4 154.31,-158.54 129.47,-125.31"/>
+<path fill="none" stroke="#63b8ff" d="M215.35,-240.18C188.61,-204.41 159.46,-165.43 135.68,-133.62"/>
 <polygon fill="none" stroke="#63b8ff" points="212.4,-242.08 221.19,-247.99 218.01,-237.89 212.4,-242.08"/>
 </a>
 </g>

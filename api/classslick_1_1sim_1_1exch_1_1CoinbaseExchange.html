@@ -154,6 +154,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:ab4e7bfdcb41f0f06ff91a3f6faf3af57 inherit pro_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_ab4e7bfdcb41f0f06ff91a3f6faf3af57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#ab4e7bfdcb41f0f06ff91a3f6faf3af57">handleModifyOrderRequest</a> (const <a class="el" href="structslick_1_1sim_1_1Request.html">Request</a> &amp;request)</td></tr>
 <tr class="memitem:aa6f1915b9c5f3edfaf6b22693e7b9223 inherit pro_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_aa6f1915b9c5f3edfaf6b22693e7b9223"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#aa6f1915b9c5f3edfaf6b22693e7b9223">handleCancelOrderRequest</a> (const <a class="el" href="structslick_1_1sim_1_1Request.html">Request</a> &amp;request)</td></tr>
 <tr class="memitem:a96dfd0cb104e4891307f03e6ee6d56f9 inherit pro_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_a96dfd0cb104e4891307f03e6ee6d56f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a96dfd0cb104e4891307f03e6ee6d56f9">rejectMdSubscription</a> (const <a class="el" href="structslick_1_1sim_1_1Request.html">Request</a> &amp;request, <a class="el" href="namespaceslick_1_1sim.html#a0a9f0bd1a7d704fe4599a7420d34e1d3">MDSubscriptionRejectReason</a> reason)</td></tr>
+<tr class="memitem:aef74e39642d090152757ef1c253b37e8 inherit pro_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_aef74e39642d090152757ef1c253b37e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#aef74e39642d090152757ef1c253b37e8">publishMdSubscriptionResponse</a> (const <a class="el" href="namespaceslick_1_1sim.html#ac1bd3fddff411bd48250a7ad297f02ac">symbol_name_t</a> &amp;symbol, uint8_t channel)</td></tr>
+<tr class="memdesc:aef74e39642d090152757ef1c253b37e8 inherit pro_methods_classslick_1_1sim_1_1exch_1_1Exchange"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publishes an accepted subscription response without a snapshot payload.  <br /></td></tr>
 <tr class="memitem:afc250b8d0cb3d59711a1e1b7b438e9b9 inherit pro_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_afc250b8d0cb3d59711a1e1b7b438e9b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#afc250b8d0cb3d59711a1e1b7b438e9b9">rejectNewOrderRequest</a> (const <a class="el" href="structslick_1_1sim_1_1Request.html">Request</a> &amp;request, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337">OrdRejectReason</a> reason)</td></tr>
 <tr class="memitem:a6c9f9133e4ee1e4b15465ce7e0a84f98 inherit pro_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_a6c9f9133e4ee1e4b15465ce7e0a84f98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a6c9f9133e4ee1e4b15465ce7e0a84f98">rejectModifyOrderRequest</a> (const <a class="el" href="structslick_1_1sim_1_1Request.html">Request</a> &amp;request, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337">OrdRejectReason</a> reason)</td></tr>
 <tr class="memitem:ae487d60e58eacb7b22f89c52a03acf3f inherit pro_methods_classslick_1_1sim_1_1exch_1_1Exchange" id="r_ae487d60e58eacb7b22f89c52a03acf3f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#ae487d60e58eacb7b22f89c52a03acf3f">rejectCancelOrderRequest</a> (const <a class="el" href="structslick_1_1sim_1_1Request.html">Request</a> &amp;request, <a class="el" href="namespaceslick_1_1sim.html#a643229c6d27fa2c4cc2651be0a9a5337">OrdRejectReason</a> reason)</td></tr>
@@ -244,7 +246,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="coinbase__exchange_8cpp_source.html#l00023">23</a> of file <a class="el" href="coinbase__exchange_8cpp_source.html">coinbase_exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8cpp_source.html#l00020">slick::sim::exch::Exchange::Exchange()</a>, <a class="el" href="types_8hpp_source.html#l00158">slick::sim::COINBASE</a>, <a class="el" href="exchange_8hpp_source.html#l00177">slick::sim::exch::Exchange::md_publisher_</a>, <a class="el" href="exchange_8hpp_source.html#l00164">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="exchange_8hpp_source.html#l00176">slick::sim::exch::Exchange::order_gateways_</a>, <a class="el" href="exchange_8hpp_source.html#l00162">slick::sim::exch::Exchange::request_queue_</a>, and <a class="el" href="exchange_8hpp_source.html#l00163">slick::sim::exch::Exchange::response_queue_</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8cpp_source.html#l00020">slick::sim::exch::Exchange::Exchange()</a>, <a class="el" href="types_8hpp_source.html#l00158">slick::sim::COINBASE</a>, <a class="el" href="exchange_8hpp_source.html#l00181">slick::sim::exch::Exchange::md_publisher_</a>, <a class="el" href="exchange_8hpp_source.html#l00168">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="exchange_8hpp_source.html#l00180">slick::sim::exch::Exchange::order_gateways_</a>, <a class="el" href="exchange_8hpp_source.html#l00166">slick::sim::exch::Exchange::request_queue_</a>, and <a class="el" href="exchange_8hpp_source.html#l00167">slick::sim::exch::Exchange::response_queue_</a>.</p>
 
 </div>
 </div>
@@ -301,7 +303,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="coinbase__exchange_8cpp_source.html#l00081">81</a> of file <a class="el" href="coinbase__exchange_8cpp_source.html">coinbase_exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00170">slick::sim::exch::Exchange::md_feeds_</a>, <a class="el" href="exchange_8hpp_source.html#l00164">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="messages_8hpp_source.html#l00285">slick::sim::Request::md_subscription</a>, <a class="el" href="messages_8hpp_source.html#l00273">slick::sim::Request::symbol</a>, and <a class="el" href="exchange_8hpp_source.html#l00161">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00174">slick::sim::exch::Exchange::md_feeds_</a>, <a class="el" href="exchange_8hpp_source.html#l00168">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="messages_8hpp_source.html#l00285">slick::sim::Request::md_subscription</a>, <a class="el" href="exchange_8cpp_source.html#l00415">slick::sim::exch::Exchange::publishMdSubscriptionResponse()</a>, <a class="el" href="messages_8hpp_source.html#l00273">slick::sim::Request::symbol</a>, and <a class="el" href="exchange_8hpp_source.html#l00165">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -330,9 +332,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classslick_1_1sim_1_1exch_1_1Exchange.html#a08416af82a06a1e18f2cc26dc36eb51d">slick::sim::exch::Exchange</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="coinbase__exchange_8cpp_source.html#l00176">176</a> of file <a class="el" href="coinbase__exchange_8cpp_source.html">coinbase_exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="coinbase__exchange_8cpp_source.html#l00190">190</a> of file <a class="el" href="coinbase__exchange_8cpp_source.html">coinbase_exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00170">slick::sim::exch::Exchange::md_feeds_</a>, <a class="el" href="messages_8hpp_source.html#l00273">slick::sim::Request::symbol</a>, and <a class="el" href="exchange_8hpp_source.html#l00161">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00174">slick::sim::exch::Exchange::md_feeds_</a>, <a class="el" href="messages_8hpp_source.html#l00273">slick::sim::Request::symbol</a>, and <a class="el" href="exchange_8hpp_source.html#l00165">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -452,7 +454,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00091">91</a> of file <a class="el" href="coinbase__feed__callbacks_8cpp_source.html">coinbase_feed_callbacks.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00164">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="utils_2order_8hpp_source.html#l00010">slick::sim::utils::nextOrderId()</a>, <a class="el" href="exchange_8cpp_source.html#l00550">slick::sim::exch::Exchange::publishTradeSummary()</a>, <a class="el" href="order__book_8hpp_source.html#l00037">slick::sim::to_book_side()</a>, <a class="el" href="types_8hpp_source.html#l00042">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00050">slick::sim::to_qty_t()</a>, and <a class="el" href="exchange_8hpp_source.html#l00161">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00168">slick::sim::exch::Exchange::md_queue_</a>, <a class="el" href="utils_2order_8hpp_source.html#l00010">slick::sim::utils::nextOrderId()</a>, <a class="el" href="exchange_8cpp_source.html#l00576">slick::sim::exch::Exchange::publishTradeSummary()</a>, <a class="el" href="order__book_8hpp_source.html#l00037">slick::sim::to_book_side()</a>, <a class="el" href="types_8hpp_source.html#l00042">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00050">slick::sim::to_qty_t()</a>, and <a class="el" href="exchange_8hpp_source.html#l00165">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -490,7 +492,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00185">185</a> of file <a class="el" href="coinbase__feed__callbacks_8cpp_source.html">coinbase_feed_callbacks.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00039">slick::sim::F_END_EVENT</a>, <a class="el" href="market__data_8hpp_source.html#l00037">slick::sim::F_NONE</a>, <a class="el" href="timestamp_8hpp_source.html#l00093">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="coinbase__exchange_8hpp_source.html#l00013">slick::sim::exch::LEVEL_UPDATE</a>, <a class="el" href="types_8hpp_source.html#l00042">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00050">slick::sim::to_qty_t()</a>, and <a class="el" href="exchange_8hpp_source.html#l00161">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00039">slick::sim::F_END_EVENT</a>, <a class="el" href="market__data_8hpp_source.html#l00037">slick::sim::F_NONE</a>, <a class="el" href="timestamp_8hpp_source.html#l00093">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="coinbase__exchange_8hpp_source.html#l00013">slick::sim::exch::LEVEL_UPDATE</a>, <a class="el" href="types_8hpp_source.html#l00042">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00050">slick::sim::to_qty_t()</a>, and <a class="el" href="exchange_8hpp_source.html#l00165">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -546,7 +548,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00021">21</a> of file <a class="el" href="coinbase__feed__callbacks_8cpp_source.html">coinbase_feed_callbacks.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00170">slick::sim::exch::Exchange::md_feeds_</a>, and <a class="el" href="exchange_8hpp_source.html#l00161">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00174">slick::sim::exch::Exchange::md_feeds_</a>, and <a class="el" href="exchange_8hpp_source.html#l00165">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -642,7 +644,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00287">287</a> of file <a class="el" href="coinbase__feed__callbacks_8cpp_source.html">coinbase_feed_callbacks.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00039">slick::sim::F_END_EVENT</a>, <a class="el" href="market__data_8hpp_source.html#l00037">slick::sim::F_NONE</a>, <a class="el" href="timestamp_8hpp_source.html#l00093">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="types_8hpp_source.html#l00042">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00050">slick::sim::to_qty_t()</a>, <a class="el" href="coinbase__exchange_8hpp_source.html#l00013">slick::sim::exch::TRADE</a>, and <a class="el" href="exchange_8hpp_source.html#l00161">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00039">slick::sim::F_END_EVENT</a>, <a class="el" href="market__data_8hpp_source.html#l00037">slick::sim::F_NONE</a>, <a class="el" href="timestamp_8hpp_source.html#l00093">slick::sim::utils::get_current_time_ns()</a>, <a class="el" href="types_8hpp_source.html#l00042">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00050">slick::sim::to_qty_t()</a>, <a class="el" href="coinbase__exchange_8hpp_source.html#l00013">slick::sim::exch::TRADE</a>, and <a class="el" href="exchange_8hpp_source.html#l00165">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -680,7 +682,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="coinbase__feed__callbacks_8cpp_source.html#l00237">237</a> of file <a class="el" href="coinbase__feed__callbacks_8cpp_source.html">coinbase_feed_callbacks.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00044">slick::sim::F_NOT_IN_BOOK</a>, <a class="el" href="exchange_8hpp_source.html#l00184">slick::sim::exch::Exchange::next_trade_id_</a>, <a class="el" href="exchange_8hpp_source.html#l00125">slick::sim::exch::Exchange::nextVenueTradeId()</a>, <a class="el" href="exchange_8cpp_source.html#l00589">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, <a class="el" href="symbol_8hpp_source.html#l00169">slick::sim::exch::Symbol::recordTrade()</a>, <a class="el" href="types_8hpp_source.html#l00042">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00050">slick::sim::to_qty_t()</a>, and <a class="el" href="exchange_8hpp_source.html#l00161">slick::sim::exch::Exchange::venue_</a>.</p>
+<p class="reference">References <a class="el" href="market__data_8hpp_source.html#l00044">slick::sim::F_NOT_IN_BOOK</a>, <a class="el" href="exchange_8hpp_source.html#l00188">slick::sim::exch::Exchange::next_trade_id_</a>, <a class="el" href="exchange_8hpp_source.html#l00129">slick::sim::exch::Exchange::nextVenueTradeId()</a>, <a class="el" href="exchange_8cpp_source.html#l00615">slick::sim::exch::Exchange::publishTradeSubscriptionResponse()</a>, <a class="el" href="symbol_8hpp_source.html#l00169">slick::sim::exch::Symbol::recordTrade()</a>, <a class="el" href="types_8hpp_source.html#l00042">slick::sim::to_price_t()</a>, <a class="el" href="types_8hpp_source.html#l00050">slick::sim::to_qty_t()</a>, and <a class="el" href="exchange_8hpp_source.html#l00165">slick::sim::exch::Exchange::venue_</a>.</p>
 
 </div>
 </div>
@@ -1073,7 +1075,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="coinbase__exchange_8cpp_source.html#l00059">59</a> of file <a class="el" href="coinbase__exchange_8cpp_source.html">coinbase_exchange.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00165">slick::sim::exch::Exchange::md_feed_</a>, <a class="el" href="exchange_8hpp_source.html#l00170">slick::sim::exch::Exchange::md_feeds_</a>, and <a class="el" href="coinbase__exchange_8cpp_source.html#l00211">processSequencedEvents()</a>.</p>
+<p class="reference">References <a class="el" href="exchange_8hpp_source.html#l00169">slick::sim::exch::Exchange::md_feed_</a>, <a class="el" href="exchange_8hpp_source.html#l00174">slick::sim::exch::Exchange::md_feeds_</a>, and <a class="el" href="coinbase__exchange_8cpp_source.html#l00225">processSequencedEvents()</a>.</p>
 
 </div>
 </div>
@@ -1100,7 +1102,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="coinbase__exchange_8cpp_source.html#l00211">211</a> of file <a class="el" href="coinbase__exchange_8cpp_source.html">coinbase_exchange.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="coinbase__exchange_8cpp_source.html#l00225">225</a> of file <a class="el" href="coinbase__exchange_8cpp_source.html">coinbase_exchange.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="timestamp_8hpp_source.html#l00093">slick::sim::utils::get_current_time_ns()</a>, and <a class="el" href="timestamp_8hpp_source.html#l00099">slick::sim::utils::ONE_SECOND_NS</a>.</p>
 

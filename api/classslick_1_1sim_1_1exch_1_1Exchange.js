@@ -25,6 +25,7 @@ var classslick_1_1sim_1_1exch_1_1Exchange =
     [ "publishLevelUpdate", "classslick_1_1sim_1_1exch_1_1Exchange.html#a90d53d2814d4e2f2a77ca28ef2249218", null ],
     [ "publishMDBookUpdate", "classslick_1_1sim_1_1exch_1_1Exchange.html#a441b828e07136f92897d64a02ab3d506", null ],
     [ "publishMDOrderUpdate", "classslick_1_1sim_1_1exch_1_1Exchange.html#a06eef9709aeb50a724f014d1fd040b96", null ],
+    [ "publishMdSubscriptionResponse", "classslick_1_1sim_1_1exch_1_1Exchange.html#aef74e39642d090152757ef1c253b37e8", null ],
     [ "publishTradeSubscriptionResponse", "classslick_1_1sim_1_1exch_1_1Exchange.html#a1504ddfbf4ab78fb07ed44f68b898113", null ],
     [ "publishTradeSummary", "classslick_1_1sim_1_1exch_1_1Exchange.html#a7ad7b7ed124de8d2ef3fac1bcb65f0b0", null ],
     [ "reconcilePhantomQty", "classslick_1_1sim_1_1exch_1_1Exchange.html#a67a593dc60a3c89b19a9e2a3f93bfced", null ],
