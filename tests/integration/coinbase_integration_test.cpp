@@ -301,20 +301,44 @@ json waitForOrderWhere(slick::sim::integration::ClientDriver& client,
     return *event;
 }
 
+/// Polls `client` until `done()` holds or the deadline passes. Market data comes from the
+/// publisher thread, so it can trail the ack or user-channel report the test last waited for.
+template <typename Done>
+void pollUntil(slick::sim::integration::ClientDriver& client, Done&& done, std::chrono::milliseconds timeout) {
+    const auto deadline = std::chrono::steady_clock::now() + timeout;
+    for (;;) {
+        client.poll();
+        if (done() || std::chrono::steady_clock::now() >= deadline) {
+            return;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+}
+
 /// Collects market-data trades until `count` have arrived, or the deadline passes.
 std::vector<json> waitForTrades(slick::sim::integration::ClientDriver& client,
                                 size_t count,
                                 std::chrono::milliseconds timeout = 10s) {
-    const auto deadline = std::chrono::steady_clock::now() + timeout;
     std::vector<json> trades;
-    for (;;) {
-        client.poll();
-        trades = tradesIn(client.events());
-        if (trades.size() >= count || std::chrono::steady_clock::now() >= deadline) {
-            return trades;
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
+    pollUntil(client, [&] { return (trades = tradesIn(client.events())).size() >= count; }, timeout);
+    return trades;
+}
+
+/// Returns the client's level2 view of `product` once `ready` accepts it, or the last view at the
+/// deadline.
+BookMirror waitForBook(slick::sim::integration::ClientDriver& client,
+                       const std::string& product,
+                       const std::function<bool(const BookMirror&)>& ready,
+                       std::chrono::milliseconds timeout = 10s) {
+    BookMirror mirror;
+    pollUntil(client,
+              [&] {
+                  mirror = BookMirror{};
+                  mirror.apply(client.events(), product);
+                  return ready(mirror);
+              },
+              timeout);
+    return mirror;
 }
 
 /// Waits for a level to be published with quantity zero on `side` at `price`.
@@ -367,10 +391,9 @@ TEST(CoinbaseTradingTest, ClientsBuildAMarketAndTradeUnderFifo) {
                     .value("success", false));
 
     // Carol has only subscribed to market data so far. Her two-sided book includes the other
-    // clients' liquidity.
-    carol.poll();
-    BookMirror mirror;
-    mirror.apply(carol.events(), product);
+    // clients' liquidity. Updates arrive in submission order, so once Bob's quantity shows, the
+    // rest of the book is in.
+    auto mirror = waitForBook(carol, product, [](const BookMirror& book) { return book.qtyAt(false, 100.00) > 0.001; });
     EXPECT_DOUBLE_EQ(mirror.qtyAt(true, 99.00), 0.001);
     EXPECT_DOUBLE_EQ(mirror.qtyAt(false, 100.00), 0.002);
     EXPECT_DOUBLE_EQ(mirror.bestBid(), 99.00);
@@ -573,9 +596,9 @@ TEST(CoinbaseTradingTest, TimeInForceBatchCancelAndHistoricalListing) {
     EXPECT_DOUBLE_EQ(swept.value("cum_qty", 0.0), 0.002);
     EXPECT_EQ(swept.value("type", ""), "MARKET");
 
-    carol.poll();
+    // The FILLED report can land before the two prints on the market-data socket.
     std::vector<double> prices;
-    for (const auto& trade : tradesIn(carol.events())) {
+    for (const auto& trade : waitForTrades(carol, 2)) {
         prices.push_back(trade.value("price", 0.0));
     }
     std::sort(prices.begin(), prices.end());
