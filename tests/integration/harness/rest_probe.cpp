@@ -39,7 +39,8 @@ HttpResult httpPost(std::string_view url, std::string_view body, HttpHeaders hea
 }
 
 bool httpPostAndHangUp(std::string_view host_port, std::string_view path,
-                       std::string_view body, const HttpHeaders &headers) {
+                       std::string_view body, const HttpHeaders &headers,
+                       const std::function<void()> &before_hang_up) {
     const auto colon = host_port.rfind(':');
     if (colon == std::string_view::npos) {
         return false;
@@ -101,8 +102,10 @@ bool httpPostAndHangUp(std::string_view host_port, std::string_view path,
         sent += static_cast<size_t>(written);
     }
 
-    // The body is on its way; hanging up now leaves the simulator to process the
-    // request and then discover that nobody is listening for the answer.
+    // Hanging up before the reply leaves the simulator to discover that nobody is listening for it.
+    if (before_hang_up) {
+        before_hang_up();
+    }
     close_socket();
     return true;
 }

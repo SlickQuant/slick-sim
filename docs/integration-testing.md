@@ -47,7 +47,7 @@ the process.
 | Batch cancel | Four known ids and one unknown in one request, correct per-entry results, and a latency bound that the old per-order 200 ms poll could not meet |
 | Malformed batch | A non-string id is rejected before anything is submitted, and the ids in the same request stay cancellable |
 | Rejected amendment | An amendment the engine refuses with `SMP` leaves the original order working and still cancellable by id |
-| Disconnect mid-request | A create sent over a raw socket that hangs up before its reply still produces an order that can be cancelled by id, with no listing in between and with the response poll slowed to 200 ms so the timer cannot mask the gap |
+| Disconnect mid-request | A create sent over a raw socket that hangs up once the exchange accepts it, before its reply, still produces an order that can be cancelled by id, with no listing in between and with the response poll slowed to 1 s so the timer cannot mask the gap |
 | Historical listing | `GET /orders/historical/batch` returns the caller's own orders with their statuses, one page, `has_next` false |
 | User channel | Snapshot on subscribe, own reports only, `PENDING_NEW` suppressed, `OPEN` for a partial fill, `GOOD_UNTIL_CANCELLED` for GTC |
 | Market data | `l2_data` snapshot and updates (including other clients' liquidity, and deletes when a level empties), `market_trades` with trade ids stable across clients, `ticker` snapshot |

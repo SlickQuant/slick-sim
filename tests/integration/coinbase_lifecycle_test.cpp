@@ -313,27 +313,22 @@ TEST(CoinbaseLifecycleTest, AnOrderIsRoutableAfterItsClientDisconnectsMidRequest
     };
     const slick::sim::integration::HttpHeaders auth = {
         {"Authorization", "Bearer " + slick::sim::integration::bearerToken("alice")}};
+    // Hang up once the exchange has accepted the order, long before the one-second poll sends the
+    // reply. A close straight after the send loses the request on macOS (see httpPostAndHangUp).
     ASSERT_TRUE(slick::sim::integration::httpPostAndHangUp(
-        std::format("127.0.0.1:{}", sim.rest_port()), "/api/v3/brokerage/orders", body.dump(), auth))
+        std::format("127.0.0.1:{}", sim.rest_port()), "/api/v3/brokerage/orders", body.dump(), auth,
+        [&sim] { sim.wait_for_log("client_oid=disc-1, price="); }))
         << "the raw POST never reached the simulator";
 
     // Read the generated order id from the venue's acceptance log. A listing would drain the report
     // stream and hide the routing bug.
     const std::regex accepted(R"(Adding order \d+: oid=([0-9a-fA-F-]{36}), client_oid=disc-1)");
-    std::string order_id;
-    const auto deadline = std::chrono::steady_clock::now() + 10s;
-    while (order_id.empty() && std::chrono::steady_clock::now() < deadline) {
-        std::smatch match;
-        const std::string log = sim.log();
-        if (std::regex_search(log, match, accepted)) {
-            order_id = match[1];
-        } else {
-            std::this_thread::sleep_for(5ms);
-        }
-    }
-    ASSERT_FALSE(order_id.empty()) << "the simulator never accepted the order: " << sim.log();
+    const std::string log = sim.log();
+    std::smatch match;
+    ASSERT_TRUE(std::regex_search(log, match, accepted)) << "the simulator never accepted the order: " << log;
+    const std::string order_id = match[1];
 
-    // Let the exchange publish the report; the poll is still 200 ms away.
+    // Let the exchange publish the report; the poll is still most of a second away.
     std::this_thread::sleep_for(20ms);
 
     // No listing before this: a cancel is the first thing to ask for routing.
