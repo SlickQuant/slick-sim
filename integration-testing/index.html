@@ -1167,7 +1167,7 @@ the process.</p>
 </tr>
 <tr>
 <td>Disconnect mid-request</td>
-<td>A create sent over a raw socket that hangs up before its reply still produces an order that can be cancelled by id, with no listing in between and with the response poll slowed to 200 ms so the timer cannot mask the gap</td>
+<td>A create sent over a raw socket that hangs up once the exchange accepts it, before its reply, still produces an order that can be cancelled by id, with no listing in between and with the response poll slowed to 1 s so the timer cannot mask the gap</td>
 </tr>
 <tr>
 <td>Historical listing</td>
