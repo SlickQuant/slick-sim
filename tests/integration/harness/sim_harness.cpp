@@ -130,6 +130,17 @@ std::string SimHarness::log() const {
     return read_file((std::filesystem::path(work_directory_) / "logs" / "slick-sim.log").string());
 }
 
+bool SimHarness::wait_for_log(std::string_view needle, size_t from, std::chrono::milliseconds timeout) const {
+    const auto deadline = std::chrono::steady_clock::now() + timeout;
+    while (log().find(needle, from) == std::string::npos) {
+        if (std::chrono::steady_clock::now() >= deadline) {
+            return false;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+    return true;
+}
+
 std::string SimHarness::stdio_text() const {
     return "--- stdout ---\n" + read_file((std::filesystem::path(work_directory_) / "slick-sim.out").string()) +
            "\n--- stderr ---\n" +

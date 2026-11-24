@@ -67,6 +67,11 @@ public:
 
     /// `logs/slick-sim.log`, always written by the simulator.
     std::string log() const;
+    /// Polls the log until `needle` appears at or after byte `from`. A line can land after the reply
+    /// that caused it: the logger writes on its own thread, and each gateway logs its own reports.
+    bool wait_for_log(std::string_view needle,
+                      size_t from = 0,
+                      std::chrono::milliseconds timeout = std::chrono::seconds(10)) const;
     /// The process's own stdout and stderr, for failures before logging starts.
     std::string stdio_text() const;
 

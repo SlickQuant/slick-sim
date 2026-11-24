@@ -230,7 +230,7 @@ TEST(CoinbaseLifecycleTest, SelfMatchPreventionRejectsTheNewestOrder) {
     ASSERT_NE(rejected, nullptr) << dumpEvents(alice.events());
     EXPECT_EQ((*rejected).value("terminal", false), true);
     // The SDK does not expose reject_reason. Check the venue log to confirm the reject was SMP.
-    EXPECT_NE(sim.log().find("SMP"), std::string::npos) << sim.log();
+    EXPECT_TRUE(sim.wait_for_log("SMP")) << sim.log();
 
     // No trade happened: the resting order is still working.
     alice.clear_events();
@@ -265,10 +265,10 @@ TEST(CoinbaseLifecycleTest, SelfMatchPreventionRejectsTheNewestOrder) {
 
     // The edit path reports PENDING_REPLACE before the engine's verdict, and the gateway's
     // synchronous poll stops at that first report. Check the venue log for the reject. Its empty
-    // client_order_id distinguishes an amendment reject from the earlier new-order reject.
-    const auto log_tail = sim.log().substr(log_before_edit);
-    EXPECT_NE(log_tail.find("REJECTED to user_id=alice, client_order_id="), std::string::npos)
-        << "the crossing amendment was not rejected: " << log_tail;
+    // client_order_id distinguishes an amendment reject from the earlier new-order reject. The WS
+    // gateway logs it from its own thread after the REST reply may already be back, so wait for it.
+    EXPECT_TRUE(sim.wait_for_log("REJECTED to user_id=alice, client_order_id=", log_before_edit))
+        << "the crossing amendment was not rejected: " << sim.log().substr(log_before_edit);
 
     // The order is still working, so it must still be cancellable by id.
     alice.clear_events();
