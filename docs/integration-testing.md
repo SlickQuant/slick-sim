@@ -169,4 +169,3 @@ No request failed. A single client's p50 is about half the other two because it 
 earlier and is the one that had to create the symbol; the long tail is the first burst. These are
 round-trip times of blocking HTTP calls from three processes, so they include the SDK's own
 serialization and the loop's timer poll (`order_gateway.rest.response_poll_ms`).
-

@@ -49,7 +49,7 @@ jobs:
     # That is why the Linux Release job failed intermittently and passed on
     # re-run: it depended on which CPU the cache came from. Key the cache on the
     # runner's CPU features so a cache is only ever reused on compatible hardware.
-    - name: CPU signature for the vcpkg cache key
+    - name: CPU and compiler signature for the vcpkg cache key
       id: cpusig
       shell: bash
       run: |
@@ -68,7 +68,21 @@ jobs:
             raw=$(wmic cpu get Name /value 2>/dev/null | tr -d '\r' | grep '=' || echo "windows-unknown")
             ;;
         esac
-        echo "CPU signature source: $raw"
+        # The compiler too, since an image update can bring a new one. coinbase-advanced-cpp's Release
+        # lib holds /GL objects, which link only with the exact MSVC that built them:
+        #   LINK : fatal error C1047: ...coinbase-advanced-cpp.lib' was created by a different version
+        #   of the compiler than other objects like 'slick-sim.dir\Release\main.obj'
+        if [ "$RUNNER_OS" = "Windows" ]; then
+          # The toolset CMake's Visual Studio generator picks: the latest instance's default.
+          ver_file=$("/c/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe" -latest -products '*' \
+                     -find 'VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt' | head -1 | tr -d '\r')
+          test -n "$ver_file"
+          compiler="msvc-$(tr -d '\r\n ' < "$(cygpath -u "$ver_file")")"
+        else
+          compiler=$(c++ --version | head -1)
+        fi
+        raw="$raw $compiler"
+        echo "CPU and compiler signature source: $raw"
         # macOS may not ship sha256sum; shasum gives the same digest.
         if command -v sha256sum >/dev/null; then sum=sha256sum; else sum="shasum -a 256"; fi
         echo "sig=$(printf '%s' "$raw" | $sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
