@@ -1272,7 +1272,8 @@ clients to reproduce, so the tests start and monitor the simulator process as we
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ctest<span class="w"> </span>--test-dir<span class="w"> </span>build<span class="w"> </span>-R<span class="w"> </span>coinbase_integration<span class="w"> </span>--output-on-failure
 </code></pre></div>
 <p>The test is registered with the <code>integration</code> label, runs serially, and has a 900 s timeout. It is
-built when the Coinbase adapter and GoogleTest are, and can be switched off for a fast inner loop:</p>
+built when the Coinbase adapter, the CLI (<code>SLICK_SIM_ENABLE_TCP_GATEWAY</code>) and GoogleTest are, and
+can be switched off for a fast inner loop:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DSLICK_SIM_BUILD_INTEGRATION_TESTS<span class="o">=</span>OFF
 </code></pre></div>
 <p>To run it directly, point it at the two executables (this is what CTest does):</p>
