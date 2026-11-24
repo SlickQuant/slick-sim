@@ -187,6 +187,11 @@ target_include_directories(slick_sim_tests
 # misaligned access would still be a real finding.
 if(ENABLE_ASAN AND NOT MSVC)
   target_compile_options(slick_sim_tests PRIVATE -fno-sanitize=alignment)
+  # OrderStore is header-only, so its apply() is compiled into this file. Keep the check on here:
+  # the file's assertions read OrderStore's own unpacked Order, and the check caught apply()
+  # binding a reference to a packed OrderResponse field. Source options come after target ones.
+  set_source_files_properties(unit/order_gateway/test_order_store.cpp
+      PROPERTIES COMPILE_OPTIONS -fsanitize=alignment)
 endif()
 
 # Set C++23 standard

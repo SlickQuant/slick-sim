@@ -108,6 +108,10 @@
   which was the only thing that would have untracked the waiter, so `expireWaiters` matched nothing
   and the poll timer stayed armed for the life of the process. Abandoning a request now drops its
   timeout records with its waiters.
+- `OrderStore::apply` bound a reference to the packed, misaligned `OrderResponse::timestamp` when it
+  recorded a fill's time, which is undefined behavior. A UBSan build of `slick-sim` aborted on its
+  first Coinbase fill. The value is copied first now, and `test_order_store.cpp` keeps UBSan's
+  alignment check on so its fill test catches a repeat.
 - Docs: `GET /orders/historical/batch` is implemented (it returned the order store but was
   documented as hanging).
 

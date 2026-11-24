@@ -247,8 +247,10 @@ CliReply SimHarness::cli(CliCommand command,
     request.request_id = ++next_request;
     request.command = static_cast<slick::sim::CliCommandType>(static_cast<uint8_t>(command));
     request.flag = flag;
-    std::memcpy(request.target, target.data(), std::min(target.size(), sizeof(request.target)));
-    std::memcpy(request.arg, argument.data(), std::min(argument.size(), sizeof(request.arg)));
+    // copy() rather than memcpy: an empty view's data() may be null, which memcpy forbids even
+    // for a zero length (UBSan halts on it).
+    target.copy(request.target, sizeof(request.target));
+    argument.copy(request.arg, sizeof(request.arg));
 
     if (!sendAll(socket, &request, sizeof(request))) {
         reply.text = "cannot send the CLI request";

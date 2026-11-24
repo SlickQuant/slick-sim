@@ -120,7 +120,9 @@ public:
             // Each response is consumed once, so this cannot double count.
             order.last_fill_price = response.last_fill_price;
             order.last_fill_qty = response.last_qty;
-            order.last_fill_time = response.timestamp;
+            // Copy first: optional's operator= binds a reference, and timestamp is a packed,
+            // misaligned field (UBSan halts on the reference).
+            order.last_fill_time = uint64_t{response.timestamp};
             ++order.num_fills;
         }
 
