@@ -6,11 +6,12 @@ matching engine fills their orders without risking capital.
 
 What your orders match against depends on how you configure the market-data feed:
 
-- **Shadowing** — connect a live feed and `slick-sim` mirrors the real venue's book, so your orders
+- **Shadowing**: connect a live feed and `slick-sim` mirrors the real venue's book, so your orders
   compete against real, currently-quoted liquidity.
-- **Self-contained** — omit the feed and it behaves like a conventional exchange simulator: books
+- **Self-contained**: omit the feed and it behaves like a conventional exchange simulator. Books
   start empty and clients trade only against each other.
-- **Historical replay** — planned, not yet implemented.
+- **Historical replay**: on CME and ICE, point a pcap feed at recorded multicast captures and
+  `slick-sim` replays them once a client sends START. See [PCAP replay](pcap-replay.md).
 
 See [Operating modes](architecture.md#operating-modes).
 

@@ -102,7 +102,8 @@ ctest --test-dir build -R coinbase_integration --output-on-failure
 ```
 
 The test is registered with the `integration` label, runs serially, and has a 900 s timeout. It is
-built when the Coinbase adapter and GoogleTest are, and can be switched off for a fast inner loop:
+built when the Coinbase adapter, the CLI (`SLICK_SIM_ENABLE_TCP_GATEWAY`) and GoogleTest are, and
+can be switched off for a fast inner loop:
 
 ```bash
 cmake -S . -B build -DSLICK_SIM_BUILD_INTEGRATION_TESTS=OFF

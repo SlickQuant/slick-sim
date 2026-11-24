@@ -114,10 +114,15 @@ endif()
 get_property(_slick_sim_venue_tests GLOBAL PROPERTY SLICK_SIM_VENUE_TESTS)
 list(APPEND SLICK_SIM_TEST_SOURCES ${_slick_sim_venue_tests})
 
-# End-to-end suites spawn slick-sim and drive its ports from a separate executable. Only builds with
-# the Coinbase venue target include the Coinbase client and test.
+# End-to-end suites spawn slick-sim and drive its ports from a separate executable. The Coinbase
+# suite needs the Coinbase venue and the CLI: the harness waits for the CLI port, stops the
+# simulator with `sim shutdown`, and tests the CLI itself. A build with the TCP gateway off has no CLI.
 if(TARGET slick_sim_venue_coinbase AND SLICK_SIM_BUILD_INTEGRATION_TESTS)
-    add_subdirectory(integration)
+    if(TARGET slick_sim_cli)
+        add_subdirectory(integration)
+    else()
+        message(STATUS "coinbase_integration skipped: it needs the CLI (SLICK_SIM_ENABLE_TCP_GATEWAY)")
+    endif()
 endif()
 
 # Add out-of-process suites declared by out-of-tree venues through

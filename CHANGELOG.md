@@ -1,4 +1,4 @@
-# Unreleased
+# v0.8.0 - 11-23-2026
 
 ## Added
 
@@ -11,15 +11,16 @@
   and drives it over its ports with three separate client processes running the real
   coinbase-advanced-cpp SDK. It covers startup, REST products/auth/validation, FIFO and TIF matching,
   cancel/edit/batch-cancel, the historical listing, the user and market-data channels, sequence
-  numbering, heartbeats, self-match prevention, the CLI and graceful shutdown.
+  numbering, heartbeats, self-match prevention, the CLI and graceful shutdown. The suite stops the
+  simulator through the CLI, so a build with `SLICK_SIM_ENABLE_TCP_GATEWAY` off leaves it out.
 - `slick_sim_add_venue(... INTEGRATION_TESTS <dir>)` lets an out-of-tree venue register an
   out-of-process suite. `tests/CMakeLists.txt` adds it when `SLICK_SIM_BUILD_INTEGRATION_TESTS` is
   on. Each suite defines its executable and CTest entries without changes to slick-sim's test list.
   The CME suite in slick-sim-cme is the first to use this hook.
 - `config/coinbase_self_contained.json`: a Coinbase-only, feed-free sample config that the suite
   exercises, with an inline product list so startup makes no outbound call.
-- `SLICK_SIM_BUILD_INTEGRATION_TESTS` (default `ON`) to leave the end-to-end suites out of a
-  test-only build.
+- `SLICK_SIM_BUILD_INTEGRATION_TESTS` (default `ON`): turn it off to build the unit tests without
+  the end-to-end suites.
 - `order_gateway.ws.fee_rate` and `base_url`: setting the display-only taker fee rate explicitly
   skips the startup call to Coinbase.
 
@@ -94,7 +95,7 @@
 - A rejected amendment made its order uncancellable. The report stream's routing cleanup treated
   `REJECTED` as terminal, but a rejected amendment or cancel names an order that is still working;
   cancelling it afterwards answered `UNKNOWN_ORDER`. Routing is now learned while the report stream
-  is drained and only `FILLED`, `CANCELED` and `EXPIRED` retire it.
+  is drained and only `FILLED`, `CANCELED`, `EXPIRED` and `DONE_FOR_DAY` retire it.
 - An order whose client disconnected mid-request could never be cancelled. Its routing was recorded
   from the create handler's completion, which is abandoned when the connection drops, and the report
   poll ran only while an HTTP waiter existed. The accepted order's report stayed unread, and

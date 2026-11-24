@@ -14,18 +14,18 @@ real exchange, with fills produced by an in-process matching engine: FIFO, or pr
 ICE when configured.
 
 A live feed lets your orders compete against real quoted liquidity. Without one, the books contain
-only client orders. Historical replay against recorded market data is planned but not implemented. See [Operating modes](https://slickquant.github.io/slick-sim/architecture/#operating-modes).
+only client orders. CME and ICE can also replay recorded multicast captures ([PCAP replay](https://slickquant.github.io/slick-sim/pcap-replay/)). See [Operating modes](https://slickquant.github.io/slick-sim/architecture/#operating-modes).
 
-Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.5.1`).
+Built in C++23. The executable is `slick-sim` (CMake project name `ExchangeSimulator`, currently `v0.8.0`).
 
 ## Documentation
 
 Full documentation is published at **<https://slickquant.github.io/slick-sim/>**:
 
-- **Internals** — [architecture and threading model](https://slickquant.github.io/slick-sim/architecture/), [order lifecycle](https://slickquant.github.io/slick-sim/order-lifecycle/), [matching engine](https://slickquant.github.io/slick-sim/matching-engine/), [order book](https://slickquant.github.io/slick-sim/order-book/), [market data](https://slickquant.github.io/slick-sim/market-data/), [adding an exchange](https://slickquant.github.io/slick-sim/extending/)
-- **Integration** — [configuration reference](https://slickquant.github.io/slick-sim/configuration/), [Coinbase](https://slickquant.github.io/slick-sim/integration-coinbase/), [Hyperliquid](https://slickquant.github.io/slick-sim/integration-hyperliquid/)
-- **[Known gaps](https://slickquant.github.io/slick-sim/known-gaps/)** — unimplemented and half-wired code paths, worth reading before you debug anything surprising
-- **[API reference](https://slickquant.github.io/slick-sim/api/)** — Doxygen
+- **Internals**: [architecture and threading model](https://slickquant.github.io/slick-sim/architecture/), [order lifecycle](https://slickquant.github.io/slick-sim/order-lifecycle/), [matching engine](https://slickquant.github.io/slick-sim/matching-engine/), [order book](https://slickquant.github.io/slick-sim/order-book/), [market data](https://slickquant.github.io/slick-sim/market-data/), [PCAP replay](https://slickquant.github.io/slick-sim/pcap-replay/), [adding an exchange](https://slickquant.github.io/slick-sim/extending/)
+- **Integration**: [configuration reference](https://slickquant.github.io/slick-sim/configuration/), [CLI](https://slickquant.github.io/slick-sim/cli/), [Coinbase](https://slickquant.github.io/slick-sim/integration-coinbase/), [Hyperliquid](https://slickquant.github.io/slick-sim/integration-hyperliquid/), [integration tests](https://slickquant.github.io/slick-sim/integration-testing/)
+- **[Known gaps](https://slickquant.github.io/slick-sim/known-gaps/)**: unimplemented and half-wired code paths. Read it before you debug anything surprising
+- **[API reference](https://slickquant.github.io/slick-sim/api/)**: Doxygen
 
 The sources live in [`docs/`](docs/) and render on GitHub too.
 
@@ -143,7 +143,7 @@ all unnecessary: nothing in the core links a wire protocol.
 ```bash
 cmake -S . -B build -DSLICK_SIM_ENABLE_HYPERLIQUID=OFF    # Coinbase only
 cmake -S . -B build -DSLICK_SIM_ENABLE_COINBASE=OFF       # Hyperliquid only
-cmake -S . -B build -DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF    # no TCP gateway, no slick-socket
+cmake -S . -B build -DSLICK_SIM_ENABLE_TCP_GATEWAY=OFF    # no TCP gateway, no CLI port, no slick-socket
 cmake -S . -B build -DSLICK_SIM_ENABLE_FIX_JSON_PARSERS=ON  # also build the unused FIX/JSON parsers (needs QuickFIX)
 ```
 
@@ -250,8 +250,9 @@ Logs:
 
 GoogleTest builds by default (`BUILD_EXCH_SIMULATOR_TESTING=ON`). The suite covers matching, order
 books, wire fields and messages, request tags, market data, both venue adapters and their encoders
-(`tests/unit/`). Out-of-tree venues can pass their suites to `slick_sim_add_venue(... TESTS ...)`
-so they run in the same test binary.
+(`tests/unit/`). Out-of-tree venues can pass their unit suites to `slick_sim_add_venue(... TESTS ...)`
+so they run in the same test binary. An end-to-end suite goes in its own directory, passed as
+`INTEGRATION_TESTS`.
 
 ```bash
 cmake -S . -B build
@@ -333,7 +334,8 @@ slick-sim/
 ├── cmake/
 │   └── slick_sim_venue.cmake   # slick_sim_add_venue() and the other venue helpers
 ├── config/
-│   └── slick_sim.json          # sample runtime configuration
+│   ├── slick_sim.json          # sample runtime configuration
+│   └── coinbase_self_contained.json  # Coinbase-only, feed-free config the integration suite runs
 ├── docs/                        # published documentation sources
 ├── src/
 │   ├── cli/                    # the CLI port: CliServer, CliEndpoint, the reject commands
@@ -349,6 +351,7 @@ slick-sim/
 │   │   └── main.cpp             # slick-sim entry point
 │   └── utils/                   # order id / timestamp / price / decimal / fixed-width string helpers (header-only)
 ├── tests/
+│   ├── integration/             # end-to-end suites that spawn slick-sim (coinbase_integration)
 │   └── unit/                    # GoogleTest suite (slick_sim_tests)
 ├── tools/
 │   └── slick_sim_cli.py         # CLI client

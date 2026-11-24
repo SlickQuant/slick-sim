@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(ExchangeSimulator VERSION 0.7.0 LANGUAGES CXX)
+project(ExchangeSimulator VERSION 0.8.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -10,7 +10,7 @@ option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 option(BUILD_EXCH_SIMULATOR_TESTING "Build tests" ON)
 
 # End-to-end suites spawn the simulator and drive its ports. They can be disabled while working on
-# unit tests. The Coinbase suite also requires the Coinbase adapter.
+# unit tests. The Coinbase suite also requires the Coinbase adapter and the CLI (TCP gateway).
 option(SLICK_SIM_BUILD_INTEGRATION_TESTS "Build the end-to-end integration suites" ON)
 
 # Each venue builds as a separate target under src/venues/<name>/.
